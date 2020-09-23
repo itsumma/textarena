@@ -1,6 +1,13 @@
+import ToolProcessor from "./ToolProcessor";
+import ToolState from "./ToolState";
+
 export default interface ToolOptions<T = {}> {
   name: string;
-  icon?: string;
+  icon: string;
+  title: string;
   config?: T;
-  processor?: (context: any, config: T) => void;
+  controlKey?: string;
+  altKey?: string;
+  state?: ToolState<T>;
+  processor: ToolProcessor<T>;
 }

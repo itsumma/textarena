@@ -5,6 +5,8 @@ import ChangeDataListener from "./interfaces/ChangeHandler";
 import HTMLLicker from "./HTMLLicker";
 import Manipulator from "./Manipulator";
 import Toolbar from "./Toolbar";
+import EventManager from "./EventManager";
+import ToolbarOptions from "./interfaces/ToolbarOptions";
 
 const defaultOptions: MediaTextOptions = {
   editable: true,
@@ -15,12 +17,16 @@ const defaultOptions: MediaTextOptions = {
       'italic',
       'underline',
       'strikethrough',
-    ]
-  }
+      'h2',
+      'h3',
+      'h4',
+    ],
+  },
 };
 
 class MediaText {
   elem: HTMLElement;
+  eventManager: EventManager;
   manipulator: Manipulator;
   toolbar: Toolbar;
   options: MediaTextOptions = {};
@@ -28,26 +34,23 @@ class MediaText {
 
   constructor (container: HTMLElement, options?: MediaTextOptions) {
     this.elem = document.createElement('DIV');
-    this.manipulator = new Manipulator(this.elem, () => {
+    this.eventManager = new EventManager();
+    this.eventManager.subscribe('textChanged', () => {
       if (this.options.onChange) {
         this.options.onChange(this.getData());
       }
     });
-    this.toolbar = new Toolbar();
+    this.manipulator = new Manipulator(this.elem, this.eventManager);
+    this.toolbar = new Toolbar(this.elem, this.eventManager);
     container.innerHTML = '';
     container.appendChild(this.elem);
     container.appendChild(this.toolbar.getElem());
     this.setOptions(options ? { ...defaultOptions, ...options } : defaultOptions);
-    if (this.options.editable) {
-      this.manipulator.turnOn();
-      this.toolbar.turnOn();
-    }
   }
 
   destructor() {
-    this.manipulator.turnOff();
-    this.toolbar.turnOff();
     console.log('destructed');
+    this.eventManager.fire('turnOff');
   }
 
   setOptions(options: MediaTextOptions) {
@@ -59,6 +62,9 @@ class MediaText {
     }
     if (options.initData) {
       this.setData(options.initData);
+    }
+    if (options.toolbar) {
+      this.setToolbarOptions(options.toolbar);
     }
   }
 
@@ -82,11 +88,9 @@ class MediaText {
   setEditable(editable: boolean) {
     if (this.options.editable !== editable) {
       if (editable) {
-        this.manipulator.turnOn();
-        this.toolbar.turnOn();
+        this.eventManager.fire('turnOn');
       } else {
-        this.manipulator.turnOff();
-        this.toolbar.turnOff();
+        this.eventManager.fire('turnOff');
       }
       this.options.editable = editable;
       this.elem.contentEditable = editable ? 'true' : 'false';
@@ -95,6 +99,10 @@ class MediaText {
 
   setOnChange(onChange: ChangeDataListener) {
     this.options.onChange = onChange;
+  }
+
+  setToolbarOptions(toolbarOptions: ToolbarOptions) {
+    this.toolbar.setOptions(toolbarOptions);
   }
 }
 

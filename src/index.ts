@@ -1,4 +1,5 @@
 import MediaText from './MediaText';
+import foreColor from './toolbarTools/foreColor';
 
 const elem = document.getElementById('mediatext');
 
@@ -23,6 +24,23 @@ if (elem) {
         localStorage.setItem('data', JSON.stringify(data));
       },
       initData,
+      // toolbar: {
+      //   tools: [
+      //     'bold',
+      //     'italic',
+      //     'underline',
+      //     'strikethrough',
+      //     {
+      //       name: 'foreColor',
+      //       icon: 'f',
+      //       title: 'ForeColor',
+      //       config: {
+      //         color: '#545454',
+      //       },
+      //       processor: foreColor,
+      //     },
+      //   ],
+      // }
     },
   );
 }

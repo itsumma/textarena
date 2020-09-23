@@ -1,41 +1,109 @@
+import EventManager from "./EventManager";
 import ChangeDataListener from "./interfaces/ChangeHandler";
 import { isDescendant } from "./utils";
 
 export const emptyStrs = ['<p><br></p>', '<p><br/></p>', '<p></p>'];
 
+enum SelectionStatus {
+  Selected,
+  Unselected,
+};
 export default class Manipulator {
   inputListenerInstance: (() => void);
   mouseUpListenerInstance: (() => void);
+  keyUpListenerInstance: ((e: KeyboardEvent) => void);
+  keyDownListenerInstance: ((e: KeyboardEvent) => void);
+  selectListenerInstance: (() => void);
 
-  constructor (private elem: HTMLElement, private onChange: () => void) {
+  lastSelectionStatus: SelectionStatus = SelectionStatus.Unselected;
+  lastSelectionRange: Range | undefined;
+
+  constructor (private elem: HTMLElement, private eventManager: EventManager) {
     this.inputListenerInstance = this.inputListener.bind(this);
     this.mouseUpListenerInstance = this.mouseUpListener.bind(this);
+    this.keyUpListenerInstance = this.keyUpListener.bind(this);
+    this.keyDownListenerInstance = this.keyDownListener.bind(this);
+    this.selectListenerInstance = this.selectListener.bind(this);
+    this.eventManager.subscribe('turnOn', () => {
+      this.elem.addEventListener("input", this.inputListenerInstance, false);
+      this.elem.addEventListener("mouseup", this.mouseUpListenerInstance, false);
+      this.elem.addEventListener("keyup", this.keyUpListenerInstance, false);
+      this.elem.addEventListener("keydown", this.keyDownListenerInstance, false);
+      document.addEventListener("selectionchange", this.selectListenerInstance, false);
+    });
+    this.eventManager.subscribe('turnOff', () => {
+      this.elem.removeEventListener('input', this.inputListenerInstance);
+      this.elem.removeEventListener('mouseup', this.mouseUpListenerInstance);
+      this.elem.removeEventListener("keyup", this.keyUpListenerInstance);
+      this.elem.removeEventListener("keydown", this.keyDownListenerInstance);
+      document.removeEventListener('selectionchange', this.selectListenerInstance);
+    });
   }
 
-  turnOn() {
-    this.elem.addEventListener("input", this.inputListenerInstance, false);
-    this.elem.addEventListener("mouseup", this.mouseUpListenerInstance, false);
+  fireSelectionStatus(onlyUnselection = false) {
+    const s = window.getSelection();
+    if (!s) {
+      return false;
+    }
+    if (this.lastSelectionStatus === SelectionStatus.Selected
+      && s.isCollapsed) {
+      this.lastSelectionStatus = SelectionStatus.Unselected;
+      this.eventManager.fire('textUnselected');
+      this.lastSelectionRange = undefined;
+      return true;
+    }
+    if (onlyUnselection) {
+      return false;
+    }
+    if (this.lastSelectionStatus === SelectionStatus.Unselected
+      && !s.isCollapsed
+      && s.anchorNode
+      && isDescendant(this.elem, s.anchorNode)) {
+      this.lastSelectionStatus = SelectionStatus.Selected;
+      this.eventManager.fire('textSelected');
+      this.lastSelectionRange = s.getRangeAt(0);
+      return true;
+    }
+    return false;
   }
 
-  turnOff() {
-    this.elem.removeEventListener('input', this.inputListenerInstance);
-    this.elem.removeEventListener('mouseup', this.mouseUpListenerInstance);
+  fireSelectionChange() {
+    if (!this.lastSelectionRange) {
+      return;
+    }
+    const s = window.getSelection();
+    if (!s) {
+      return;
+    }
+    const newRange = s.getRangeAt(0);
+    if (newRange.startContainer !== this.lastSelectionRange.startContainer
+      || newRange.startOffset !== this.lastSelectionRange.startOffset
+      || newRange.endContainer !== this.lastSelectionRange.endContainer
+      || newRange.endOffset !== this.lastSelectionRange.endOffset) {
+        this.eventManager.fire('selectionChanged');
+        this.lastSelectionRange = newRange;
+    }
   }
 
   inputListener() {
-    console.log('fire input');
-    this.onChange();
+    this.eventManager.fire('textChanged');
   }
 
   mouseUpListener() {
-    const s = window.getSelection();
-    if (s
-      && !s.isCollapsed
-      && s.anchorNode
-      && isDescendant(this.elem, s.anchorNode)
-    ) {
-      console.log('fire mouseUp');
+    this.fireSelectionStatus();
+  }
+
+  keyUpListener(e: KeyboardEvent) {
+    if (!this.fireSelectionStatus()) {
+      this.fireSelectionChange()
     }
+  }
+
+  keyDownListener(e: KeyboardEvent) {
+  }
+
+  selectListener() {
+    this.fireSelectionStatus(true);
   }
 
   checkFirstLine() {

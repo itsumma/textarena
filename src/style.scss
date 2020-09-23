@@ -32,3 +32,85 @@ p {
     line-height: 1.2em;
     margin: 0 0 1em;
 }
+
+.mediatext-toolbar {
+    position: absolute;
+    transform: translate(0, 30px);
+    &__list {
+        display: flex;
+        flex-wrap: wrap;
+        transform: translateX(-50%);
+        color: #ccc;
+        box-shadow: 0 8px 23px -6px rgba(21,40,54,.31), 22px -14px 34px -18px rgba(33,48,73,.26);
+        border-radius: 4px;
+        background-color: #333;
+        z-index: 2;
+        transition: 0.3s;
+        user-select: none;
+        &:before {
+            content: '';
+            position: absolute;
+            top: -7px;
+            left: calc(50% - 8px);
+            width: 15px;
+            height: 15px;
+            -webkit-transform: rotate(-45deg);
+            transform: rotate(-45deg);
+            background-color: inherit;
+            z-index: -1;
+        }
+    }
+    &__item {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 34px;
+        height: 34px;
+        font-size: 16px;
+        font-weight: 900;
+        font-family: monospace;
+        cursor: pointer;
+        &_active {
+            color: #fff;
+        }
+    }
+    &__control-key {
+        position: absolute;
+        left: 50%;
+        top: -17%;
+        display: none;
+        width: 16px;
+        height: 16px;
+        background-color: #333;
+        text-align: center;
+        line-height: 16px;
+        color: #fff;
+        border-radius: 5px;
+        border: 1px solid #999;
+    }
+    &__alt-key {
+        position: absolute;
+        left: 50%;
+        top: -17%;
+        display: none;
+        width: 16px;
+        height: 16px;
+        background-color: #333;
+        text-align: center;
+        line-height: 16px;
+        color: #fff;
+        border-radius: 5px;
+        border: 1px solid #999;
+    }
+    &_show-control-key {
+        .mediatext-toolbar__control-key {
+            display: block;
+        }
+    }
+    &_show-alt-key {
+        .mediatext-toolbar__alt-key {
+            display: block;
+        }
+    }
+}
