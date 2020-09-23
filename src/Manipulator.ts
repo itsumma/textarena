@@ -17,6 +17,7 @@ export default class Manipulator {
 
   lastSelectionStatus: SelectionStatus = SelectionStatus.Unselected;
   lastSelectionRange: Range | undefined;
+  lastFocusElement: HTMLElement | undefined;
 
   constructor (private elem: HTMLElement, private eventManager: EventManager) {
     this.inputListenerInstance = this.inputListener.bind(this);
@@ -44,6 +45,19 @@ export default class Manipulator {
     const s = window.getSelection();
     if (!s) {
       return false;
+    }
+    if (s.isCollapsed) {
+      const focusNode = s.focusNode;
+      if (focusNode) {
+        const focusElem = (focusNode.nodeType === 1 ? focusNode : focusNode.parentElement) as HTMLElement
+        if (focusElem && this.lastFocusElement !== focusElem) {
+          this.eventManager.fire({
+            name: 'changeFocusElement',
+            target: focusElem,
+          });
+          this.lastFocusElement = focusElem;
+        }
+      }
     }
     if (this.lastSelectionStatus === SelectionStatus.Selected
       && s.isCollapsed) {

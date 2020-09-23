@@ -1,0 +1,7 @@
+.mediatext-container {
+  position: relative;
+  border: none;
+  &:hover, &:active, &:focus {
+    border: none;
+  }
+}

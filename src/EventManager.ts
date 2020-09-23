@@ -1,7 +1,12 @@
-type Handler = () => void;
+type Handler = (event?: string | MediaEvent) => void;
 
 type Handlers = {
   [key: string]: Handler[];
+}
+
+export type MediaEvent = {
+  name: string,
+  target?: Node | HTMLElement,
 }
 
 export default class EventManager {
@@ -10,11 +15,11 @@ export default class EventManager {
   constructor() {
   }
 
-  fire(event: string) {
-    console.log('fire ' + event);
-    if (this.handlers[event]) {
-      this.handlers[event].map((handler) => {
-        handler();
+  fire(event: string | MediaEvent) {
+    const eventName = typeof event === 'string' ? event : event.name;
+    if (this.handlers[eventName]) {
+      this.handlers[eventName].map((handler) => {
+        handler(event);
       });
     }
   }

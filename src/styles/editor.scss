@@ -1,0 +1,8 @@
+.mediatext-editor {
+  position: relative;
+  border: none;
+  &:hover, &:active, &:focus {
+    border: none;
+    outline: none;
+  }
+}

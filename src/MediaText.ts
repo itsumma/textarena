@@ -7,6 +7,7 @@ import Manipulator from "./Manipulator";
 import Toolbar from "./Toolbar";
 import EventManager from "./EventManager";
 import ToolbarOptions from "./interfaces/ToolbarOptions";
+import Creator from "./Creator";
 
 const defaultOptions: MediaTextOptions = {
   editable: true,
@@ -29,11 +30,13 @@ class MediaText {
   eventManager: EventManager;
   manipulator: Manipulator;
   toolbar: Toolbar;
+  creator: Creator;
   options: MediaTextOptions = {};
   meta: MetaData = {};
 
   constructor (container: HTMLElement, options?: MediaTextOptions) {
     this.elem = document.createElement('DIV');
+    this.elem.className = 'mediatext-editor';
     this.eventManager = new EventManager();
     this.eventManager.subscribe('textChanged', () => {
       if (this.options.onChange) {
@@ -42,7 +45,10 @@ class MediaText {
     });
     this.manipulator = new Manipulator(this.elem, this.eventManager);
     this.toolbar = new Toolbar(this.elem, this.eventManager);
+    this.creator = new Creator(this.elem, this.eventManager);
     container.innerHTML = '';
+    container.className = 'mediatext-container';
+    container.appendChild(this.creator.getElem());
     container.appendChild(this.elem);
     container.appendChild(this.toolbar.getElem());
     this.setOptions(options ? { ...defaultOptions, ...options } : defaultOptions);

@@ -4,6 +4,7 @@
     "xss": "^1.0.8"
   },
   "scripts": {
+    "lint": "eslint ./src",
     "start": "parcel ./src/index.html"
   },
   "devDependencies": {
