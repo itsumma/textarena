@@ -1,5 +1,5 @@
 import MediaText from './MediaText';
-import foreColor from './toolbarTools/foreColor';
+import foreColor from './tools/foreColor';
 
 const elem = document.getElementById('mediatext');
 

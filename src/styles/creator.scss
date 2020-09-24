@@ -13,8 +13,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 1.5rem;
-    height: 1.5rem;
+    width: 1.8rem;
+    height: 1.8rem;
     border: 1px solid #888;
     border-radius: 10em;
     cursor: pointer;
@@ -24,17 +24,59 @@
       width: 100%;
       fill: #888;
     }
-    &:hover {
+    &:hover, &:focus, &:active {
+      outline: none;
       border: 1px solid #000;
       svg {
         fill: #000;
       }
     }
   }
+  &_active &__create-button {
+    transform: rotate(135deg);
+  }
 
   &__placeholder {
     visibility: visible;
     opacity: .2;
     user-select: none;
+  }
+
+  &__list {
+    display: flex;
+    transition: .3s;
+    margin-left: -2.5rem;
+    opacity: 0;
+  }
+  &_active &__list {
+    flex-direction: row;
+    margin-left: 0;
+    opacity: 1;
+  }
+
+  &__item {
+    display: flex;
+    width: 1.8rem;
+    height: 1.8rem;
+    border: 1px solid #888;
+    color: #888;
+    border-radius: 100%;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: .3s;
+    background: none;
+    margin-right: -1.8rem;
+    &:hover, &:focus, &:active {
+      outline: none;
+      border: 1px solid #000;
+      color: #000;
+      svg {
+        fill: #000;
+      }
+    }
+  }
+  &_active &__item {
+    margin-right: 0.5rem;
   }
 }

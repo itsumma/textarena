@@ -26,19 +26,25 @@
       }
   }
   &__item {
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 34px;
-      height: 34px;
-      font-size: 16px;
-      font-weight: 900;
-      font-family: monospace;
-      cursor: pointer;
-      &_active {
-          color: #fff;
-      }
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    font-size: 16px;
+    font-weight: 900;
+    font-family: monospace;
+    cursor: pointer;
+    margin: 4px 4px 4px 0px;
+    &:first-child {
+      margin-left: 4px;
+    }
+    &_active {
+      color: #fff;
+      box-shadow: inset -1px -1px 0px 0px rgba(255,255,255,0.4);
+      background: #1a1a1a;
+    }
   }
   &__control-key {
       position: absolute;

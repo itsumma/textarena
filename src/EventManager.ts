@@ -6,7 +6,7 @@ type Handlers = {
 
 export type MediaEvent = {
   name: string,
-  target?: Node | HTMLElement,
+  target?: HTMLElement,
 }
 
 export default class EventManager {

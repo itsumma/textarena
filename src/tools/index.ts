@@ -4,7 +4,7 @@ import header from "./header";
 import foreColor from "./foreColor";
 import styleState from "./styleState";
 
-const toolbarTools: {[key: string]: ToolOptions} = {
+const tools: {[key: string]: ToolOptions} = {
   'bold': {
     name: 'bold',
     title: 'Bold',
@@ -96,4 +96,4 @@ const toolbarTools: {[key: string]: ToolOptions} = {
   },
 }
 
-export default toolbarTools;
+export default tools;

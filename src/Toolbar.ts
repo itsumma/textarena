@@ -1,8 +1,7 @@
 import EventManager from "./EventManager";
 import ToolbarOptions from "./interfaces/ToolbarOptions";
 import ToolOptions from "./interfaces/ToolOptions";
-import ToolProcessor from "./interfaces/ToolProcessor";
-import toolbarTools from "./toolbarTools";
+import tools from "./tools";
 
 
 const scrollPattern = /(auto|scroll)/
@@ -96,8 +95,8 @@ export default class Toolbar {
       this.tools = options.tools.map((toolOptions: ToolOptions | string) => {
         let options: ToolOptions;
         if (typeof toolOptions === 'string') {
-          if (toolbarTools[toolOptions]) {
-            options = toolbarTools[toolOptions];
+          if (tools[toolOptions]) {
+            options = tools[toolOptions];
           } else {
             throw `Tool "${toolOptions}" not found`;
           }

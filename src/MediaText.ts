@@ -7,7 +7,8 @@ import Manipulator from "./Manipulator";
 import Toolbar from "./Toolbar";
 import EventManager from "./EventManager";
 import ToolbarOptions from "./interfaces/ToolbarOptions";
-import Creator from "./Creator";
+import CreatorBar from "./CreatorBar";
+import CreatorBarOptions from "./interfaces/CreatorBarOptions";
 
 const defaultOptions: MediaTextOptions = {
   editable: true,
@@ -23,6 +24,13 @@ const defaultOptions: MediaTextOptions = {
       'h4',
     ],
   },
+  creatorBar: {
+    enabled: true,
+    creators: [
+      'hr',
+      'hr',
+    ]
+  }
 };
 
 class MediaText {
@@ -30,7 +38,7 @@ class MediaText {
   eventManager: EventManager;
   manipulator: Manipulator;
   toolbar: Toolbar;
-  creator: Creator;
+  creatorBar: CreatorBar;
   options: MediaTextOptions = {};
   meta: MetaData = {};
 
@@ -45,11 +53,11 @@ class MediaText {
     });
     this.manipulator = new Manipulator(this.elem, this.eventManager);
     this.toolbar = new Toolbar(this.elem, this.eventManager);
-    this.creator = new Creator(this.elem, this.eventManager);
+    this.creatorBar = new CreatorBar(this.elem, this.eventManager);
     container.innerHTML = '';
     container.className = 'mediatext-container';
-    container.appendChild(this.creator.getElem());
     container.appendChild(this.elem);
+    container.appendChild(this.creatorBar.getElem());
     container.appendChild(this.toolbar.getElem());
     this.setOptions(options ? { ...defaultOptions, ...options } : defaultOptions);
   }
@@ -71,6 +79,9 @@ class MediaText {
     }
     if (options.toolbar) {
       this.setToolbarOptions(options.toolbar);
+    }
+    if (options.creatorBar) {
+      this.setCreatorBarOptions(options.creatorBar);
     }
   }
 
@@ -109,6 +120,10 @@ class MediaText {
 
   setToolbarOptions(toolbarOptions: ToolbarOptions) {
     this.toolbar.setOptions(toolbarOptions);
+  }
+
+  setCreatorBarOptions(creatorBarOptions: CreatorBarOptions) {
+    this.creatorBar.setOptions(creatorBarOptions);
   }
 }
 
