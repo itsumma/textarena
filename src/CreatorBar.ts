@@ -22,7 +22,6 @@ export default class CreatorBar {
     this.elem.className = 'mediatext-creator';
     this.list = document.createElement('DIV');
     this.list.className = 'mediatext-creator__list';
-    this.elem.appendChild(this.list);
     this.hide();
     const createButton = document.createElement('BUTTON');
     createButton.className = 'mediatext-creator__create-button';
@@ -33,12 +32,25 @@ export default class CreatorBar {
     createButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 14 14">
     <path d="M8.05 5.8h4.625a1.125 1.125 0 0 1 0 2.25H8.05v4.625a1.125 1.125 0 0 1-2.25 0V8.05H1.125a1.125 1.125 0 0 1 0-2.25H5.8V1.125a1.125 1.125 0 0 1 2.25 0V5.8z"/>
     </svg>`;
-    this.elem.appendChild(createButton);
     const placeholder = document.createElement('DIV');
     placeholder.className = 'mediatext-creator__placeholder';
-    placeholder.innerHTML = '';
+    placeholder.innerHTML = 'Введите текст';
+    this.elem.appendChild(createButton);
+    this.elem.appendChild(this.list);
     this.elem.appendChild(placeholder);
 
+    this.eventManager.subscribe('textChanged', () => {
+      const focucElement = this.getFocusElement();
+      if (focucElement) {
+        if (!focucElement?.textContent) {
+          this.currentFocusElement = focucElement;
+          this.show(focucElement);
+        } else {
+          this.currentFocusElement = undefined;
+          this.hide();
+        }
+      }
+    });
     this.eventManager.subscribe('changeFocusElement', (event?: string | MediaEvent) => {
       if (typeof event === 'object' && event.target) {
         console.log(event.target)
@@ -51,6 +63,18 @@ export default class CreatorBar {
         }
       }
     });
+  }
+
+  getFocusElement(): HTMLElement | undefined {
+    const s = window.getSelection();
+    if (!s) {
+      return undefined;
+    }
+    const focusNode = s.focusNode;
+    if (focusNode) {
+      return (focusNode.nodeType === 1 ? focusNode : focusNode.parentElement) as HTMLElement
+    }
+    return undefined;
   }
 
   getContext(): CreatorContext {
@@ -97,14 +121,18 @@ export default class CreatorBar {
   }
 
   show(target: HTMLElement) {
-    this.elem.style.display = 'block';
+    this.elem.style.display = 'flex';
     this.elem.style.top = `${target.offsetTop}px`;
     this.showed = true;
+    this.active = false;
+    this.elem.className = 'mediatext-creator';
   }
 
   hide() {
     this.elem.style.display = 'none';
     this.showed = false;
+    this.active = false;
+    this.elem.className = 'mediatext-creator';
   }
 
 }

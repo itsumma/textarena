@@ -46,18 +46,21 @@ export default class Manipulator {
     if (!s) {
       return false;
     }
+    const focucElement = this.getFocusElement();
+    if (!focucElement) {
+      return;
+    }
+    if (!focucElement.closest('.mediatext-editor')) {
+      return;
+    }
     if (s.isCollapsed) {
-      const focusNode = s.focusNode;
-      if (focusNode) {
-        const focusElem = (focusNode.nodeType === 1 ? focusNode : focusNode.parentElement) as HTMLElement
-        if (focusElem && this.lastFocusElement !== focusElem) {
+        if (this.lastFocusElement !== focucElement) {
           this.eventManager.fire({
             name: 'changeFocusElement',
-            target: focusElem,
+            target: focucElement,
           });
-          this.lastFocusElement = focusElem;
+          this.lastFocusElement = focucElement;
         }
-      }
     }
     if (this.lastSelectionStatus === SelectionStatus.Selected
       && s.isCollapsed) {
@@ -113,7 +116,44 @@ export default class Manipulator {
     }
   }
 
+  getFocusElement(): HTMLElement | undefined {
+    const s = window.getSelection();
+    if (!s) {
+      return undefined;
+    }
+    const focusNode = s.focusNode;
+    if (focusNode) {
+      return (focusNode.nodeType === 1 ? focusNode : focusNode.parentElement) as HTMLElement
+    }
+    return undefined;
+  }
+
   keyDownListener(e: KeyboardEvent) {
+    if (e.key === 'Enter') {
+      const focusElement = this.getFocusElement();
+      // if (focusElement) {
+      //   e.preventDefault();
+      //   const p = document.createElement('p')
+      //   p.innerHTML = '<br/>';
+      //   // TODO remove empty element focucElement
+      //   if (focusElement.parentNode) {
+      //     if (focusElement.nextSibling) {
+      //       focusElement.parentNode.insertBefore(p, focusElement.nextSibling);
+      //     } else {
+      //       focusElement.parentNode.appendChild(p);
+      //     }
+      //     const s = window.getSelection();
+      //     const r = document.createRange();
+      //     r.setStart(p, 0);
+      //     r.setEnd(p, 0);
+      //     if (s) {
+      //       s.removeAllRanges();
+      //       s.addRange(r);
+      //     }
+      //     p.scrollIntoView({behavior: 'smooth', block: 'nearest'});
+      //   }
+      // }
+    }
   }
 
   selectListener() {

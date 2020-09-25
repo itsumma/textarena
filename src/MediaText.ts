@@ -29,6 +29,13 @@ const defaultOptions: MediaTextOptions = {
     creators: [
       'hr',
       'hr',
+      'hr',
+      'hr',
+      'hr',
+      'hr',
+      'hr',
+      'hr',
+      'hr',
     ]
   }
 };
@@ -56,8 +63,8 @@ class MediaText {
     this.creatorBar = new CreatorBar(this.elem, this.eventManager);
     container.innerHTML = '';
     container.className = 'mediatext-container';
-    container.appendChild(this.elem);
     container.appendChild(this.creatorBar.getElem());
+    container.appendChild(this.elem);
     container.appendChild(this.toolbar.getElem());
     this.setOptions(options ? { ...defaultOptions, ...options } : defaultOptions);
   }
