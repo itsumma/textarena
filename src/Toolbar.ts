@@ -30,9 +30,15 @@ type Tool = {
   options: ToolOptions;
 };
 
+type KeysForTool = {
+  [key: string]: Tool;
+}
+
 export default class Toolbar {
   showed = false;
   controlKeyShowed = false;
+  controlKeys: KeysForTool = {};
+  altKeys: KeysForTool = {};
   altKeyShowed = false;
   elem: HTMLElement;
   list: HTMLElement;
@@ -54,12 +60,11 @@ export default class Toolbar {
       this.hide();
     });
     this.eventManager.subscribe('selectionChanged', () => {
-      this.move();
+      this.show();
     });
     this.keyUpListenerInstance = this.keyUpListener.bind(this);
     this.keyDownListenerInstance = this.keyDownListener.bind(this);
     this.eventManager.subscribe('turnOn', () => {
-      console.log('tool')
       this.root.addEventListener("keyup", this.keyUpListenerInstance, false);
       this.root.addEventListener("keydown", this.keyDownListenerInstance, false);
     });
@@ -78,11 +83,22 @@ export default class Toolbar {
   }
 
   keyDownListener(e: KeyboardEvent) {
-    if (!this.controlKeyShowed && this.showed && e.key === 'Control') {
+    console.log(e);
+    if (e.altKey && this.altKeys[e.code]) {
+      e.preventDefault();
+      this.executeTool(this.altKeys[e.code]);
+    } else
+    if (e.ctrlKey && !e.altKey && this.controlKeys[e.code]) {
+      e.preventDefault();
+      this.executeTool(this.controlKeys[e.code]);
+    } else
+    if (!this.controlKeyShowed && this.showed && e.key === 'Control' && !e.ctrlKey && !e.shiftKey) {
+      e.preventDefault();
       this.elem.className = 'mediatext-toolbar mediatext-toolbar_show-control-key';
       this.controlKeyShowed = true;
-    }
+    } else
     if (!this.altKeyShowed && this.showed && e.key === 'Alt') {
+      e.preventDefault();
       this.elem.className = 'mediatext-toolbar mediatext-toolbar_show-alt-key';
       this.altKeyShowed = true;
     }
@@ -92,6 +108,7 @@ export default class Toolbar {
     // TODO use enabler parameter
     if (options.tools) {
       this.list.innerHTML = '';
+      this.controlKeys = {};
       this.tools = options.tools.map((toolOptions: ToolOptions | string) => {
         let options: ToolOptions;
         if (typeof toolOptions === 'string') {
@@ -105,40 +122,55 @@ export default class Toolbar {
         }
         const elem = document.createElement('DIV');
         elem.className = 'mediatext-toolbar__item';
+        const tool = {
+          elem,
+          options,
+        };
         elem.onclick = (e) => {
           e.preventDefault();
-          options.processor(this.getContext, options.config || {});
-          if (options.state) {
-            if (options.state({}, options.config || {})) {
-              elem.className = 'mediatext-toolbar__item mediatext-toolbar__item_active';
-            } else {
-              elem.className = 'mediatext-toolbar__item';
-            }
-          }
+          this.executeTool(tool);
         };
         if (options.icon) {
           elem.innerHTML = options.icon;
         }
         if (options.controlKey) {
-          console.log(options);
+          this.controlKeys[this.getCodeForKey(options.controlKey)] = tool;
           const controlKey = document.createElement('DIV');
           controlKey.className = 'mediatext-toolbar__control-key';
           controlKey.innerHTML = options.controlKey;
           elem.appendChild(controlKey);
         } else if (options.altKey) {
-          console.log(options);
+          this.altKeys[this.getCodeForKey(options.altKey)] = tool;
           const altKey = document.createElement('DIV');
           altKey.className = 'mediatext-toolbar__alt-key';
           altKey.innerHTML = options.altKey;
           elem.appendChild(altKey);
         }
         this.list.append(elem);
-        return {
-          elem,
-          options,
-        };
+        return tool;
       });
+      console.log(this.altKeys)
     }
+  }
+
+  getCodeForKey(key: string) {
+    if (/\d/.test(key)) {
+      return 'Digit' + key;
+    }
+    return 'Key' + key.toUpperCase();
+  }
+
+  executeTool(tool: Tool) {
+    const { options, elem } = tool;
+    options.processor(this, options.config || {});
+    if (options.state) {
+      if (options.state({}, options.config || {})) {
+        elem.className = 'mediatext-toolbar__item mediatext-toolbar__item_active';
+      } else {
+        elem.className = 'mediatext-toolbar__item';
+      }
+    }
+    this.hide();
   }
 
   private updateState() {
@@ -181,26 +213,21 @@ export default class Toolbar {
     }
   }
 
-  move() {
-    const s = window.getSelection()
-    if (s && !s.isCollapsed && s.rangeCount > 0) {
-        const range = s.getRangeAt(0)
-        const rect = range.getBoundingClientRect()
-        const elemSel = range.startContainer.parentElement;
-        if (elemSel) {
-          let scrollparent = getScrollparent(elemSel) as HTMLElement
-          let scrollTop = scrollparent.tagName === 'BODY' ? window.pageYOffset : scrollparent.scrollTop
-          rect.y += scrollTop
-          this.elem.style.top = `${rect.y + rect.height}px`;
-          this.elem.style.left = `${rect.x + rect.width / 2}px`;
-          this.updateState();
-        }
-    }
-  }
-
   hide() {
     this.elem.style.display = 'none';
     this.showed = false;
+  }
+
+  getFocusElement(): HTMLElement | undefined {
+    const s = window.getSelection();
+    if (!s) {
+      return undefined;
+    }
+    const focusNode = s.focusNode;
+    if (focusNode) {
+      return (focusNode.nodeType === 1 ? focusNode : focusNode.parentElement) as HTMLElement
+    }
+    return undefined;
   }
 
 }

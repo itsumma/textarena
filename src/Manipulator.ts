@@ -111,9 +111,17 @@ export default class Manipulator {
   }
 
   keyUpListener(e: KeyboardEvent) {
+    if (e.key === 'Enter') {
+      const focusElement = this.getFocusElement();
+      console.log(focusElement);
+      if (focusElement?.tagName === 'DIV') {
+        document.execCommand('formatBlock', false, 'p');
+      }
+    }
     if (!this.fireSelectionStatus()) {
       this.fireSelectionChange()
     }
+
   }
 
   getFocusElement(): HTMLElement | undefined {
@@ -130,7 +138,11 @@ export default class Manipulator {
 
   keyDownListener(e: KeyboardEvent) {
     if (e.key === 'Enter') {
-      const focusElement = this.getFocusElement();
+      // const focusElement = this.getFocusElement();
+      // console.log(focusElement);
+      // if (focusElement?.tagName === 'DIV') {
+      //   document.execCommand('formatBlock', false, 'p');
+      // }
       // if (focusElement) {
       //   e.preventDefault();
       //   const p = document.createElement('p')

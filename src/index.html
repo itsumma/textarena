@@ -17,13 +17,26 @@
 			line-height: 1.5;
 			padding: 60px;
 		}
+		.cont {
+			display: flex;;
+		}
+		.col {
+			width: 50%
+		}
 	</style>
 	<link rel="stylesheet" href="style.scss">
 </head>
 
 <body>
 	<h1>MediaText</h1>
-	<div id="mediatext"></div>
+	<div class="cont">
+		<div class="col">
+			<div id="mediatext"></div>
+		</div>
+		<div class="col">
+			<div id="html"></div>
+		</div>
+	</div>
 	<script src="index.ts"></script>
 </body>
 

@@ -22,6 +22,7 @@ const defaultOptions: MediaTextOptions = {
       'h2',
       'h3',
       'h4',
+      'link',
     ],
   },
   creatorBar: {

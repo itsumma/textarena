@@ -1,5 +1,6 @@
 import MediaText from './MediaText';
 import foreColor from './tools/foreColor';
+import xss from 'xss';
 
 const elem = document.getElementById('mediatext');
 
@@ -21,7 +22,9 @@ if (elem) {
     {
       editable: true,
       onChange: (data) => {
+
         localStorage.setItem('data', JSON.stringify(data));
+        document.getElementById('html')?.innerText = data.content;
       },
       initData,
       // toolbar: {

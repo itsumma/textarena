@@ -3,6 +3,7 @@ import style from "./style"
 import header from "./header";
 import foreColor from "./foreColor";
 import styleState from "./styleState";
+import link from "./link";
 
 const tools: {[key: string]: ToolOptions} = {
   'bold': {
@@ -53,6 +54,7 @@ const tools: {[key: string]: ToolOptions} = {
     name: 'h1',
     title: 'H1',
     icon: '<b>H1</b>',
+    altKey: '1',
     config: {
       header: 'H1',
     },
@@ -62,6 +64,7 @@ const tools: {[key: string]: ToolOptions} = {
     name: 'h2',
     title: 'H2',
     icon: '<b>H2</b>',
+    altKey: '2',
     config: {
       header: 'H2',
     },
@@ -71,6 +74,7 @@ const tools: {[key: string]: ToolOptions} = {
     name: 'h3',
     title: 'H3',
     icon: '<b>H3</b>',
+    altKey: '3',
     config: {
       header: 'H3',
     },
@@ -80,6 +84,7 @@ const tools: {[key: string]: ToolOptions} = {
     name: 'h4',
     title: 'H4',
     icon: '<b>H4</b>',
+    altKey: '4',
     config: {
       header: 'H4',
     },
@@ -89,11 +94,19 @@ const tools: {[key: string]: ToolOptions} = {
     name: 'foreColor',
     icon: 'f',
     title: 'ForeColor',
+    altKey: 'c',
     config: {
       color: '#545454',
     },
     processor: foreColor,
   },
+  'link': {
+    name: 'link',
+    icon: '🔗',
+    title: 'Link',
+    controlKey: 'k',
+    processor: link,
+  }
 }
 
 export default tools;
