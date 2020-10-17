@@ -1,5 +1,7 @@
+/.vscode
 /.cache
 /dist
+/lib
 /node_modules
 yarn.lock
 yarn-error.log

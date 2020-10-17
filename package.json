@@ -1,14 +1,46 @@
 {
+  "name": "textarena",
+  "license": "MIT",
   "dependencies": {
-    "parcel": "^1.12.4",
+    "sanitize-html": "^2.0.0",
     "xss": "^1.0.8"
   },
-  "scripts": {
-    "lint": "eslint ./src",
-    "start": "parcel ./src/index.html"
-  },
   "devDependencies": {
+    "@babel/cli": "^7.11.6",
+    "@babel/core": "^7.11.6",
+    "@babel/preset-env": "^7.11.5",
+    "@babel/preset-typescript": "^7.10.4",
+    "@types/node": "^14.11.2",
+    "@types/sanitize-html": "^1.27.0",
+    "@typescript-eslint/eslint-plugin": "^4.3.0",
+    "@typescript-eslint/parser": "^4.3.0",
+    "babel-loader": "^8.1.0",
+    "css-loader": "^5.0.0",
+    "eslint": "^7.10.0",
+    "eslint-config-airbnb": "^18.2.0",
+    "eslint-import-resolver-typescript": "^2.3.0",
+    "eslint-plugin-import": "^2.22.1",
+    "extract-loader": "^5.1.0",
+    "file-loader": "^6.1.1",
+    "rimraf": "^3.0.2",
     "sass": "^1.26.11",
-    "typescript": "^4.0.3"
+    "sass-loader": "^10.0.3",
+    "stylelint": "^13.7.2",
+    "stylelint-config-standard": "^20.0.0",
+    "typescript": "^4.0.3",
+    "webpack": "^4.44.2",
+    "webpack-cli": "^3.3.12",
+    "webpack-dev-server": "^3.11.0"
+  },
+  "scripts": {
+    "start": "webpack-dev-server",
+    "lint": "yarn lint:eslint && yarn lint:types && yarn lint:css",
+    "lint:eslint": "eslint ./src",
+    "lint:types": "tsc --noEmit",
+    "lint:css": "stylelint \"**/*.{css,scss}\" --cache --cache-location .cache/.stylelintcache",
+    "build": "rimraf lib && yarn build:types && yarn build:js && yarn build:bundle",
+    "build:types": "tsc --emitDeclarationOnly",
+    "build:js": "babel src --out-dir lib --extensions \".ts,.tsx\" --source-maps inline",
+    "build:bundle": "rimraf dist && yarn webpack"
   }
 }

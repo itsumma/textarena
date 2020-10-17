@@ -20,15 +20,15 @@ export default class CreatorBar {
 
   constructor(private root: HTMLElement, private eventManager: EventManager) {
     this.elem = document.createElement('DIV');
-    this.elem.className = 'mediatext-creator';
+    this.elem.className = 'textarena-creator';
     this.elem.onclick = () => {
       this.closeList();
     };
     this.list = document.createElement('DIV');
-    this.list.className = 'mediatext-creator__list';
+    this.list.className = 'textarena-creator__list';
     this.hide();
     const createButton = document.createElement('BUTTON');
-    createButton.className = 'mediatext-creator__create-button';
+    createButton.className = 'textarena-creator__create-button';
     createButton.onclick = (e: MouseEvent) => {
       e.stopPropagation();
       if (this.active) {
@@ -41,7 +41,7 @@ export default class CreatorBar {
     <path d="M8.05 5.8h4.625a1.125 1.125 0 0 1 0 2.25H8.05v4.625a1.125 1.125 0 0 1-2.25 0V8.05H1.125a1.125 1.125 0 0 1 0-2.25H5.8V1.125a1.125 1.125 0 0 1 2.25 0V5.8z"/>
     </svg>`;
     const placeholder = document.createElement('DIV');
-    placeholder.className = 'mediatext-creator__placeholder';
+    placeholder.className = 'textarena-creator__placeholder';
     placeholder.innerHTML = 'Введите текст или Ctrl+q';
     this.elem.appendChild(createButton);
     this.elem.appendChild(this.list);
@@ -154,7 +154,7 @@ export default class CreatorBar {
           options = creatorOptions;
         }
         const elem = document.createElement('BUTTON');
-        elem.className = 'mediatext-creator__item';
+        elem.className = 'textarena-creator__item';
         elem.onclick = (e) => {
           e.preventDefault();
           options.processor(this.getContext(), options.config || {});
@@ -180,19 +180,19 @@ export default class CreatorBar {
     this.elem.style.top = `${target.offsetTop}px`;
     this.showed = true;
     this.active = false;
-    this.elem.className = 'mediatext-creator';
+    this.elem.className = 'textarena-creator';
   }
 
   hide() {
     this.elem.style.display = 'none';
     this.showed = false;
     this.active = false;
-    this.elem.className = 'mediatext-creator';
+    this.elem.className = 'textarena-creator';
   }
 
   openList() {
     this.active = true;
-    this.elem.className = 'mediatext-creator mediatext-creator_active';
+    this.elem.className = 'textarena-creator textarena-creator_active';
     if (this.creators.length > 0) {
       this.creators[0].elem.focus();
     }
@@ -200,7 +200,7 @@ export default class CreatorBar {
 
   closeList() {
     this.active = false;
-    this.elem.className = 'mediatext-creator';
+    this.elem.className = 'textarena-creator';
     this.root.focus();
   }
 

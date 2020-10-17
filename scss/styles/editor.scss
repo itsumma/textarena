@@ -1,8 +1,11 @@
-.mediatext-editor {
+.textarena-editor {
   position: relative;
   border: none;
-  padding: .1rem 0;
-  &:hover, &:active, &:focus {
+  padding: 0.1rem 0;
+
+  &:hover,
+  &:active,
+  &:focus {
     border: none;
     outline: none;
   }

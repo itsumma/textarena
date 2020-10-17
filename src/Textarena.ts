@@ -52,7 +52,7 @@ class MediaText {
 
   constructor (container: HTMLElement, options?: MediaTextOptions) {
     this.elem = document.createElement('DIV');
-    this.elem.className = 'mediatext-editor';
+    this.elem.className = 'textarena-editor';
     this.eventManager = new EventManager();
     this.eventManager.subscribe('textChanged', () => {
       if (this.options.onChange) {
@@ -63,7 +63,7 @@ class MediaText {
     this.toolbar = new Toolbar(this.elem, this.eventManager);
     this.creatorBar = new CreatorBar(this.elem, this.eventManager);
     container.innerHTML = '';
-    container.className = 'mediatext-container';
+    container.className = 'textarena-container';
     container.appendChild(this.creatorBar.getElem());
     container.appendChild(this.elem);
     container.appendChild(this.toolbar.getElem());

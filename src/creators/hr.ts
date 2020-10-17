@@ -3,13 +3,12 @@ import CreatorContext from "~/interfaces/CreatorContext";
 export default function hr(context: CreatorContext, config: any) {
   const elem = document.createElement('p');
   // elem.contentEditable = "false";
-  elem.className = "mediatext__hr";
+  elem.className = "textarena__hr";
   const hr = document.createElement('HR');
   elem.appendChild(hr);
   console.log(context);
   if (context.focusElement) {
     const nextElement = context.focusElement.nextElementSibling;
-    const prevElement = context.focusElement.previousElementSibling;
     if (nextElement) {
       context.focusElement.replaceWith(elem);
 

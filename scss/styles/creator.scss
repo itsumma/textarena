@@ -1,4 +1,4 @@
-.mediatext-creator {
+.textarena-creator {
   position: absolute;
   bottom: 0;
   left: 0;
@@ -8,13 +8,14 @@
   flex-direction: row;
   box-sizing: border-box;
   align-items: center;
+
   &_active {
     z-index: 1;
   }
 
   &__create-button {
     margin-left: -2.2rem;
-    margin-right: .4rem;
+    margin-right: 0.4rem;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -24,34 +25,41 @@
     border: 1px solid #888;
     border-radius: 100%;
     cursor: pointer;
-    transition: .3s;
+    transition: 0.3s;
     background: none;
     box-sizing: border-box;
+
     svg {
       width: 100%;
       fill: #888;
     }
-    &:hover, &:focus, &:active {
+
+    &:hover,
+    &:focus,
+    &:active {
       outline: none;
       border: 1px solid #000;
+
       svg {
         fill: #000;
       }
     }
   }
+
   &_active &__create-button {
     transform: rotate(135deg);
   }
 
   &__placeholder {
     visibility: visible;
-    opacity: .2;
+    opacity: 0.2;
     user-select: none;
     pointer-events: none;
-    transition: .3s;
+    transition: 0.3s;
     width: 0;
     white-space: nowrap;
   }
+
   &_active &__placeholder {
     // left: 60px;
     opacity: 0;
@@ -60,9 +68,10 @@
   &__list {
     display: flex;
     flex-wrap: wrap;
-    transition: .3s;
+    transition: 0.3s;
     opacity: 0;
   }
+
   &_active &__list {
     flex-direction: row;
     opacity: 1;
@@ -78,19 +87,24 @@
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition: .3s;
+    transition: 0.3s;
     background: none;
     margin-right: -1.8rem;
     box-sizing: border-box;
-    &:hover, &:focus, &:active {
+
+    &:hover,
+    &:focus,
+    &:active {
       outline: none;
       border: 1px solid #000;
       color: #000;
+
       svg {
         fill: #000;
       }
     }
   }
+
   &_active &__item {
     margin-right: 0.5rem;
   }

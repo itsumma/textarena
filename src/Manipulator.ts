@@ -1,5 +1,6 @@
 import EventManager from "./EventManager";
-import ChangeDataListener from "./interfaces/ChangeHandler";
+import HTMLLicker from "./HTMLLicker";
+// import ChangeDataListener from "./interfaces/ChangeHandler";
 import { isDescendant } from "./utils";
 
 export const emptyStrs = ['<p><br></p>', '<p><br/></p>', '<p></p>'];
@@ -14,6 +15,7 @@ export default class Manipulator {
   keyUpListenerInstance: ((e: KeyboardEvent) => void);
   keyDownListenerInstance: ((e: KeyboardEvent) => void);
   selectListenerInstance: (() => void);
+  pasteListenerInstance: ((event: ClipboardEvent) => void);
 
   lastSelectionStatus: SelectionStatus = SelectionStatus.Unselected;
   lastSelectionRange: Range | undefined;
@@ -25,11 +27,13 @@ export default class Manipulator {
     this.keyUpListenerInstance = this.keyUpListener.bind(this);
     this.keyDownListenerInstance = this.keyDownListener.bind(this);
     this.selectListenerInstance = this.selectListener.bind(this);
+    this.pasteListenerInstance = this.pasteListener.bind(this);
     this.eventManager.subscribe('turnOn', () => {
       this.elem.addEventListener("input", this.inputListenerInstance, false);
       this.elem.addEventListener("mouseup", this.mouseUpListenerInstance, false);
       this.elem.addEventListener("keyup", this.keyUpListenerInstance, false);
       this.elem.addEventListener("keydown", this.keyDownListenerInstance, false);
+      this.elem.addEventListener("paste", this.pasteListenerInstance, false);
       document.addEventListener("selectionchange", this.selectListenerInstance, false);
     });
     this.eventManager.subscribe('turnOff', () => {
@@ -37,8 +41,73 @@ export default class Manipulator {
       this.elem.removeEventListener('mouseup', this.mouseUpListenerInstance);
       this.elem.removeEventListener("keyup", this.keyUpListenerInstance);
       this.elem.removeEventListener("keydown", this.keyDownListenerInstance);
+      this.elem.removeEventListener("paste", this.pasteListenerInstance);
       document.removeEventListener('selectionchange', this.selectListenerInstance);
     });
+  }
+
+  pasteListener(event: ClipboardEvent) {
+    event.preventDefault();
+    const { clipboardData } = event;
+    if (!clipboardData) {
+      return
+    }
+    const types: string[] = [ ...clipboardData.types || [] ];
+    console.log(event.clipboardData?.types);
+    if (types.includes('text/html')) {
+      const html = clipboardData.getData('text/html')
+      if (!html) {
+        return;
+      }
+      console.log(html);
+      const clearHtml = this.clearHtml(html);
+      this.insert(clearHtml);
+    } else if (types.includes('text/plain')) {
+      const text = clipboardData.getData('text/plan');
+      if (!text) {
+        return;
+      }
+      this.insert(this.convertToHTML(text));
+    }
+  }
+
+  insert(html: string) {
+    console.log('insert: ' + html);
+    const s = window.getSelection();
+    if (!s) {
+      return;
+    }
+    const range = s.getRangeAt(0);
+    if (!range) {
+      return;
+    }
+    if ( !s.isCollapsed ) {
+      range.deleteContents();
+    }
+    const tmp = document.createElement("div");
+    tmp.innerHTML = html;
+    const fragment = document.createDocumentFragment();
+    let node;
+    let lastNode;
+    while (node = tmp.firstChild) {
+      lastNode = fragment.appendChild(node);
+    }
+    range.insertNode(fragment);
+    if (lastNode) {
+      const newRange = range.cloneRange();
+      newRange.setStartAfter(lastNode);
+      newRange.collapse(true);
+      s.removeAllRanges();
+      s.addRange(newRange);
+    }
+  }
+
+  convertToHTML(html: string) {
+    return '<p>' + (new HTMLLicker(html).xssFull().getHtml()) + '</p>';
+  }
+
+  clearHtml(html: string) {
+    return new HTMLLicker(html).sanitize().getHtml();
   }
 
   fireSelectionStatus(onlyUnselection = false) {
@@ -50,7 +119,7 @@ export default class Manipulator {
     if (!focucElement) {
       return;
     }
-    if (!focucElement.closest('.mediatext-editor')) {
+    if (!focucElement.closest('.textarena-editor')) {
       return;
     }
     if (s.isCollapsed) {
