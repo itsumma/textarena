@@ -95,7 +95,7 @@ export default class Toolbar {
       e.preventDefault();
       this.executeTool(this.controlKeys[e.code]);
     } else
-    if (!this.controlKeyShowed && this.showed && e.key === 'Control' && !e.ctrlKey && !e.shiftKey) {
+    if (!this.controlKeyShowed && this.showed && e.key === 'Control' && !e.altKey && !e.shiftKey) {
       e.preventDefault();
       this.elem.addClass('textarena-toolbar_show-control-key');
       this.controlKeyShowed = true;
