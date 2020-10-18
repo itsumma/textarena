@@ -19,6 +19,8 @@ const defaultOptions: TextarenaOptions = {
       'italic',
       'underline',
       'strikethrough',
+      'list',
+      'orderedlist',
       'h2',
       'h3',
       'h4',
@@ -76,8 +78,7 @@ class Textarena {
     this.setOptions(options ? { ...defaultOptions, ...options } : defaultOptions);
   }
 
-  destructor() {
-    console.log('destructed');
+  destructor(): void {
     this.eventManager.fire('turnOff');
   }
 

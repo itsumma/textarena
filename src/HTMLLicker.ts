@@ -3,7 +3,6 @@ import sanitizeHtml from 'sanitize-html';
 
 export default class HTMLLicker {
   constructor(private html: string) {
-
   }
 
   prepareHTML() {
@@ -39,6 +38,9 @@ export default class HTMLLicker {
           hr: [],
           div: ['contenteditable', 'class'],
           a: ['href', 'target'],
+          ol: [],
+          ul: [],
+          li: [],
         },
       },
     ));

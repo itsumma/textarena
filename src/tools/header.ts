@@ -1,8 +1,9 @@
 import Toolbar from '~/Toolbar';
+import * as utils from '../utils';
 
-export default function header(toolbar: Toolbar, config: any) {
+export default function header(toolbar: Toolbar, config: { header: string }): void {
   const value = config.header;
-  const focusElement = toolbar.getFocusElement();
+  const focusElement = utils.getFocusElement();
   if (focusElement && focusElement.closest(value)) {
     document.execCommand('formatblock', false, 'P');
   } else {

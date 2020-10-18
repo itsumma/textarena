@@ -1,4 +1,3 @@
-import { threadId } from 'worker_threads';
 import ElementHelper from './ElementHelper';
 import EventManager from './EventManager';
 import ToolbarOptions from './interfaces/ToolbarOptions';
@@ -203,19 +202,27 @@ export default class Toolbar {
     const rect = range.getBoundingClientRect();
     const containerRect = this.container.getBoundingClientRect();
     let positionTop = true;
-    if (rect.y < 400) {
-      positionTop = rect.y >= window.innerHeight / 2;
+    if (rect.y < window.innerHeight / 2) {
+      positionTop = rect.top >= window.innerHeight - rect.bottom;
     }
     if (positionTop) {
+      let elemBottom = containerRect.bottom - rect.top;
+      if (rect.top < 100) {
+        elemBottom -= 100;
+      }
       this.elem.css({
         top: 'auto',
-        bottom: `${containerRect.bottom - rect.top}px`,
+        bottom: `${elemBottom}px`,
       });
       this.elem.removeClass('textarena-toolbar_bottom');
       this.elem.addClass('textarena-toolbar_top');
     } else {
+      let elemTop = rect.top - containerRect.top + rect.height;
+      if (window.innerHeight - rect.bottom < 100) {
+        elemTop -= 100;
+      }
       this.elem.css({
-        top: `${rect.top - containerRect.top + rect.height}px`,
+        top: `${elemTop}px`,
         bottom: 'auto',
       });
       this.elem.removeClass('textarena-toolbar_top');

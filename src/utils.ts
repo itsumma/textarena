@@ -1,3 +1,5 @@
+import HTMLLicker from './HTMLLicker';
+
 export function getFocusElement(): HTMLElement | undefined {
   const s = window.getSelection();
   if (!s) {
@@ -28,3 +30,41 @@ export function getCodeForKey(key: string): string {
   }
   return `Key${key.toUpperCase()}`;
 };
+
+export function insert(html: string): void {
+  const s = window.getSelection();
+  if (!s) {
+    return;
+  }
+  const range = s.getRangeAt(0);
+  if (!range) {
+    return;
+  }
+  if (!s.isCollapsed) {
+    range.deleteContents();
+  }
+  const tmp = document.createElement('div');
+  tmp.innerHTML = html;
+  const fragment = document.createDocumentFragment();
+  let node;
+  let lastNode;
+  while (node = tmp.firstChild) {
+    lastNode = fragment.appendChild(node);
+  }
+  range.insertNode(fragment);
+  if (lastNode) {
+    const newRange = range.cloneRange();
+    newRange.setStartAfter(lastNode);
+    newRange.collapse(true);
+    s.removeAllRanges();
+    s.addRange(newRange);
+  }
+}
+
+export function convertToHTML(html: string): string {
+  return `<p>${new HTMLLicker(html).xssFull().getHtml()}</p>`;
+}
+
+export function clearHtml(html: string) {
+  return new HTMLLicker(html).sanitize().getHtml();
+}

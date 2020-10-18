@@ -50,6 +50,28 @@ const tools: {[key: string]: ToolOptions} = {
     state: styleState,
     processor: style,
   },
+  list: {
+    name: 'list',
+    title: 'Unordered list',
+    icon: '=',
+    altKey: 'l',
+    config: {
+      style: 'insertunorderedlist',
+    },
+    state: styleState,
+    processor: style,
+  },
+  orderedlist: {
+    name: 'orderedlist',
+    title: 'Ordered list',
+    icon: '1.',
+    altKey: 'o',
+    config: {
+      style: 'insertorderedlist',
+    },
+    state: styleState,
+    processor: style,
+  },
   h1: {
     name: 'h1',
     title: 'H1',

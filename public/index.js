@@ -1,4 +1,4 @@
-(function () {
+(function (d, lc) {
   const elem = document.getElementById('textarena-container');
 
   if (elem && (typeof Textarena !== 'undefined')) {
@@ -46,4 +46,4 @@
       },
     );
   }
-})();
+}());
