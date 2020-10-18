@@ -1,3 +1,4 @@
+import ElementHelper from './ElementHelper';
 import EventManager from './EventManager';
 import ToolbarOptions from './interfaces/ToolbarOptions';
 import ToolOptions from './interfaces/ToolOptions';
@@ -5,23 +6,31 @@ import tools from './tools';
 
 const scrollPattern = /(auto|scroll)/;
 
-const style = (node: Element, prop: string) => (
+const style = (node: Element, prop: string): string => (
   getComputedStyle(node, null).getPropertyValue(prop)
 );
 
-const scroll = (node: Element) =>
-  scrollPattern.test(
-    style(node, 'overflow')
-		+ style(node, 'overflow-y')
-		+ style(node, 'overflow-x'),
-  );
+const scroll = (node: Element) => scrollPattern.test(
+  style(node, 'overflow')
+  + style(node, 'overflow-y')
+  + style(node, 'overflow-x'),
+);
 
-const getScrollparent = (node: Element | null): Node =>
-  (!node || node === document.body
-    ? document.body
-    : scroll(node)
-      ? node
-      : getScrollparent(node.parentElement));
+const getScrollableParent = (node: Element | null): Element => {
+  if (!node || node === document.body) {
+    return document.body;
+  }
+  return scroll(node)
+    ? node
+    : getScrollableParent(node.parentElement);
+};
+
+const getCodeForKey = (key: string): string => {
+  if (/\d/.test(key)) {
+    return `Digit${key}`;
+  }
+  return `Key${key.toUpperCase()}`;
+};
 
 type Tool = {
   elem: Element;
@@ -43,7 +52,7 @@ export default class Toolbar {
 
   altKeyShowed = false;
 
-  elem: HTMLElement;
+  elem: ElementHelper;
 
   list: HTMLElement;
 
@@ -53,9 +62,13 @@ export default class Toolbar {
 
   keyDownListenerInstance: ((e: KeyboardEvent) => void);
 
-  constructor(private root: HTMLElement, private eventManager: EventManager) {
-    this.elem = document.createElement('DIV');
-    this.elem.className = 'textarena-toolbar';
+  constructor(
+    private container: HTMLElement,
+    private root: HTMLElement,
+    private eventManager: EventManager,
+  ) {
+    this.elem = new ElementHelper('DIV');
+    this.elem.addClass('textarena-toolbar');
     this.list = document.createElement('DIV');
     this.list.className = 'textarena-toolbar__list';
     this.elem.appendChild(this.list);
@@ -81,15 +94,16 @@ export default class Toolbar {
     });
   }
 
-  keyUpListener(e: KeyboardEvent) {
+  keyUpListener(e: KeyboardEvent): void {
     if (this.altKeyShowed || this.controlKeyShowed) {
-      this.elem.className = 'textarena-toolbar';
+      this.elem.removeClass('textarena-toolbar_show-control-key');
+      this.elem.removeClass('textarena-toolbar_show-alt-key');
       this.controlKeyShowed = false;
       this.altKeyShowed = false;
     }
   }
 
-  keyDownListener(e: KeyboardEvent) {
+  keyDownListener(e: KeyboardEvent): void {
     console.log(e);
     if (e.altKey && this.altKeys[e.code]) {
       e.preventDefault();
@@ -101,22 +115,22 @@ export default class Toolbar {
     } else
     if (!this.controlKeyShowed && this.showed && e.key === 'Control' && !e.ctrlKey && !e.shiftKey) {
       e.preventDefault();
-      this.elem.className = 'textarena-toolbar textarena-toolbar_show-control-key';
+      this.elem.addClass('textarena-toolbar_show-control-key');
       this.controlKeyShowed = true;
     } else
     if (!this.altKeyShowed && this.showed && e.key === 'Alt') {
       e.preventDefault();
-      this.elem.className = 'textarena-toolbar textarena-toolbar_show-alt-key';
+      this.elem.addClass('textarena-toolbar_show-alt-key');
       this.altKeyShowed = true;
     }
   }
 
-  setOptions(options: ToolbarOptions) {
+  setOptions(toolbarOptions: ToolbarOptions) {
     // TODO use enabler parameter
-    if (options.tools) {
+    if (toolbarOptions.tools) {
       this.list.innerHTML = '';
       this.controlKeys = {};
-      this.tools = options.tools.map((toolOptions: ToolOptions | string) => {
+      this.tools = toolbarOptions.tools.map((toolOptions: ToolOptions | string) => {
         let options: ToolOptions;
         if (typeof toolOptions === 'string') {
           if (tools[toolOptions]) {
@@ -141,13 +155,13 @@ export default class Toolbar {
           elem.innerHTML = options.icon;
         }
         if (options.controlKey) {
-          this.controlKeys[this.getCodeForKey(options.controlKey)] = tool;
+          this.controlKeys[getCodeForKey(options.controlKey)] = tool;
           const controlKey = document.createElement('DIV');
           controlKey.className = 'textarena-toolbar__control-key';
           controlKey.innerHTML = options.controlKey;
           elem.appendChild(controlKey);
         } else if (options.altKey) {
-          this.altKeys[this.getCodeForKey(options.altKey)] = tool;
+          this.altKeys[getCodeForKey(options.altKey)] = tool;
           const altKey = document.createElement('DIV');
           altKey.className = 'textarena-toolbar__alt-key';
           altKey.innerHTML = options.altKey;
@@ -158,13 +172,6 @@ export default class Toolbar {
       });
       console.log(this.altKeys);
     }
-  }
-
-  getCodeForKey(key: string) {
-    if (/\d/.test(key)) {
-      return `Digit${key}`;
-    }
-    return `Key${key.toUpperCase()}`;
   }
 
   executeTool(tool: Tool) {
@@ -193,43 +200,60 @@ export default class Toolbar {
     });
   }
 
-  getElem() {
-    return this.elem;
+  getElem(): HTMLElement {
+    return this.elem.getElem();
   }
 
-  show() {
+  show(): void {
     const s = window.getSelection();
-    if (s && !s.isCollapsed && s.rangeCount > 0) {
-      const range = s.getRangeAt(0);
-      const rect = range.getBoundingClientRect();
-      const elemSel = range.startContainer.parentElement;
-      if (elemSel) {
-        const scrollparent = getScrollparent(elemSel) as HTMLElement;
-        const scrollTop = scrollparent.tagName === 'BODY' ? window.pageYOffset : scrollparent.scrollTop;
-        rect.y += scrollTop;
-        this.elem.style.top = `${rect.y + rect.height}px`;
-        this.elem.style.left = `${rect.x + rect.width / 2}px`;
-        this.updateState();
-        this.elem.style.display = 'block';
-        this.showed = true;
-      }
+    if (!s || s.isCollapsed || s.rangeCount === 0) {
+      return;
     }
+    const { focusNode } = s;
+    if (!focusNode) {
+      return;
+    }
+    const focusElement = (focusNode.nodeType === 1
+      ? focusNode : focusNode.parentElement) as HTMLElement;
+    const rootElement = focusElement.closest('.textarena-editor');
+    if (!rootElement) {
+      return;
+    }
+    const range = s.getRangeAt(0);
+    const rect = range.getBoundingClientRect();
+    const containerRect = this.container.getBoundingClientRect();
+    let positionTop = true;
+    if (rect.y < 400) {
+      positionTop = rect.y >= window.innerHeight / 2;
+    }
+    if (positionTop) {
+      this.elem.css({
+        top: 'auto',
+        bottom: `${containerRect.bottom - rect.top}px`,
+      });
+      this.elem.removeClass('textarena-toolbar_bottom');
+      this.elem.addClass('textarena-toolbar_top');
+    } else {
+      this.elem.css({
+        top: `${rect.y - containerRect.y + rect.height}px`,
+        bottom: 'auto',
+      });
+      this.elem.removeClass('textarena-toolbar_top');
+      this.elem.addClass('textarena-toolbar_bottom');
+    }
+    this.elem.css({
+      left: `${rect.x + rect.width / 2}px`,
+      display: 'block',
+    });
+    this.updateState();
+    this.showed = true;
   }
 
-  hide() {
-    this.elem.style.display = 'none';
+  hide(): void {
+    this.elem.css({
+      display: 'none',
+    });
     this.showed = false;
   }
 
-  getFocusElement(): HTMLElement | undefined {
-    const s = window.getSelection();
-    if (!s) {
-      return undefined;
-    }
-    const { focusNode } = s;
-    if (focusNode) {
-      return (focusNode.nodeType === 1 ? focusNode : focusNode.parentElement) as HTMLElement;
-    }
-    return undefined;
-  }
 }

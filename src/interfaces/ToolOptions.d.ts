@@ -1,5 +1,5 @@
-import ToolProcessor from "./ToolProcessor";
-import ToolState from "./ToolState";
+import ToolProcessor from './ToolProcessor';
+import ToolState from './ToolState';
 
 export default interface ToolOptions<T = {}> {
   name: string;
@@ -10,4 +10,4 @@ export default interface ToolOptions<T = {}> {
   altKey?: string;
   state?: ToolState<T>;
   processor: ToolProcessor<T>;
-}
+};

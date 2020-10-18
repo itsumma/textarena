@@ -1,4 +1,4 @@
-import CreatorContext from "./CreatorContext";
+import CreatorContext from './CreatorContext';
 
 type CreatorProcessor<T = {}> = (context: CreatorContext, config: T) => void;
 

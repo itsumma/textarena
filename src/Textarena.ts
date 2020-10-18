@@ -1,14 +1,14 @@
-import TextarenaData from "./interfaces/TextarenaData";
-import TextarenaOptions from "./interfaces/TextarenaOptions";
-import MetaData from "./interfaces/MetaData";
-import ChangeDataListener from "./interfaces/ChangeHandler";
-import HTMLLicker from "./HTMLLicker";
-import Manipulator from "./Manipulator";
-import Toolbar from "./Toolbar";
-import EventManager from "./EventManager";
-import ToolbarOptions from "./interfaces/ToolbarOptions";
-import CreatorBar from "./CreatorBar";
-import CreatorBarOptions from "./interfaces/CreatorBarOptions";
+import TextarenaData from './interfaces/TextarenaData';
+import TextarenaOptions from './interfaces/TextarenaOptions';
+import MetaData from './interfaces/MetaData';
+import ChangeDataListener from './interfaces/ChangeHandler';
+import HTMLLicker from './HTMLLicker';
+import Manipulator from './Manipulator';
+import Toolbar from './Toolbar';
+import EventManager from './EventManager';
+import ToolbarOptions from './interfaces/ToolbarOptions';
+import CreatorBar from './CreatorBar';
+import CreatorBarOptions from './interfaces/CreatorBarOptions';
 
 const defaultOptions: TextarenaOptions = {
   editable: true,
@@ -37,20 +37,26 @@ const defaultOptions: TextarenaOptions = {
       'hr',
       'hr',
       'hr',
-    ]
-  }
+    ],
+  },
 };
 
 class Textarena {
   elem: HTMLElement;
+
   eventManager: EventManager;
+
   manipulator: Manipulator;
+
   toolbar: Toolbar;
+
   creatorBar: CreatorBar;
+
   options: TextarenaOptions = {};
+
   meta: MetaData = {};
 
-  constructor (container: HTMLElement, options?: TextarenaOptions) {
+  constructor(private container: HTMLElement, options?: TextarenaOptions) {
     this.elem = document.createElement('DIV');
     this.elem.className = 'textarena-editor';
     this.eventManager = new EventManager();
@@ -60,10 +66,10 @@ class Textarena {
       }
     });
     this.manipulator = new Manipulator(this.elem, this.eventManager);
-    this.toolbar = new Toolbar(this.elem, this.eventManager);
+    this.toolbar = new Toolbar(this.container, this.elem, this.eventManager);
     this.creatorBar = new CreatorBar(this.elem, this.eventManager);
-    container.innerHTML = '';
-    container.className = 'textarena-container';
+    this.container.innerHTML = '';
+    this.container.className = 'textarena-container';
     container.appendChild(this.creatorBar.getElem());
     container.appendChild(this.elem);
     container.appendChild(this.toolbar.getElem());
@@ -97,7 +103,7 @@ class Textarena {
     return {
       content: this.elem.innerHTML,
       meta: this.meta,
-    }
+    };
   }
 
   setData(data: TextarenaData) {

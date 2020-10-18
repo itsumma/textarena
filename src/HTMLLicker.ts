@@ -2,20 +2,20 @@ import xss from 'xss';
 import sanitizeHtml from 'sanitize-html';
 
 export default class HTMLLicker {
-  constructor (private html: string) {
+  constructor(private html: string) {
 
   }
 
   prepareHTML() {
     return this
       .xss();
-      // .checkFirstLine();
+    // .checkFirstLine();
   }
 
   xssFull() {
     return new HTMLLicker(xss(
       this.html,
-      { }
+      { },
     ));
   }
 
@@ -39,8 +39,8 @@ export default class HTMLLicker {
           hr: [],
           div: ['contenteditable', 'class'],
           a: ['href', 'target'],
-        }
-      }
+        },
+      },
     ));
   }
 
@@ -66,11 +66,11 @@ export default class HTMLLicker {
       allowedSchemesByTag: {
         a: ['https', 'mailto', 'tel'],
       },
-      exclusiveFilter: function(frame) {
+      exclusiveFilter(frame) {
         // return frame.tag === 'a' && !frame.text.trim();
         return !frame.text.trim();
       },
-      nonTextTags: [ 'style', 'script', 'textarea', 'option', 'noscript' ],
+      nonTextTags: ['style', 'script', 'textarea', 'option', 'noscript'],
       transformTags: {
         strong: 'b',
       },
@@ -78,13 +78,11 @@ export default class HTMLLicker {
         lowerCaseTags: true,
         lowerCaseAttributeNames: true,
       },
-      enforceHtmlBoundary: true
+      enforceHtmlBoundary: true,
     }));
   }
 
   getHtml() {
     return this.html;
   }
-
-
 }

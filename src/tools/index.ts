@@ -1,12 +1,12 @@
-import ToolOptions from "~/interfaces/ToolOptions"
-import style from "./style"
-import header from "./header";
-import foreColor from "./foreColor";
-import styleState from "./styleState";
-import link from "./link";
+import ToolOptions from '~/interfaces/ToolOptions';
+import style from './style';
+import header from './header';
+import foreColor from './foreColor';
+import styleState from './styleState';
+import link from './link';
 
 const tools: {[key: string]: ToolOptions} = {
-  'bold': {
+  bold: {
     name: 'bold',
     title: 'Bold',
     icon: '<b>B</b>',
@@ -17,7 +17,7 @@ const tools: {[key: string]: ToolOptions} = {
     state: styleState,
     processor: style,
   },
-  'italic': {
+  italic: {
     name: 'italic',
     title: 'Italic',
     icon: '<i>I</i>',
@@ -28,7 +28,7 @@ const tools: {[key: string]: ToolOptions} = {
     state: styleState,
     processor: style,
   },
-  'underline': {
+  underline: {
     name: 'underline',
     title: 'Underline',
     icon: '<u>U</u>',
@@ -39,7 +39,7 @@ const tools: {[key: string]: ToolOptions} = {
     state: styleState,
     processor: style,
   },
-  'strikethrough': {
+  strikethrough: {
     name: 'strikethrough',
     title: 'Strikethrough',
     icon: '<s>S</s>',
@@ -50,7 +50,7 @@ const tools: {[key: string]: ToolOptions} = {
     state: styleState,
     processor: style,
   },
-  'h1': {
+  h1: {
     name: 'h1',
     title: 'H1',
     icon: '<b>H1</b>',
@@ -60,7 +60,7 @@ const tools: {[key: string]: ToolOptions} = {
     },
     processor: header,
   },
-  'h2': {
+  h2: {
     name: 'h2',
     title: 'H2',
     icon: '<b>H2</b>',
@@ -70,7 +70,7 @@ const tools: {[key: string]: ToolOptions} = {
     },
     processor: header,
   },
-  'h3': {
+  h3: {
     name: 'h3',
     title: 'H3',
     icon: '<b>H3</b>',
@@ -80,7 +80,7 @@ const tools: {[key: string]: ToolOptions} = {
     },
     processor: header,
   },
-  'h4': {
+  h4: {
     name: 'h4',
     title: 'H4',
     icon: '<b>H4</b>',
@@ -90,7 +90,7 @@ const tools: {[key: string]: ToolOptions} = {
     },
     processor: header,
   },
-  'foreColor': {
+  foreColor: {
     name: 'foreColor',
     icon: 'f',
     title: 'ForeColor',
@@ -100,13 +100,13 @@ const tools: {[key: string]: ToolOptions} = {
     },
     processor: foreColor,
   },
-  'link': {
+  link: {
     name: 'link',
     icon: '🔗',
     title: 'Link',
     controlKey: 'k',
     processor: link,
-  }
-}
+  },
+};
 
 export default tools;

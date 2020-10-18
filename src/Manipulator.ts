@@ -1,27 +1,34 @@
-import EventManager from "./EventManager";
-import HTMLLicker from "./HTMLLicker";
+import EventManager from './EventManager';
+import HTMLLicker from './HTMLLicker';
 // import ChangeDataListener from "./interfaces/ChangeHandler";
-import { isDescendant } from "./utils";
+import { isDescendant } from './utils';
 
 export const emptyStrs = ['<p><br></p>', '<p><br/></p>', '<p></p>'];
 
 enum SelectionStatus {
   Selected,
   Unselected,
-};
+}
 export default class Manipulator {
   inputListenerInstance: (() => void);
+
   mouseUpListenerInstance: (() => void);
+
   keyUpListenerInstance: ((e: KeyboardEvent) => void);
+
   keyDownListenerInstance: ((e: KeyboardEvent) => void);
+
   selectListenerInstance: (() => void);
+
   pasteListenerInstance: ((event: ClipboardEvent) => void);
 
   lastSelectionStatus: SelectionStatus = SelectionStatus.Unselected;
+
   lastSelectionRange: Range | undefined;
+
   lastFocusElement: HTMLElement | undefined;
 
-  constructor (private elem: HTMLElement, private eventManager: EventManager) {
+  constructor(private elem: HTMLElement, private eventManager: EventManager) {
     this.inputListenerInstance = this.inputListener.bind(this);
     this.mouseUpListenerInstance = this.mouseUpListener.bind(this);
     this.keyUpListenerInstance = this.keyUpListener.bind(this);
@@ -29,19 +36,19 @@ export default class Manipulator {
     this.selectListenerInstance = this.selectListener.bind(this);
     this.pasteListenerInstance = this.pasteListener.bind(this);
     this.eventManager.subscribe('turnOn', () => {
-      this.elem.addEventListener("input", this.inputListenerInstance, false);
-      this.elem.addEventListener("mouseup", this.mouseUpListenerInstance, false);
-      this.elem.addEventListener("keyup", this.keyUpListenerInstance, false);
-      this.elem.addEventListener("keydown", this.keyDownListenerInstance, false);
-      this.elem.addEventListener("paste", this.pasteListenerInstance, false);
-      document.addEventListener("selectionchange", this.selectListenerInstance, false);
+      this.elem.addEventListener('input', this.inputListenerInstance, false);
+      this.elem.addEventListener('mouseup', this.mouseUpListenerInstance, false);
+      this.elem.addEventListener('keyup', this.keyUpListenerInstance, false);
+      this.elem.addEventListener('keydown', this.keyDownListenerInstance, false);
+      this.elem.addEventListener('paste', this.pasteListenerInstance, false);
+      document.addEventListener('selectionchange', this.selectListenerInstance, false);
     });
     this.eventManager.subscribe('turnOff', () => {
       this.elem.removeEventListener('input', this.inputListenerInstance);
       this.elem.removeEventListener('mouseup', this.mouseUpListenerInstance);
-      this.elem.removeEventListener("keyup", this.keyUpListenerInstance);
-      this.elem.removeEventListener("keydown", this.keyDownListenerInstance);
-      this.elem.removeEventListener("paste", this.pasteListenerInstance);
+      this.elem.removeEventListener('keyup', this.keyUpListenerInstance);
+      this.elem.removeEventListener('keydown', this.keyDownListenerInstance);
+      this.elem.removeEventListener('paste', this.pasteListenerInstance);
       document.removeEventListener('selectionchange', this.selectListenerInstance);
     });
   }
@@ -50,12 +57,12 @@ export default class Manipulator {
     event.preventDefault();
     const { clipboardData } = event;
     if (!clipboardData) {
-      return
+      return;
     }
-    const types: string[] = [ ...clipboardData.types || [] ];
+    const types: string[] = [...clipboardData.types || []];
     console.log(event.clipboardData?.types);
     if (types.includes('text/html')) {
-      const html = clipboardData.getData('text/html')
+      const html = clipboardData.getData('text/html');
       if (!html) {
         return;
       }
@@ -71,8 +78,8 @@ export default class Manipulator {
     }
   }
 
-  insert(html: string) {
-    console.log('insert: ' + html);
+  insert(html: string): void {
+    console.log(`insert: ${html}`);
     const s = window.getSelection();
     if (!s) {
       return;
@@ -81,10 +88,10 @@ export default class Manipulator {
     if (!range) {
       return;
     }
-    if ( !s.isCollapsed ) {
+    if (!s.isCollapsed) {
       range.deleteContents();
     }
-    const tmp = document.createElement("div");
+    const tmp = document.createElement('div');
     tmp.innerHTML = html;
     const fragment = document.createDocumentFragment();
     let node;
@@ -103,7 +110,7 @@ export default class Manipulator {
   }
 
   convertToHTML(html: string) {
-    return '<p>' + (new HTMLLicker(html).xssFull().getHtml()) + '</p>';
+    return `<p>${new HTMLLicker(html).xssFull().getHtml()}</p>`;
   }
 
   clearHtml(html: string) {
@@ -123,13 +130,13 @@ export default class Manipulator {
       return;
     }
     if (s.isCollapsed) {
-        if (this.lastFocusElement !== focucElement) {
-          this.eventManager.fire({
-            name: 'changeFocusElement',
-            target: focucElement,
-          });
-          this.lastFocusElement = focucElement;
-        }
+      if (this.lastFocusElement !== focucElement) {
+        this.eventManager.fire({
+          name: 'changeFocusElement',
+          target: focucElement,
+        });
+        this.lastFocusElement = focucElement;
+      }
     }
     if (this.lastSelectionStatus === SelectionStatus.Selected
       && s.isCollapsed) {
@@ -166,8 +173,8 @@ export default class Manipulator {
       || newRange.startOffset !== this.lastSelectionRange.startOffset
       || newRange.endContainer !== this.lastSelectionRange.endContainer
       || newRange.endOffset !== this.lastSelectionRange.endOffset) {
-        this.eventManager.fire('selectionChanged');
-        this.lastSelectionRange = newRange;
+      this.eventManager.fire('selectionChanged');
+      this.lastSelectionRange = newRange;
     }
   }
 
@@ -188,9 +195,8 @@ export default class Manipulator {
       }
     }
     if (!this.fireSelectionStatus()) {
-      this.fireSelectionChange()
+      this.fireSelectionChange();
     }
-
   }
 
   getFocusElement(): HTMLElement | undefined {
@@ -198,9 +204,9 @@ export default class Manipulator {
     if (!s) {
       return undefined;
     }
-    const focusNode = s.focusNode;
+    const { focusNode } = s;
     if (focusNode) {
-      return (focusNode.nodeType === 1 ? focusNode : focusNode.parentElement) as HTMLElement
+      return (focusNode.nodeType === 1 ? focusNode : focusNode.parentElement) as HTMLElement;
     }
     return undefined;
   }
@@ -244,14 +250,14 @@ export default class Manipulator {
   checkFirstLine() {
     console.log(this.elem.innerHTML);
     if (this.elem.innerHTML) {
-      const firstChild = this.elem.firstChild;
+      const { firstChild } = this.elem;
       if (firstChild && firstChild.nodeName === '#text') {
         const newFirstChild = document.createElement('p');
         newFirstChild.append(firstChild.cloneNode());
 
         const range = document.createRange();
         range.selectNodeContents(this.elem);
-        range.setStartAfter(firstChild)
+        range.setStartAfter(firstChild);
 
         const children = range.extractContents();
         children.prepend(newFirstChild);

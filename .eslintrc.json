@@ -20,7 +20,6 @@
   "plugins": [
     "@typescript-eslint"
   ],
-  "excludedFiles": "*.js",
   "rules": {
     "import/extensions": [
       "error",

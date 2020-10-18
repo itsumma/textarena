@@ -1,4 +1,4 @@
-import MetaData from "./MetaData";
+import MetaData from './MetaData';
 
 export default interface TextarenaData {
   content?: string;

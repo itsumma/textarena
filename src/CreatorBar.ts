@@ -1,8 +1,8 @@
-import creators from "./creators";
-import EventManager, { MediaEvent } from "./EventManager";
-import CreatorBarOptions from "./interfaces/CreatorBarOptions";
-import CreatorContext from "./interfaces/CreatorContext";
-import CreatorOptions from "./interfaces/CreatorOptions";
+import creators from './creators';
+import EventManager, { MediaEvent } from './EventManager';
+import CreatorBarOptions from './interfaces/CreatorBarOptions';
+import CreatorContext from './interfaces/CreatorContext';
+import CreatorOptions from './interfaces/CreatorOptions';
 
 type Creator = {
   elem: HTMLElement;
@@ -11,11 +11,17 @@ type Creator = {
 
 export default class CreatorBar {
   elem: HTMLElement;
+
   list: HTMLElement;
+
   creators: Creator[] = [];
+
   showed = false;
+
   active = false;
+
   currentFocusElement: HTMLElement | undefined;
+
   keyDownListenerInstance: ((e: KeyboardEvent) => void);
 
   constructor(private root: HTMLElement, private eventManager: EventManager) {
@@ -72,12 +78,12 @@ export default class CreatorBar {
     });
     this.keyDownListenerInstance = this.keyDownListener.bind(this);
     this.eventManager.subscribe('turnOn', () => {
-      this.root.addEventListener("keydown", this.keyDownListenerInstance, false);
-      this.elem.addEventListener("keydown", this.keyDownListenerInstance, false);
+      this.root.addEventListener('keydown', this.keyDownListenerInstance, false);
+      this.elem.addEventListener('keydown', this.keyDownListenerInstance, false);
     });
     this.eventManager.subscribe('turnOff', () => {
-      this.root.removeEventListener("keydown", this.keyDownListenerInstance);
-      this.elem.removeEventListener("keydown", this.keyDownListenerInstance);
+      this.root.removeEventListener('keydown', this.keyDownListenerInstance);
+      this.elem.removeEventListener('keydown', this.keyDownListenerInstance);
     });
   }
 
@@ -97,10 +103,8 @@ export default class CreatorBar {
         } else {
           this.creators[index + 1].elem.focus();
         }
-      } else {
-        if (this.creators.length > 0) {
-          this.creators[0].elem.focus();
-        }
+      } else if (this.creators.length > 0) {
+        this.creators[0].elem.focus();
       }
     }
     if (this.showed && this.active && e.key === 'ArrowLeft') {
@@ -112,10 +116,8 @@ export default class CreatorBar {
         } else {
           this.creators[index - 1].elem.focus();
         }
-      } else {
-        if (this.creators.length > 0) {
-          this.creators[this.creators.length - 1].elem.focus();
-        }
+      } else if (this.creators.length > 0) {
+        this.creators[this.creators.length - 1].elem.focus();
       }
     }
   }
@@ -125,9 +127,9 @@ export default class CreatorBar {
     if (!s) {
       return undefined;
     }
-    const focusNode = s.focusNode;
+    const { focusNode } = s;
     if (focusNode) {
-      return (focusNode.nodeType === 1 ? focusNode : focusNode.parentElement) as HTMLElement
+      return (focusNode.nodeType === 1 ? focusNode : focusNode.parentElement) as HTMLElement;
     }
     return undefined;
   }
@@ -203,5 +205,4 @@ export default class CreatorBar {
     this.elem.className = 'textarena-creator';
     this.root.focus();
   }
-
 }

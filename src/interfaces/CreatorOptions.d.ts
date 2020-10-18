@@ -1,4 +1,4 @@
-import CreatorProcessor from "./CreatorProcessor";
+import CreatorProcessor from './CreatorProcessor';
 
 export default interface CreatorOptions<T = {}> {
   name: string;
@@ -8,4 +8,4 @@ export default interface CreatorOptions<T = {}> {
   controlKey?: string;
   altKey?: string;
   processor: CreatorProcessor<T>;
-}
+};

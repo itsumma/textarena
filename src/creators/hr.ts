@@ -1,9 +1,9 @@
-import CreatorContext from "~/interfaces/CreatorContext";
+import CreatorContext from '~/interfaces/CreatorContext';
 
 export default function hr(context: CreatorContext, config: any) {
   const elem = document.createElement('p');
   // elem.contentEditable = "false";
-  elem.className = "textarena__hr";
+  elem.className = 'textarena__hr';
   const hr = document.createElement('HR');
   elem.appendChild(hr);
   console.log(context);
@@ -24,18 +24,16 @@ export default function hr(context: CreatorContext, config: any) {
         s.removeAllRanges();
         s.addRange(r);
       }
-      nextElement.scrollIntoView({behavior: 'smooth', block: 'nearest'});
-    } else {
-      if (context.focusElement.parentNode) {
-        context.focusElement.parentNode.insertBefore(elem, context.focusElement);
-        const s = window.getSelection();
-        const r = document.createRange();
-        r.setStart(context.focusElement, 0);
-        r.setEnd(context.focusElement, 0);
-        if (s) {
-          s.removeAllRanges();
-          s.addRange(r);
-        }
+      nextElement.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    } else if (context.focusElement.parentNode) {
+      context.focusElement.parentNode.insertBefore(elem, context.focusElement);
+      const s = window.getSelection();
+      const r = document.createRange();
+      r.setStart(context.focusElement, 0);
+      r.setEnd(context.focusElement, 0);
+      if (s) {
+        s.removeAllRanges();
+        s.addRange(r);
       }
     }
   }
