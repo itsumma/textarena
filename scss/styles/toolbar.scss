@@ -1,12 +1,11 @@
 .textarena-toolbar {
   position: absolute;
 
-  &::before {
-    content: '';
+  &__pointer {
     position: absolute;
     left: 0;
-    width: 15px;
-    height: 15px;
+    width: 16px;
+    height: 16px;
     -webkit-transform: rotate(-45deg);
     transform: rotate(-45deg);
     background-color: #333;
@@ -15,33 +14,31 @@
 
   &_bottom {
     transform: translate(0, 15px);
+  }
 
-    &::before {
-      top: -7px;
-    }
+  &_bottom &__pointer {
+    top: -7px;
   }
 
   &_top {
     transform: translate(0, -15px);
+  }
 
-    &::before {
-      bottom: -7px;
-    }
+  &_top &__pointer {
+    bottom: -7px;
   }
 
   &__list {
     display: flex;
     flex-wrap: wrap;
-    transform: translateX(-50%);
+    // transform: translateX(-50%);
     color: #ccc;
     box-shadow: 0 8px 23px -6px rgba(21, 40, 54, 0.31), 22px -14px 34px -18px rgba(33, 48, 73, 0.26);
     border-radius: 4px;
     background-color: #333;
     z-index: 2;
-    transition: 0.3s;
+    // transition: 0.3s;
     user-select: none;
-
-
   }
 
   &__item {

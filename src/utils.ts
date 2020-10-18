@@ -21,3 +21,10 @@ isDescendant(parent: HTMLElement | Node, child: HTMLElement | Node): boolean {
   }
   return false;
 }
+
+export function getCodeForKey(key: string): string {
+  if (/\d/.test(key)) {
+    return `Digit${key}`;
+  }
+  return `Key${key.toUpperCase()}`;
+};
