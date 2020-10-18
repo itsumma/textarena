@@ -1,4 +1,4 @@
-import MediaTextData from "./MediaTextData";
+import TextarenaData from "./TextarenaData";
 
-type ChangeDataListener = (data: MediaTextData) => void;
+type ChangeDataListener = (data: TextarenaData) => void;
 export default ChangeDataListener;

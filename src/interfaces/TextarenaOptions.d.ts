@@ -1,12 +1,12 @@
 import ChangeDataListener from "./ChangeHandler";
 import CreatorBarOptions from "./CreatorBarOptions";
-import MediaTextData from "./MediaTextData";
+import TextarenaData from "./TextarenaData";
 import ToolbarOptions from "./ToolbarOptions";
 
-export default interface MediaTextOptions {
+export default interface TextarenaOptions {
   editable?: boolean;
   onChange?: ChangeDataListener;
-  initData?: MediaTextData;
+  initData?: TextarenaData;
   toolbar?: ToolbarOptions;
   creatorBar?: CreatorBarOptions;
 }

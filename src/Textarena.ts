@@ -1,5 +1,5 @@
-import MediaTextData from "./interfaces/MediaTextData";
-import MediaTextOptions from "./interfaces/MediaTextOptions";
+import TextarenaData from "./interfaces/TextarenaData";
+import TextarenaOptions from "./interfaces/TextarenaOptions";
 import MetaData from "./interfaces/MetaData";
 import ChangeDataListener from "./interfaces/ChangeHandler";
 import HTMLLicker from "./HTMLLicker";
@@ -10,7 +10,7 @@ import ToolbarOptions from "./interfaces/ToolbarOptions";
 import CreatorBar from "./CreatorBar";
 import CreatorBarOptions from "./interfaces/CreatorBarOptions";
 
-const defaultOptions: MediaTextOptions = {
+const defaultOptions: TextarenaOptions = {
   editable: true,
   toolbar: {
     enabled: true,
@@ -41,16 +41,16 @@ const defaultOptions: MediaTextOptions = {
   }
 };
 
-class MediaText {
+class Textarena {
   elem: HTMLElement;
   eventManager: EventManager;
   manipulator: Manipulator;
   toolbar: Toolbar;
   creatorBar: CreatorBar;
-  options: MediaTextOptions = {};
+  options: TextarenaOptions = {};
   meta: MetaData = {};
 
-  constructor (container: HTMLElement, options?: MediaTextOptions) {
+  constructor (container: HTMLElement, options?: TextarenaOptions) {
     this.elem = document.createElement('DIV');
     this.elem.className = 'textarena-editor';
     this.eventManager = new EventManager();
@@ -75,7 +75,7 @@ class MediaText {
     this.eventManager.fire('turnOff');
   }
 
-  setOptions(options: MediaTextOptions) {
+  setOptions(options: TextarenaOptions) {
     if (options.editable) {
       this.setEditable(options.editable);
     }
@@ -93,14 +93,14 @@ class MediaText {
     }
   }
 
-  getData(): MediaTextData {
+  getData(): TextarenaData {
     return {
       content: this.elem.innerHTML,
       meta: this.meta,
     }
   }
 
-  setData(data: MediaTextData) {
+  setData(data: TextarenaData) {
     if (typeof data.content === 'string') {
       this.elem.innerHTML = (new HTMLLicker(data.content)).prepareHTML().getHtml();
       this.manipulator.checkFirstLine();
@@ -135,4 +135,4 @@ class MediaText {
   }
 }
 
-export default MediaText;
+export default Textarena;
