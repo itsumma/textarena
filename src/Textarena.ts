@@ -82,7 +82,7 @@ class Textarena {
     this.eventManager.fire('turnOff');
   }
 
-  setOptions(options: TextarenaOptions) {
+  setOptions(options: TextarenaOptions): void {
     if (options.editable) {
       this.setEditable(options.editable);
     }
@@ -107,7 +107,7 @@ class Textarena {
     };
   }
 
-  setData(data: TextarenaData) {
+  setData(data: TextarenaData): void {
     if (typeof data.content === 'string') {
       this.elem.innerHTML = (new HTMLLicker(data.content)).prepareHTML().getHtml();
       this.manipulator.checkFirstLine();
@@ -117,7 +117,7 @@ class Textarena {
     }
   }
 
-  setEditable(editable: boolean) {
+  setEditable(editable: boolean): void {
     if (this.options.editable !== editable) {
       if (editable) {
         this.eventManager.fire('turnOn');
@@ -129,15 +129,15 @@ class Textarena {
     }
   }
 
-  setOnChange(onChange: ChangeDataListener) {
+  setOnChange(onChange: ChangeDataListener): void {
     this.options.onChange = onChange;
   }
 
-  setToolbarOptions(toolbarOptions: ToolbarOptions) {
+  setToolbarOptions(toolbarOptions: ToolbarOptions): void {
     this.toolbar.setOptions(toolbarOptions);
   }
 
-  setCreatorBarOptions(creatorBarOptions: CreatorBarOptions) {
+  setCreatorBarOptions(creatorBarOptions: CreatorBarOptions): void {
     this.creatorBar.setOptions(creatorBarOptions);
   }
 }

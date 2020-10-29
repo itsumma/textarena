@@ -29,7 +29,7 @@ export function getCodeForKey(key: string): string {
     return `Digit${key}`;
   }
   return `Key${key.toUpperCase()}`;
-};
+}
 
 export function insert(html: string): void {
   const s = window.getSelection();
@@ -48,7 +48,8 @@ export function insert(html: string): void {
   const fragment = document.createDocumentFragment();
   let node;
   let lastNode;
-  while (node = tmp.firstChild) {
+  while (tmp.firstChild) {
+    node = tmp.firstChild;
     lastNode = fragment.appendChild(node);
   }
   range.insertNode(fragment);
@@ -65,6 +66,6 @@ export function convertToHTML(html: string): string {
   return `<p>${new HTMLLicker(html).xssFull().getHtml()}</p>`;
 }
 
-export function clearHtml(html: string) {
+export function clearHtml(html: string): string {
   return new HTMLLicker(html).sanitize().getHtml();
 }

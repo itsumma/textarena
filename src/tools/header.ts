@@ -1,4 +1,4 @@
-import { ToolOptionsType } from '~/interfaces/ToolOptions'
+import { ToolOptionsType } from '~/interfaces/ToolOptions';
 import Toolbar from '~/Toolbar';
 import * as utils from '../utils';
 

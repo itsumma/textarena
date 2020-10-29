@@ -3,6 +3,7 @@ import EventManager, { MediaEvent } from './EventManager';
 import CreatorBarOptions from './interfaces/CreatorBarOptions';
 import CreatorContext from './interfaces/CreatorContext';
 import CreatorOptions from './interfaces/CreatorOptions';
+import { getFocusElement } from './utils';
 
 type Creator = {
   elem: HTMLElement;
@@ -54,7 +55,7 @@ export default class CreatorBar {
     this.elem.appendChild(placeholder);
 
     this.eventManager.subscribe('textChanged', () => {
-      const focucElement = this.getFocusElement();
+      const focucElement = getFocusElement();
       if (focucElement) {
         if (!focucElement?.textContent) {
           this.currentFocusElement = focucElement;
@@ -87,7 +88,7 @@ export default class CreatorBar {
     });
   }
 
-  keyDownListener(e: KeyboardEvent) {
+  keyDownListener(e: KeyboardEvent): void {
     if (this.showed && !this.active && e.key === 'q' && e.ctrlKey) {
       this.openList();
     }
@@ -122,62 +123,50 @@ export default class CreatorBar {
     }
   }
 
-  getFocusElement(): HTMLElement | undefined {
-    const s = window.getSelection();
-    if (!s) {
-      return undefined;
-    }
-    const { focusNode } = s;
-    if (focusNode) {
-      return (focusNode.nodeType === 1 ? focusNode : focusNode.parentElement) as HTMLElement;
-    }
-    return undefined;
-  }
-
   getContext(): CreatorContext {
     return {
       focusElement: this.currentFocusElement,
     };
   }
 
-  setOptions(options: CreatorBarOptions) {
+  setOptions(options: CreatorBarOptions): void {
     // TODO use enabler parameter
     if (options.creators) {
       this.list.innerHTML = '';
       this.creators = options.creators.map((creatorOptions: CreatorOptions | string) => {
-        let options: CreatorOptions;
+        let opts: CreatorOptions;
         if (typeof creatorOptions === 'string') {
           if (creators[creatorOptions]) {
-            options = creators[creatorOptions];
+            opts = creators[creatorOptions];
           } else {
-            throw `Tool "${creatorOptions}" not found`;
+            throw Error(`Tool "${creatorOptions}" not found`);
           }
         } else {
-          options = creatorOptions;
+          opts = creatorOptions;
         }
         const elem = document.createElement('BUTTON');
         elem.className = 'textarena-creator__item';
         elem.onclick = (e) => {
           e.preventDefault();
-          options.processor(this.getContext(), options.config || {});
+          opts.processor(this.getContext(), opts.config || {});
         };
-        if (options.icon) {
-          elem.innerHTML = options.icon;
+        if (opts.icon) {
+          elem.innerHTML = opts.icon;
         }
         this.list.append(elem);
         return {
           elem,
-          options,
+          options: opts,
         };
       });
     }
   }
 
-  getElem() {
+  getElem(): HTMLElement {
     return this.elem;
   }
 
-  show(target: HTMLElement) {
+  show(target: HTMLElement): void {
     this.elem.style.display = 'flex';
     this.elem.style.top = `${target.offsetTop}px`;
     this.showed = true;
@@ -185,14 +174,14 @@ export default class CreatorBar {
     this.elem.className = 'textarena-creator';
   }
 
-  hide() {
+  hide(): void {
     this.elem.style.display = 'none';
     this.showed = false;
     this.active = false;
     this.elem.className = 'textarena-creator';
   }
 
-  openList() {
+  openList(): void {
     this.active = true;
     this.elem.className = 'textarena-creator textarena-creator_active';
     if (this.creators.length > 0) {
@@ -200,7 +189,7 @@ export default class CreatorBar {
     }
   }
 
-  closeList() {
+  closeList(): void {
     this.active = false;
     this.elem.className = 'textarena-creator';
     this.root.focus();

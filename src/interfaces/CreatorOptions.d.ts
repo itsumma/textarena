@@ -1,6 +1,6 @@
 import CreatorProcessor from './CreatorProcessor';
 
-export default interface CreatorOptions<T = {}> {
+export default interface CreatorOptions<T = unknown> {
   name: string;
   icon: string;
   title: string;
