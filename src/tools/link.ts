@@ -1,7 +1,8 @@
 import Toolbar from '~/Toolbar';
+import { getFocusElement } from '../utils';
 
 export default function link(toolbar: Toolbar) {
-  const focusElement = toolbar.getFocusElement();
+  const focusElement = getFocusElement();
   let url = 'http:\/\/';
   if (focusElement && focusElement.tagName === 'A') {
     url = focusElement.getAttribute('href') || '';

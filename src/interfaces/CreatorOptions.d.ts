@@ -8,4 +8,4 @@ export default interface CreatorOptions<T = {}> {
   controlKey?: string;
   altKey?: string;
   processor: CreatorProcessor<T>;
-};
+}

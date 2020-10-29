@@ -1,7 +1,9 @@
 import ToolProcessor from './ToolProcessor';
 import ToolState from './ToolState';
 
-export default interface ToolOptions<T = { [key: string]: string|number|Element }> {
+export type ToolOptionsType = { [key: string]: string|number|Element }
+
+export default interface ToolOptions<T = ToolOptionsType> {
   name: string;
   icon: string;
   title: string;
