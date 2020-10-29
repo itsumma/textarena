@@ -5,3 +5,6 @@
 /node_modules
 yarn.lock
 yarn-error.log
+public/style.js
+public/textarena.css
+public/textarena.js

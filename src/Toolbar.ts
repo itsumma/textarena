@@ -12,7 +12,7 @@ type Tool = {
 
 type KeysForTool = {
   [key: string]: Tool;
-}
+};
 
 export default class Toolbar {
   showed = false;
@@ -117,7 +117,7 @@ export default class Toolbar {
           if (tools[toolOptions]) {
             options = tools[toolOptions];
           } else {
-            throw `Tool "${toolOptions}" not found`;
+            throw Error(`Tool "${toolOptions}" not found`);
           }
         } else {
           options = toolOptions;

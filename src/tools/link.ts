@@ -1,13 +1,14 @@
-import Toolbar from '~/Toolbar';
+import { getFocusElement } from '../utils';
 
-export default function link(toolbar: Toolbar) {
-  const focusElement = toolbar.getFocusElement();
-  let url = 'http:\/\/';
+export default function link(): void {
+  const focusElement = getFocusElement();
+  let url = 'http://';
   if (focusElement && focusElement.tagName === 'A') {
     url = focusElement.getAttribute('href') || '';
   }
   const value = prompt('Введите ваш URL', url);
   if (value === null) {
+    // eslint-disable-next-line no-console
     console.log('null');
     return;
   }

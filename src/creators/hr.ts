@@ -1,11 +1,12 @@
 import CreatorContext from '~/interfaces/CreatorContext';
 
-export default function hr(context: CreatorContext, config: any) {
+export default function hr(context: CreatorContext): void {
   const elem = document.createElement('p');
   // elem.contentEditable = "false";
   elem.className = 'textarena__hr';
-  const hr = document.createElement('HR');
-  elem.appendChild(hr);
+  const hrElement = document.createElement('HR');
+  elem.appendChild(hrElement);
+  // eslint-disable-next-line no-console
   console.log(context);
   if (context.focusElement) {
     const nextElement = context.focusElement.nextElementSibling;

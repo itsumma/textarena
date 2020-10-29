@@ -6,6 +6,7 @@ import * as utils from './utils';
 
 export const emptyStrs = ['<p><br></p>', '<p><br/></p>', '<p></p>'];
 
+// eslint-disable-next-line no-shadow
 enum SelectionStatus {
   Selected,
   Unselected,
@@ -41,7 +42,7 @@ export default class Manipulator {
 
   keyUpListenerInstance: ((e: KeyboardEvent) => void);
 
-  keyDownListenerInstance: ((e: KeyboardEvent) => void);
+  // keyDownListenerInstance: ((e: KeyboardEvent) => void);
 
   selectListenerInstance: (() => void);
 
@@ -57,14 +58,14 @@ export default class Manipulator {
     this.inputListenerInstance = this.inputListener.bind(this);
     this.mouseUpListenerInstance = this.mouseUpListener.bind(this);
     this.keyUpListenerInstance = this.keyUpListener.bind(this);
-    this.keyDownListenerInstance = this.keyDownListener.bind(this);
+    // this.keyDownListenerInstance = this.keyDownListener.bind(this);
     this.selectListenerInstance = this.selectListener.bind(this);
     this.pasteListenerInstance = pasteListener.bind(this);
     this.eventManager.subscribe('turnOn', () => {
       this.elem.addEventListener('input', this.inputListenerInstance, false);
       this.elem.addEventListener('mouseup', this.mouseUpListenerInstance, false);
       this.elem.addEventListener('keyup', this.keyUpListenerInstance, false);
-      this.elem.addEventListener('keydown', this.keyDownListenerInstance, false);
+      // this.elem.addEventListener('keydown', this.keyDownListenerInstance, false);
       this.elem.addEventListener('paste', this.pasteListenerInstance, false);
       document.addEventListener('selectionchange', this.selectListenerInstance, false);
     });
@@ -72,7 +73,7 @@ export default class Manipulator {
       this.elem.removeEventListener('input', this.inputListenerInstance);
       this.elem.removeEventListener('mouseup', this.mouseUpListenerInstance);
       this.elem.removeEventListener('keyup', this.keyUpListenerInstance);
-      this.elem.removeEventListener('keydown', this.keyDownListenerInstance);
+      // this.elem.removeEventListener('keydown', this.keyDownListenerInstance);
       this.elem.removeEventListener('paste', this.pasteListenerInstance);
       document.removeEventListener('selectionchange', this.selectListenerInstance);
     });
@@ -139,9 +140,10 @@ export default class Manipulator {
     }
   }
 
-  inputListener() {
+  inputListener(): void {
     this.checkFirstLine();
     const focusElement = utils.getFocusElement();
+    // eslint-disable-next-line no-console
     console.log(focusElement);
     // if (focusElement?.innerHTML) {
     //   focusElement.innerHTML = utils.clearHtml(focusElement.innerHTML);
@@ -149,13 +151,14 @@ export default class Manipulator {
     this.eventManager.fire('textChanged');
   }
 
-  mouseUpListener() {
+  mouseUpListener(): void {
     this.fireSelectionStatus();
   }
 
-  keyUpListener(e: KeyboardEvent) {
+  keyUpListener(e: KeyboardEvent): void {
     if (e.key === 'Enter') {
       const focusElement = utils.getFocusElement();
+      // eslint-disable-next-line no-console
       console.log(focusElement);
       if (focusElement?.tagName === 'DIV') {
         document.execCommand('formatBlock', false, 'p');
@@ -166,43 +169,43 @@ export default class Manipulator {
     }
   }
 
-  keyDownListener(e: KeyboardEvent) {
-    if (e.key === 'Enter') {
-      // const focusElement = utils.getFocusElement();
-      // console.log(focusElement);
-      // if (focusElement?.tagName === 'DIV') {
-      //   document.execCommand('formatBlock', false, 'p');
-      // }
-      // if (focusElement) {
-      //   e.preventDefault();
-      //   const p = document.createElement('p')
-      //   p.innerHTML = '<br/>';
-      //   // TODO remove empty element focucElement
-      //   if (focusElement.parentNode) {
-      //     if (focusElement.nextSibling) {
-      //       focusElement.parentNode.insertBefore(p, focusElement.nextSibling);
-      //     } else {
-      //       focusElement.parentNode.appendChild(p);
-      //     }
-      //     const s = window.getSelection();
-      //     const r = document.createRange();
-      //     r.setStart(p, 0);
-      //     r.setEnd(p, 0);
-      //     if (s) {
-      //       s.removeAllRanges();
-      //       s.addRange(r);
-      //     }
-      //     p.scrollIntoView({behavior: 'smooth', block: 'nearest'});
-      //   }
-      // }
-    }
-  }
+  // keyDownListener(e: KeyboardEvent) {
+  // if (e.key === 'Enter') {
+  // const focusElement = utils.getFocusElement();
+  // console.log(focusElement);
+  // if (focusElement?.tagName === 'DIV') {
+  //   document.execCommand('formatBlock', false, 'p');
+  // }
+  // if (focusElement) {
+  //   e.preventDefault();
+  //   const p = document.createElement('p')
+  //   p.innerHTML = '<br/>';
+  //   // TODO remove empty element focucElement
+  //   if (focusElement.parentNode) {
+  //     if (focusElement.nextSibling) {
+  //       focusElement.parentNode.insertBefore(p, focusElement.nextSibling);
+  //     } else {
+  //       focusElement.parentNode.appendChild(p);
+  //     }
+  //     const s = window.getSelection();
+  //     const r = document.createRange();
+  //     r.setStart(p, 0);
+  //     r.setEnd(p, 0);
+  //     if (s) {
+  //       s.removeAllRanges();
+  //       s.addRange(r);
+  //     }
+  //     p.scrollIntoView({behavior: 'smooth', block: 'nearest'});
+  //   }
+  // }
+  //   }
+  // }
 
-  selectListener() {
+  selectListener(): void {
     this.fireSelectionStatus(true);
   }
 
-  checkFirstLine() {
+  checkFirstLine(): void {
     if (this.elem.innerHTML) {
       const { firstChild } = this.elem;
       if (firstChild && firstChild.nodeName === '#text') {
@@ -220,7 +223,7 @@ export default class Manipulator {
         this.elem.append(children);
       }
     } else {
-      this.elem.innerHTML = emptyStrs[0];
+      [this.elem.innerHTML] = emptyStrs;
     }
   }
 }

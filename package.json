@@ -37,10 +37,11 @@
     "lint": "yarn lint:eslint && yarn lint:types && yarn lint:css",
     "lint:eslint": "eslint ./src",
     "lint:types": "tsc --noEmit",
-    "lint:css": "stylelint \"**/*.{css,scss}\" --cache --cache-location .cache/.stylelintcache",
+    "lint:css": "stylelint \"scss/**/*.{css,scss}\" --cache --cache-location .cache/.stylelintcache",
     "build": "rimraf lib && yarn build:types && yarn build:js && yarn build:bundle",
     "build:types": "tsc --emitDeclarationOnly",
     "build:js": "babel src --out-dir lib --extensions \".ts,.tsx\" --source-maps inline",
-    "build:bundle": "rimraf dist && yarn webpack"
+    "build:bundle": "rimraf dist && yarn webpack",
+    "test": "yarn lint"
   }
 }

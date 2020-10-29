@@ -25,7 +25,7 @@ module.exports = {
     library: 'Textarena',
     libraryExport: 'default',
     libraryTarget: 'umd',
-    path: path.resolve(__dirname, 'dist'),
+    path: path.resolve(__dirname, 'public'),
   },
   resolve: {
     extensions: ['.ts', '.js', '.json', 'scss'],

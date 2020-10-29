@@ -1,0 +1,18 @@
+language: node_js
+node_js:
+  - "12.18.3"
+
+install:
+  - npm i -g yarn && yarn
+
+before_script:
+  - yarn build
+
+deploy:
+  provider: pages
+  skip_cleanup: true
+  local_dir: public
+  github_token: $GITHUB_TOKEN  # Set in the settings page of your repository, as a secure variable
+  keep_history: true
+  on:
+    branch: master
