@@ -69,8 +69,7 @@ export default class HTMLLicker {
         a: ['https', 'mailto', 'tel'],
       },
       exclusiveFilter(frame) {
-        // return frame.tag === 'a' && !frame.text.trim();
-        return !frame.text.trim();
+        return frame.tag === 'a' && !frame.text.trim();
       },
       nonTextTags: ['style', 'script', 'textarea', 'option', 'noscript'],
       transformTags: {
