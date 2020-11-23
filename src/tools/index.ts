@@ -53,7 +53,7 @@ const tools: {[key: string]: ToolOptions} = {
   list: {
     name: 'list',
     title: 'Unordered list',
-    icon: '=',
+    icon: '≣',
     altKey: 'l',
     config: {
       style: 'insertunorderedlist',
