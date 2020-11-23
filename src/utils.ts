@@ -63,7 +63,7 @@ export function insert(html: string): void {
 }
 
 export function convertToHTML(html: string): string {
-  return `<p>${new HTMLLicker(html).xssFull().getHtml()}</p>`;
+  return new HTMLLicker(html).xssFull().getHtml();
 }
 
 export function clearHtml(html: string): string {
