@@ -27,7 +27,7 @@ const pasteListener = (event: ClipboardEvent): void => {
     const clearHtml = utils.clearHtml(html);
     utils.insert(clearHtml);
   } else if (types.includes('text/plain')) {
-    const text = clipboardData.getData('text');
+    const text = clipboardData.getData('text/plain');
     if (!text) {
       return;
     }
