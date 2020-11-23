@@ -73,6 +73,7 @@ export default class HTMLLicker {
         return frame.tag === 'a' && !frame.text.trim();
       },
       nonTextTags: ['style', 'script', 'textarea', 'option', 'noscript'],
+      textFilter: (text) => text.replace(/\n/g, '<br />'),
       transformTags: {
         strong: 'b',
       },
