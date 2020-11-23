@@ -14,7 +14,7 @@ export default class HTMLLicker {
   xssFull(): HTMLLicker {
     return new HTMLLicker(xss(
       this.html,
-      { },
+      { escapeHtml: (html) => html.replace(/\n/g, '<br />') },
     ));
   }
 
@@ -22,6 +22,7 @@ export default class HTMLLicker {
     return new HTMLLicker(xss(
       this.html,
       {
+        escapeHtml: (html) => html.replace(/\n/g, '<br />'),
         whiteList: {
           h1: [],
           h2: [],
