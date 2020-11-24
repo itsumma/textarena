@@ -69,3 +69,7 @@ export function convertToHTML(html: string): string {
 export function clearHtml(html: string): string {
   return new HTMLLicker(html).sanitize().getHtml();
 }
+
+export function isMac(): boolean {
+  return window.navigator.platform.includes('Mac');
+}

@@ -4,6 +4,7 @@ import ToolbarOptions from './interfaces/ToolbarOptions';
 import ToolOptions from './interfaces/ToolOptions';
 import tools from './tools';
 import * as utils from './utils';
+import { isMac } from './utils';
 
 type Tool = {
   elem: ElementHelper;
@@ -86,10 +87,9 @@ export default class Toolbar {
   }
 
   keyDownListener(e: KeyboardEvent): void {
-    const ctrlKey = window.navigator.platform.includes('Mac')
-      ? e.metaKey : e.ctrlKey;
-    const key = window.navigator.platform.includes('Mac')
-      ? 'Meta' : 'Control';
+    const MACOS = isMac();
+    const ctrlKey = MACOS ? e.metaKey : e.ctrlKey;
+    const key = MACOS ? 'Meta' : 'Control';
     if (e.altKey && this.altKeys[e.code]) {
       e.preventDefault();
       this.executeTool(this.altKeys[e.code]);
