@@ -86,9 +86,9 @@ export default class Toolbar {
   }
 
   keyDownListener(e: KeyboardEvent): void {
-    const ctrlKey = window.navigator.platform === 'MacIntel'
+    const ctrlKey = window.navigator.platform.includes('Mac')
       ? e.metaKey : e.ctrlKey;
-    const key = window.navigator.platform === 'MacIntel'
+    const key = window.navigator.platform.includes('Mac')
       ? 'Meta' : 'Control';
     if (e.altKey && this.altKeys[e.code]) {
       e.preventDefault();
