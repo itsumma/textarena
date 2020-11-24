@@ -142,9 +142,9 @@ export default class Manipulator {
 
   inputListener(): void {
     this.checkFirstLine();
-    const focusElement = utils.getFocusElement();
+    // const focusElement = utils.getFocusElement();
     // eslint-disable-next-line no-console
-    console.log(focusElement);
+    // console.log(focusElement);
     // if (focusElement?.innerHTML) {
     //   focusElement.innerHTML = utils.clearHtml(focusElement.innerHTML);
     // }
