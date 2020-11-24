@@ -3,7 +3,7 @@ import EventManager, { MediaEvent } from './EventManager';
 import CreatorBarOptions from './interfaces/CreatorBarOptions';
 import CreatorContext from './interfaces/CreatorContext';
 import CreatorOptions from './interfaces/CreatorOptions';
-import { getFocusElement } from './utils';
+import { getFocusElement, isMac } from './utils';
 
 type Creator = {
   elem: HTMLElement;
@@ -47,9 +47,11 @@ export default class CreatorBar {
     createButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 14 14">
     <path d="M8.05 5.8h4.625a1.125 1.125 0 0 1 0 2.25H8.05v4.625a1.125 1.125 0 0 1-2.25 0V8.05H1.125a1.125 1.125 0 0 1 0-2.25H5.8V1.125a1.125 1.125 0 0 1 2.25 0V5.8z"/>
     </svg>`;
+    const MACOS = isMac();
+    const altKey = MACOS ? '⌥' : 'Alt';
     const placeholder = document.createElement('DIV');
     placeholder.className = 'textarena-creator__placeholder';
-    placeholder.innerHTML = 'Введите текст или Ctrl+q';
+    placeholder.innerHTML = `Введите текст или ${altKey}-Q`;
     this.elem.appendChild(createButton);
     this.elem.appendChild(this.list);
     this.elem.appendChild(placeholder);
@@ -89,7 +91,7 @@ export default class CreatorBar {
   }
 
   keyDownListener(e: KeyboardEvent): void {
-    if (this.showed && !this.active && e.key === 'q' && e.ctrlKey) {
+    if (this.showed && !this.active && e.code === 'KeyQ' && e.altKey) {
       this.openList();
     }
     if (this.showed && this.active && e.key === 'Escape') {
