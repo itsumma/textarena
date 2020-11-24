@@ -86,15 +86,19 @@ export default class Toolbar {
   }
 
   keyDownListener(e: KeyboardEvent): void {
+    const ctrlKey = window.navigator.platform === 'MacIntel'
+      ? e.metaKey : e.ctrlKey;
+    const key = window.navigator.platform === 'MacIntel'
+      ? 'Meta' : 'Control';
     if (e.altKey && this.altKeys[e.code]) {
       e.preventDefault();
       this.executeTool(this.altKeys[e.code]);
     } else
-    if (e.ctrlKey && !e.altKey && this.controlKeys[e.code]) {
+    if (ctrlKey && !e.altKey && this.controlKeys[e.code]) {
       e.preventDefault();
       this.executeTool(this.controlKeys[e.code]);
     } else
-    if (!this.controlKeyShowed && this.showed && e.key === 'Control' && !e.altKey && !e.shiftKey) {
+    if (!this.controlKeyShowed && this.showed && e.key === key && !e.altKey && !e.shiftKey) {
       e.preventDefault();
       this.elem.addClass('textarena-toolbar_show-control-key');
       this.controlKeyShowed = true;
