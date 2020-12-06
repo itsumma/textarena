@@ -19,7 +19,9 @@ const pasteListener = (event: ClipboardEvent): void => {
     return;
   }
   const types: string[] = [...clipboardData.types || []];
-  if (types.includes('text/html')) {
+  if (types.includes('Files')) {
+    utils.insertImage(event);
+  } else if (types.includes('text/html')) {
     const html = clipboardData.getData('text/html');
     if (!html) {
       return;

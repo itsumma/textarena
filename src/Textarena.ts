@@ -31,6 +31,7 @@ const defaultOptions: TextarenaOptions = {
     enabled: true,
     creators: [
       'hr',
+      'img',
     ],
   },
 };

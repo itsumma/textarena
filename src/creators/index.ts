@@ -1,5 +1,6 @@
 import CreatorOptions from '~/interfaces/CreatorOptions';
 import hr from './hr';
+import image from './image';
 
 const creators: {[key: string]: CreatorOptions} = {
   hr: {
@@ -8,6 +9,13 @@ const creators: {[key: string]: CreatorOptions} = {
     icon: '<b>—</b>',
     controlKey: 'h',
     processor: hr,
+  },
+  img: {
+    name: 'image',
+    title: 'Add image',
+    icon: '🌄',
+    controlKey: 'g',
+    processor: image,
   },
 };
 
