@@ -4,16 +4,25 @@ import CreatorBarOptions from './interfaces/CreatorBarOptions';
 import CreatorContext from './interfaces/CreatorContext';
 import CreatorOptions from './interfaces/CreatorOptions';
 import { getFocusElement, isMac } from './utils';
+import * as utils from './utils';
 
 type Creator = {
   elem: HTMLElement;
   options: CreatorOptions;
 };
 
+type KeysForTool = {
+  [key: string]: CreatorOptions;
+};
+
 export default class CreatorBar {
   elem: HTMLElement;
 
   list: HTMLElement;
+
+  controlKeys: KeysForTool = {};
+
+  altKeys: KeysForTool = {};
 
   creators: Creator[] = [];
 
@@ -93,9 +102,11 @@ export default class CreatorBar {
   keyDownListener(e: KeyboardEvent): void {
     if (this.showed && !this.active && e.code === 'KeyQ' && e.altKey) {
       this.openList();
+      return;
     }
     if (this.showed && this.active && e.key === 'Escape') {
       this.closeList();
+      return;
     }
     if (this.showed && this.active && e.key === 'ArrowRight') {
       const activeCreator = this.creators.find((some) => some.elem === document.activeElement);
@@ -109,6 +120,7 @@ export default class CreatorBar {
       } else if (this.creators.length > 0) {
         this.creators[0].elem.focus();
       }
+      return;
     }
     if (this.showed && this.active && e.key === 'ArrowLeft') {
       const activeCreator = this.creators.find((some) => some.elem === document.activeElement);
@@ -122,6 +134,18 @@ export default class CreatorBar {
       } else if (this.creators.length > 0) {
         this.creators[this.creators.length - 1].elem.focus();
       }
+      return;
+    }
+    const MACOS = isMac();
+    const ctrlKey = MACOS ? e.metaKey : e.ctrlKey;
+    if (this.showed && e.altKey && this.altKeys[e.code]) {
+      e.preventDefault();
+      const opts = this.altKeys[e.code];
+      opts.processor(this.getContext(), opts.config || {});
+    } else if (this.showed && ctrlKey && !e.altKey && this.controlKeys[e.code]) {
+      e.preventDefault();
+      const opts = this.controlKeys[e.code];
+      opts.processor(this.getContext(), opts.config || {});
     }
   }
 
@@ -145,6 +169,11 @@ export default class CreatorBar {
           }
         } else {
           opts = creatorOptions;
+        }
+        if (opts.controlKey) {
+          this.controlKeys[utils.getCodeForKey(opts.controlKey)] = opts;
+        } else if (opts.altKey) {
+          this.altKeys[utils.getCodeForKey(opts.altKey)] = opts;
         }
         const elem = document.createElement('BUTTON');
         elem.className = 'textarena-creator__item';
