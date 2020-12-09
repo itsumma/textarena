@@ -160,8 +160,6 @@ export default class Manipulator {
   keyUpListener(e: KeyboardEvent): void {
     if (e.key === 'Enter') {
       const focusElement = utils.getFocusElement();
-      // eslint-disable-next-line no-console
-      console.log(focusElement);
       if (focusElement?.tagName === 'DIV') {
         document.execCommand('formatBlock', false, 'p');
       }

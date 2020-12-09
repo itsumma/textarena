@@ -8,8 +8,6 @@ export default function link(): void {
   }
   const value = prompt('Введите ваш URL', url);
   if (value === null) {
-    // eslint-disable-next-line no-console
-    console.log('null');
     return;
   }
   if (focusElement && focusElement.tagName === 'A') {

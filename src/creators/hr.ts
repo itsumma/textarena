@@ -6,8 +6,6 @@ export default function hr(context: CreatorContext): void {
   elem.className = 'textarena__hr';
   const hrElement = document.createElement('HR');
   elem.appendChild(hrElement);
-  // eslint-disable-next-line no-console
-  console.log(context);
   if (context.focusElement) {
     const nextElement = context.focusElement.nextElementSibling;
     if (nextElement) {
