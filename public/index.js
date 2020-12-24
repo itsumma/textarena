@@ -1,4 +1,19 @@
 (function (d, lc) {
+  function debounce(func, wait, immediate) {
+    let timeout;
+    return function() {
+      const context = this, args = arguments;
+      const later = function() {
+        timeout = null;
+        if (!immediate) func.apply(context, args);
+      };
+      const callNow = immediate && !timeout;
+      clearTimeout(timeout);
+      timeout = setTimeout(later, wait);
+      if (callNow) func.apply(context, args);
+    };
+  };
+
   const elem = document.getElementById('textarena-container');
 
   if (elem && (typeof Textarena !== 'undefined')) {
@@ -15,16 +30,17 @@
       };
     }
     const htmlElem = document.getElementById('html');
+    const onChange = debounce((data) => {
+      localStorage.setItem('data', JSON.stringify(data));
+      if (htmlElem) {
+        htmlElem.innerText = data.content;
+      }
+    }, 500);
     const textarena = new Textarena(
       elem,
       {
         editable: true,
-        onChange: (data) => {
-          localStorage.setItem('data', JSON.stringify(data));
-          if (htmlElem) {
-            htmlElem.innerText = data.content;
-          }
-        },
+        onChange,
         initData,
         // toolbar: {
         //   tools: [
