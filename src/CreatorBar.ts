@@ -225,4 +225,8 @@ export default class CreatorBar {
     this.elem.className = 'textarena-creator';
     this.root.focus();
   }
+
+  insertImage(src: string): void {
+    return utils.insertImage(src, this.getContext());
+  }
 }

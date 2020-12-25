@@ -23,7 +23,6 @@ export default function image(context: CreatorContext): void {
       focusElement.setAttribute('src', value);
     }
   } else if (value) {
-    insertImage(value);
-    // document.execCommand('insertImage', false, value);
+    insertImage(value, context);
   }
 }

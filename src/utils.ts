@@ -1,3 +1,4 @@
+import CreatorContext from 'interfaces/CreatorContext';
 import HTMLLicker from './HTMLLicker';
 
 export function getFocusElement(): HTMLElement | undefined {
@@ -74,6 +75,19 @@ export function isMac(): boolean {
   return window.navigator.platform.includes('Mac');
 }
 
-export function insertImage(src: string): void {
-  document.execCommand('insertImage', false, src);
+export function insertImage(value: string, context: CreatorContext): void {
+  const p = document.createElement('p');
+  const figure = document.createElement('figure');
+  p.appendChild(figure);
+  const img = document.createElement('img');
+  img.setAttribute('src', value);
+  figure.appendChild(img);
+  if (context.focusElement) {
+    const nextElement = context.focusElement.nextElementSibling;
+    if (nextElement) {
+      context.focusElement.replaceWith(p);
+    } else if (context.focusElement.parentNode) {
+      context.focusElement.parentNode.insertBefore(p, context.focusElement);
+    }
+  }
 }

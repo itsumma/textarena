@@ -9,4 +9,13 @@
     border: none;
     outline: none;
   }
+
+  & figure {
+    overflow: auto;
+    resize: both;
+
+    & img {
+      max-width: 100%;
+    }
+  }
 }

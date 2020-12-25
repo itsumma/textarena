@@ -27,7 +27,8 @@ const pasteListener = (event: ClipboardEvent): void => {
       if (e === null || !e.target || !e.target.result || typeof e.target.result !== 'string') {
         return;
       }
-      utils.insertImage(e.target.result);
+      const focusElement = utils.getFocusElement();
+      utils.insertImage(e.target.result, { focusElement });
     };
     reader.readAsDataURL(file);
   } else if (types.includes('text/html')) {
