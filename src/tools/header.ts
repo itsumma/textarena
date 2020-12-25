@@ -1,5 +1,5 @@
-import { ToolOptionsType } from '~/interfaces/ToolOptions';
-import Toolbar from '~/Toolbar';
+import { ToolOptionsType } from 'interfaces/ToolOptions';
+import Toolbar from 'Toolbar';
 import * as utils from '../utils';
 
 export default function header(toolbar: Toolbar, config: ToolOptionsType): void {

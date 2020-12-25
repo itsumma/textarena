@@ -20,7 +20,16 @@ const pasteListener = (event: ClipboardEvent): void => {
   }
   const types: string[] = [...clipboardData.types || []];
   if (types.includes('Files')) {
-    utils.insertImage(event);
+    if (event.clipboardData === null || !event.clipboardData.files) return;
+    const file = event.clipboardData.files[0];
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      if (e === null || !e.target || !e.target.result || typeof e.target.result !== 'string') {
+        return;
+      }
+      utils.insertImage(e.target.result);
+    };
+    reader.readAsDataURL(file);
   } else if (types.includes('text/html')) {
     const html = clipboardData.getData('text/html');
     if (!html) {

@@ -41,7 +41,7 @@
     "build": "rimraf lib && yarn build:types && yarn build:js && yarn build:bundle",
     "build:types": "tsc --emitDeclarationOnly",
     "build:js": "babel src --out-dir lib --extensions \".ts,.tsx\" --source-maps inline",
-    "build:bundle": "rimraf dist && yarn webpack",
+    "build:bundle": "yarn webpack",
     "test": "yarn lint"
   }
 }

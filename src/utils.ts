@@ -74,15 +74,6 @@ export function isMac(): boolean {
   return window.navigator.platform.includes('Mac');
 }
 
-export function insertImage(e: ClipboardEvent): void {
-  if (e.clipboardData === null || !e.clipboardData.files) return;
-  const file = e.clipboardData.files[0];
-  const reader = new FileReader();
-  reader.onload = (event) => {
-    if (event === null || !event.target || !event.target.result || typeof event.target.result !== 'string') {
-      return;
-    }
-    document.execCommand('insertImage', false, event.target.result);
-  };
-  reader.readAsDataURL(file);
+export function insertImage(src: string): void {
+  document.execCommand('insertImage', false, src);
 }

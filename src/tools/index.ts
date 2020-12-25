@@ -1,4 +1,4 @@
-import ToolOptions from '~/interfaces/ToolOptions';
+import ToolOptions from 'interfaces/ToolOptions';
 import style from './style';
 import header from './header';
 import foreColor from './foreColor';

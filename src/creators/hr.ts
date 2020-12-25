@@ -1,4 +1,4 @@
-import CreatorContext from '~/interfaces/CreatorContext';
+import CreatorContext from 'interfaces/CreatorContext';
 
 export default function hr(context: CreatorContext): void {
   const elem = document.createElement('p');

@@ -1,4 +1,5 @@
-import CreatorContext from '~/interfaces/CreatorContext';
+import CreatorContext from 'interfaces/CreatorContext';
+import { insertImage } from 'utils';
 
 export default function image(context: CreatorContext): void {
   const { focusElement } = context;
@@ -22,6 +23,7 @@ export default function image(context: CreatorContext): void {
       focusElement.setAttribute('src', value);
     }
   } else if (value) {
-    document.execCommand('insertImage', false, value);
+    insertImage(value);
+    // document.execCommand('insertImage', false, value);
   }
 }

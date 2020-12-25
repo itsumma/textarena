@@ -1,4 +1,4 @@
-import CreatorOptions from '~/interfaces/CreatorOptions';
+import CreatorOptions from 'interfaces/CreatorOptions';
 import hr from './hr';
 import image from './image';
 
