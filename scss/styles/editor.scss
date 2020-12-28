@@ -13,6 +13,7 @@
   & figure {
     overflow: auto;
     resize: both;
+    border: 1px solid black;
 
     & img {
       max-width: 100%;
