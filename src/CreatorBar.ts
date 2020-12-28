@@ -183,6 +183,7 @@ export default class CreatorBar {
         elem.onclick = (e) => {
           e.preventDefault();
           opts.processor(this.getContext(), opts.config || {});
+          this.eventManager.fire('textChanged');
         };
         if (opts.icon) {
           elem.innerHTML = opts.icon;
