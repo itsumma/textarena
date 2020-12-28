@@ -1,3 +1,4 @@
+import { observeHTMLElement } from 'utils';
 import TextarenaData from './interfaces/TextarenaData';
 import TextarenaOptions from './interfaces/TextarenaOptions';
 import MetaData from './interfaces/MetaData';
@@ -103,6 +104,7 @@ class Textarena {
   setData(data: TextarenaData): void {
     if (typeof data.content === 'string') {
       this.elem.innerHTML = (new HTMLLicker(data.content)).prepareHTML().getHtml();
+      this.processElements();
       this.manipulator.checkFirstLine();
     }
     if (data.meta) {
@@ -132,6 +134,14 @@ class Textarena {
 
   setCreatorBarOptions(creatorBarOptions: CreatorBarOptions): void {
     this.creatorBar.setOptions(creatorBarOptions);
+  }
+
+  processElements(): void {
+    const figures = document.querySelectorAll('figure');
+    for (let i = 0; i < figures.length; i += 1) {
+      const figure = figures[i];
+      observeHTMLElement(figure, this.eventManager);
+    }
   }
 }
 

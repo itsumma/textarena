@@ -152,6 +152,7 @@ export default class CreatorBar {
   getContext(): CreatorContext {
     return {
       focusElement: this.currentFocusElement,
+      eventManager: this.eventManager,
     };
   }
 
@@ -226,7 +227,7 @@ export default class CreatorBar {
     this.root.focus();
   }
 
-  insertImage(src: string): void {
+  insertImage(src: string): HTMLElement {
     return utils.insertImage(src, this.getContext());
   }
 }

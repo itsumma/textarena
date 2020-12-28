@@ -1,3 +1,4 @@
+import EventManager from 'EventManager';
 import CreatorContext from 'interfaces/CreatorContext';
 import HTMLLicker from './HTMLLicker';
 
@@ -75,7 +76,19 @@ export function isMac(): boolean {
   return window.navigator.platform.includes('Mac');
 }
 
-export function insertImage(value: string, context: CreatorContext): void {
+export function observeHTMLElement(figure: HTMLElement, eventManager: EventManager): void {
+  const observer = new MutationObserver((mutationsList: MutationRecord[]) => {
+    for (let i = 0; i < mutationsList.length; i += 1) {
+      const mutation = mutationsList[i];
+      if (mutation.type === 'attributes') {
+        eventManager.fire('textChanged');
+      }
+    }
+  });
+  observer.observe(figure, { attributes: true });
+}
+
+export function insertImage(value: string, context: CreatorContext): HTMLElement {
   const p = document.createElement('p');
   const figure = document.createElement('figure');
   p.appendChild(figure);
@@ -90,4 +103,8 @@ export function insertImage(value: string, context: CreatorContext): void {
       context.focusElement.parentNode.insertBefore(p, context.focusElement);
     }
   }
+  if (context.eventManager) {
+    observeHTMLElement(figure, context.eventManager);
+  }
+  return figure;
 }

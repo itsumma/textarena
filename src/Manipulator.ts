@@ -1,3 +1,4 @@
+import CreatorContext from 'interfaces/CreatorContext';
 import EventManager from './EventManager';
 
 // import ChangeDataListener from "./interfaces/ChangeHandler";
@@ -11,41 +12,6 @@ enum SelectionStatus {
   Selected,
   Unselected,
 }
-
-const pasteListener = (event: ClipboardEvent): void => {
-  event.preventDefault();
-  const { clipboardData } = event;
-  if (!clipboardData) {
-    return;
-  }
-  const types: string[] = [...clipboardData.types || []];
-  if (types.includes('Files')) {
-    if (event.clipboardData === null || !event.clipboardData.files) return;
-    const file = event.clipboardData.files[0];
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      if (e === null || !e.target || !e.target.result || typeof e.target.result !== 'string') {
-        return;
-      }
-      const focusElement = utils.getFocusElement();
-      utils.insertImage(e.target.result, { focusElement });
-    };
-    reader.readAsDataURL(file);
-  } else if (types.includes('text/html')) {
-    const html = clipboardData.getData('text/html');
-    if (!html) {
-      return;
-    }
-    const clearHtml = utils.clearHtml(html);
-    utils.insert(clearHtml);
-  } else if (types.includes('text/plain')) {
-    const text = clipboardData.getData('text/plain');
-    if (!text) {
-      return;
-    }
-    utils.insert(utils.convertToHTML(text));
-  }
-};
 
 export default class Manipulator {
   inputListenerInstance: (() => void);
@@ -72,7 +38,7 @@ export default class Manipulator {
     this.keyUpListenerInstance = this.keyUpListener.bind(this);
     // this.keyDownListenerInstance = this.keyDownListener.bind(this);
     this.selectListenerInstance = this.selectListener.bind(this);
-    this.pasteListenerInstance = pasteListener.bind(this);
+    this.pasteListenerInstance = this.pasteListener.bind(this);
     this.eventManager.subscribe('turnOn', () => {
       this.elem.addEventListener('input', this.inputListenerInstance, false);
       this.elem.addEventListener('mouseup', this.mouseUpListenerInstance, false);
@@ -235,5 +201,48 @@ export default class Manipulator {
     } else {
       [this.elem.innerHTML] = emptyStrs;
     }
+  }
+
+  pasteListener(event: ClipboardEvent): void {
+    event.preventDefault();
+    const { clipboardData } = event;
+    if (!clipboardData) {
+      return;
+    }
+    const types: string[] = [...clipboardData.types || []];
+    if (types.includes('Files')) {
+      if (event.clipboardData === null || !event.clipboardData.files) return;
+      const file = event.clipboardData.files[0];
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        if (e === null || !e.target || !e.target.result || typeof e.target.result !== 'string') {
+          return;
+        }
+        utils.insertImage(e.target.result, this.getContext());
+        this.inputListener();
+      };
+      reader.readAsDataURL(file);
+    } else if (types.includes('text/html')) {
+      const html = clipboardData.getData('text/html');
+      if (!html) {
+        return;
+      }
+      const clearHtml = utils.clearHtml(html);
+      utils.insert(clearHtml);
+    } else if (types.includes('text/plain')) {
+      const text = clipboardData.getData('text/plain');
+      if (!text) {
+        return;
+      }
+      utils.insert(utils.convertToHTML(text));
+    }
+    this.inputListener();
+  }
+
+  getContext(): CreatorContext {
+    return {
+      focusElement: utils.getFocusElement(),
+      eventManager: this.eventManager,
+    };
   }
 }
