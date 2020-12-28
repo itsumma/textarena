@@ -90,18 +90,16 @@ export function observeHTMLElement(figure: HTMLElement, eventManager: EventManag
 }
 
 export function insertImage(value: string, context: CreatorContext): HTMLElement {
-  const p = document.createElement('p');
   const figure = document.createElement(IMAGE_WRAPPER);
-  p.appendChild(figure);
   const img = document.createElement('img');
   img.setAttribute('src', value);
   figure.appendChild(img);
   if (context.focusElement) {
     const nextElement = context.focusElement.nextElementSibling;
     if (nextElement) {
-      context.focusElement.replaceWith(p);
+      context.focusElement.replaceWith(figure);
     } else if (context.focusElement.parentNode) {
-      context.focusElement.parentNode.insertBefore(p, context.focusElement);
+      context.focusElement.parentNode.insertBefore(figure, context.focusElement);
     }
   }
   if (context.eventManager) {
