@@ -1,3 +1,4 @@
+import { IMAGE_WRAPPER } from 'common/constants';
 import EventManager from 'EventManager';
 import CreatorContext from 'interfaces/CreatorContext';
 import HTMLLicker from './HTMLLicker';
@@ -90,7 +91,7 @@ export function observeHTMLElement(figure: HTMLElement, eventManager: EventManag
 
 export function insertImage(value: string, context: CreatorContext): HTMLElement {
   const p = document.createElement('p');
-  const figure = document.createElement('figure');
+  const figure = document.createElement(IMAGE_WRAPPER);
   p.appendChild(figure);
   const img = document.createElement('img');
   img.setAttribute('src', value);
