@@ -138,14 +138,16 @@ export default class CreatorBar {
     }
     const MACOS = isMac();
     const ctrlKey = MACOS ? e.metaKey : e.ctrlKey;
+    let opts;
     if (this.showed && e.altKey && this.altKeys[e.code]) {
-      e.preventDefault();
-      const opts = this.altKeys[e.code];
-      opts.processor(this.getContext(), opts.config || {});
+      opts = this.altKeys[e.code];
     } else if (this.showed && ctrlKey && !e.altKey && this.controlKeys[e.code]) {
+      opts = this.controlKeys[e.code];
+    }
+    if (opts) {
       e.preventDefault();
-      const opts = this.controlKeys[e.code];
       opts.processor(this.getContext(), opts.config || {});
+      this.eventManager.fire('textChanged');
     }
   }
 
