@@ -138,7 +138,7 @@ export default class Manipulator {
       }
       if (focusElement?.tagName === IMAGE_WRAPPER) {
         document.execCommand('delete');
-        document.execCommand('insertHTML', false, '<p><br /></p>');
+        document.execCommand('insertHTML', false, emptyStrs[0]);
       }
     }
     if (!this.fireSelectionStatus()) {
