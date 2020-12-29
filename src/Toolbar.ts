@@ -1,3 +1,4 @@
+import { IMAGE_WRAPPER } from 'common/constants';
 import ElementHelper from './ElementHelper';
 import EventManager from './EventManager';
 import ToolbarOptions from './interfaces/ToolbarOptions';
@@ -199,7 +200,7 @@ export default class Toolbar {
       return;
     }
     const focusElement = utils.getFocusElement();
-    if (!focusElement) {
+    if (!focusElement || focusElement.tagName === IMAGE_WRAPPER) {
       return;
     }
     const rootElement = focusElement.closest('.textarena-editor');

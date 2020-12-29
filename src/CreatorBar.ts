@@ -1,3 +1,4 @@
+import { IMAGE_WRAPPER } from 'common/constants';
 import creators from './creators';
 import EventManager, { MediaEvent } from './EventManager';
 import CreatorBarOptions from './interfaces/CreatorBarOptions';
@@ -79,7 +80,9 @@ export default class CreatorBar {
     });
     this.eventManager.subscribe('changeFocusElement', (event?: string | MediaEvent) => {
       if (typeof event === 'object' && event.target) {
-        if (event.target.textContent === '') {
+        if (event.target.tagName === IMAGE_WRAPPER) {
+          this.hide();
+        } else if (event.target.textContent === '') {
           this.currentFocusElement = event.target;
           this.show(event.target);
         } else {
