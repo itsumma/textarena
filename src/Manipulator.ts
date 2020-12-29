@@ -1,4 +1,5 @@
 import CreatorContext from 'interfaces/CreatorContext';
+import { IMAGE_WRAPPER } from 'common/constants';
 import EventManager from './EventManager';
 
 // import ChangeDataListener from "./interfaces/ChangeHandler";
@@ -71,11 +72,7 @@ export default class Manipulator {
     }
     if (s.isCollapsed) {
       if (this.lastFocusElement !== focucElement) {
-        this.eventManager.fire({
-          name: 'changeFocusElement',
-          target: focucElement,
-        });
-        this.lastFocusElement = focucElement;
+        this.processFocusElementChange(focucElement);
       }
     }
     if (this.lastSelectionStatus === SelectionStatus.Selected
@@ -138,6 +135,10 @@ export default class Manipulator {
       const focusElement = utils.getFocusElement();
       if (focusElement?.tagName === 'DIV') {
         document.execCommand('formatBlock', false, 'p');
+      }
+      if (focusElement?.tagName === IMAGE_WRAPPER) {
+        document.execCommand('delete');
+        document.execCommand('insertHTML', false, '<p><br /></p>');
       }
     }
     if (!this.fireSelectionStatus()) {
@@ -244,5 +245,13 @@ export default class Manipulator {
       focusElement: utils.getFocusElement(),
       eventManager: this.eventManager,
     };
+  }
+
+  processFocusElementChange(focusElement: HTMLElement): void {
+    this.eventManager.fire({
+      name: 'changeFocusElement',
+      target: focusElement,
+    });
+    this.lastFocusElement = focusElement;
   }
 }
