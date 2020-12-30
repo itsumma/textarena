@@ -92,6 +92,8 @@ export default class Toolbar {
     const ctrlKey = MACOS ? e.metaKey : e.ctrlKey;
     const key = MACOS ? 'Meta' : 'Control';
     if (e.code === 'Tab' && !e.altKey && !ctrlKey) {
+      const el = utils.getFocusElement();
+      if (utils.isElementParent(el, ['UL', 'OL'], 3)) return;
       e.preventDefault();
       document.execCommand('indent');
     }

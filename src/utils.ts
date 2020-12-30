@@ -107,3 +107,17 @@ export function insertImage(value: string, context: CreatorContext): HTMLElement
   }
   return figure;
 }
+
+export function isElementParent(el: HTMLElement | undefined, tags: string[], times = 1): boolean {
+  let result: HTMLElement | undefined = el;
+  for (let i = 0; i < times; i += 1) {
+    if (!result || !result.parentElement) return false;
+    if (tags.includes(result.parentElement.tagName)) {
+      result = result.parentElement;
+    } else {
+      return false;
+    }
+  }
+  if (result) return true;
+  return false;
+}
