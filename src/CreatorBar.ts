@@ -67,28 +67,14 @@ export default class CreatorBar {
     this.elem.appendChild(placeholder);
 
     this.eventManager.subscribe('textChanged', () => {
-      const focucElement = getFocusElement();
-      if (focucElement) {
-        if (!focucElement?.textContent) {
-          this.currentFocusElement = focucElement;
-          this.show(focucElement);
-        } else {
-          this.currentFocusElement = undefined;
-          this.hide();
-        }
+      const focusElement = getFocusElement();
+      if (focusElement) {
+        this.handleElementChange(focusElement);
       }
     });
     this.eventManager.subscribe('changeFocusElement', (event?: string | MediaEvent) => {
       if (typeof event === 'object' && event.target) {
-        if (event.target.tagName === IMAGE_WRAPPER) {
-          this.hide();
-        } else if (event.target.textContent === '') {
-          this.currentFocusElement = event.target;
-          this.show(event.target);
-        } else {
-          this.currentFocusElement = undefined;
-          this.hide();
-        }
+        this.handleElementChange(event.target);
       }
     });
     this.keyDownListenerInstance = this.keyDownListener.bind(this);
@@ -100,6 +86,19 @@ export default class CreatorBar {
       this.root.removeEventListener('keydown', this.keyDownListenerInstance);
       this.elem.removeEventListener('keydown', this.keyDownListenerInstance);
     });
+  }
+
+  handleElementChange(element: HTMLElement): void {
+    if (!element) return;
+    if ([IMAGE_WRAPPER, 'LI'].includes(element.tagName)) {
+      this.hide();
+    } else if (!element.textContent) {
+      this.currentFocusElement = element;
+      this.show(element);
+    } else {
+      this.currentFocusElement = undefined;
+      this.hide();
+    }
   }
 
   keyDownListener(e: KeyboardEvent): void {
