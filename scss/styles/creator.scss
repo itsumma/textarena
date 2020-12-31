@@ -79,6 +79,7 @@
 
   &__item {
     display: flex;
+    position: relative;
     width: 1.8rem;
     height: 1.8rem;
     border: 1px solid #888;
@@ -107,5 +108,20 @@
 
   &_active &__item {
     margin-right: 0.5rem;
+  }
+
+  &__control-key,
+  &__alt-key { @include key; }
+
+  &_show-control-key {
+    .textarena-creator__control-key {
+      display: block;
+    }
+  }
+
+  &_show-alt-key {
+    .textarena-creator__alt-key {
+      display: block;
+    }
   }
 }

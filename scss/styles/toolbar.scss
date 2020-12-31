@@ -65,35 +65,8 @@
     }
   }
 
-  &__control-key {
-    position: absolute;
-    left: 50%;
-    top: -17%;
-    display: none;
-    width: 16px;
-    height: 16px;
-    background-color: #333;
-    text-align: center;
-    line-height: 16px;
-    color: #fff;
-    border-radius: 5px;
-    border: 1px solid #999;
-  }
-
-  &__alt-key {
-    position: absolute;
-    left: 50%;
-    top: -17%;
-    display: none;
-    width: 16px;
-    height: 16px;
-    background-color: #333;
-    text-align: center;
-    line-height: 16px;
-    color: #fff;
-    border-radius: 5px;
-    border: 1px solid #999;
-  }
+  &__control-key,
+  &__alt-key { @include key; }
 
   &_show-control-key {
     .textarena-toolbar__control-key {

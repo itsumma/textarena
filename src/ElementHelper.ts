@@ -9,6 +9,12 @@ class ElementHelper {
     this.elem = document.createElement(tagName);
   }
 
+  setClass(className: string): ElementHelper {
+    this.elem.className = className;
+    this.classes = [className];
+    return this;
+  }
+
   addClass(className: string): ElementHelper {
     if (!this.classes.includes(className)) {
       this.classes.push(className);
@@ -51,6 +57,24 @@ class ElementHelper {
 
   onClick(handler: ((this: GlobalEventHandlers, ev: MouseEvent) => void) | null): ElementHelper {
     this.elem.onclick = handler;
+    return this;
+  }
+
+  addEventListener<K extends keyof HTMLElementEventMap>(
+    type: K,
+    listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any,
+    options?: boolean | AddEventListenerOptions,
+  ) : ElementHelper {
+    this.elem.addEventListener(type, listener, options);
+    return this;
+  }
+
+  removeEventListener<K extends keyof HTMLElementEventMap>(
+    type: K,
+    listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any,
+    options?: boolean | EventListenerOptions,
+  ) : ElementHelper {
+    this.elem.removeEventListener(type, listener, options);
     return this;
   }
 }
