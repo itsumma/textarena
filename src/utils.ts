@@ -1,4 +1,5 @@
 import { IMAGE_WRAPPER } from 'common/constants';
+import ElementHelper from 'ElementHelper';
 import EventManager from 'EventManager';
 import CreatorContext from 'interfaces/CreatorContext';
 import HTMLLicker from './HTMLLicker';
@@ -16,10 +17,11 @@ export function getFocusElement(): HTMLElement | undefined {
 }
 
 export function
-isDescendant(parent: HTMLElement | Node, child: HTMLElement | Node): boolean {
+isDescendant(parent: HTMLElement | Node | ElementHelper, child: HTMLElement | Node): boolean {
+  const parentNode = parent instanceof ElementHelper ? parent.getElem() : parent;
   let node = child.parentNode;
   while (node !== null) {
-    if (node === parent) {
+    if (node === parentNode) {
       return true;
     }
     node = node.parentNode;

@@ -1,7 +1,7 @@
 import CreatorContext from 'interfaces/CreatorContext';
 import { IMAGE_WRAPPER } from 'common/constants';
+import ElementHelper from 'ElementHelper';
 import EventManager from './EventManager';
-
 // import ChangeDataListener from "./interfaces/ChangeHandler";
 import { isDescendant } from './utils';
 import * as utils from './utils';
@@ -33,7 +33,7 @@ export default class Manipulator {
 
   lastFocusElement: HTMLElement | undefined;
 
-  constructor(private elem: HTMLElement, private eventManager: EventManager) {
+  constructor(private elem: ElementHelper, private eventManager: EventManager) {
     this.inputListenerInstance = this.inputListener.bind(this);
     this.mouseUpListenerInstance = this.mouseUpListener.bind(this);
     this.keyUpListenerInstance = this.keyUpListener.bind(this);
@@ -183,24 +183,27 @@ export default class Manipulator {
   }
 
   checkFirstLine(): void {
-    if (this.elem.innerHTML) {
-      const { firstChild } = this.elem;
+    const {
+      innerHTML,
+      firstChild,
+    } = this.elem.getElem();
+    if (innerHTML) {
       if (firstChild && firstChild.nodeName === '#text') {
         const newFirstChild = document.createElement('p');
         newFirstChild.append(firstChild.cloneNode());
 
         const range = document.createRange();
-        range.selectNodeContents(this.elem);
+        range.selectNodeContents(this.elem.getElem());
         range.setStartAfter(firstChild);
 
         const children = range.extractContents();
         children.prepend(newFirstChild);
 
-        this.elem.innerHTML = '';
+        this.elem.setInnerHTML('');
         this.elem.append(children);
       }
     } else {
-      [this.elem.innerHTML] = emptyStrs;
+      this.elem.setInnerHTML(emptyStrs[0]);
     }
   }
 

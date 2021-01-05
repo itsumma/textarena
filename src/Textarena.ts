@@ -1,4 +1,5 @@
 import { observeHTMLElement } from 'utils';
+import ElementHelper from 'ElementHelper';
 import TextarenaData from './interfaces/TextarenaData';
 import TextarenaOptions from './interfaces/TextarenaOptions';
 import MetaData from './interfaces/MetaData';
@@ -38,7 +39,7 @@ const defaultOptions: TextarenaOptions = {
 };
 
 class Textarena {
-  elem: HTMLElement;
+  elem: ElementHelper;
 
   eventManager: EventManager;
 
@@ -53,8 +54,7 @@ class Textarena {
   meta: MetaData = {};
 
   constructor(private container: HTMLElement, options?: TextarenaOptions) {
-    this.elem = document.createElement('DIV');
-    this.elem.className = 'textarena-editor';
+    this.elem = new ElementHelper('DIV', 'textarena-editor');
     this.eventManager = new EventManager();
     this.eventManager.subscribe('textChanged', () => {
       if (this.options.onChange) {
@@ -67,7 +67,7 @@ class Textarena {
     this.container.innerHTML = '';
     this.container.className = 'textarena-container';
     container.appendChild(this.creatorBar.getElem());
-    container.appendChild(this.elem);
+    container.appendChild(this.elem.getElem());
     container.appendChild(this.toolbar.getElem());
     this.setOptions(options ? { ...defaultOptions, ...options } : defaultOptions);
   }
@@ -96,14 +96,14 @@ class Textarena {
 
   getData(): TextarenaData {
     return {
-      content: this.elem.innerHTML,
+      content: this.elem.getInnerHTML(),
       meta: this.meta,
     };
   }
 
   setData(data: TextarenaData): void {
     if (typeof data.content === 'string') {
-      this.elem.innerHTML = (new HTMLLicker(data.content)).prepareHTML().getHtml();
+      this.elem.setInnerHTML((new HTMLLicker(data.content)).prepareHTML().getHtml());
       this.processElements();
       this.manipulator.checkFirstLine();
     }
@@ -120,7 +120,7 @@ class Textarena {
         this.eventManager.fire('turnOff');
       }
       this.options.editable = editable;
-      this.elem.contentEditable = editable ? 'true' : 'false';
+      this.elem.setContentEditable(editable);
     }
   }
 

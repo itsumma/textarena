@@ -5,8 +5,14 @@ class ElementHelper {
 
   private classes: string[] = [];
 
-  constructor(tagName: string) {
+  constructor(tagName: string, className = '', innerHtml = '') {
     this.elem = document.createElement(tagName);
+    if (className) {
+      this.setClass(className);
+    }
+    if (innerHtml) {
+      this.setInnerHTML(innerHtml);
+    }
   }
 
   setClass(className: string): ElementHelper {
@@ -37,6 +43,11 @@ class ElementHelper {
     return this;
   }
 
+  append(node: Node | ElementHelper): ElementHelper {
+    this.elem.append(node instanceof ElementHelper ? node.getElem() : node);
+    return this;
+  }
+
   css(styles: CSSStyles): ElementHelper {
     const k = 'color';
     this.elem.style[k] = 's';
@@ -50,8 +61,17 @@ class ElementHelper {
     return this.elem;
   }
 
+  getInnerHTML(): string {
+    return this.elem.innerHTML;
+  }
+
   setInnerHTML(html: string): ElementHelper {
     this.elem.innerHTML = html;
+    return this;
+  }
+
+  setContentEditable(enable: boolean): ElementHelper {
+    this.elem.contentEditable = enable ? 'true' : 'false';
     return this;
   }
 
@@ -75,6 +95,15 @@ class ElementHelper {
     options?: boolean | EventListenerOptions,
   ) : ElementHelper {
     this.elem.removeEventListener(type, listener, options);
+    return this;
+  }
+
+  getBoundingClientRect(): DOMRect {
+    return this.elem.getBoundingClientRect();
+  }
+
+  focus(): ElementHelper {
+    this.elem.focus();
     return this;
   }
 }

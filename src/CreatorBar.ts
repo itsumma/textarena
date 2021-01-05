@@ -9,7 +9,7 @@ import { getFocusElement, isMac } from './utils';
 import * as utils from './utils';
 
 type Creator = {
-  elem: HTMLElement;
+  elem: ElementHelper;
   options: CreatorOptions;
 };
 
@@ -20,7 +20,7 @@ type KeysForTool = {
 export default class CreatorBar {
   elem: ElementHelper;
 
-  list: HTMLElement;
+  list: ElementHelper;
 
   controlKeyShowed = false;
 
@@ -42,33 +42,32 @@ export default class CreatorBar {
 
   keyUpListenerInstance: ((e: KeyboardEvent) => void);
 
-  constructor(private root: HTMLElement, private eventManager: EventManager) {
-    this.elem = new ElementHelper('DIV');
-    this.elem.setClass('textarena-creator');
+  constructor(private root: ElementHelper, private eventManager: EventManager) {
+    this.elem = new ElementHelper('DIV', 'textarena-creator');
     this.elem.onClick(() => {
       this.closeList();
     });
-    this.list = document.createElement('DIV');
-    this.list.className = 'textarena-creator__list';
+    this.list = new ElementHelper('DIV', 'textarena-creator__list');
     this.hide();
-    const createButton = document.createElement('BUTTON');
-    createButton.className = 'textarena-creator__create-button';
-    createButton.onclick = (e: MouseEvent) => {
+    const createButton = new ElementHelper('BUTTON', 'textarena-creator__create-button');
+    createButton.onClick((e: MouseEvent) => {
       e.stopPropagation();
       if (this.active) {
         this.closeList();
       } else {
         this.openList();
       }
-    };
-    createButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 14 14">
+    });
+    createButton.setInnerHTML(`<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 14 14">
     <path d="M8.05 5.8h4.625a1.125 1.125 0 0 1 0 2.25H8.05v4.625a1.125 1.125 0 0 1-2.25 0V8.05H1.125a1.125 1.125 0 0 1 0-2.25H5.8V1.125a1.125 1.125 0 0 1 2.25 0V5.8z"/>
-    </svg>`;
+    </svg>`);
     const MACOS = isMac();
     const altKey = MACOS ? '⌥' : 'Alt';
-    const placeholder = document.createElement('DIV');
-    placeholder.className = 'textarena-creator__placeholder';
-    placeholder.innerHTML = `Введите текст или ${altKey}-Q`;
+    const placeholder = new ElementHelper(
+      'DIV',
+      'textarena-creator__placeholder',
+      `Введите текст или ${altKey}-Q`,
+    );
     this.elem.appendChild(createButton);
     this.elem.appendChild(this.list);
     this.elem.appendChild(placeholder);
@@ -121,7 +120,9 @@ export default class CreatorBar {
       return;
     }
     if (this.showed && this.active && e.key === 'ArrowRight') {
-      const activeCreator = this.creators.find((some) => some.elem === document.activeElement);
+      const activeCreator = this.creators.find(
+        (some) => some.elem.getElem() === document.activeElement,
+      );
       if (activeCreator) {
         const index = this.creators.indexOf(activeCreator);
         if (index === this.creators.length - 1) {
@@ -135,7 +136,9 @@ export default class CreatorBar {
       return;
     }
     if (this.showed && this.active && e.key === 'ArrowLeft') {
-      const activeCreator = this.creators.find((some) => some.elem === document.activeElement);
+      const activeCreator = this.creators.find(
+        (some) => some.elem.getElem() === document.activeElement,
+      );
       if (activeCreator) {
         const index = this.creators.indexOf(activeCreator);
         if (index === 0) {
@@ -192,7 +195,7 @@ export default class CreatorBar {
   setOptions(options: CreatorBarOptions): void {
     // TODO use enabler parameter
     if (options.creators) {
-      this.list.innerHTML = '';
+      this.list.setInnerHTML('');
       this.creators = options.creators.map((creatorOptions: CreatorOptions | string) => {
         let opts: CreatorOptions;
         if (typeof creatorOptions === 'string') {
@@ -204,27 +207,30 @@ export default class CreatorBar {
         } else {
           opts = creatorOptions;
         }
-        const elem = document.createElement('BUTTON');
-        elem.className = 'textarena-creator__item';
-        elem.onclick = (e) => {
+        const elem = new ElementHelper('BUTTON', 'textarena-creator__item');
+        elem.onClick((e) => {
           e.preventDefault();
           opts.processor(this.getContext(), opts.config || {});
           this.eventManager.fire('textChanged');
-        };
+        });
         if (opts.icon) {
-          elem.innerHTML = opts.icon;
+          elem.setInnerHTML(opts.icon);
         }
         if (opts.controlKey) {
           this.controlKeys[utils.getCodeForKey(opts.controlKey)] = opts;
-          const controlKey = document.createElement('DIV');
-          controlKey.className = 'textarena-creator__control-key';
-          controlKey.innerHTML = opts.controlKey;
+          const controlKey = new ElementHelper(
+            'DIV',
+            'textarena-creator__control-key',
+            opts.controlKey,
+          );
           elem.appendChild(controlKey);
         } else if (opts.altKey) {
           this.altKeys[utils.getCodeForKey(opts.altKey)] = opts;
-          const altKey = document.createElement('DIV');
-          altKey.className = 'textarena-creator__alt-key';
-          altKey.innerHTML = opts.altKey;
+          const altKey = new ElementHelper(
+            'DIV',
+            'textarena-creator__alt-key',
+            opts.altKey,
+          );
           elem.appendChild(altKey);
         }
         this.list.append(elem);

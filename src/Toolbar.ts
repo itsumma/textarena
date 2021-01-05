@@ -45,15 +45,12 @@ export default class Toolbar {
 
   constructor(
     private container: HTMLElement,
-    private root: HTMLElement,
+    private root: ElementHelper,
     private eventManager: EventManager,
   ) {
-    this.elem = new ElementHelper('DIV');
-    this.elem.addClass('textarena-toolbar');
-    this.pointer = new ElementHelper('DIV');
-    this.pointer.addClass('textarena-toolbar__pointer');
-    this.list = new ElementHelper('DIV');
-    this.list.addClass('textarena-toolbar__list');
+    this.elem = new ElementHelper('DIV', 'textarena-toolbar');
+    this.pointer = new ElementHelper('DIV', 'textarena-toolbar__pointer');
+    this.list = new ElementHelper('DIV', 'textarena-toolbar__list');
     this.elem.appendChild(this.list);
     this.elem.appendChild(this.pointer);
     this.hide();
@@ -133,8 +130,7 @@ export default class Toolbar {
         } else {
           options = toolOptions;
         }
-        const elem = new ElementHelper('DIV');
-        elem.addClass('textarena-toolbar__item');
+        const elem = new ElementHelper('DIV', 'textarena-toolbar__item');
         const tool = {
           elem,
           options,
@@ -148,15 +144,11 @@ export default class Toolbar {
         }
         if (options.controlKey) {
           this.controlKeys[utils.getCodeForKey(options.controlKey)] = tool;
-          const controlKey = document.createElement('DIV');
-          controlKey.className = 'textarena-toolbar__control-key';
-          controlKey.innerHTML = options.controlKey;
+          const controlKey = new ElementHelper('DIV', 'textarena-toolbar__control-key', options.controlKey);
           elem.appendChild(controlKey);
         } else if (options.altKey) {
           this.altKeys[utils.getCodeForKey(options.altKey)] = tool;
-          const altKey = document.createElement('DIV');
-          altKey.className = 'textarena-toolbar__alt-key';
-          altKey.innerHTML = options.altKey;
+          const altKey = new ElementHelper('DIV', 'textarena-toolbar__alt-key', options.altKey);
           elem.appendChild(altKey);
         }
         this.list.appendChild(elem);
