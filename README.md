@@ -7,7 +7,9 @@ Textarena is a simple WYSIWYG editor
 
 ## Table of Contents
 
-- [Usage](#usage)
+  - [Usage](#usage)
+  - [Run for development](#run-for-development)
+  - [Recomendations](#recomendations)
 
 ## Usage
 
@@ -52,3 +54,33 @@ creator bar
 
 You can click on the item to insert it at the cursor position or use a
 keyboard.
+
+## Run for development
+
+Install all Textarena dependencies by yarn:
+
+```
+yarn
+```
+
+Start the developmnet server:
+
+```
+yarn start
+```
+
+Open in your browser http://localhost:8080.
+
+## Recomendations
+
+Add paddings arround the editor:
+
+```
+.textarena-editor {
+  padding: 1rem;
+}
+```
+
+This will make it easier to select text with the mouse.
+
+

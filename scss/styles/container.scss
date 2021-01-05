@@ -1,6 +1,7 @@
 .textarena-container {
   position: relative;
   border: none;
+  line-height: 1.6em;
 
   &:hover,
   &:active,
@@ -55,14 +56,12 @@
 
   p {
     font-size: 1rem;
-    line-height: 1.2em;
     margin: 0 0 1em;
   }
 
   ul,
   ol {
     font-size: 1rem;
-    line-height: 1.2em;
     padding-left: 1rem;
   }
 
