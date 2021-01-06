@@ -66,7 +66,7 @@ export default class CreatorBar {
     const placeholder = new ElementHelper(
       'DIV',
       'textarena-creator__placeholder',
-      `Введите текст или ${altKey}-Q`,
+      // `Введите текст или ${altKey}-Q`,
     );
     this.elem.appendChild(createButton);
     this.elem.appendChild(this.list);
@@ -247,25 +247,24 @@ export default class CreatorBar {
   }
 
   show(target: HTMLElement): void {
-    const elem = this.elem.getElem();
-    elem.style.display = 'flex';
-    elem.style.top = `${target.offsetTop}px`;
     this.showed = true;
-    this.active = false;
-    this.elem.setClass('textarena-creator');
+    this.elem.css({
+      display: 'flex',
+      top: `${target.offsetTop}px`,
+    });
+    this.closeList();
   }
 
   hide(): void {
-    const elem = this.elem.getElem();
-    elem.style.display = 'none';
     this.showed = false;
-    this.active = false;
-    this.elem.setClass('textarena-creator');
+    this.elem.css({
+      display: 'none',
+    });
+    this.closeList();
   }
 
   openList(): void {
     this.active = true;
-    this.elem.setClass('textarena-creator');
     this.elem.addClass('textarena-creator_active');
     if (this.creators.length > 0) {
       this.creators[0].elem.focus();
@@ -274,7 +273,7 @@ export default class CreatorBar {
 
   closeList(): void {
     this.active = false;
-    this.elem.setClass('textarena-creator');
+    this.elem.removeClass('textarena-creator_active');
     this.root.focus();
   }
 

@@ -92,6 +92,7 @@ export default class Toolbar {
       const el = utils.getFocusElement();
       if (utils.isElementParent(el, ['UL', 'OL'], 3)) return;
       e.preventDefault();
+      // TODO запретить отступ для простого текста. Сделать удаление отступа с шифтом.
       document.execCommand('indent');
     }
     if (e.altKey && this.altKeys[e.code]) {
