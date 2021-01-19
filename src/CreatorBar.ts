@@ -1,5 +1,6 @@
 import { IMAGE_WRAPPER } from 'common/constants';
 import ElementHelper from 'ElementHelper';
+import ArenaParser from 'ArenaParser';
 import creators from './creators';
 import EventManager, { MediaEvent } from './EventManager';
 import CreatorBarOptions from './interfaces/CreatorBarOptions';
@@ -42,7 +43,11 @@ export default class CreatorBar {
 
   keyUpListenerInstance: ((e: KeyboardEvent) => void);
 
-  constructor(private root: ElementHelper, private eventManager: EventManager) {
+  constructor(
+    private root: ElementHelper,
+    private eventManager: EventManager,
+    private parser: ArenaParser,
+  ) {
     this.elem = new ElementHelper('DIV', 'textarena-creator');
     this.elem.onClick(() => {
       this.closeList();
@@ -61,8 +66,8 @@ export default class CreatorBar {
     createButton.setInnerHTML(`<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 14 14">
     <path d="M8.05 5.8h4.625a1.125 1.125 0 0 1 0 2.25H8.05v4.625a1.125 1.125 0 0 1-2.25 0V8.05H1.125a1.125 1.125 0 0 1 0-2.25H5.8V1.125a1.125 1.125 0 0 1 2.25 0V5.8z"/>
     </svg>`);
-    const MACOS = isMac();
-    const altKey = MACOS ? '⌥' : 'Alt';
+    // const MACOS = isMac();
+    // const altKey = MACOS ? '⌥' : 'Alt';
     const placeholder = new ElementHelper(
       'DIV',
       'textarena-creator__placeholder',
@@ -189,6 +194,7 @@ export default class CreatorBar {
     return {
       focusElement: this.currentFocusElement,
       eventManager: this.eventManager,
+      parser: this.parser,
     };
   }
 

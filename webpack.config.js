@@ -60,6 +60,7 @@ module.exports = {
     constantPack,
   ],
   devServer: {
+    hot: false,
     contentBase: path.join(__dirname, 'public'),
     host: '0.0.0.0',
   },

@@ -1,19 +1,20 @@
-import { observeHTMLElement } from 'utils';
+import ArenaParser from 'ArenaParser';
+import CreatorBar from 'CreatorBar';
 import ElementHelper from 'ElementHelper';
-import TextarenaData from './interfaces/TextarenaData';
-import TextarenaOptions from './interfaces/TextarenaOptions';
-import MetaData from './interfaces/MetaData';
-import ChangeDataListener from './interfaces/ChangeHandler';
-import HTMLLicker from './HTMLLicker';
-import Manipulator from './Manipulator';
-import Toolbar from './Toolbar';
-import EventManager from './EventManager';
-import ToolbarOptions from './interfaces/ToolbarOptions';
-import CreatorBar from './CreatorBar';
-import CreatorBarOptions from './interfaces/CreatorBarOptions';
+import EventManager from 'EventManager';
+import Manipulator from 'Manipulator';
+import Toolbar from 'Toolbar';
+import ChangeDataListener from 'interfaces/ChangeHandler';
+import CreatorBarOptions from 'interfaces/CreatorBarOptions';
+import MetaData from 'interfaces/MetaData';
+import TextarenaData from 'interfaces/TextarenaData';
+import TextarenaOptions from 'interfaces/TextarenaOptions';
+import ToolbarOptions from 'interfaces/ToolbarOptions';
+import ArenaLogger from 'ArenaLogger';
 
 const defaultOptions: TextarenaOptions = {
   editable: true,
+  debug: false,
   toolbar: {
     enabled: true,
     tools: [
@@ -39,9 +40,15 @@ const defaultOptions: TextarenaOptions = {
 };
 
 class Textarena {
-  elem: ElementHelper;
+  container: ElementHelper;
+
+  editor: ElementHelper;
+
+  logger: ArenaLogger;
 
   eventManager: EventManager;
+
+  parser: ArenaParser;
 
   manipulator: Manipulator;
 
@@ -53,23 +60,31 @@ class Textarena {
 
   meta: MetaData = {};
 
-  constructor(private container: HTMLElement, options?: TextarenaOptions) {
-    this.elem = new ElementHelper('DIV', 'textarena-editor');
-    this.eventManager = new EventManager();
+  constructor(container: HTMLElement, options?: TextarenaOptions) {
+    this.container = new ElementHelper(container, 'textarena-container', '');
+    this.editor = new ElementHelper('DIV', 'textarena-editor');
+    this.logger = new ArenaLogger();
+    this.eventManager = new EventManager(this.logger);
+    this.parser = new ArenaParser(this.editor, this.logger);
+    this.manipulator = new Manipulator(this.editor, this.eventManager, this.parser);
+    this.toolbar = new Toolbar(this.container, this.editor, this.eventManager);
+    this.creatorBar = new CreatorBar(this.editor, this.eventManager, this.parser);
+    this.container.appendChild(this.creatorBar.getElem());
+    this.container.appendChild(this.editor.getElem());
+    this.container.appendChild(this.toolbar.getElem());
+    this.setOptions(options ? { ...defaultOptions, ...options } : defaultOptions);
+    this.start();
+  }
+
+  start(): void {
     this.eventManager.subscribe('textChanged', () => {
       if (this.options.onChange) {
         this.options.onChange(this.getData());
       }
     });
-    this.manipulator = new Manipulator(this.elem, this.eventManager);
-    this.toolbar = new Toolbar(this.container, this.elem, this.eventManager);
-    this.creatorBar = new CreatorBar(this.elem, this.eventManager);
-    this.container.innerHTML = '';
-    this.container.className = 'textarena-container';
-    container.appendChild(this.creatorBar.getElem());
-    container.appendChild(this.elem.getElem());
-    container.appendChild(this.toolbar.getElem());
-    this.setOptions(options ? { ...defaultOptions, ...options } : defaultOptions);
+    if (this.options.onReady) {
+      this.options.onReady(this.getData());
+    }
   }
 
   destructor(): void {
@@ -77,35 +92,39 @@ class Textarena {
   }
 
   setOptions(options: TextarenaOptions): void {
-    if (options.editable) {
-      this.setEditable(options.editable);
-    }
-    if (options.onChange) {
+    if (options.onChange !== undefined) {
       this.setOnChange(options.onChange);
     }
-    if (options.initData) {
-      this.setData(options.initData);
+    if (options.onReady !== undefined) {
+      this.setOnReady(options.onReady);
     }
-    if (options.toolbar) {
+    if (options.toolbar !== undefined) {
       this.setToolbarOptions(options.toolbar);
     }
-    if (options.creatorBar) {
+    if (options.creatorBar !== undefined) {
       this.setCreatorBarOptions(options.creatorBar);
+    }
+    if (options.initData !== undefined) {
+      this.setData(options.initData);
+    }
+    if (options.editable !== undefined) {
+      this.setEditable(options.editable);
+    }
+    if (options.debug !== undefined) {
+      this.logger.setDebug(options.debug);
     }
   }
 
   getData(): TextarenaData {
     return {
-      content: this.elem.getInnerHTML(),
+      content: this.editor.getInnerHTML(),
       meta: this.meta,
     };
   }
 
   setData(data: TextarenaData): void {
     if (typeof data.content === 'string') {
-      this.elem.setInnerHTML((new HTMLLicker(data.content)).prepareHTML().getHtml());
-      this.processElements();
-      this.manipulator.checkFirstLine();
+      this.parser.insert(data.content, true);
     }
     if (data.meta) {
       this.meta = data.meta;
@@ -120,12 +139,16 @@ class Textarena {
         this.eventManager.fire('turnOff');
       }
       this.options.editable = editable;
-      this.elem.setContentEditable(editable);
+      this.editor.setContentEditable(editable);
     }
   }
 
   setOnChange(onChange: ChangeDataListener): void {
     this.options.onChange = onChange;
+  }
+
+  setOnReady(onReady: ChangeDataListener): void {
+    this.options.onReady = onReady;
   }
 
   setToolbarOptions(toolbarOptions: ToolbarOptions): void {
@@ -136,13 +159,14 @@ class Textarena {
     this.creatorBar.setOptions(creatorBarOptions);
   }
 
-  processElements(): void {
-    const figures = document.querySelectorAll('figure');
-    for (let i = 0; i < figures.length; i += 1) {
-      const figure = figures[i];
-      observeHTMLElement(figure, this.eventManager);
-    }
-  }
+  // TODO вынести это в плагин для картинок
+  // processElements(): void {
+  //   const figures = document.querySelectorAll('figure');
+  //   for (let i = 0; i < figures.length; i += 1) {
+  //     const figure = figures[i];
+  //     observeHTMLElement(figure, this.eventManager);
+  //   }
+  // }
 }
 
 export default Textarena;

@@ -57,6 +57,7 @@
   p {
     font-size: 1rem;
     margin: 0 0 1em;
+    min-height: 1.6em;
   }
 
   ul,
@@ -67,5 +68,15 @@
 
   li {
     margin: 0 0 1em;
+  }
+
+  hr {
+    display: inline-block;
+    width: 100%;
+    // height: 0.5rem;
+    margin: 0.4em 0 0.4em;
+    padding: 0;
+    // border: none;
+    // border-bottom: 1px solid black;
   }
 }

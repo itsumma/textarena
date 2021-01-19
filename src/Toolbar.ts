@@ -44,7 +44,7 @@ export default class Toolbar {
   keyDownListenerInstance: ((e: KeyboardEvent) => void);
 
   constructor(
-    private container: HTMLElement,
+    private container: ElementHelper,
     private root: ElementHelper,
     private eventManager: EventManager,
   ) {

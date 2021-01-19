@@ -1,3 +1,4 @@
+import ArenaParser from 'ArenaParser';
 import CreatorContext from 'interfaces/CreatorContext';
 import { IMAGE_WRAPPER } from 'common/constants';
 import ElementHelper from 'ElementHelper';
@@ -15,11 +16,13 @@ enum SelectionStatus {
 }
 
 export default class Manipulator {
-  inputListenerInstance: (() => void);
+  inputListenerInstance: ((e: Event) => void);
 
   mouseUpListenerInstance: (() => void);
 
   keyUpListenerInstance: ((e: KeyboardEvent) => void);
+
+  keyPressListenerInstance: ((e: KeyboardEvent) => void);
 
   // keyDownListenerInstance: ((e: KeyboardEvent) => void);
 
@@ -33,10 +36,15 @@ export default class Manipulator {
 
   lastFocusElement: HTMLElement | undefined;
 
-  constructor(private elem: ElementHelper, private eventManager: EventManager) {
+  constructor(
+    private elem: ElementHelper,
+    private eventManager: EventManager,
+    private parser: ArenaParser,
+  ) {
     this.inputListenerInstance = this.inputListener.bind(this);
     this.mouseUpListenerInstance = this.mouseUpListener.bind(this);
     this.keyUpListenerInstance = this.keyUpListener.bind(this);
+    this.keyPressListenerInstance = this.keyPressListener.bind(this);
     // this.keyDownListenerInstance = this.keyDownListener.bind(this);
     this.selectListenerInstance = this.selectListener.bind(this);
     this.pasteListenerInstance = this.pasteListener.bind(this);
@@ -44,6 +52,7 @@ export default class Manipulator {
       this.elem.addEventListener('input', this.inputListenerInstance, false);
       this.elem.addEventListener('mouseup', this.mouseUpListenerInstance, false);
       this.elem.addEventListener('keyup', this.keyUpListenerInstance, false);
+      this.elem.addEventListener('keypress', this.keyPressListenerInstance, false);
       // this.elem.addEventListener('keydown', this.keyDownListenerInstance, false);
       this.elem.addEventListener('paste', this.pasteListenerInstance, false);
       document.addEventListener('selectionchange', this.selectListenerInstance, false);
@@ -52,9 +61,11 @@ export default class Manipulator {
       this.elem.removeEventListener('input', this.inputListenerInstance);
       this.elem.removeEventListener('mouseup', this.mouseUpListenerInstance);
       this.elem.removeEventListener('keyup', this.keyUpListenerInstance);
+      this.elem.removeEventListener('keypress', this.keyPressListenerInstance);
       // this.elem.removeEventListener('keydown', this.keyDownListenerInstance);
       this.elem.removeEventListener('paste', this.pasteListenerInstance);
       document.removeEventListener('selectionchange', this.selectListenerInstance);
+      this.elem.stopObserve();
     });
   }
 
@@ -116,18 +127,22 @@ export default class Manipulator {
   }
 
   inputListener(): void {
-    this.checkFirstLine();
-    // const focusElement = utils.getFocusElement();
-    // eslint-disable-next-line no-console
-    // console.log(focusElement);
-    // if (focusElement?.innerHTML) {
-    //   focusElement.innerHTML = utils.clearHtml(focusElement.innerHTML);
-    // }
     this.eventManager.fire('textChanged');
   }
 
   mouseUpListener(): void {
     this.fireSelectionStatus();
+  }
+
+  keyPressListener(e: KeyboardEvent): void {
+    if (!this.parser.prepareAndPasteText(e.key)) {
+      e.preventDefault();
+      const focusElement = utils.getFocusElement();
+      if (focusElement) {
+        this.parser.checkElement(focusElement);
+      }
+    }
+    // this.eventManager.fire('textChanged');
   }
 
   keyUpListener(e: KeyboardEvent): void {
@@ -231,14 +246,23 @@ export default class Manipulator {
       if (!html) {
         return;
       }
-      const clearHtml = utils.clearHtml(html);
-      utils.insert(clearHtml);
+      if (this.parser.prepareAndPasteHtml(html)) {
+        const focusElement = utils.getFocusElement();
+        if (focusElement) {
+          this.parser.checkElement(focusElement);
+        }
+      }
     } else if (types.includes('text/plain')) {
       const text = clipboardData.getData('text/plain');
       if (!text) {
         return;
       }
-      utils.insert(utils.convertToHTML(text));
+      if (this.parser.prepareAndPasteText(text)) {
+        const focusElement = utils.getFocusElement();
+        if (focusElement) {
+          this.parser.checkElement(focusElement);
+        }
+      }
     }
     this.inputListener();
   }
@@ -247,6 +271,7 @@ export default class Manipulator {
     return {
       focusElement: utils.getFocusElement(),
       eventManager: this.eventManager,
+      parser: this.parser,
     };
   }
 

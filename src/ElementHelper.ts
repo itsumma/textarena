@@ -5,8 +5,14 @@ class ElementHelper {
 
   private classes: string[] = [];
 
-  constructor(tagName: string, className = '', innerHtml = '') {
-    this.elem = document.createElement(tagName);
+  private observer: MutationObserver | undefined;
+
+  constructor(tagName: string | HTMLElement, className = '', innerHtml = '') {
+    if (typeof tagName === 'string') {
+      this.elem = document.createElement(tagName);
+    } else {
+      this.elem = tagName;
+    }
     if (className) {
       this.setClass(className);
     }
@@ -105,6 +111,19 @@ class ElementHelper {
   focus(): ElementHelper {
     this.elem.focus();
     return this;
+  }
+
+  startObserve(callback: MutationCallback, options?: MutationObserverInit): void {
+    this.stopObserve();
+    this.observer = new MutationObserver(callback);
+    this.observer.observe(this.elem, options);
+  }
+
+  stopObserve(): void {
+    if (this.observer) {
+      this.observer.disconnect();
+      this.observer = undefined;
+    }
   }
 }
 
