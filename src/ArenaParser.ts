@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import { FilterXSS, IWhiteList } from 'xss';
+import { FilterXSS } from 'xss';
 import ElementHelper from 'ElementHelper';
 import * as utils from 'utils';
 import ArenaLogger from 'ArenaLogger';
@@ -14,7 +14,7 @@ type Level = {
   raiseTags?: {
     [key: string]: string,
   },
-  unwrap: string,
+  unwrap?: string | false,
 };
 
 type Tags = {
@@ -130,6 +130,10 @@ export default class ArenaParser {
   };
 
   constructor(private editor: ElementHelper, private logger: ArenaLogger) {
+  }
+
+  public registerTag(tagName: string, tag: Tag): void {
+    this.tags[tagName] = tag;
   }
 
   public prepareAndPasteText(text: string, forcePaste = false): boolean {
@@ -356,5 +360,4 @@ export default class ArenaParser {
     }
     return true;
   }
-
 }

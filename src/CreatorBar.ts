@@ -1,7 +1,6 @@
 import { IMAGE_WRAPPER } from 'common/constants';
 import ElementHelper from 'ElementHelper';
 import ArenaParser from 'ArenaParser';
-import creators from './creators';
 import EventManager, { MediaEvent } from './EventManager';
 import CreatorBarOptions from './interfaces/CreatorBarOptions';
 import CreatorContext from './interfaces/CreatorContext';
@@ -31,7 +30,11 @@ export default class CreatorBar {
 
   altKeys: KeysForTool = {};
 
-  creators: Creator[] = [];
+  creators: {
+    [key: string]: CreatorOptions,
+  } = {};
+
+  controls: Creator[] = [];
 
   showed = false;
 
@@ -102,6 +105,17 @@ export default class CreatorBar {
     });
   }
 
+  setOptions(options: CreatorBarOptions): void {
+    // TODO use enabler parameter
+    if (options.creators) {
+      this.list.setInnerHTML('');
+      this.controls = [];
+      options.creators.forEach((creatorOptions: string) => {
+        this.setupCreator(creatorOptions);
+      });
+    }
+  }
+
   handleElementChange(element: HTMLElement): void {
     if (!element) return;
     if ([IMAGE_WRAPPER, 'LI'].includes(element.tagName)) {
@@ -125,34 +139,34 @@ export default class CreatorBar {
       return;
     }
     if (this.showed && this.active && e.key === 'ArrowRight') {
-      const activeCreator = this.creators.find(
+      const activeCreator = this.controls.find(
         (some) => some.elem.getElem() === document.activeElement,
       );
       if (activeCreator) {
-        const index = this.creators.indexOf(activeCreator);
-        if (index === this.creators.length - 1) {
-          this.creators[0].elem.focus();
+        const index = this.controls.indexOf(activeCreator);
+        if (index === this.controls.length - 1) {
+          this.controls[0].elem.focus();
         } else {
-          this.creators[index + 1].elem.focus();
+          this.controls[index + 1].elem.focus();
         }
-      } else if (this.creators.length > 0) {
-        this.creators[0].elem.focus();
+      } else if (this.controls.length > 0) {
+        this.controls[0].elem.focus();
       }
       return;
     }
     if (this.showed && this.active && e.key === 'ArrowLeft') {
-      const activeCreator = this.creators.find(
+      const activeCreator = this.controls.find(
         (some) => some.elem.getElem() === document.activeElement,
       );
       if (activeCreator) {
-        const index = this.creators.indexOf(activeCreator);
+        const index = this.controls.indexOf(activeCreator);
         if (index === 0) {
-          this.creators[this.creators.length - 1].elem.focus();
+          this.controls[this.controls.length - 1].elem.focus();
         } else {
-          this.creators[index - 1].elem.focus();
+          this.controls[index - 1].elem.focus();
         }
-      } else if (this.creators.length > 0) {
-        this.creators[this.creators.length - 1].elem.focus();
+      } else if (this.controls.length > 0) {
+        this.controls[this.controls.length - 1].elem.focus();
       }
       return;
     }
@@ -198,54 +212,48 @@ export default class CreatorBar {
     };
   }
 
-  setOptions(options: CreatorBarOptions): void {
-    // TODO use enabler parameter
-    if (options.creators) {
-      this.list.setInnerHTML('');
-      this.creators = options.creators.map((creatorOptions: CreatorOptions | string) => {
-        let opts: CreatorOptions;
-        if (typeof creatorOptions === 'string') {
-          if (creators[creatorOptions]) {
-            opts = creators[creatorOptions];
-          } else {
-            throw Error(`Tool "${creatorOptions}" not found`);
-          }
-        } else {
-          opts = creatorOptions;
-        }
-        const elem = new ElementHelper('BUTTON', 'textarena-creator__item');
-        elem.onClick((e) => {
-          e.preventDefault();
-          opts.processor(this.getContext(), opts.config || {});
-          this.eventManager.fire('textChanged');
-        });
-        if (opts.icon) {
-          elem.setInnerHTML(opts.icon);
-        }
-        if (opts.controlKey) {
-          this.controlKeys[utils.getCodeForKey(opts.controlKey)] = opts;
-          const controlKey = new ElementHelper(
-            'DIV',
-            'textarena-creator__control-key',
-            opts.controlKey,
-          );
-          elem.appendChild(controlKey);
-        } else if (opts.altKey) {
-          this.altKeys[utils.getCodeForKey(opts.altKey)] = opts;
-          const altKey = new ElementHelper(
-            'DIV',
-            'textarena-creator__alt-key',
-            opts.altKey,
-          );
-          elem.appendChild(altKey);
-        }
-        this.list.append(elem);
-        return {
-          elem,
-          options: opts,
-        };
-      });
+  registerCreator(name: string, creatorOptions: CreatorOptions): void {
+    this.creators[name] = creatorOptions;
+  }
+
+  setupCreator(creatorOptions: string): void {
+    let opts: CreatorOptions;
+    if (this.creators[creatorOptions]) {
+      opts = this.creators[creatorOptions];
+    } else {
+      throw Error(`Tool "${creatorOptions}" not found`);
     }
+    const elem = new ElementHelper('BUTTON', 'textarena-creator__item');
+    elem.onClick((e) => {
+      e.preventDefault();
+      opts.processor(this.getContext(), opts.config || {});
+      this.eventManager.fire('textChanged');
+    });
+    if (opts.icon) {
+      elem.setInnerHTML(opts.icon);
+    }
+    if (opts.controlKey) {
+      this.controlKeys[utils.getCodeForKey(opts.controlKey)] = opts;
+      const controlKey = new ElementHelper(
+        'DIV',
+        'textarena-creator__control-key',
+        opts.controlKey,
+      );
+      elem.appendChild(controlKey);
+    } else if (opts.altKey) {
+      this.altKeys[utils.getCodeForKey(opts.altKey)] = opts;
+      const altKey = new ElementHelper(
+        'DIV',
+        'textarena-creator__alt-key',
+        opts.altKey,
+      );
+      elem.appendChild(altKey);
+    }
+    this.list.append(elem);
+    this.controls.push({
+      elem,
+      options: opts,
+    });
   }
 
   getElem(): HTMLElement {
@@ -272,8 +280,8 @@ export default class CreatorBar {
   openList(): void {
     this.active = true;
     this.elem.addClass('textarena-creator_active');
-    if (this.creators.length > 0) {
-      this.creators[0].elem.focus();
+    if (this.controls.length > 0) {
+      this.controls[0].elem.focus();
     }
   }
 
@@ -281,9 +289,5 @@ export default class CreatorBar {
     this.active = false;
     this.elem.removeClass('textarena-creator_active');
     this.root.focus();
-  }
-
-  insertImage(src: string): HTMLElement {
-    return utils.insertImage(src, this.getContext());
   }
 }

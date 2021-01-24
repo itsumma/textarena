@@ -6,28 +6,28 @@ export default class ArenaLogger {
     return this;
   }
 
-  log(message?: string, ...optionalParams: any[]): void {
+  log(message?: string, ...optionalParams: (Record<string, unknown> | string)[]): void {
     if (this.debug) {
       // eslint-disable-next-line no-console
       console.log(message, ...optionalParams);
     }
   }
 
-  info(message?: string, ...optionalParams: any[]): void {
+  info(message?: string, ...optionalParams: (Record<string, unknown> | string)[]): void {
     if (this.debug) {
       // eslint-disable-next-line no-console
       console.info(message, ...optionalParams);
     }
   }
 
-  error(message?: string, ...optionalParams: any[]): void {
+  error(message?: string, ...optionalParams: (Record<string, unknown> | string)[]): void {
     if (this.debug) {
       // eslint-disable-next-line no-console
       console.error(message, ...optionalParams);
     }
   }
 
-  warn(message?: string, ...optionalParams: any[]): void {
+  warn(message?: string, ...optionalParams: (Record<string, unknown> | string)[]): void {
     if (this.debug) {
       // eslint-disable-next-line no-console
       console.warn(message, ...optionalParams);

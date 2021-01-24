@@ -88,7 +88,7 @@ class ElementHelper {
 
   addEventListener<K extends keyof HTMLElementEventMap>(
     type: K,
-    listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any,
+    listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => void,
     options?: boolean | AddEventListenerOptions,
   ) : ElementHelper {
     this.elem.addEventListener(type, listener, options);
@@ -97,7 +97,7 @@ class ElementHelper {
 
   removeEventListener<K extends keyof HTMLElementEventMap>(
     type: K,
-    listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any,
+    listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => void,
     options?: boolean | EventListenerOptions,
   ) : ElementHelper {
     this.elem.removeEventListener(type, listener, options);

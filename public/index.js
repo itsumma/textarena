@@ -36,6 +36,27 @@
         htmlElem.innerText = data.content;
       }
     }, 500);
+    const calloutPlugin = function () {
+      const self = {
+        register: (textarena) => {
+          console.log(self, textarena);
+          textarena.creatorBar.registerCreator('callout', {
+            name: 'callout',
+            icon: '!',
+            title: 'Callout',
+            processor: (context) => {
+              context.parser.prepareAndPasteHtml(
+                `<div contenteditable="false" class="callout">
+                  <div class="callout-icon">!</div>
+                  <div contenteditable="true" class="callout-text"></div>
+                </div>`
+              );
+            }
+          })
+        }
+      }
+      return self;
+    }
     const textarena = new Textarena(
       elem,
       {
@@ -44,6 +65,17 @@
         onChange,
         onReady: onChange,
         initData,
+        plugins: [
+          calloutPlugin(),
+        ],
+        creatorBar: {
+          creators: [
+            'hr',
+            'image',
+            'blockquote',
+            'callout',
+          ],
+        },
         // toolbar: {
         //   tools: [
         //     'bold',

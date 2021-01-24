@@ -11,6 +11,10 @@ import TextarenaData from 'interfaces/TextarenaData';
 import TextarenaOptions from 'interfaces/TextarenaOptions';
 import ToolbarOptions from 'interfaces/ToolbarOptions';
 import ArenaLogger from 'ArenaLogger';
+import ArenaPlugin from 'interfaces/ArenaPlugin';
+import Hr from 'plugins/Hr';
+import Image from 'plugins/Image';
+import Quote from 'plugins/Blockquote';
 
 const defaultOptions: TextarenaOptions = {
   editable: true,
@@ -35,6 +39,7 @@ const defaultOptions: TextarenaOptions = {
     creators: [
       'hr',
       'img',
+      'blockquote',
     ],
   },
 };
@@ -72,6 +77,7 @@ class Textarena {
     this.container.appendChild(this.creatorBar.getElem());
     this.container.appendChild(this.editor.getElem());
     this.container.appendChild(this.toolbar.getElem());
+    this.setPlugins([new Hr(), new Image(), new Quote()]);
     this.setOptions(options ? { ...defaultOptions, ...options } : defaultOptions);
     this.start();
   }
@@ -97,6 +103,9 @@ class Textarena {
     }
     if (options.onReady !== undefined) {
       this.setOnReady(options.onReady);
+    }
+    if (options.plugins) {
+      this.setPlugins(options.plugins);
     }
     if (options.toolbar !== undefined) {
       this.setToolbarOptions(options.toolbar);
@@ -149,6 +158,12 @@ class Textarena {
 
   setOnReady(onReady: ChangeDataListener): void {
     this.options.onReady = onReady;
+  }
+
+  setPlugins(plugins: ArenaPlugin[]): void {
+    plugins.forEach((plugin) => {
+      plugin.register(this);
+    });
   }
 
   setToolbarOptions(toolbarOptions: ToolbarOptions): void {
