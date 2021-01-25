@@ -148,6 +148,48 @@ export default class Manipulator {
   keyUpListener(e: KeyboardEvent): void {
     if (e.key === 'Enter') {
       const focusElement = utils.getFocusElement();
+      if (focusElement
+        && focusElement.tagName === 'P'
+        && focusElement.parentElement !== this.elem.getElem()) {
+        // есть куда повышать уровень
+        // если мы в пустом параграфе и
+        const prevElem = (focusElement?.previousSibling as Element);
+        const prevPrevElem = (prevElem?.previousSibling as Element);
+        if (
+          prevElem && prevElem.tagName === 'P'
+          && prevElem.textContent === ''
+          && (focusElement.textContent === '' || (prevPrevElem && prevPrevElem.textContent === ''))
+        ) {
+          // если два пустых параграфа подряд
+          console.log('two empty paragraphs');
+          const parent = focusElement.parentElement;
+          if (parent) {
+            const offsetStart = Array.from(parent.children).indexOf(prevElem);
+            const offsetEnd = Array.from(parent.children).indexOf(focusElement);
+            if (offsetStart !== -1 && offsetEnd !== -1) {
+              // const range = new Range();
+              // range.setStart(parent, offsetStart);
+              // range.setStart(parent, offsetEnd + 1);
+              // console.log(parent, offsetStart, offsetEnd + 1);
+              const s = document.getSelection();
+              if (!s) {
+                return;
+              }
+              // s.setBaseAndExtent(parent, offsetStart, parent, offsetEnd + 1);
+              // range.deleteContents();
+              // console.log(s.getRangeAt(0), prevElem, focusElement);
+              // s.removeAllRanges();
+              // s.addRange(range);
+              // document.execCommand('insertHTML', false, '<p><br/></p>');
+              // document.execCommand('InsertParagraph');
+              // document.execCommand('forwardDelete');
+              // document.execCommand('delete');
+              document.execCommand('Outdent');
+            }
+          }
+        }
+      }
+
       if (focusElement?.tagName === 'DIV') {
         document.execCommand('formatBlock', false, 'p');
       }

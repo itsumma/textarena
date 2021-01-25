@@ -15,6 +15,10 @@ import ArenaPlugin from 'interfaces/ArenaPlugin';
 import Hr from 'plugins/Hr';
 import Image from 'plugins/Image';
 import Quote from 'plugins/Blockquote';
+import Callout from 'components/Callout';
+
+// FIXME как инициализировать кмопоненты.
+const callout = new Callout();
 
 const defaultOptions: TextarenaOptions = {
   editable: true,

@@ -40,16 +40,24 @@
       const self = {
         register: (textarena) => {
           console.log(self, textarena);
+          textarena.parser.registerTag('DIV', {
+            level: 'ROOT_LEVEL',
+            insideLevel: 'ROOT_LEVEL',
+          })
+          textarena.parser.registerTag('ARENA-CALLOUT', {
+            level: 'ROOT_LEVEL',
+            insideLevel: 'ROOT_LEVEL',
+          })
           textarena.creatorBar.registerCreator('callout', {
             name: 'callout',
             icon: '!',
             title: 'Callout',
             processor: (context) => {
               context.parser.prepareAndPasteHtml(
-                `<div contenteditable="false" class="callout">
-                  <div class="callout-icon">!</div>
-                  <div contenteditable="true" class="callout-text"></div>
-                </div>`
+                `<arena-callout>
+                  <p slot="title">Пиши заголовок сюды</p>
+                  <p slot="body">А текст сюды</p>
+                </arena-callout>`
               );
             }
           })

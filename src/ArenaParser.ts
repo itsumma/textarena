@@ -190,9 +190,25 @@ export default class ArenaParser {
     div.innerHTML = html;
     this.logger.log('parse', div.innerHTML);
     const resultLevel = this.parse(div, forLevel, true);
+    if (typeof resultLevel === 'string') {
+      const parent = focusElement.parentElement;
+      if (!parent) {
+        return;
+      }
+      if (focusElement.nextElementSibling) {
+        Array.from(div.children).forEach((element) => {
+          parent.insertBefore(element, focusElement.nextElementSibling);
+        });
+      } else {
+        Array.from(div.children).forEach((element) => {
+          parent.append(element);
+        });
+      }
+    }
     this.logger.log('parsed', div.innerHTML);
     this.logger.log('resultLevel', resultLevel, forLevel);
-    document.execCommand('insertHTML', false, div.innerHTML);
+    // document.execCommand('insertHTML', false, div.innerHTML);
+
     return true;
   }
 
@@ -205,6 +221,26 @@ export default class ArenaParser {
         allowCommentTag: false,
         stripBlankChar: true,
         css: true,
+        whiteList: {
+          h1: [],
+          h2: [],
+          h3: [],
+          h4: [],
+          h5: [],
+          h6: [],
+          b: [],
+          strong: [],
+          i: [],
+          u: [],
+          p: ['class', 'slot'],
+          br: [],
+          hr: [],
+          div: ['contenteditable', 'class'],
+          a: ['href', 'target'],
+          ol: [],
+          ul: [],
+          li: [],
+        },
       });
     }
     return this.filterXSS;
