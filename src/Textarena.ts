@@ -16,6 +16,7 @@ import Hr from 'plugins/Hr';
 import Image from 'plugins/Image';
 import Quote from 'plugins/Blockquote';
 import Callout from 'components/Callout';
+import ArenaViewer from 'ArenaViewer';
 
 // FIXME как инициализировать кмопоненты.
 const callout = new Callout();
@@ -57,9 +58,11 @@ class Textarena {
 
   eventManager: EventManager;
 
+  viewer: ArenaViewer;
+
   parser: ArenaParser;
 
-  manipulator: Manipulator;
+  // manipulator: Manipulator;
 
   toolbar: Toolbar;
 
@@ -75,7 +78,8 @@ class Textarena {
     this.logger = new ArenaLogger();
     this.eventManager = new EventManager(this.logger);
     this.parser = new ArenaParser(this.editor, this.logger);
-    this.manipulator = new Manipulator(this.editor, this.eventManager, this.parser);
+    this.viewer = new ArenaViewer(this.editor, this.logger, this.eventManager);
+    // this.manipulator = new Manipulator(this.editor, this.eventManager, this.parser);
     this.toolbar = new Toolbar(this.container, this.editor, this.eventManager);
     this.creatorBar = new CreatorBar(this.editor, this.eventManager, this.parser);
     this.container.appendChild(this.creatorBar.getElem());
@@ -137,7 +141,8 @@ class Textarena {
 
   setData(data: TextarenaData): void {
     if (typeof data.content === 'string') {
-      this.parser.insert(data.content, true);
+      this.viewer.render();
+      // this.parser.insert(data.content, true);
     }
     if (data.meta) {
       this.meta = data.meta;
