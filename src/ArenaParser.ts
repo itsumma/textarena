@@ -132,6 +132,29 @@ export default class ArenaParser {
   constructor(private editor: ElementHelper, private logger: ArenaLogger) {
   }
 
+  public getLevelofPlace(model, path) {
+    this.logger.log('asd');
+    return 1;
+  }
+
+  public getLevelofHtml(html) {
+    this.logger.log('asd');
+    return 1;
+  }
+
+  public insertHtmlToModel(model, path, offset, html) {
+    this.logger.log('asd');
+    const levelOfPlace = this.getLevelofPlace(model, path);
+    const levelOfPeace = this.getLevelofHtml(html);
+    if (levelOfPlace < levelOfPeace) {
+      // seprate and raise level of place
+    }
+    if (levelOfPlace > levelOfPeace) {
+      // wrap and raise level of peace
+    }
+    // insert
+  }
+
   public registerTag(tagName: string, tag: Tag): void {
     this.tags[tagName] = tag;
   }
