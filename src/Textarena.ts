@@ -78,54 +78,45 @@ class Textarena {
     this.logger = new ArenaLogger();
     this.eventManager = new EventManager(this.logger);
     this.parser = new ArenaParser(this.editor, this.logger);
-    this.parser.registerArena(
-      {
-        name: '__ROOT__',
-        tag: '',
-        attributes: [],
-      },
-      [],
-    );
-    this.parser.registerArena(
-      {
-        name: '__TEXT__',
-        tag: '',
-        attributes: [],
-      },
-      [
-        {
-          tag: '__TEXT__',
-          attributes: [],
-        },
-      ],
-    );
-    this.parser.registerArena(
-      {
-        name: 'paragraph',
-        tag: 'P',
-        attributes: [],
-      },
-      [
-        {
-          tag: 'P',
-          attributes: [],
-        },
-        {
-          tag: 'DIV',
-          attributes: [],
-        },
-      ],
-    );
+
     this.parser.registerArena(
       {
         name: 'header2',
         tag: 'H2',
         attributes: [],
+        allowText: true,
       },
       [
         {
           tag: 'H2',
           attributes: [],
+        },
+      ],
+    );
+    this.parser.registerFormating(
+      {
+        name: 'strong',
+        tag: 'STRONG',
+        attributes: [],
+      },
+      [
+        {
+          tag: 'b',
+          attributes: [],
+        },
+        {
+          tag: 'strong',
+          attributes: [],
+        },
+        {
+          tag: 'span',
+          attributes: [
+            'style=font-weight: bold',
+            'style=font-weight: 900',
+            'style=font-weight: 800',
+            'style=font-weight: 700',
+            'style=font-weight: 600',
+          ],
         },
       ],
     );
@@ -192,6 +183,7 @@ class Textarena {
 
   setData(data: TextarenaData): void {
     if (typeof data.content === 'string') {
+      this.parser.htmlToModel(data.content, this.parser.model, 0);
       this.viewer.render();
       // this.parser.insert(data.content, true);
     }

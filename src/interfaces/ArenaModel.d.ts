@@ -1,17 +1,19 @@
-type ArenaLevel = string[];
-
-export interface ArenaNode {
-  arena: string,
-  children: ArenaNode[],
-  parent: ArenaNode,
-}
-
-export type Arena = {
+type AbstractArena = {
   name: string,
   tag: string,
   attributes: string[],
   allowFormating?: true,
 };
+
+export type ArenaWithText = AbstractArena & {
+  allowText: true,
+};
+
+export type ArenaWithChildText = AbstractArena & {
+  arenaForText: ArenaWithText,
+};
+
+export type Arena = ArenaWithText | ArenaWithChildText;
 
 export type ArenaFormating = {
   name: string,
@@ -33,12 +35,5 @@ export type ArenaMarketWithTag = ArenaMarker & {
   tag: string,
 };
 
-type ArenaModel<T> = {
-  level: 0,
-  allowedLevels: [],
-  canRaise: false,
-  children: []
-};
-
-export default ArenaModel;
-
+export default interface ArenaModel {
+}

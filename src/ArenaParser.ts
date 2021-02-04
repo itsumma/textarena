@@ -3,7 +3,9 @@ import { FilterXSS } from 'xss';
 import ElementHelper from 'ElementHelper';
 import * as utils from 'utils';
 import ArenaLogger from 'ArenaLogger';
-import { Arena, ArenaFormating, ArenaMarker, ArenaMarkers, ArenaMarketWithTag } from 'interfaces/ArenaModel';
+import { Arena, ArenaFormating, ArenaMarkers, ArenaMarketWithTag, ArenaWithText, Formatings } from 'interfaces/ArenaModel';
+import ArenaNode from 'models/ArenaNode';
+import ArenaFormatings from 'ArenaFormatings';
 
 type Tag = {
   level: string,
@@ -44,7 +46,6 @@ function rewrapElem(child: Element, tagName: string): void {
   paragraph.innerHTML = child.innerHTML || '';
   child.replaceWith(paragraph);
 }
-
 
 export default class ArenaParser {
   private filterXSS: FilterXSS | undefined;
@@ -137,7 +138,45 @@ export default class ArenaParser {
 
   markers: ArenaMarkers = { };
 
+  rootArena: Arena;
+
+  // textArena: Arena;
+
+  model: ArenaNode;
+
   constructor(private editor: ElementHelper, private logger: ArenaLogger) {
+    const paragraph: Arena = {
+      name: 'paragraph',
+      tag: 'P',
+      attributes: [],
+      allowText: true,
+    };
+    this.registerArena(
+      paragraph,
+      [
+        {
+          tag: 'P',
+          attributes: [],
+        },
+        {
+          tag: 'DIV',
+          attributes: [],
+        },
+      ],
+    );
+    this.rootArena = {
+      name: '__ROOT__',
+      tag: '',
+      attributes: [],
+      arenaForText: paragraph,
+    };
+    // this.textArena = {
+    //   name: '__TEXT__',
+    //   tag: '',
+    //   attributes: [],
+    //   allowText
+    // };
+    this.model = new ArenaNode(this.rootArena);
   }
 
   public registerArena(arena: Arena, markers: ArenaMarketWithTag[]): void {
@@ -169,46 +208,121 @@ export default class ArenaParser {
     });
   }
 
-  public getLevelofPlace(model, path) {
-    this.logger.log('asd');
-    return 1;
-  }
+  // public getLevelofPlace(model, path) {
+  //   this.logger.log('asd');
+  //   return 1;
+  // }
 
-  public getLevelofHtml(html) {
-    this.logger.log('asd');
-    return 1;
-  }
+  // public getLevelofHtml(html) {
+  //   this.logger.log('asd');
+  //   return 1;
+  // }
 
-  public htmlToModel(html: string, arenaNode: ArenaNode, offset: number) {
+  public htmlToModel(
+    html: string,
+    arenaNode: ArenaNode,
+    offset: number,
+  ): [ArenaNode, number] {
     const node = document.createElement('DIV');
     node.innerHTML = html;
-    this.parseNode(node);
+    return this.parseChildren(node, arenaNode, offset);
   }
 
-  public parseNode(node: ChildNode): void {
+  public parseChildren(
+    node: HTMLElement,
+    arenaNode: ArenaNode,
+    offset: number,
+  ): [ArenaNode, number] {
+    let currentNode = arenaNode;
+    let currentOffset = offset;
+    node.childNodes.forEach((childNode) => {
+      [currentNode, currentOffset] = this.parseNode(childNode, currentNode, currentOffset);
+    });
+    return [currentNode, currentOffset];
+  }
+
+  public textToModel(text: string, arenaNode: ArenaNode, offset: number): void {
+    this.logger.log('atata');
+    arenaNode.insertText(text, offset);
+  }
+
+  public createNode(node: HTMLElement): ArenaNode {
+
+  }
+
+  public parseNode(
+    node: ChildNode,
+    arenaNode: ArenaNode,
+    offset: number,
+  ): [ArenaNode, number] {
+    let currentNode = arenaNode;
+    let currentOffset = offset;
     if (node.nodeType === Node.TEXT_NODE) {
-      //
+      const text = node.textContent || '';
+      [currentNode, currentOffset] = currentNode.insertText(text, currentOffset);
     } else if (node.nodeType === Node.ELEMENT_NODE) {
-      node.childNodes.forEach((childNode) => {
-        this.parseNode(childNode);
-      });
+      const elementNode = node as HTMLElement;
+      // this.createNode(node as HTMLElement);
+      const marker = this.markers[elementNode.tagName];
+      if (marker) {
+        if ('formating' in marker) {
+          currentNode.insertFormating(marker.formating.name, start, end);
+          elementNode.childNodes.forEach((childNode) => {
+            this.parseNode(childNode);
+          });
+        }
+      } else {
+        // unwrap
+      }
+
+      // node.childNodes.forEach((childNode) => {
+      //   this.parseNode(childNode);
+      // });
     } else {
       this.logger.error('unaccepted node type, remove', node);
     }
+    return [currentNode, currentOffset];
   }
 
-  public insertHtmlToModel(arenaNode: ArenaNode, offset: number, html) {
-    this.logger.log('asd');
-    const levelOfPlace = this.getLevelofPlace(model, path);
-    const levelOfPeace = this.getLevelofHtml(html);
-    if (levelOfPlace < levelOfPeace) {
-      // seprate and raise level of place
-    }
-    if (levelOfPlace > levelOfPeace) {
-      // wrap and raise level of peace
-    }
-    // insert
+  public getText(node: HTMLElement): [string, Formatings] {
+    let text = '';
+    let formatings = new ArenaFormatings();
+    node.childNodes.forEach((childNode) => {
+      if (childNode.nodeType === Node.TEXT_NODE) {
+        text += (childNode.textContent || '');
+      } else if (childNode.nodeType === Node.ELEMENT_NODE) {
+        const elementNode = childNode as HTMLElement;
+        const marker = this.markers[elementNode.tagName];
+        if (marker) {
+          if ('formating' in marker) {
+            formatings.insertFormating(marker.formating.name)
+            text += this.getText(elementNode);
+          } else {
+            text += this.getText(elementNode);
+          }
+        } else {
+          text += this.getText(elementNode);
+        }
+      } else {
+        this.logger.error('unaccepted node type, remove', childNode);
+      }
+      // [currentNode, currentOffset] = this.parseNode(childNode, currentNode, currentOffset);
+    });
+    return [text, formatings];
   }
+
+  // public insertHtmlToModel(arenaNode: ArenaNode, offset: number, html) {
+  //   this.logger.log('asd');
+  //   const levelOfPlace = this.getLevelofPlace(model, path);
+  //   const levelOfPeace = this.getLevelofHtml(html);
+  //   if (levelOfPlace < levelOfPeace) {
+  //     // seprate and raise level of place
+  //   }
+  //   if (levelOfPlace > levelOfPeace) {
+  //     // wrap and raise level of peace
+  //   }
+  //   // insert
+  // }
 
   public registerTag(tagName: string, tag: Tag): void {
     this.tags[tagName] = tag;
@@ -328,14 +442,14 @@ export default class ArenaParser {
     return this.getFilterXSS().process(html);
   }
 
-  prepare(html: string, forLevel: string): string {
-    const stripedHtml = this.xss(html);
-    const elem = document.createElement('DIV');
-    this.logger.log(stripedHtml);
-    elem.innerHTML = stripedHtml;
-    this.parse(elem, forLevel);
-    return elem.innerHTML;
-  }
+  // prepare(html: string, forLevel: string): string {
+  //   const stripedHtml = this.xss(html);
+  //   const elem = document.createElement('DIV');
+  //   this.logger.log(stripedHtml);
+  //   elem.innerHTML = stripedHtml;
+  //   this.parse(elem, forLevel);
+  //   return elem.innerHTML;
+  // }
 
   insert(html: string, silent = false): string {
     const preparedHtml = this.prepare(html, 'ROOT_LEVEL');
@@ -369,109 +483,109 @@ export default class ArenaParser {
     return this.getTagByName('__TEXT');
   }
 
-  parseChildren(elem: Element, tag: Tag): void {
-    if (tag.insideLevel === false) {
-      this.logger.error('\tremove children');
-      elem.childNodes.forEach((someNode: ChildNode) => someNode.remove());
-    } else {
-      this.logger.log('\tparse children', tag.insideLevel);
-      this.parse(elem, tag.insideLevel);
-      this.logger.log('\tend parse children', tag.insideLevel);
-    }
-  }
+  // parseChildren(elem: Element, tag: Tag): void {
+  //   if (tag.insideLevel === false) {
+  //     this.logger.error('\tremove children');
+  //     elem.childNodes.forEach((someNode: ChildNode) => someNode.remove());
+  //   } else {
+  //     this.logger.log('\tparse children', tag.insideLevel);
+  //     this.parse(elem, tag.insideLevel);
+  //     this.logger.log('\tend parse children', tag.insideLevel);
+  //   }
+  // }
 
-  parseText(elem: Text, forLevel: string): boolean {
-    const tag = this.getTag(elem as Text);
-    if (tag === false) {
-      this.logger.error(`"${elem.textContent}" - text node is not allowed`, elem);
-      elem.remove();
-      return false;
-    }
-    if (tag.level !== forLevel) {
-      const raiseTag = this.levels[forLevel]?.raiseTags?.FORMATED_TEXT_LEVEL;
-      if (raiseTag) {
-        this.logger.warn(`"${elem.textContent}" - text node, raise level to ${raiseTag}`);
-        wrapElem(elem, raiseTag);
-      } else {
-        this.logger.error(`"${elem.textContent}" - text node, cant wrap`, elem);
-        elem.remove();
-      }
-      return false;
-    }
-    this.logger.info(`"${elem.textContent}" - text node, ok`);
-    return true;
-  }
+  // parseText(elem: Text, forLevel: string): boolean {
+  //   const tag = this.getTag(elem as Text);
+  //   if (tag === false) {
+  //     this.logger.error(`"${elem.textContent}" - text node is not allowed`, elem);
+  //     elem.remove();
+  //     return false;
+  //   }
+  //   if (tag.level !== forLevel) {
+  //     const raiseTag = this.levels[forLevel]?.raiseTags?.FORMATED_TEXT_LEVEL;
+  //     if (raiseTag) {
+  //       this.logger.warn(`"${elem.textContent}" - text node, raise level to ${raiseTag}`);
+  //       wrapElem(elem, raiseTag);
+  //     } else {
+  //       this.logger.error(`"${elem.textContent}" - text node, cant wrap`, elem);
+  //       elem.remove();
+  //     }
+  //     return false;
+  //   }
+  //   this.logger.info(`"${elem.textContent}" - text node, ok`);
+  //   return true;
+  // }
 
-  parseElement(
-    elem: Element,
-    forLevel: string,
-    parent: Element,
-    canRaiseLevel = false,
-  ): boolean | string {
-    const tag = this.getTag(elem as Element);
-    if (tag === false) {
-      this.logger.warn(`${elem.tagName} unaccepted node tag name - unwrap`, elem);
-      upwrapElem(elem, parent);
-      return false;
-    }
-    if (tag.replaceWith) {
-      rewrapElem(elem, tag.replaceWith);
-      return false;
-    }
-    if (forLevel !== tag.level) {
-      const raiseTag = this.levels[forLevel]?.raiseTags?.FORMATED_TEXT_LEVEL;
-      if (raiseTag) {
-        this.logger.warn(`${elem.tagName} wrap by ${raiseTag}`, elem);
-        wrapElem(elem, raiseTag);
-      } else {
-        if (canRaiseLevel) {
-          this.logger.warn(`${elem.tagName} require level ${tag.level}, given ${forLevel} - raise level`, elem);
-          return tag.level;
-        }
-        this.logger.warn(`${elem.tagName} require level ${tag.level}, given ${forLevel} - unwrap`, elem);
-        upwrapElem(elem, parent);
-      }
-      return false;
-    }
-    this.logger.info(`${elem.tagName} ok`, elem);
-    this.parseChildren(elem, tag);
-    return true;
-  }
+  // parseElement(
+  //   elem: Element,
+  //   forLevel: string,
+  //   parent: Element,
+  //   canRaiseLevel = false,
+  // ): boolean | string {
+  //   const tag = this.getTag(elem as Element);
+  //   if (tag === false) {
+  //     this.logger.warn(`${elem.tagName} unaccepted node tag name - unwrap`, elem);
+  //     upwrapElem(elem, parent);
+  //     return false;
+  //   }
+  //   if (tag.replaceWith) {
+  //     rewrapElem(elem, tag.replaceWith);
+  //     return false;
+  //   }
+  //   if (forLevel !== tag.level) {
+  //     const raiseTag = this.levels[forLevel]?.raiseTags?.FORMATED_TEXT_LEVEL;
+  //     if (raiseTag) {
+  //       this.logger.warn(`${elem.tagName} wrap by ${raiseTag}`, elem);
+  //       wrapElem(elem, raiseTag);
+  //     } else {
+  //       if (canRaiseLevel) {
+  //         this.logger.warn(`${elem.tagName} require level ${tag.level}, given ${forLevel} - raise level`, elem);
+  //         return tag.level;
+  //       }
+  //       this.logger.warn(`${elem.tagName} require level ${tag.level}, given ${forLevel} - unwrap`, elem);
+  //       upwrapElem(elem, parent);
+  //     }
+  //     return false;
+  //   }
+  //   this.logger.info(`${elem.tagName} ok`, elem);
+  //   this.parseChildren(elem, tag);
+  //   return true;
+  // }
 
-  checkElement(elem: Element): void {
-    let target = elem;
-    if (elem !== this.editor.getElem()) {
-      target = elem.parentElement || elem;
-    }
-    const tag = this.getTag(target);
-    if (tag && tag.insideLevel) {
-      this.parse(target, tag.insideLevel);
-    }
-  }
+  // checkElement(elem: Element): void {
+  //   let target = elem;
+  //   if (elem !== this.editor.getElem()) {
+  //     target = elem.parentElement || elem;
+  //   }
+  //   const tag = this.getTag(target);
+  //   if (tag && tag.insideLevel) {
+  //     this.parse(target, tag.insideLevel);
+  //   }
+  // }
 
-  parse(node: Element, forLevel: string, canRaiseLevel = false): true | string {
-    this.logger.log(`LEVEL ${forLevel}`);
-    let i = 0;
-    while (node.childNodes.length > i) {
-      const childNode = node.childNodes[i];
-      i += 1;
-      if (childNode.nodeType === Node.TEXT_NODE) {
-        if (!this.parseText(childNode as Text, forLevel)) {
-          i -= 1;
-        }
-      } else if (childNode.nodeType === Node.ELEMENT_NODE) {
-        const result = this.parseElement(childNode as Element, forLevel, node, canRaiseLevel);
-        if (result === false) {
-          i -= 1;
-        } else if (typeof result === 'string') {
-          return result;
-        }
-      } else {
-        this.logger.error('unaccepted node type, remove', childNode);
-        childNode.remove();
-        i -= 1;
-      }
-    }
-    return true;
-  }
+  // parse(node: Element, forLevel: string, canRaiseLevel = false): true | string {
+  //   this.logger.log(`LEVEL ${forLevel}`);
+  //   let i = 0;
+  //   while (node.childNodes.length > i) {
+  //     const childNode = node.childNodes[i];
+  //     i += 1;
+  //     if (childNode.nodeType === Node.TEXT_NODE) {
+  //       if (!this.parseText(childNode as Text, forLevel)) {
+  //         i -= 1;
+  //       }
+  //     } else if (childNode.nodeType === Node.ELEMENT_NODE) {
+  //       const result = this.parseElement(childNode as Element, forLevel, node, canRaiseLevel);
+  //       if (result === false) {
+  //         i -= 1;
+  //       } else if (typeof result === 'string') {
+  //         return result;
+  //       }
+  //     } else {
+  //       this.logger.error('unaccepted node type, remove', childNode);
+  //       childNode.remove();
+  //       i -= 1;
+  //     }
+  //   }
+  //   return true;
+  // }
 }
