@@ -78,6 +78,57 @@ class Textarena {
     this.logger = new ArenaLogger();
     this.eventManager = new EventManager(this.logger);
     this.parser = new ArenaParser(this.editor, this.logger);
+    this.parser.registerArena(
+      {
+        name: '__ROOT__',
+        tag: '',
+        attributes: [],
+      },
+      [],
+    );
+    this.parser.registerArena(
+      {
+        name: '__TEXT__',
+        tag: '',
+        attributes: [],
+      },
+      [
+        {
+          tag: '__TEXT__',
+          attributes: [],
+        },
+      ],
+    );
+    this.parser.registerArena(
+      {
+        name: 'paragraph',
+        tag: 'P',
+        attributes: [],
+      },
+      [
+        {
+          tag: 'P',
+          attributes: [],
+        },
+        {
+          tag: 'DIV',
+          attributes: [],
+        },
+      ],
+    );
+    this.parser.registerArena(
+      {
+        name: 'header2',
+        tag: 'H2',
+        attributes: [],
+      },
+      [
+        {
+          tag: 'H2',
+          attributes: [],
+        },
+      ],
+    );
     this.viewer = new ArenaViewer(this.editor, this.logger, this.eventManager);
     // this.manipulator = new Manipulator(this.editor, this.eventManager, this.parser);
     this.toolbar = new Toolbar(this.container, this.editor, this.eventManager);

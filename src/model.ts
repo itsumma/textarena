@@ -1,5 +1,6 @@
 const a = {
   type: 'root',
+  level: 'pLevel',
   children: [
     {
       type: 'header',
@@ -83,14 +84,36 @@ const levels = {
   },
 };
 
-const tags = {
+const tags1 = {
   paragraph: {
     allowedTag: [
-      'p'
+      'p',
     ],
     preferedTag: 'p',
-    level: 'p',
+    level: 'pLevel',
+    allowFormating: true,
   },
+  header: {
+    allowedTag: [
+      'h2',
+      'h3',
+      'h4',
+      'h5',
+    ],
+    preferedTag: 'd',
+    level: 'pLevel',
+    allowFormating: false,
+  },
+  formating: {
+    allowedTag: {
+      b: [],
+      strong: [],
+      em: [],
+      i: [],
+      span: ['style="font-weigh:bold"'],
+    },
+    isFormating: true,
+  }
 };
 
 const formatings = {
@@ -102,4 +125,32 @@ const formatings = {
     preferedTag: 'strong',
     level: 'text',
   }
+};
+
+const arenas = [
+  {
+    name: 'paragraph',
+    tag: 'P',
+    attributes: [],
+  },
+  {
+    name: 'paragraph',
+    tag: 'P',
+    attributes: [],
+  },
+];
+
+const tags = {
+  P: [
+    {
+      arena: 'pargraph',
+      attributes: [],
+    },
+  ],
+  H2: [
+    {
+      arena: 'pargraph',
+      attributes: [],
+    },
+  ],
 };

@@ -1,10 +1,37 @@
 type ArenaLevel = string[];
 
-interface ArenaNode<T extends Array<string>> {
-  allowedLevels: keyof T,
-  children: ArenaNode,
-  howToRaise: {[key in keyof T]: boolean},
+export interface ArenaNode {
+  arena: string,
+  children: ArenaNode[],
+  parent: ArenaNode,
 }
+
+export type Arena = {
+  name: string,
+  tag: string,
+  attributes: string[],
+  allowFormating?: true,
+};
+
+export type ArenaFormating = {
+  name: string,
+  tag: string,
+  attributes: string[],
+};
+
+export type ArenaMarker = {
+  attributes: string[],
+};
+
+export type ArenaMarkers = {
+  [tag: string]: Array<ArenaMarker & (
+    { arena: Arena } | { formating: ArenaFormating }
+  )>,
+};
+
+export type ArenaMarketWithTag = ArenaMarker & {
+  tag: string,
+};
 
 type ArenaModel<T> = {
   level: 0,
@@ -14,3 +41,4 @@ type ArenaModel<T> = {
 };
 
 export default ArenaModel;
+

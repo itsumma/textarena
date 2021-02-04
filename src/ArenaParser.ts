@@ -3,6 +3,7 @@ import { FilterXSS } from 'xss';
 import ElementHelper from 'ElementHelper';
 import * as utils from 'utils';
 import ArenaLogger from 'ArenaLogger';
+import { Arena, ArenaFormating, ArenaMarker, ArenaMarkers, ArenaMarketWithTag } from 'interfaces/ArenaModel';
 
 type Tag = {
   level: string,
@@ -43,6 +44,7 @@ function rewrapElem(child: Element, tagName: string): void {
   paragraph.innerHTML = child.innerHTML || '';
   child.replaceWith(paragraph);
 }
+
 
 export default class ArenaParser {
   private filterXSS: FilterXSS | undefined;
@@ -129,7 +131,42 @@ export default class ArenaParser {
     },
   };
 
+  arenas: Arena[] = [];
+
+  formationgs: ArenaFormating[] = [];
+
+  markers: ArenaMarkers = { };
+
   constructor(private editor: ElementHelper, private logger: ArenaLogger) {
+  }
+
+  public registerArena(arena: Arena, markers: ArenaMarketWithTag[]): void {
+    this.arenas.push(arena);
+    markers.forEach(({ tag, attributes }) => {
+      if (!this.markers[tag]) {
+        this.markers[tag] = [];
+      }
+      this.markers[tag].push({
+        attributes,
+        arena,
+      });
+    });
+  }
+
+  public registerFormating(
+    formating: ArenaFormating,
+    markers: ArenaMarketWithTag[],
+  ): void {
+    this.formationgs.push(formating);
+    markers.forEach(({ tag, attributes }) => {
+      if (!this.markers[tag]) {
+        this.markers[tag] = [];
+      }
+      this.markers[tag].push({
+        attributes,
+        formating,
+      });
+    });
   }
 
   public getLevelofPlace(model, path) {
@@ -142,7 +179,25 @@ export default class ArenaParser {
     return 1;
   }
 
-  public insertHtmlToModel(model, path, offset, html) {
+  public htmlToModel(html: string, arenaNode: ArenaNode, offset: number) {
+    const node = document.createElement('DIV');
+    node.innerHTML = html;
+    this.parseNode(node);
+  }
+
+  public parseNode(node: ChildNode): void {
+    if (node.nodeType === Node.TEXT_NODE) {
+      //
+    } else if (node.nodeType === Node.ELEMENT_NODE) {
+      node.childNodes.forEach((childNode) => {
+        this.parseNode(childNode);
+      });
+    } else {
+      this.logger.error('unaccepted node type, remove', node);
+    }
+  }
+
+  public insertHtmlToModel(arenaNode: ArenaNode, offset: number, html) {
     this.logger.log('asd');
     const levelOfPlace = this.getLevelofPlace(model, path);
     const levelOfPeace = this.getLevelofHtml(html);
