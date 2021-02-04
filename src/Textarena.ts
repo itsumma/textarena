@@ -92,6 +92,7 @@ class Textarena {
           attributes: [],
         },
       ],
+      [ArenaParser.rootArenaName],
     );
     this.parser.registerFormating(
       {
@@ -111,15 +112,18 @@ class Textarena {
         {
           tag: 'span',
           attributes: [
-            'style=font-weight: bold',
-            'style=font-weight: 900',
-            'style=font-weight: 800',
-            'style=font-weight: 700',
-            'style=font-weight: 600',
+            'style=fontWeight:bold',
+            'style=fontWeight:900',
+            'style=fontWeight:800',
+            'style=fontWeight:700',
+            'style=fontWeight:600',
           ],
         },
       ],
     );
+    this.parser.insertHtmlToModel('word <p> is best </p> spawn', this.parser.model, 0);
+    window['parser'] = this.parser;
+    return;
     this.viewer = new ArenaViewer(this.editor, this.logger, this.eventManager);
     // this.manipulator = new Manipulator(this.editor, this.eventManager, this.parser);
     this.toolbar = new Toolbar(this.container, this.editor, this.eventManager);
@@ -183,7 +187,7 @@ class Textarena {
 
   setData(data: TextarenaData): void {
     if (typeof data.content === 'string') {
-      this.parser.htmlToModel(data.content, this.parser.model, 0);
+      this.parser.insertHtmlToModel(data.content, this.parser.model, 0);
       this.viewer.render();
       // this.parser.insert(data.content, true);
     }
