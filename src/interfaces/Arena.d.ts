@@ -1,6 +1,9 @@
+import { TemplateResult } from 'lit-html';
+
 type AbstractArena = {
   name: string,
   tag: string,
+  template: (child: TemplateResult | string) => TemplateResult,
   attributes: string[],
 };
 

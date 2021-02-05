@@ -73,17 +73,17 @@
         onChange,
         onReady: onChange,
         initData,
-        plugins: [
-          calloutPlugin(),
-        ],
-        creatorBar: {
-          creators: [
-            'hr',
-            'image',
-            'blockquote',
-            'callout',
-          ],
-        },
+        // plugins: [
+        //   calloutPlugin(),
+        // ],
+        // creatorBar: {
+        //   creators: [
+        //     'hr',
+        //     'image',
+        //     'blockquote',
+        //     'callout',
+        //   ],
+        // },
         // toolbar: {
         //   tools: [
         //     'bold',

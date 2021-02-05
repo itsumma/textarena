@@ -1,3 +1,4 @@
+import { TemplateResult, html } from 'lit-html';
 import ArenaNodeAncestorInterface from 'interfaces/ArenaNodeAncestorInterface';
 import Arena, { ArenaWithText } from 'interfaces/Arena';
 import ArenaNodeInterface from 'interfaces/ArenaNodeInterface';
@@ -24,5 +25,9 @@ export default class TextNode implements ArenaNodeInterface {
     ArenaNodeInterface | undefined, ArenaNodeInterface, number,
   ] {
     return this.parent.createAndInsertNode(arena, this.getMyIndex() + 1);
+  }
+
+  getHtml(): TemplateResult {
+    return this.arena.template(this.text);
   }
 }

@@ -5,6 +5,8 @@ import ArenaLogger from 'ArenaLogger';
 import Arena from 'interfaces/Arena';
 import ArenaNodeInterface from 'interfaces/ArenaNodeInterface';
 import RootNode from 'models/RootNode';
+import RichTextManager from 'RichTextManager';
+import { TemplateResult, html } from 'lit-html';
 
 type TagAndAttributes = {
   tag: string,
@@ -50,6 +52,7 @@ export default class ArenaParser {
     const paragraph: Arena = {
       name: 'paragraph',
       tag: 'P',
+      template: (child: TemplateResult | string) => html`<p>${child}</p>`,
       attributes: [],
       allowText: true,
       allowFormating: true,
@@ -57,6 +60,7 @@ export default class ArenaParser {
     this.rootArena = {
       name: ArenaParser.rootArenaName,
       tag: '',
+      template: (child: TemplateResult | string) => child,
       attributes: [],
       arenaForText: paragraph,
       allowedArenas: [
@@ -140,7 +144,7 @@ export default class ArenaParser {
     offset: number,
   ): void {
     this.logger.log('atata');
-    arenaNode.insertText(text, offset);
+    arenaNode.insertText(text, offset, undefined);
   }
 
   private insertChildren(
@@ -163,7 +167,8 @@ export default class ArenaParser {
   ): [ArenaNodeInterface, number] {
     if (node.nodeType === Node.TEXT_NODE) {
       const text = node.textContent || '';
-      return arenaNode.insertText(text, offset);
+      this.logger.log('insert text', text);
+      return arenaNode.insertText(text, offset, undefined);
     }
     if (node.nodeType === Node.ELEMENT_NODE) {
       const elementNode = node as HTMLElement;
@@ -178,16 +183,15 @@ export default class ArenaParser {
           this.insertChildren(elementNode, newArenaNode, 0);
           return [currentNode, currentOffset];
         }
+        this.logger.log('this is arena');
         return this.insertChildren(elementNode, arenaNode, offset);
       }
       const formating = this.checkFormatingMark(elementNode);
       if (formating) {
-        // const newNode = NodeFactory.createNode(arena);
-        // arenaNode.insertFormating(marker.formating.name, start, end);
-        // elementNode.childNodes.forEach((childNode) => {
-        //   this.insertChildNode(childNode);
-        // });
-        // return;
+        const formatings = this.getText(elementNode);
+        formatings.insertFormating(formating.name, 0, formatings.text.length);
+        this.logger.log('this is formating', formatings);
+        return arenaNode.insertText(formatings.text, offset, formatings);
       }
       return this.insertChildren(elementNode, arenaNode, offset);
     }
@@ -241,32 +245,27 @@ export default class ArenaParser {
     return false;
   }
 
-  // public getText(node: HTMLElement): [string, Formatings] {
-  //   let text = '';
-  //   const formatings = new ArenaFormatings();
-  //   node.childNodes.forEach((childNode) => {
-  //     if (childNode.nodeType === Node.TEXT_NODE) {
-  //       text += (childNode.textContent || '');
-  //     } else if (childNode.nodeType === Node.ELEMENT_NODE) {
-  //       const elementNode = childNode as HTMLElement;
-  //       const marker = this.markers[elementNode.tagName];
-  //       if (marker) {
-  //         if ('formating' in marker) {
-  //           formatings.insertFormating(marker.formating.name);
-  //           text += this.getText(elementNode);
-  //         } else {
-  //           text += this.getText(elementNode);
-  //         }
-  //       } else {
-  //         text += this.getText(elementNode);
-  //       }
-  //     } else {
-  //       this.logger.error('unaccepted node type, remove', childNode);
-  //     }
-  //     // [currentNode, currentOffset] = this.parseNode(childNode, currentNode, currentOffset);
-  //   });
-  //   return [text, formatings];
-  // }
+  public getText(node: HTMLElement): RichTextManager {
+    const formatings = new RichTextManager();
+    let offset = 0;
+    node.childNodes.forEach((childNode) => {
+      if (childNode.nodeType === Node.TEXT_NODE) {
+        offset = formatings.insertText(childNode.textContent || '', offset, undefined);
+      } else if (childNode.nodeType === Node.ELEMENT_NODE) {
+        const elementNode = childNode as HTMLElement;
+        const newFormatings = this.getText(elementNode);
+        const formating = this.checkFormatingMark(elementNode);
+        if (formating) {
+          newFormatings.insertFormating(formating.name, 0, newFormatings.text.length);
+        }
+        offset = formatings.insertText(newFormatings.text, offset, newFormatings);
+      } else {
+        this.logger.error('unaccepted node type, remove', childNode);
+      }
+      // [currentNode, currentOffset] = this.parseNode(childNode, currentNode, currentOffset);
+    });
+    return formatings;
+  }
 
   getFilterXSS(): FilterXSS {
     if (!this.filterXSS) {

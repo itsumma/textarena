@@ -2,6 +2,9 @@ import { html, render } from 'lit-html';
 import ArenaLogger from 'ArenaLogger';
 import ElementHelper from 'ElementHelper';
 import EventManager from 'EventManager';
+import ArenaNodeInterface from 'interfaces/ArenaNodeInterface';
+
+
 
 const selectionKeys = {
   pageup: 33,
@@ -116,8 +119,10 @@ export default class ArenaViewer {
     });
   }
 
-  render() {
-    render(html`<p>sdf</p>`, this.editor.getElem());
+  render(arenaNode: ArenaNodeInterface) {
+    console.log('asd');
+    this.logger.log(arenaNode.getHtml().getHTML());
+    render(arenaNode.getHtml(), this.editor.getElem());
   }
 
   inputListener(e: Event): void {

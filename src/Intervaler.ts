@@ -3,8 +3,30 @@ type Interval = {
   end: number,
 };
 
-export default class ArenaNodeFormating {
+export default class Intervaler {
   private intervals: Interval[] = [];
+
+  getIntervals(): Interval[] {
+    return this.intervals;
+  }
+
+  shift(offset: number, step: number): void {
+    this.intervals = this.intervals.map((interval) => {
+      if (interval.end < offset) {
+        return interval;
+      }
+      return {
+        start: interval.start < offset ? interval.start : interval.start + step,
+        end: interval.end + step,
+      };
+    });
+  }
+
+  merge(intervaler: Intervaler, offset: number): void {
+    intervaler.intervals.forEach((interval) => {
+      this.addInterval(interval.start + offset, interval.end + offset);
+    });
+  }
 
   addInterval(start: number, end: number): void {
     let newInterval = {

@@ -1,9 +1,12 @@
+import { TemplateResult, html } from 'lit-html';
+import { repeat } from 'lit-html/directives/repeat';
 import ArenaNodeAncestorInterface from 'interfaces/ArenaNodeAncestorInterface';
 import Arena, {
   ArenaWithChildText, ArenaWithNodes,
 } from 'interfaces/Arena';
 import ArenaNodeInterface from 'interfaces/ArenaNodeInterface';
 import ArenaNodeScionInterface from 'interfaces/ArenaNodeScionInterface';
+import RichTextManager from 'RichTextManager';
 import NodeFactory from './NodeFactory';
 
 // TODO сделать вариант когда у нас фиксированное количество дочерних нод,
@@ -23,15 +26,19 @@ export default class MediatorNode implements ArenaNodeAncestorInterface, ArenaNo
     return this.parent.children.indexOf(this);
   }
 
-  insertText(text: string, offset = 0): [ArenaNodeInterface, number] {
+  insertText(
+    text: string,
+    offset: number,
+    formatings: RichTextManager | undefined,
+  ): [ArenaNodeInterface, number] {
     if ('arenaForText' in this.arena) {
       const [newNode] = this.createAndInsertNode(this.arena.arenaForText, offset);
       if (newNode) {
-        newNode.insertText(text, 0);
+        newNode.insertText(text, 0, formatings);
         return [newNode, text.length];
       }
     }
-    return this.parent.insertText(text, this.getMyIndex() + 1);
+    return this.parent.insertText(text, this.getMyIndex() + 1, formatings);
   }
 
   createAndInsertNode(arena: Arena, offset: number): [
@@ -43,5 +50,11 @@ export default class MediatorNode implements ArenaNodeAncestorInterface, ArenaNo
       return [node, this, offset + 1];
     }
     return this.parent.createAndInsertNode(arena, this.getMyIndex() + 1);
+  }
+
+  getHtml(): TemplateResult {
+    return this.arena.template(html`
+      ${repeat(this.children, (c, index) => index, (child) => child.getHtml())}
+    `);
   }
 }

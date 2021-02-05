@@ -1,3 +1,6 @@
+import { TemplateResult, html } from 'lit-html';
+import { repeat } from 'lit-html/directives/repeat';
+import RichTextManager from 'RichTextManager';
 import Arena, { ArenaWithChildText, ArenaWithNodes } from 'interfaces/Arena';
 import ArenaNodeAncestorInterface from 'interfaces/ArenaNodeAncestorInterface';
 import ArenaNodeInterface from 'interfaces/ArenaNodeInterface';
@@ -14,11 +17,15 @@ export default class RootNode implements ArenaNodeAncestorInterface {
   ) {
   }
 
-  insertText(text: string, offset = 0): [ArenaNodeInterface, number] {
+  insertText(
+    text: string,
+    offset: number,
+    formatings: RichTextManager | undefined,
+  ): [ArenaNodeInterface, number] {
     if ('arenaForText' in this.arena) {
       const [newNode] = this.createAndInsertNode(this.arena.arenaForText, offset);
       if (newNode) {
-        newNode.insertText(text, 0);
+        newNode.insertText(text, 0, formatings);
         return [newNode, text.length];
       }
     }
@@ -36,5 +43,12 @@ export default class RootNode implements ArenaNodeAncestorInterface {
     }
     // вставить не удалось, но мы вернём что дали, чтобы не усложнять дальнейшую логику
     return [undefined, this, offset];
+  }
+
+  getHtml(): TemplateResult {
+    console.log('root node');
+    return this.arena.template(html`
+      ${repeat(this.children, (c, index) => index, (child) => child.getHtml())}
+    `);
   }
 }

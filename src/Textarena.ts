@@ -17,6 +17,7 @@ import Image from 'plugins/Image';
 import Quote from 'plugins/Blockquote';
 import Callout from 'components/Callout';
 import ArenaViewer from 'ArenaViewer';
+import { TemplateResult, html } from 'lit-html';
 
 // FIXME как инициализировать кмопоненты.
 const callout = new Callout();
@@ -27,24 +28,24 @@ const defaultOptions: TextarenaOptions = {
   toolbar: {
     enabled: true,
     tools: [
-      'bold',
-      'italic',
-      'underline',
-      'strikethrough',
-      'list',
-      'orderedlist',
-      'h2',
-      'h3',
-      'h4',
-      'link',
+      // 'bold',
+      // 'italic',
+      // 'underline',
+      // 'strikethrough',
+      // 'list',
+      // 'orderedlist',
+      // 'h2',
+      // 'h3',
+      // 'h4',
+      // 'link',
     ],
   },
   creatorBar: {
     enabled: true,
     creators: [
-      'hr',
-      'img',
-      'blockquote',
+      // 'hr',
+      // 'img',
+      // 'blockquote',
     ],
   },
 };
@@ -83,6 +84,7 @@ class Textarena {
       {
         name: 'header2',
         tag: 'H2',
+        template: (child: TemplateResult | string) => html`<h2>${child}</h2>`,
         attributes: [],
         allowText: true,
       },
@@ -102,15 +104,15 @@ class Textarena {
       },
       [
         {
-          tag: 'b',
+          tag: 'B',
           attributes: [],
         },
         {
-          tag: 'strong',
+          tag: 'STRONG',
           attributes: [],
         },
         {
-          tag: 'span',
+          tag: 'SPAN',
           attributes: [
             'style=fontWeight:bold',
             'style=fontWeight:900',
@@ -121,9 +123,30 @@ class Textarena {
         },
       ],
     );
-    this.parser.insertHtmlToModel('word <p> is best </p> spawn', this.parser.model, 0);
+    this.parser.registerFormating(
+      {
+        name: 'italic',
+        tag: 'EM',
+        attributes: [],
+      },
+      [
+        {
+          tag: 'I',
+          attributes: [],
+        },
+        {
+          tag: 'EM',
+          attributes: [],
+        },
+        {
+          tag: 'SPAN',
+          attributes: [
+            'style=fontStyle:italic',
+          ],
+        },
+      ],
+    );
     window['parser'] = this.parser;
-    return;
     this.viewer = new ArenaViewer(this.editor, this.logger, this.eventManager);
     // this.manipulator = new Manipulator(this.editor, this.eventManager, this.parser);
     this.toolbar = new Toolbar(this.container, this.editor, this.eventManager);
@@ -131,7 +154,7 @@ class Textarena {
     this.container.appendChild(this.creatorBar.getElem());
     this.container.appendChild(this.editor.getElem());
     this.container.appendChild(this.toolbar.getElem());
-    this.setPlugins([new Hr(), new Image(), new Quote()]);
+    // this.setPlugins([new Hr(), new Image(), new Quote()]);
     this.setOptions(options ? { ...defaultOptions, ...options } : defaultOptions);
     this.start();
   }
@@ -187,8 +210,9 @@ class Textarena {
 
   setData(data: TextarenaData): void {
     if (typeof data.content === 'string') {
-      this.parser.insertHtmlToModel(data.content, this.parser.model, 0);
-      this.viewer.render();
+      // this.parser.insertHtmlToModel(data.content, this.parser.model, 0);
+      this.parser.insertHtmlToModel('<h2>titl<i>e</i></h2><p>blah <em>it <b>bold</b> </em></p><p>blah <b>bold</b></p>', this.parser.model, 0);
+      this.viewer.render(this.parser.model);
       // this.parser.insert(data.content, true);
     }
     if (data.meta) {
