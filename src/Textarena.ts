@@ -84,7 +84,7 @@ class Textarena {
       {
         name: 'header2',
         tag: 'H2',
-        template: (child: TemplateResult | string) => html`<h2>${child}</h2>`,
+        template: (child: TemplateResult | string, id: string) => html`<h2 observe-id="${id}">${child}</h2>`,
         attributes: [],
         allowText: true,
       },

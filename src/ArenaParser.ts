@@ -2,7 +2,7 @@
 import { FilterXSS } from 'xss';
 import ElementHelper from 'ElementHelper';
 import ArenaLogger from 'ArenaLogger';
-import Arena from 'interfaces/Arena';
+import Arena, { ArenaWithText, ArenaWithRichText } from 'interfaces/Arena';
 import ArenaNodeInterface from 'interfaces/ArenaNodeInterface';
 import RootNode from 'models/RootNode';
 import RichTextManager from 'RichTextManager';
@@ -49,10 +49,10 @@ export default class ArenaParser {
   model: RootNode;
 
   constructor(private editor: ElementHelper, private logger: ArenaLogger) {
-    const paragraph: Arena = {
+    const paragraph: ArenaWithRichText = {
       name: 'paragraph',
       tag: 'P',
-      template: (child: TemplateResult | string) => html`<p>${child}</p>`,
+      template: (child: TemplateResult | string, id: string) => html`<p observe-id="${id}">${child}</p>`,
       attributes: [],
       allowText: true,
       allowFormating: true,
@@ -129,12 +129,12 @@ export default class ArenaParser {
   }
 
   public insertHtmlToModel(
-    html: string,
+    htmlString: string,
     arenaNode: ArenaNodeInterface,
     offset: number,
   ): [ArenaNodeInterface, number] {
     const node = document.createElement('DIV');
-    node.innerHTML = html;
+    node.innerHTML = htmlString;
     return this.insertChildren(node, arenaNode, offset);
   }
 
@@ -265,6 +265,33 @@ export default class ArenaParser {
       // [currentNode, currentOffset] = this.parseNode(childNode, currentNode, currentOffset);
     });
     return formatings;
+  }
+
+  getId(node: Node | HTMLElement): string | undefined {
+    if (node.nodeType === Node.ELEMENT_NODE) {
+      const elementNode = node as HTMLElement;
+      const id = elementNode.getAttribute('observe-id');
+      if (id) {
+        return id;
+      }
+    }
+    if (node.parentElement) {
+      return this.getId(node.parentElement);
+    }
+    return undefined;
+  }
+
+  checkSelection(): false {
+    const s = window.getSelection();
+    const range = s ? s.getRangeAt(0) : undefined;
+    const isCollapsed = s && s.isCollapsed;
+    if (isCollapsed) {
+      return false;
+    }
+    if (range) {
+      const startId = this.getId(range.startContainer);
+    }
+    return false;
   }
 
   getFilterXSS(): FilterXSS {

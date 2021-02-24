@@ -26,6 +26,10 @@ export default class MediatorNode implements ArenaNodeAncestorInterface, ArenaNo
     return this.parent.children.indexOf(this);
   }
 
+  getGlobalIndex(): string {
+    return `${this.parent.getGlobalIndex()}.${this.getMyIndex().toString()}`;
+  }
+
   insertText(
     text: string,
     offset: number,
@@ -52,9 +56,9 @@ export default class MediatorNode implements ArenaNodeAncestorInterface, ArenaNo
     return this.parent.createAndInsertNode(arena, this.getMyIndex() + 1);
   }
 
-  getHtml(): TemplateResult {
+  getHtml(): TemplateResult | string {
     return this.arena.template(html`
       ${repeat(this.children, (c, index) => index, (child) => child.getHtml())}
-    `);
+    `, this.getGlobalIndex());
   }
 }

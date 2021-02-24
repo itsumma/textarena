@@ -3,7 +3,7 @@ import { TemplateResult } from 'lit-html';
 type AbstractArena = {
   name: string,
   tag: string,
-  template: (child: TemplateResult | string) => TemplateResult,
+  template: (child: TemplateResult | string, id: string) => TemplateResult | string,
   attributes: string[],
 };
 

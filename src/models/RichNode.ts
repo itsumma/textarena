@@ -18,6 +18,10 @@ export default class RichNode implements ArenaNodeInterface {
     return this.parent.children.indexOf(this);
   }
 
+  getGlobalIndex(): string {
+    return `${this.parent.getGlobalIndex()}.${this.getMyIndex().toString()}`;
+  }
+
   insertText(
     text: string,
     offset: number,
@@ -32,10 +36,10 @@ export default class RichNode implements ArenaNodeInterface {
     return this.parent.createAndInsertNode(arena, this.getMyIndex() + 1);
   }
 
-  getHtml(): TemplateResult {
+  getHtml(): TemplateResult | string {
     console.log('rich node', this.arena.tag, this.richTextManager.getHtml());
     return this.arena.template(html`
       ${unsafeHTML(this.richTextManager.getHtml())}
-    `);
+    `, this.getGlobalIndex());
   }
 }

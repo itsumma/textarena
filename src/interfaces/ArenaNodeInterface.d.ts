@@ -15,5 +15,7 @@ export default interface ArenaNodeInterface {
     ArenaNodeInterface | undefined, ArenaNodeInterface, number,
   ];
 
-  getHtml(): TemplateResult;
+  getHtml(): TemplateResult | string;
+
+  getGlobalIndex(): string;
 }

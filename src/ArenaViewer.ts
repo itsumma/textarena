@@ -4,7 +4,12 @@ import ElementHelper from 'ElementHelper';
 import EventManager from 'EventManager';
 import ArenaNodeInterface from 'interfaces/ArenaNodeInterface';
 
-
+const modifiersKeys = {
+  shift: 16,
+  ctrl: 17,
+  alt: 18,
+  meta: 91,
+};
 
 const selectionKeys = {
   pageup: 33,
@@ -19,6 +24,10 @@ const selectionKeys = {
 };
 
 const typeKeys = {
+  space: 32,
+};
+
+const removeKeys = {
   space: 32,
   backspace: 8,
   delete: 46,
@@ -61,9 +70,13 @@ function invertObject<
   return result as { [key in T[keyof T]]: keyof T };
 }
 
-const typeCodes = invertObject(typeKeys);
+const modifiersCodes = invertObject(modifiersKeys);
 
 const selectionCodes = invertObject(selectionKeys);
+
+const typeCodes = invertObject(typeKeys);
+
+const removeCodes = invertObject(removeKeys);
 
 const specialCodes = invertObject(specialKeys);
 
@@ -119,91 +132,110 @@ export default class ArenaViewer {
     });
   }
 
-  render(arenaNode: ArenaNodeInterface) {
-    console.log('asd');
+  render(arenaNode: ArenaNodeInterface): void {
     this.logger.log(arenaNode.getHtml().getHTML());
     render(arenaNode.getHtml(), this.editor.getElem());
   }
 
   inputListener(e: Event): void {
     // this.logger.info('input', e);
-    e.preventDefault();
-    e.stopPropagation();
+    // e.preventDefault();
+    // e.stopPropagation();
   }
 
   beforeinputListener(e: Event): void {
-    this.logger.info('beforeinput', e);
-    e.preventDefault();
-    e.stopPropagation();
+    // this.logger.info('beforeinput', e);
+    // if (e.inputType === 'formatBold') {
+    //   e.preventDefault();
+    //   e.stopPropagation();
+    // }
   }
 
   mouseUpListener(): void {
     // this.logger.info('mouseUp');
   }
 
-  keyUpListener(e: KeyboardEvent): void {
-    // this.logger.info('keyUp', e);
-    e.preventDefault();
-    e.stopPropagation();
-  }
-
-  keyPressListener(e: KeyboardEvent): void {
-    // this.logger.info('keyPress', e);
-    e.preventDefault();
-    e.stopPropagation();
-  }
-
-  keyDownListener(e: KeyboardEvent): boolean {
-    e.preventDefault();
-    e.stopPropagation();
-    // this.logger.info('keyDown', e);
-
+  checkEvent(e: KeyboardEvent): 'prevent' | 'input' | 'selection' {
     const modifiers = {
       shift: e.shiftKey,
       ctrl: e.ctrlKey,
       alt: e.altKey,
       meta: e.metaKey,
     };
-    let code;
-    if (e.keyCode) {
-      code = e.keyCode;
-    } else if (e.which) {
-      code = e.which;
-    }
+    const code = e.keyCode || e.which;
     const character = code ? String.fromCharCode(code).toLowerCase() : undefined;
-    if (!code) {
-      return false;
-    }
-    if (specialCodes[code]) {
-      // this.logger.info(`keyDown: ${specialCodes[code]}`);
-      // special code
+    if (modifiersCodes[code]) {
+      this.logger.info(`keyDown modifier: ${modifiersCodes[code]}`);
+      // nothing to do
+    } else if (specialCodes[code]) {
+      this.logger.info(`keyDown specialCode: ${specialCodes[code]}`);
+      // TODO special code
     } else if (selectionCodes[code]) {
-      // this.logger.info(`keyDown true: ${selectionCodes[code]}`);
-      return true;
-    } else if (typeCodes[code]) {
-      // this.logger.info(`keyDown true: ${typeCodes[code]}`);
-      return true;
+      this.logger.info(`keyDown selectionCode: ${selectionCodes[code]}`);
+      // nothing to do
+      return 'selection';
+    } else if (removeCodes[code]) {
+      this.logger.info(`keyDown removeCode: ${removeCodes[code]}`);
+      // TODO custom remove
     } else if (modifiers.alt || modifiers.ctrl || modifiers.meta) {
-      this.logger.info(`keyDown: ${character}`, modifiers, e);
-      // modifier + character
-      e.stopPropagation();
-      e.preventDefault();
-      return false;
+      const mod = Object.entries(modifiers).filter(([, t]) => t).map(([m]) => m).join(', ');
+      this.logger.info(`keyDown modifier ${mod} + ${character}`, code, e);
+      // TODO modifier + character
     } else {
-      this.logger.info(`keyDown true: ${character}`);
-      return true;
+      this.logger.info(`keyDown true: ${character}`, code, e);
+
+      // TODO observe changes
+      return 'input';
     }
-    e.cancelBubble = true;
-    e.returnValue = false;
-    if (e.stopPropagation) {
-      e.stopPropagation();
-      e.preventDefault();
+    return 'prevent';
+  }
+
+  keyUpListener(e: KeyboardEvent): void {
+    const result = this.checkEvent(e);
+    if (result === 'input') {
+      const s = window.getSelection();
+      const range = s ? s.getRangeAt(0) : undefined;
+      const isCollapsed = s && s.isCollapsed;
+      this.logger.log('oserve', e, isCollapsed, range?.startContainer, range?.endContainer);
+
     }
-    return false;
+  }
+
+  keyPressListener(e: KeyboardEvent): void {
+    // this.logger.info('keyPress', e);
+    // e.preventDefault();
+    // e.stopPropagation();
+  }
+
+  keyDownListener(e: KeyboardEvent): void {
+    const result = this.checkEvent(e);
+    if (result === 'input') {
+      const s = window.getSelection();
+      const range = s ? s.getRangeAt(0) : undefined;
+      const isCollapsed = s && s.isCollapsed;
+      if (!isCollapsed) {
+        // TODO remove selection
+      }
+    }
+    if (result === 'prevent') {
+      e.cancelBubble = true;
+      e.returnValue = false;
+      if (e.stopPropagation) {
+        e.stopPropagation();
+        e.preventDefault();
+      }
+    }
   }
 
   pasteListener(e: ClipboardEvent): void {
-    // this.logger.info('pasteListener', e);
+    e.preventDefault();
+    this.logger.info('pasteListener', e);
+    const s = window.getSelection();
+    const isCollapsed = s && s.isCollapsed;
+    if (!isCollapsed) {
+      // TODO remove selection
+    }
+    // TODO paste
   }
 
   selectListener(): void {

@@ -17,6 +17,10 @@ export default class RootNode implements ArenaNodeAncestorInterface {
   ) {
   }
 
+  getGlobalIndex(): string {
+    return '0';
+  }
+
   insertText(
     text: string,
     offset: number,
@@ -45,10 +49,9 @@ export default class RootNode implements ArenaNodeAncestorInterface {
     return [undefined, this, offset];
   }
 
-  getHtml(): TemplateResult {
-    console.log('root node');
+  getHtml(): TemplateResult |string {
     return this.arena.template(html`
       ${repeat(this.children, (c, index) => index, (child) => child.getHtml())}
-    `);
+    `, this.getGlobalIndex());
   }
 }
