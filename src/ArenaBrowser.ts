@@ -1,8 +1,8 @@
-import { html, render } from 'lit-html';
 import ArenaLogger from 'ArenaLogger';
 import ElementHelper from 'ElementHelper';
 import EventManager from 'EventManager';
 import ArenaNodeInterface from 'interfaces/ArenaNodeInterface';
+import Textarena from 'Textarena';
 
 const modifiersKeys = {
   shift: 16,
@@ -80,7 +80,7 @@ const removeCodes = invertObject(removeKeys);
 
 const specialCodes = invertObject(specialKeys);
 
-export default class ArenaViewer {
+export default class ArenaBrowser {
   inputListenerInstance: ((e: Event) => void);
 
   beforeinputListenerInstance: ((e: Event) => void);
@@ -98,9 +98,7 @@ export default class ArenaViewer {
   pasteListenerInstance: ((event: ClipboardEvent) => void);
 
   constructor(
-    private editor: ElementHelper,
-    private logger: ArenaLogger,
-    private eventManager: EventManager,
+    private textarena: Textarena,
   ) {
     this.inputListenerInstance = this.inputListener.bind(this);
     this.beforeinputListenerInstance = this.beforeinputListener.bind(this);
@@ -110,41 +108,37 @@ export default class ArenaViewer {
     this.keyDownListenerInstance = this.keyDownListener.bind(this);
     this.selectListenerInstance = this.selectListener.bind(this);
     this.pasteListenerInstance = this.pasteListener.bind(this);
-    this.eventManager.subscribe('turnOn', () => {
-      document.addEventListener('input', this.inputListenerInstance, false);
-      document.addEventListener('beforeinput', this.beforeinputListenerInstance, false);
-      document.addEventListener('mouseup', this.mouseUpListenerInstance, false);
-      document.addEventListener('keyup', this.keyUpListenerInstance, false);
-      document.addEventListener('keypress', this.keyPressListenerInstance, false);
-      document.addEventListener('keydown', this.keyDownListenerInstance, false);
-      document.addEventListener('paste', this.pasteListenerInstance, false);
+    this.textarena.eventManager.subscribe('turnOn', () => {
+      this.textarena.editor.addEventListener('input', this.inputListenerInstance, false);
+      this.textarena.editor.addEventListener('beforeinput', this.beforeinputListenerInstance, false);
+      this.textarena.editor.addEventListener('mouseup', this.mouseUpListenerInstance, false);
+      this.textarena.editor.addEventListener('keyup', this.keyUpListenerInstance, false);
+      this.textarena.editor.addEventListener('keypress', this.keyPressListenerInstance, false);
+      this.textarena.editor.addEventListener('keydown', this.keyDownListenerInstance, false);
+      this.textarena.editor.addEventListener('paste', this.pasteListenerInstance, false);
       document.addEventListener('selectionchange', this.selectListenerInstance, false);
     });
-    this.eventManager.subscribe('turnOff', () => {
-      this.editor.removeEventListener('input', this.inputListenerInstance);
-      this.editor.removeEventListener('mouseup', this.mouseUpListenerInstance);
-      this.editor.removeEventListener('keyup', this.keyUpListenerInstance);
-      this.editor.removeEventListener('keypress', this.keyPressListenerInstance);
-      this.editor.removeEventListener('keydown', this.keyDownListenerInstance);
-      this.editor.removeEventListener('paste', this.pasteListenerInstance);
+    this.textarena.eventManager.subscribe('turnOff', () => {
+      this.textarena.editor.removeEventListener('input', this.inputListenerInstance);
+      this.textarena.editor.removeEventListener('beforeinput', this.beforeinputListenerInstance);
+      this.textarena.editor.removeEventListener('mouseup', this.mouseUpListenerInstance);
+      this.textarena.editor.removeEventListener('keyup', this.keyUpListenerInstance);
+      this.textarena.editor.removeEventListener('keypress', this.keyPressListenerInstance);
+      this.textarena.editor.removeEventListener('keydown', this.keyDownListenerInstance);
+      this.textarena.editor.removeEventListener('paste', this.pasteListenerInstance);
       document.removeEventListener('selectionchange', this.selectListenerInstance);
-      this.editor.stopObserve();
+      // this.textarena.editor.stopObserve();
     });
-  }
-
-  render(arenaNode: ArenaNodeInterface): void {
-    this.logger.log(arenaNode.getHtml().getHTML());
-    render(arenaNode.getHtml(), this.editor.getElem());
   }
 
   inputListener(e: Event): void {
-    // this.logger.info('input', e);
+    // this.textarena.logger.info('input', e);
     // e.preventDefault();
     // e.stopPropagation();
   }
 
   beforeinputListener(e: Event): void {
-    // this.logger.info('beforeinput', e);
+    // this.textarena.logger.info('beforeinput', e);
     // if (e.inputType === 'formatBold') {
     //   e.preventDefault();
     //   e.stopPropagation();
@@ -152,7 +146,7 @@ export default class ArenaViewer {
   }
 
   mouseUpListener(): void {
-    // this.logger.info('mouseUp');
+    // this.textarena.logger.info('mouseUp');
   }
 
   checkEvent(e: KeyboardEvent): 'prevent' | 'input' | 'selection' {
@@ -165,24 +159,24 @@ export default class ArenaViewer {
     const code = e.keyCode || e.which;
     const character = code ? String.fromCharCode(code).toLowerCase() : undefined;
     if (modifiersCodes[code]) {
-      this.logger.info(`keyDown modifier: ${modifiersCodes[code]}`);
+      this.textarena.logger.info(`keyDown modifier: ${modifiersCodes[code]}`);
       // nothing to do
     } else if (specialCodes[code]) {
-      this.logger.info(`keyDown specialCode: ${specialCodes[code]}`);
+      this.textarena.logger.info(`keyDown specialCode: ${specialCodes[code]}`);
       // TODO special code
     } else if (selectionCodes[code]) {
-      this.logger.info(`keyDown selectionCode: ${selectionCodes[code]}`);
+      this.textarena.logger.info(`keyDown selectionCode: ${selectionCodes[code]}`);
       // nothing to do
       return 'selection';
     } else if (removeCodes[code]) {
-      this.logger.info(`keyDown removeCode: ${removeCodes[code]}`);
+      this.textarena.logger.info(`keyDown removeCode: ${removeCodes[code]}`);
       // TODO custom remove
     } else if (modifiers.alt || modifiers.ctrl || modifiers.meta) {
       const mod = Object.entries(modifiers).filter(([, t]) => t).map(([m]) => m).join(', ');
-      this.logger.info(`keyDown modifier ${mod} + ${character}`, code, e);
+      this.textarena.logger.info(`keyDown modifier ${mod} + ${character}`, code, e);
       // TODO modifier + character
     } else {
-      this.logger.info(`keyDown true: ${character}`, code, e);
+      this.textarena.logger.info(`keyDown true: ${character}`, code, e);
 
       // TODO observe changes
       return 'input';
@@ -196,13 +190,12 @@ export default class ArenaViewer {
       const s = window.getSelection();
       const range = s ? s.getRangeAt(0) : undefined;
       const isCollapsed = s && s.isCollapsed;
-      this.logger.log('oserve', e, isCollapsed, range?.startContainer, range?.endContainer);
-
+      this.textarena.logger.log('oserve', e, isCollapsed, range?.startContainer, range?.endContainer);
     }
   }
 
   keyPressListener(e: KeyboardEvent): void {
-    // this.logger.info('keyPress', e);
+    // this.textarena.logger.info('keyPress', e);
     // e.preventDefault();
     // e.stopPropagation();
   }
@@ -229,7 +222,7 @@ export default class ArenaViewer {
 
   pasteListener(e: ClipboardEvent): void {
     e.preventDefault();
-    this.logger.info('pasteListener', e);
+    this.textarena.logger.info('pasteListener', e);
     const s = window.getSelection();
     const isCollapsed = s && s.isCollapsed;
     if (!isCollapsed) {
@@ -239,6 +232,6 @@ export default class ArenaViewer {
   }
 
   selectListener(): void {
-    // this.logger.info('select');
+    // this.textarena.logger.info('select');
   }
 }

@@ -16,8 +16,10 @@ import Hr from 'plugins/Hr';
 import Image from 'plugins/Image';
 import Quote from 'plugins/Blockquote';
 import Callout from 'components/Callout';
-import ArenaViewer from 'ArenaViewer';
+import ArenaBrowser from 'ArenaBrowser';
 import { TemplateResult, html } from 'lit-html';
+import ArenaModel from 'ArenaModel';
+import ArenaView from 'ArenaView';
 
 // FIXME как инициализировать кмопоненты.
 const callout = new Callout();
@@ -59,101 +61,43 @@ class Textarena {
 
   eventManager: EventManager;
 
-  viewer: ArenaViewer;
+  browser: ArenaBrowser;
+
+  viewer: ArenaView;
 
   parser: ArenaParser;
 
+  model: ArenaModel;
+
   // manipulator: Manipulator;
 
-  toolbar: Toolbar;
+  // toolbar: Toolbar;
 
-  creatorBar: CreatorBar;
+  // creatorBar: CreatorBar;
 
   options: TextarenaOptions = {};
 
   meta: MetaData = {};
 
   constructor(container: HTMLElement, options?: TextarenaOptions) {
+    // DOM Elements
     this.container = new ElementHelper(container, 'textarena-container', '');
     this.editor = new ElementHelper('DIV', 'textarena-editor');
-    this.logger = new ArenaLogger();
-    this.eventManager = new EventManager(this.logger);
-    this.parser = new ArenaParser(this.editor, this.logger);
 
-    this.parser.registerArena(
-      {
-        name: 'header2',
-        tag: 'H2',
-        template: (child: TemplateResult | string, id: string) => html`<h2 observe-id="${id}">${child}</h2>`,
-        attributes: [],
-        allowText: true,
-      },
-      [
-        {
-          tag: 'H2',
-          attributes: [],
-        },
-      ],
-      [ArenaParser.rootArenaName],
-    );
-    this.parser.registerFormating(
-      {
-        name: 'strong',
-        tag: 'STRONG',
-        attributes: [],
-      },
-      [
-        {
-          tag: 'B',
-          attributes: [],
-        },
-        {
-          tag: 'STRONG',
-          attributes: [],
-        },
-        {
-          tag: 'SPAN',
-          attributes: [
-            'style=fontWeight:bold',
-            'style=fontWeight:900',
-            'style=fontWeight:800',
-            'style=fontWeight:700',
-            'style=fontWeight:600',
-          ],
-        },
-      ],
-    );
-    this.parser.registerFormating(
-      {
-        name: 'italic',
-        tag: 'EM',
-        attributes: [],
-      },
-      [
-        {
-          tag: 'I',
-          attributes: [],
-        },
-        {
-          tag: 'EM',
-          attributes: [],
-        },
-        {
-          tag: 'SPAN',
-          attributes: [
-            'style=fontStyle:italic',
-          ],
-        },
-      ],
-    );
-    window['parser'] = this.parser;
-    this.viewer = new ArenaViewer(this.editor, this.logger, this.eventManager);
+    // Services
+    this.eventManager = new EventManager(this);
+    this.logger = new ArenaLogger();
+    this.parser = new ArenaParser(this);
+    this.model = new ArenaModel(this);
+    this.browser = new ArenaBrowser(this);
+    this.viewer = new ArenaView(this);
+
     // this.manipulator = new Manipulator(this.editor, this.eventManager, this.parser);
-    this.toolbar = new Toolbar(this.container, this.editor, this.eventManager);
-    this.creatorBar = new CreatorBar(this.editor, this.eventManager, this.parser);
-    this.container.appendChild(this.creatorBar.getElem());
+    // this.toolbar = new Toolbar(this.container, this.editor, this.eventManager);
+    // this.creatorBar = new CreatorBar(this.editor, this.eventManager, this.parser);
+    // this.container.appendChild(this.creatorBar.getElem());
     this.container.appendChild(this.editor.getElem());
-    this.container.appendChild(this.toolbar.getElem());
+    // this.container.appendChild(this.toolbar.getElem());
     // this.setPlugins([new Hr(), new Image(), new Quote()]);
     this.setOptions(options ? { ...defaultOptions, ...options } : defaultOptions);
     this.start();
@@ -210,9 +154,11 @@ class Textarena {
 
   setData(data: TextarenaData): void {
     if (typeof data.content === 'string') {
-      // this.parser.insertHtmlToModel(data.content, this.parser.model, 0);
-      this.parser.insertHtmlToModel('<h2>titl<i>e</i></h2><p>blah <em>it <b>bold</b> </em></p><p>blah <b>bold</b></p>', this.parser.model, 0);
-      this.viewer.render(this.parser.model);
+      this.parser.insertHtmlToRoot(data.content);
+      // this.parser.insertHtmlToModel(
+      // '<h2>titl<i>e</i></h2><p>blah <em>it <b>bold</b> </em></p><p>blah <b>bold</b></p>',
+      // this.parser.model, 0);
+      this.viewer.render();
       // this.parser.insert(data.content, true);
     }
     if (data.meta) {
@@ -247,11 +193,11 @@ class Textarena {
   }
 
   setToolbarOptions(toolbarOptions: ToolbarOptions): void {
-    this.toolbar.setOptions(toolbarOptions);
+    // this.toolbar.setOptions(toolbarOptions);
   }
 
   setCreatorBarOptions(creatorBarOptions: CreatorBarOptions): void {
-    this.creatorBar.setOptions(creatorBarOptions);
+    // this.creatorBar.setOptions(creatorBarOptions);
   }
 
   // TODO вынести это в плагин для картинок

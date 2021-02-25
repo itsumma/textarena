@@ -1,4 +1,4 @@
-import ArenaLogger from 'ArenaLogger';
+import Textarena from 'Textarena';
 
 export type MediaEvent = {
   name: string,
@@ -14,11 +14,11 @@ type Handlers = {
 export default class EventManager {
   handlers: Handlers = {};
 
-  constructor(private logger: ArenaLogger) {
+  constructor(private textarena: Textarena) {
   }
 
   fire(event: string | MediaEvent): void {
-    this.logger.log(`fire:  ${event}`);
+    this.textarena.logger.log(`fire:  ${event}`);
     const eventName = typeof event === 'string' ? event : event.name;
     if (this.handlers[eventName]) {
       this.handlers[eventName].map((handler) => handler(event));

@@ -1,6 +1,6 @@
 import { TemplateResult } from 'lit-html';
 
-type AbstractArena = {
+export type AbstractArena = {
   name: string,
   tag: string,
   template: (child: TemplateResult | string, id: string) => TemplateResult | string,

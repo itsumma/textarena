@@ -1,138 +1,32 @@
 /* eslint-disable no-console */
 import { FilterXSS } from 'xss';
-import ElementHelper from 'ElementHelper';
-import ArenaLogger from 'ArenaLogger';
-import Arena, { ArenaWithText, ArenaWithRichText } from 'interfaces/Arena';
+import Arena from 'interfaces/Arena';
 import ArenaNodeInterface from 'interfaces/ArenaNodeInterface';
-import RootNode from 'models/RootNode';
 import RichTextManager from 'RichTextManager';
-import { TemplateResult, html } from 'lit-html';
-
-type TagAndAttributes = {
-  tag: string,
-  attributes: string[],
-};
-
-type ArenaFormating = {
-  name: string,
-  tag: string,
-  attributes: string[],
-};
-
-type ArenaMark = {
-  attributes: string[],
-  arena: Arena,
-};
-
-type FormatingMark = {
-  attributes: string[],
-  formating: ArenaFormating
-};
+import Textarena from 'Textarena';
+import { ArenaFormating } from 'ArenaModel';
 
 export default class ArenaParser {
-  static rootArenaName = '__ROOT__';
-
   private filterXSS: FilterXSS | undefined;
 
-  arenas: Arena[] = [];
-
-  arenasByName: { [name: string]: Arena } = { };
-
-  formatings: ArenaFormating[] = [];
-
-  areanMarks: { [tag: string]: ArenaMark[] } = { };
-
-  formatingMarks: { [tag: string]: FormatingMark[] } = { };
-
-  rootArena: Arena;
-
-  model: RootNode;
-
-  constructor(private editor: ElementHelper, private logger: ArenaLogger) {
-    const paragraph: ArenaWithRichText = {
-      name: 'paragraph',
-      tag: 'P',
-      template: (child: TemplateResult | string, id: string) => html`<p observe-id="${id}">${child}</p>`,
-      attributes: [],
-      allowText: true,
-      allowFormating: true,
-    };
-    this.rootArena = {
-      name: ArenaParser.rootArenaName,
-      tag: '',
-      template: (child: TemplateResult | string) => child,
-      attributes: [],
-      arenaForText: paragraph,
-      allowedArenas: [
-      ],
-    };
-    this.registerArena(
-      this.rootArena,
-      [],
-      [],
-    );
-    this.registerArena(
-      paragraph,
-      [
-        {
-          tag: 'P',
-          attributes: [],
-        },
-        {
-          tag: 'DIV',
-          attributes: [],
-        },
-      ],
-      [ArenaParser.rootArenaName],
-    );
-    this.model = new RootNode(this.rootArena);
+  constructor(private textarena: Textarena) {
   }
 
-  public registerArena(
-    arena: Arena,
-    markers: TagAndAttributes[],
-    parentArenas: string[],
+  public insertHtmlToRoot(
+    htmlString: string,
   ): void {
-    this.arenas.push(arena);
-    this.arenasByName[arena.name] = arena;
-    parentArenas.forEach((parentName) => {
-      const parentArena = this.arenasByName[parentName];
-      if (parentArena && 'allowedArenas' in parentArena) {
-        parentArena.allowedArenas.push(arena);
-      }
-    });
-    markers.forEach(({ tag, attributes }) => {
-      if (!this.areanMarks[tag]) {
-        this.areanMarks[tag] = [];
-      }
-      this.areanMarks[tag].push({
-        attributes,
-        arena,
-      });
-    });
-  }
-
-  public registerFormating(
-    formating: ArenaFormating,
-    markers: TagAndAttributes[],
-  ): void {
-    this.formatings.push(formating);
-    markers.forEach(({ tag, attributes }) => {
-      if (!this.formatingMarks[tag]) {
-        this.formatingMarks[tag] = [];
-      }
-      this.formatingMarks[tag].push({
-        attributes,
-        formating,
-      });
-    });
+    this.insertHtmlToModel(
+      htmlString,
+      this.textarena.model.model,
+      0,
+    );
   }
 
   public insertHtmlToModel(
     htmlString: string,
     arenaNode: ArenaNodeInterface,
     offset: number,
-  ): [ArenaNodeInterface, number] {
+  ): [ArenaNodeInterface, number] | undefined {
     const node = document.createElement('DIV');
     node.innerHTML = htmlString;
     return this.insertChildren(node, arenaNode, offset);
@@ -143,7 +37,7 @@ export default class ArenaParser {
     arenaNode: ArenaNodeInterface,
     offset: number,
   ): void {
-    this.logger.log('atata');
+    this.textarena.logger.log('atata');
     arenaNode.insertText(text, offset, undefined);
   }
 
@@ -151,11 +45,16 @@ export default class ArenaParser {
     node: HTMLElement,
     arenaNode: ArenaNodeInterface,
     offset: number,
-  ): [ArenaNodeInterface, number] {
+  ): [ArenaNodeInterface, number] | undefined {
     let currentNode = arenaNode;
     let currentOffset = offset;
     node.childNodes.forEach((childNode) => {
-      [currentNode, currentOffset] = this.insertChildNode(childNode, currentNode, currentOffset);
+      const result = this.insertChildNode(childNode, currentNode, currentOffset);
+      if (result) {
+        [currentNode, currentOffset] = result;
+      } else {
+        return undefined;
+      }
     });
     return [currentNode, currentOffset];
   }
@@ -164,43 +63,46 @@ export default class ArenaParser {
     node: ChildNode,
     arenaNode: ArenaNodeInterface,
     offset: number,
-  ): [ArenaNodeInterface, number] {
+  ): [ArenaNodeInterface, number] | undefined {
     if (node.nodeType === Node.TEXT_NODE) {
       const text = node.textContent || '';
-      this.logger.log('insert text', text);
+      this.textarena.logger.log('insert text', text);
       return arenaNode.insertText(text, offset, undefined);
     }
     if (node.nodeType === Node.ELEMENT_NODE) {
       const elementNode = node as HTMLElement;
       const arena = this.checkArenaMark(elementNode);
       if (arena) {
-        const [
-          newArenaNode,
-          currentNode,
-          currentOffset,
-        ] = arenaNode.createAndInsertNode(arena, offset);
-        if (newArenaNode) {
-          this.insertChildren(elementNode, newArenaNode, 0);
-          return [currentNode, currentOffset];
+        const result = arenaNode.createAndInsertNode(arena, offset);
+        if (result) {
+          const [
+            newArenaNode,
+            currentNode,
+            currentOffset,
+          ] = result;
+          if (newArenaNode) {
+            this.insertChildren(elementNode, newArenaNode, 0);
+            return [currentNode, currentOffset];
+          }
         }
-        this.logger.log('this is arena');
+        this.textarena.logger.log('this is arena');
         return this.insertChildren(elementNode, arenaNode, offset);
       }
       const formating = this.checkFormatingMark(elementNode);
       if (formating) {
         const formatings = this.getText(elementNode);
         formatings.insertFormating(formating.name, 0, formatings.text.length);
-        this.logger.log('this is formating', formatings);
+        this.textarena.logger.log('this is formating', formatings);
         return arenaNode.insertText(formatings.text, offset, formatings);
       }
       return this.insertChildren(elementNode, arenaNode, offset);
     }
-    this.logger.error('unaccepted node type, remove', node);
+    this.textarena.logger.error('unaccepted node type, remove', node);
     return [arenaNode, offset];
   }
 
   private checkArenaMark(node: HTMLElement): Arena | undefined {
-    const marks = this.areanMarks[node.tagName];
+    const marks = this.textarena.model.getArenaMarks(node.tagName);
     if (marks) {
       for (let i = 0; i < marks.length; i += 1) {
         const mark = marks[i];
@@ -213,7 +115,7 @@ export default class ArenaParser {
   }
 
   private checkFormatingMark(node: HTMLElement): ArenaFormating | undefined {
-    const marks = this.formatingMarks[node.tagName];
+    const marks = this.textarena.model.getFormatingMarks(node.tagName);
     if (marks) {
       for (let i = 0; i < marks.length; i += 1) {
         const mark = marks[i];
@@ -226,7 +128,7 @@ export default class ArenaParser {
   }
 
   private checkAttributes(node: HTMLElement, attributes: string[]): boolean {
-    this.logger.log('aa');
+    this.textarena.logger.log('aa');
     if (attributes.length === 0) {
       return true;
     }
@@ -245,7 +147,7 @@ export default class ArenaParser {
     return false;
   }
 
-  public getText(node: HTMLElement): RichTextManager {
+  private getText(node: HTMLElement): RichTextManager {
     const formatings = new RichTextManager();
     let offset = 0;
     node.childNodes.forEach((childNode) => {
@@ -260,14 +162,14 @@ export default class ArenaParser {
         }
         offset = formatings.insertText(newFormatings.text, offset, newFormatings);
       } else {
-        this.logger.error('unaccepted node type, remove', childNode);
+        this.textarena.logger.error('unaccepted node type, remove', childNode);
       }
       // [currentNode, currentOffset] = this.parseNode(childNode, currentNode, currentOffset);
     });
     return formatings;
   }
 
-  getId(node: Node | HTMLElement): string | undefined {
+  private getId(node: Node | HTMLElement): string | undefined {
     if (node.nodeType === Node.ELEMENT_NODE) {
       const elementNode = node as HTMLElement;
       const id = elementNode.getAttribute('observe-id');
@@ -281,7 +183,7 @@ export default class ArenaParser {
     return undefined;
   }
 
-  checkSelection(): false {
+  public getSelectionModel(): false {
     const s = window.getSelection();
     const range = s ? s.getRangeAt(0) : undefined;
     const isCollapsed = s && s.isCollapsed;
@@ -290,6 +192,11 @@ export default class ArenaParser {
     }
     if (range) {
       const startId = this.getId(range.startContainer);
+      const endId = this.getId(range.startContainer);
+      if (startId && endId) {
+        const startModel = this.textarena.model.getModelById(startId);
+        const endModel = this.textarena.model.getModelById(endId);
+      }
     }
     return false;
   }
@@ -297,7 +204,7 @@ export default class ArenaParser {
   getFilterXSS(): FilterXSS {
     if (!this.filterXSS) {
       this.filterXSS = new FilterXSS({
-        escapeHtml: (html) => html,
+        escapeHtml: (htmlString) => htmlString,
         stripIgnoreTag: false,
         stripIgnoreTagBody: ['script'],
         allowCommentTag: false,
@@ -328,7 +235,7 @@ export default class ArenaParser {
     return this.filterXSS;
   }
 
-  xss(html: string): string {
-    return this.getFilterXSS().process(html);
+  xss(htmlString: string): string {
+    return this.getFilterXSS().process(htmlString);
   }
 }

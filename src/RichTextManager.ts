@@ -7,7 +7,7 @@ type Formatings = {
 type Insertion = {
   tag: string,
   offset: number,
-}
+};
 
 export default class RichTextManager {
   private formatings: Formatings = { };
@@ -37,7 +37,7 @@ export default class RichTextManager {
   insertText(
     text: string,
     offset = 0,
-    formatings: RichTextManager | undefined,
+    formatings?: RichTextManager,
   ): number {
     this.text = this.text.slice(0, offset) + text + this.text.slice(offset);
     this.shiftFormatings(offset, text.length);

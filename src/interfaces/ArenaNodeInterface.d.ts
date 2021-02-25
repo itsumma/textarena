@@ -8,12 +8,12 @@ export default interface ArenaNodeInterface {
   insertText(
     text: string,
     offset: number,
-    formatings: RichTextManager | undefined,
-  ): [ArenaNodeInterface, number];
+    formatings?: RichTextManager,
+  ): [ArenaNodeInterface, number] | undefined;
 
   createAndInsertNode(arena: Arena, offset: number): [
-    ArenaNodeInterface | undefined, ArenaNodeInterface, number,
-  ];
+    ArenaNodeInterface, ArenaNodeInterface, number,
+  ] | undefined;
 
   getHtml(): TemplateResult | string;
 
