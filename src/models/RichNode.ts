@@ -23,4 +23,8 @@ export default class RichNode
       ${unsafeHTML(this.richTextManager.getHtml())}
     `;
   }
+
+  removeText(start: number, end?: number): void {
+    this.richTextManager.removeText(start, end);
+  }
 }

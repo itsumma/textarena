@@ -16,18 +16,18 @@ export default abstract class AbstractNodeText
     super(arena, parent);
   }
 
-  getMyIndex(): number {
+  getIndex(): number {
     return this.parent.children.indexOf(this as ArenaNodeScion);
   }
 
   getGlobalIndex(): string {
-    return `${this.parent.getGlobalIndex()}.${this.getMyIndex().toString()}`;
+    return `${this.parent.getGlobalIndex()}.${this.getIndex().toString()}`;
   }
 
   createAndInsertNode(arena: Arena): [
     ArenaNodeCore, ArenaNodeCore, number,
   ] | undefined {
-    return this.parent.createAndInsertNode(arena, this.getMyIndex() + 1);
+    return this.parent.createAndInsertNode(arena, this.getIndex() + 1);
   }
 
   getText(): TemplateResult | string {

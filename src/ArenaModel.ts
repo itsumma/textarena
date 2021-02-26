@@ -6,6 +6,9 @@ import { TemplateResult, html } from 'lit-html';
 import Textarena from 'Textarena';
 import ArenaNodeText from 'interfaces/ArenaNodeText';
 import ArenaNode from 'interfaces/ArenaNode';
+import ArenaSelection from 'ArenaSelection';
+import ArenaNodeAncestor from 'interfaces/ArenaNodeAncestor';
+import ArenaNodeScion from 'interfaces/ArenaNodeScion';
 
 type TagAndAttributes = {
   tag: string,
@@ -215,5 +218,65 @@ export default class ArenaModel {
       }
     }
     return undefined;
+  }
+
+  getAncestors(node: ArenaNode): ArenaNodeAncestor[] {
+    if ('hasParent' in node) {
+      return [...this.getAncestors(node.parent), node.parent];
+    }
+    return [];
+  }
+
+  public getCommonAncestor(nodeA: ArenaNode, nodeB: ArenaNode): ArenaNode | undefined {
+    if (nodeA === nodeB) {
+      return nodeA;
+    }
+    const ancestorsForA = this.getAncestors(nodeA);
+    const ancestorsForB = this.getAncestors(nodeB);
+    const commonMaxDeep = Math.min(ancestorsForA.length, ancestorsForB.length);
+    if (commonMaxDeep === 0) {
+      return undefined;
+    }
+    let i = 0;
+    let result;
+    while (ancestorsForA[i] === ancestorsForB[i]) {
+      result = ancestorsForA[i];
+      i += 1;
+    }
+    return result;
+  }
+
+  public removeSelection(selection: ArenaSelection): void {
+    if (selection.startNode === selection.endNode) {
+      selection.startNode.removeText(selection.startOffset, selection.endOffset);
+      return;
+    }
+    const commonAncestor = this.getCommonAncestor(selection.startNode, selection.endNode);
+    if (!commonAncestor) {
+      return;
+    }
+
+    if (selection.startOffset === 0) {
+      selection.startNode.remove();
+    } else {
+      selection.startNode.removeText(selection.startOffset);
+    }
+    if (selection.startNode.parent === commonAncestor) {
+
+      const endIndex = selection.endNode.getIndex();
+    }
+    if (selection.startNode.parent !== commonAncestor) {
+      selection.startNode.parent.children
+    }
+
+    let cursor: ArenaNode = selection.startNode;
+    cursor = cursor.parent;
+    while (cursor !== commonAncestor) {
+      if ('hasParent' in cursor) {
+        cursor = cursor.parent;
+      } else {
+        return;
+      }
+    }
   }
 }

@@ -52,4 +52,8 @@ export default abstract class AbstractNodeAncestor {
     }
     return undefined;
   }
+
+  public removeChild(index: number): void {
+    this.children.splice(index, 1);
+  }
 }

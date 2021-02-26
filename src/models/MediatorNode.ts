@@ -23,12 +23,12 @@ export default class MediatorNode
     super(arena);
   }
 
-  getMyIndex(): number {
+  getIndex(): number {
     return this.parent.children.indexOf(this);
   }
 
   getGlobalIndex(): string {
-    return `${this.parent.getGlobalIndex()}.${this.getMyIndex().toString()}`;
+    return `${this.parent.getGlobalIndex()}.${this.getIndex().toString()}`;
   }
 
   insertText(
@@ -40,7 +40,7 @@ export default class MediatorNode
     if (result) {
       return result;
     }
-    return this.parent.insertText(text, this.getMyIndex() + 1, formatings);
+    return this.parent.insertText(text, this.getIndex() + 1, formatings);
   }
 
   createAndInsertNode(arena: Arena, offset: number): [
@@ -50,6 +50,10 @@ export default class MediatorNode
     if (result) {
       return result;
     }
-    return this.parent.createAndInsertNode(arena, this.getMyIndex() + 1);
+    return this.parent.createAndInsertNode(arena, this.getIndex() + 1);
+  }
+
+  remove(): void {
+    this.parent.removeChild(this.getIndex());
   }
 }

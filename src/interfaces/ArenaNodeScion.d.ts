@@ -5,4 +5,8 @@ export default interface ArenaNodeScion extends ArenaNodeCore {
   hasParent: true;
 
   parent: ArenaNodeAncestor;
+
+  remove(): void
+
+  getIndex(): number;
 }

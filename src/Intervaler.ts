@@ -22,6 +22,57 @@ export default class Intervaler {
     });
   }
 
+  cut(offset: number, length?: number): void {
+    this.intervals = [];
+    this.intervals.forEach((interval) => {
+      /**
+       * 0123456789
+       * ---[  ]-- offset: 3, length 4
+       * [ ] 0-2
+       */
+      if (interval.end < offset) {
+        this.intervals.push(interval);
+        return;
+      }
+      /**
+       * 0123456789
+       * ---[  ]-- offset: 3, length 4
+       * [  ] 0-3 → 0-2
+       * [    ] 0-5 → 0-2
+       * [     ] 0-6 → 0-2
+       * [        ] 0-9 → 0-5
+       * 012789
+       */
+      if (interval.start < offset) {
+        this.intervals.push({
+          start: interval.start,
+          end: length ? Math.max(offset - 1, interval.end - length) : offset - 1,
+        });
+        return;
+      }
+      /**
+       * 0123456789
+       * ---[  ]-- offset: 3, length 4
+       *    H 3-3 → ×
+       *    [ ] 3-5 → ×
+       *    [  ] 3-6 → ×
+       *    [   ] 3-7 → 3-3
+       *     [    ] 4-9 → 3-5
+       *        [ ] 7-9 → 3-5
+       *         [] 8-9 → 4-5
+       * 012789
+       */
+      if (length
+        && interval.start >= offset
+        && interval.end >= offset + length) {
+        this.intervals.push({
+          start: offset,
+          end: interval.end - length,
+        });
+      }
+    });
+  }
+
   merge(intervaler: Intervaler, offset: number): void {
     intervaler.intervals.forEach((interval) => {
       this.addInterval(interval.start + offset, interval.end + offset);

@@ -25,6 +25,10 @@ export default class RichTextManager {
     Object.values(this.formatings).forEach((intervaler) => intervaler.shift(offset, step));
   }
 
+  cutFormatings(offset: number, length?: number): void {
+    Object.values(this.formatings).forEach((intervaler) => intervaler.cut(offset, length));
+  }
+
   merge(formatings: RichTextManager, offset: number): void {
     Object.entries(formatings.formatings).forEach(([name, intervaler]) => {
       if (!this.formatings[name]) {
@@ -70,6 +74,12 @@ export default class RichTextManager {
     this.getInsertions().forEach((insertion) => {
       text = text.slice(0, insertion.offset) + insertion.tag + text.slice(insertion.offset);
     });
+    console.log(text);
     return text;
+  }
+
+  removeText(start: number, end?: number): void {
+    this.text.slice(start, end);
+    this.cutFormatings(start, end ? end - start : undefined);
   }
 }

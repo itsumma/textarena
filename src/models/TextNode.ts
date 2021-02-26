@@ -19,4 +19,8 @@ export default class TextNode
   getText(): TemplateResult | string {
     return this.text;
   }
+
+  removeText(start: number, end?: number): void {
+    this.text.slice(start, end);
+  }
 }

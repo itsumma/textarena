@@ -13,18 +13,18 @@ export default abstract class AbstractNodeScion implements ArenaNodeScion {
   ) {
   }
 
-  getMyIndex(): number {
+  getIndex(): number {
     return this.parent.children.indexOf(this);
   }
 
   getGlobalIndex(): string {
-    return `${this.parent.getGlobalIndex()}.${this.getMyIndex().toString()}`;
+    return `${this.parent.getGlobalIndex()}.${this.getIndex().toString()}`;
   }
 
   createAndInsertNode(arena: Arena): [
     ArenaNodeCore, ArenaNodeCore, number,
   ] | undefined {
-    return this.parent.createAndInsertNode(arena, this.getMyIndex() + 1);
+    return this.parent.createAndInsertNode(arena, this.getIndex() + 1);
   }
 
   insertText(
@@ -40,5 +40,9 @@ export default abstract class AbstractNodeScion implements ArenaNodeScion {
 
   getHtml(): TemplateResult | string {
     return this.arena.template(this.getText(), this.getGlobalIndex());
+  }
+
+  remove(): void {
+    this.parent.removeChild(this.getIndex());
   }
 }
