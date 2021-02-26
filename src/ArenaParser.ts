@@ -1,10 +1,11 @@
 /* eslint-disable no-console */
 import { FilterXSS } from 'xss';
 import Arena from 'interfaces/Arena';
-import ArenaNodeInterface from 'interfaces/ArenaNodeInterface';
+import ArenaNodeCore from 'interfaces/ArenaNodeCore';
 import RichTextManager from 'RichTextManager';
 import Textarena from 'Textarena';
 import { ArenaFormating } from 'ArenaModel';
+import ArenaSelection from 'ArenaSelection';
 
 export default class ArenaParser {
   private filterXSS: FilterXSS | undefined;
@@ -15,6 +16,7 @@ export default class ArenaParser {
   public insertHtmlToRoot(
     htmlString: string,
   ): void {
+    console.log(htmlString);
     this.insertHtmlToModel(
       htmlString,
       this.textarena.model.model,
@@ -24,9 +26,9 @@ export default class ArenaParser {
 
   public insertHtmlToModel(
     htmlString: string,
-    arenaNode: ArenaNodeInterface,
+    arenaNode: ArenaNodeCore,
     offset: number,
-  ): [ArenaNodeInterface, number] | undefined {
+  ): [ArenaNodeCore, number] | undefined {
     const node = document.createElement('DIV');
     node.innerHTML = htmlString;
     return this.insertChildren(node, arenaNode, offset);
@@ -34,7 +36,7 @@ export default class ArenaParser {
 
   public insertTextToModel(
     text: string,
-    arenaNode: ArenaNodeInterface,
+    arenaNode: ArenaNodeCore,
     offset: number,
   ): void {
     this.textarena.logger.log('atata');
@@ -43,13 +45,20 @@ export default class ArenaParser {
 
   private insertChildren(
     node: HTMLElement,
-    arenaNode: ArenaNodeInterface,
+    arenaNode: ArenaNodeCore,
     offset: number,
-  ): [ArenaNodeInterface, number] | undefined {
+  ): [ArenaNodeCore, number] | undefined {
     let currentNode = arenaNode;
     let currentOffset = offset;
-    node.childNodes.forEach((childNode) => {
-      const result = this.insertChildNode(childNode, currentNode, currentOffset);
+    node.childNodes.forEach((childNode, i) => {
+      const result = this.insertChildNode(
+        childNode,
+        currentNode,
+        currentOffset,
+        i === 0,
+        i === node.childNodes.length - 1,
+      );
+
       if (result) {
         [currentNode, currentOffset] = result;
       } else {
@@ -61,11 +70,25 @@ export default class ArenaParser {
 
   private insertChildNode(
     node: ChildNode,
-    arenaNode: ArenaNodeInterface,
+    arenaNode: ArenaNodeCore,
     offset: number,
-  ): [ArenaNodeInterface, number] | undefined {
+    first: boolean,
+    last: boolean,
+  ): [ArenaNodeCore, number] | undefined {
+    console.log('isert', node, arenaNode);
     if (node.nodeType === Node.TEXT_NODE) {
-      const text = node.textContent || '';
+      let text = node.textContent || '';
+      const dontInsertEmptyString = first || last || !('hasText' in arenaNode);
+      console.log('test', dontInsertEmptyString, text, /^[\s\n]*$/.test(text));
+      if (dontInsertEmptyString && /^[\s\n]*$/.test(text)) {
+        return [arenaNode, offset];
+      }
+      if (first) {
+        text = text.replace(/^[\s\n]+/, '');
+      }
+      if (last) {
+        text = text.replace(/[\s\n]+$/, '');
+      }
       this.textarena.logger.log('insert text', text);
       return arenaNode.insertText(text, offset, undefined);
     }
@@ -183,22 +206,25 @@ export default class ArenaParser {
     return undefined;
   }
 
-  public getSelectionModel(): false {
+  public getSelectionModel(): ArenaSelection | undefined {
     const s = window.getSelection();
     const range = s ? s.getRangeAt(0) : undefined;
     const isCollapsed = s && s.isCollapsed;
     if (isCollapsed) {
-      return false;
+      return undefined;
     }
     if (range) {
       const startId = this.getId(range.startContainer);
       const endId = this.getId(range.startContainer);
       if (startId && endId) {
-        const startModel = this.textarena.model.getModelById(startId);
-        const endModel = this.textarena.model.getModelById(endId);
+        const startNode = this.textarena.model.getTextNodeById(startId);
+        const endNode = this.textarena.model.getTextNodeById(endId);
+        if (startNode && endNode) {
+          return new ArenaSelection(startNode, 0, endNode, 0);
+        }
       }
     }
-    return false;
+    return undefined;
   }
 
   getFilterXSS(): FilterXSS {

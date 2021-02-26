@@ -12,7 +12,7 @@ export default class Intervaler {
 
   shift(offset: number, step: number): void {
     this.intervals = this.intervals.map((interval) => {
-      if (interval.end < offset) {
+      if (interval.end <= offset) {
         return interval;
       }
       return {

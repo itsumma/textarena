@@ -1,10 +1,11 @@
 /* eslint-disable no-console */
 import Arena, { ArenaWithRichText } from 'interfaces/Arena';
-import ArenaNodeInterface from 'interfaces/ArenaNodeInterface';
+import ArenaNodeCore from 'interfaces/ArenaNodeCore';
 import RootNode from 'models/RootNode';
 import { TemplateResult, html } from 'lit-html';
-import AncestorNodeAbstract from 'models/AncestorNodeAbstract';
 import Textarena from 'Textarena';
+import ArenaNodeText from 'interfaces/ArenaNodeText';
+import ArenaNode from 'interfaces/ArenaNode';
 
 type TagAndAttributes = {
   tag: string,
@@ -198,19 +199,21 @@ export default class ArenaModel {
     return this.formatingMarks[tagName];
   }
 
-  public getModelById(id: string): ArenaNodeInterface | undefined {
+  public getTextNodeById(id: string): ArenaNodeText | undefined {
     const path = id.split('.').map((i) => parseInt(i, 10));
-    let result: ArenaNodeInterface | undefined;
+    let cursor: ArenaNode | undefined = this.model;
     if (path.shift() === 0) {
-      result = this.model;
       path.forEach((i) => {
-        if (result instanceof AncestorNodeAbstract) {
-          result = result.children[i];
+        if (cursor && 'hasChildren' in cursor) {
+          cursor = cursor.children[i];
         } else {
-          result = undefined;
+          cursor = undefined;
         }
       });
+      if ('hasText' in cursor) {
+        return cursor;
+      }
     }
-    return result;
+    return undefined;
   }
 }

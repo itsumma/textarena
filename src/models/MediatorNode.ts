@@ -1,22 +1,24 @@
-import ArenaNodeAncestorInterface from 'interfaces/ArenaNodeAncestorInterface';
+import ArenaNodeAncestor from 'interfaces/ArenaNodeAncestor';
 import Arena, {
   ArenaWithChildText, ArenaWithNodes,
 } from 'interfaces/Arena';
-import ArenaNodeInterface from 'interfaces/ArenaNodeInterface';
-import ArenaNodeScionInterface from 'interfaces/ArenaNodeScionInterface';
+import ArenaNodeCore from 'interfaces/ArenaNodeCore';
+import ArenaNodeScion from 'interfaces/ArenaNodeScion';
 import RichTextManager from 'RichTextManager';
-import AncestorNodeAbstract from './AncestorNodeAbstract';
+import AbstractNodeAncestor from './AbstractNodeAncestor';
 
 // TODO сделать вариант когда у нас фиксированное количество дочерних нод,
 // например callout (title, paragraph)
 // или quote (title, section).
 
 export default class MediatorNode
-  extends AncestorNodeAbstract
-  implements ArenaNodeScionInterface {
+  extends AbstractNodeAncestor
+  implements ArenaNodeScion, ArenaNodeAncestor {
+  hasParent: true = true;
+
   constructor(
     arena: ArenaWithNodes | ArenaWithChildText,
-    public parent: ArenaNodeAncestorInterface,
+    public parent: ArenaNodeAncestor,
   ) {
     super(arena);
   }
@@ -33,7 +35,7 @@ export default class MediatorNode
     text: string,
     offset: number,
     formatings?: RichTextManager,
-  ): [ArenaNodeInterface, number] | undefined {
+  ): [ArenaNodeCore, number] | undefined {
     const result = super.insertText(text, offset, formatings);
     if (result) {
       return result;
@@ -42,7 +44,7 @@ export default class MediatorNode
   }
 
   createAndInsertNode(arena: Arena, offset: number): [
-    ArenaNodeInterface, ArenaNodeInterface, number,
+    ArenaNodeCore, ArenaNodeCore, number,
   ] | undefined {
     const result = super.createAndInsertNode(arena, offset);
     if (result) {

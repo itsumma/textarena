@@ -1,13 +1,17 @@
 import { TemplateResult } from 'lit-html';
-import ArenaNodeInterface from 'interfaces/ArenaNodeInterface';
-import ScionNodeAbstract from './ScionNodeAbstract';
+import ArenaNodeCore from 'interfaces/ArenaNodeCore';
+import ArenaNodeText from 'interfaces/ArenaNodeText';
+import AbstractNodeText from './AbstractNodeText';
 
 export default class TextNode
-  extends ScionNodeAbstract
-  implements ArenaNodeInterface {
+  extends AbstractNodeText
+  implements ArenaNodeText {
   protected text = '';
 
-  insertText(text: string, offset = 0): [ArenaNodeInterface, number] | undefined {
+  insertText(
+    text: string,
+    offset = 0,
+  ): [ArenaNodeCore, number] | undefined {
     this.text = this.text.slice(0, offset) + text + this.text.slice(offset);
     return [this, offset + text.length];
   }

@@ -1,7 +1,3 @@
-import ArenaLogger from 'ArenaLogger';
-import ElementHelper from 'ElementHelper';
-import EventManager from 'EventManager';
-import ArenaNodeInterface from 'interfaces/ArenaNodeInterface';
 import Textarena from 'Textarena';
 
 const modifiersKeys = {
@@ -208,6 +204,8 @@ export default class ArenaBrowser {
       const isCollapsed = s && s.isCollapsed;
       if (!isCollapsed) {
         // TODO remove selection
+        const selection = this.textarena.parser.getSelectionModel();
+        this.textarena.model.removeSelection(selection);
       }
     }
     if (result === 'prevent') {

@@ -101,6 +101,7 @@ class Textarena {
     // this.setPlugins([new Hr(), new Image(), new Quote()]);
     this.setOptions(options ? { ...defaultOptions, ...options } : defaultOptions);
     this.start();
+    window['ta'] = this;
   }
 
   start(): void {
@@ -147,7 +148,14 @@ class Textarena {
 
   getData(): TextarenaData {
     return {
-      content: this.editor.getInnerHTML(),
+      content: this.editor.getInnerHTML()
+        .replace(/<!--(?!-->)*-->/g, '')
+        .replace(/^[\s\n]+/, '')
+        .replace(/[\s\n]+$/, '')
+        .replace(/(<\w+)\s+observe-id="[\d.]+"/g, '$1')
+        .replace(/(<p)/g, '\n$1')
+        // .replace(/>[\s\n]+</g, '')
+        ,
       meta: this.meta,
     };
   }

@@ -1,12 +1,12 @@
 import Arena from 'interfaces/Arena';
-import ArenaNodeAncestorInterface from 'interfaces/ArenaNodeAncestorInterface';
-import ArenaNodeScionInterface from 'interfaces/ArenaNodeScionInterface';
+import ArenaNodeAncestor from 'interfaces/ArenaNodeAncestor';
+import ArenaNodeScion from 'interfaces/ArenaNodeScion';
 import MediatorNode from './MediatorNode';
 import RichNode from './RichNode';
 import TextNode from './TextNode';
 
 export default class NodeFactory {
-  static createNode(arena: Arena, parent: ArenaNodeAncestorInterface): ArenaNodeScionInterface {
+  static createNode(arena: Arena, parent: ArenaNodeAncestor): ArenaNodeScion {
     if ('allowFormating' in arena) {
       return new RichNode(arena, parent);
     }

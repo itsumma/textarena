@@ -1,13 +1,15 @@
 import { TemplateResult } from 'lit-html';
-import Arena, { ArenaWithText } from 'interfaces/Arena';
-import ArenaNodeInterface from 'interfaces/ArenaNodeInterface';
-import ArenaNodeScionInterface from 'interfaces/ArenaNodeScionInterface';
-import ArenaNodeAncestorInterface from 'interfaces/ArenaNodeAncestorInterface';
+import Arena from 'interfaces/Arena';
+import ArenaNodeCore from 'interfaces/ArenaNodeCore';
+import ArenaNodeScion from 'interfaces/ArenaNodeScion';
+import ArenaNodeAncestor from 'interfaces/ArenaNodeAncestor';
 
-export default abstract class ScionNodeAbstract implements ArenaNodeScionInterface {
+export default abstract class AbstractNodeScion implements ArenaNodeScion {
+  hasParent: true = true;
+
   constructor(
-    public arena: ArenaWithText,
-    public parent: ArenaNodeAncestorInterface,
+    public arena: Arena,
+    public parent: ArenaNodeAncestor,
   ) {
   }
 
@@ -20,7 +22,7 @@ export default abstract class ScionNodeAbstract implements ArenaNodeScionInterfa
   }
 
   createAndInsertNode(arena: Arena): [
-    ArenaNodeInterface, ArenaNodeInterface, number,
+    ArenaNodeCore, ArenaNodeCore, number,
   ] | undefined {
     return this.parent.createAndInsertNode(arena, this.getMyIndex() + 1);
   }
@@ -28,7 +30,7 @@ export default abstract class ScionNodeAbstract implements ArenaNodeScionInterfa
   insertText(
     text: string,
     offset: number,
-  ): [ArenaNodeInterface, number] | undefined {
+  ): [ArenaNodeCore, number] | undefined {
     return [this, offset + text.length];
   }
 

@@ -1,13 +1,15 @@
 import { TemplateResult, html } from 'lit-html';
 import { repeat } from 'lit-html/directives/repeat';
-import ArenaNodeScionInterface from 'interfaces/ArenaNodeScionInterface';
 import Arena, { ArenaWithNodes, ArenaWithChildText } from 'interfaces/Arena';
-import ArenaNodeInterface from 'interfaces/ArenaNodeInterface';
+import ArenaNodeCore from 'interfaces/ArenaNodeCore';
+import ArenaNodeScion from 'interfaces/ArenaNodeScion';
 import RichTextManager from 'RichTextManager';
 import NodeFactory from './NodeFactory';
 
-export default abstract class AncestorNodeAbstract {
-  public children: ArenaNodeScionInterface[] = [];
+export default abstract class AbstractNodeAncestor {
+  hasChildren: true = true;
+
+  public children: ArenaNodeScion[] = [];
 
   constructor(
     public arena: ArenaWithNodes | ArenaWithChildText,
@@ -28,7 +30,7 @@ export default abstract class AncestorNodeAbstract {
     text: string,
     offset: number,
     formatings?: RichTextManager,
-  ): [ArenaNodeInterface, number] | undefined {
+  ): [ArenaNodeCore, number] | undefined {
     if ('arenaForText' in this.arena) {
       const result = this.createAndInsertNode(this.arena.arenaForText, offset);
       if (result) {
@@ -41,7 +43,7 @@ export default abstract class AncestorNodeAbstract {
   }
 
   createAndInsertNode(arena: Arena, offset: number): [
-    ArenaNodeInterface, ArenaNodeInterface, number,
+    ArenaNodeCore, ArenaNodeCore, number,
   ] | undefined {
     if (this.arena.allowedArenas.includes(arena)) {
       const node = NodeFactory.createNode(arena, this);

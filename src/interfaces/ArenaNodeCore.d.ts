@@ -2,17 +2,17 @@ import { TemplateResult } from 'lit-html';
 import RichTextManager from 'RichTextManager';
 import Arena from './Arena';
 
-export default interface ArenaNodeInterface {
+export default interface ArenaNodeCore {
   arena: Arena;
 
   insertText(
     text: string,
     offset: number,
     formatings?: RichTextManager,
-  ): [ArenaNodeInterface, number] | undefined;
+  ): [ArenaNodeCore, number] | undefined;
 
   createAndInsertNode(arena: Arena, offset: number): [
-    ArenaNodeInterface, ArenaNodeInterface, number,
+    ArenaNodeCore, ArenaNodeCore, number,
   ] | undefined;
 
   getHtml(): TemplateResult | string;
