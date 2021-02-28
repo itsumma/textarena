@@ -7,4 +7,6 @@ export default interface ArenaNodeAncestor extends ArenaNodeCore {
   children: ArenaNodeScion[];
 
   removeChild(index: number): void;
+
+  removeChildren(start: number, length?: number): void;
 }

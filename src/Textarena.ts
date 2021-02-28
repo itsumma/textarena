@@ -63,7 +63,7 @@ class Textarena {
 
   browser: ArenaBrowser;
 
-  viewer: ArenaView;
+  view: ArenaView;
 
   parser: ArenaParser;
 
@@ -90,7 +90,7 @@ class Textarena {
     this.parser = new ArenaParser(this);
     this.model = new ArenaModel(this);
     this.browser = new ArenaBrowser(this);
-    this.viewer = new ArenaView(this);
+    this.view = new ArenaView(this);
 
     // this.manipulator = new Manipulator(this.editor, this.eventManager, this.parser);
     // this.toolbar = new Toolbar(this.container, this.editor, this.eventManager);
@@ -166,7 +166,7 @@ class Textarena {
       // this.parser.insertHtmlToModel(
       // '<h2>titl<i>e</i></h2><p>blah <em>it <b>bold</b> </em></p><p>blah <b>bold</b></p>',
       // this.parser.model, 0);
-      this.viewer.render();
+      this.view.render();
       // this.parser.insert(data.content, true);
     }
     if (data.meta) {

@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import { FilterXSS } from 'xss';
 import Arena from 'interfaces/Arena';
 import ArenaNodeCore from 'interfaces/ArenaNodeCore';
@@ -6,6 +5,7 @@ import RichTextManager from 'RichTextManager';
 import Textarena from 'Textarena';
 import { ArenaFormating } from 'ArenaModel';
 import ArenaSelection from 'ArenaSelection';
+import ArenaNodeText from 'interfaces/ArenaNodeText';
 
 export default class ArenaParser {
   private filterXSS: FilterXSS | undefined;
@@ -16,7 +16,7 @@ export default class ArenaParser {
   public insertHtmlToRoot(
     htmlString: string,
   ): void {
-    console.log(htmlString);
+    this.textarena.logger.log(htmlString);
     this.insertHtmlToModel(
       htmlString,
       this.textarena.model.model,
@@ -32,15 +32,6 @@ export default class ArenaParser {
     const node = document.createElement('DIV');
     node.innerHTML = htmlString;
     return this.insertChildren(node, arenaNode, offset);
-  }
-
-  public insertTextToModel(
-    text: string,
-    arenaNode: ArenaNodeCore,
-    offset: number,
-  ): void {
-    this.textarena.logger.log('atata');
-    arenaNode.insertText(text, offset, undefined);
   }
 
   private insertChildren(
@@ -151,7 +142,6 @@ export default class ArenaParser {
   }
 
   private checkAttributes(node: HTMLElement, attributes: string[]): boolean {
-    this.textarena.logger.log('aa');
     if (attributes.length === 0) {
       return true;
     }
@@ -190,41 +180,6 @@ export default class ArenaParser {
       // [currentNode, currentOffset] = this.parseNode(childNode, currentNode, currentOffset);
     });
     return formatings;
-  }
-
-  private getId(node: Node | HTMLElement): string | undefined {
-    if (node.nodeType === Node.ELEMENT_NODE) {
-      const elementNode = node as HTMLElement;
-      const id = elementNode.getAttribute('observe-id');
-      if (id) {
-        return id;
-      }
-    }
-    if (node.parentElement) {
-      return this.getId(node.parentElement);
-    }
-    return undefined;
-  }
-
-  public getSelectionModel(): ArenaSelection | undefined {
-    const s = window.getSelection();
-    const range = s ? s.getRangeAt(0) : undefined;
-    const isCollapsed = s && s.isCollapsed;
-    if (isCollapsed) {
-      return undefined;
-    }
-    if (range) {
-      const startId = this.getId(range.startContainer);
-      const endId = this.getId(range.startContainer);
-      if (startId && endId) {
-        const startNode = this.textarena.model.getTextNodeById(startId);
-        const endNode = this.textarena.model.getTextNodeById(endId);
-        if (startNode && endNode) {
-          return new ArenaSelection(startNode, 0, endNode, 0);
-        }
-      }
-    }
-    return undefined;
   }
 
   getFilterXSS(): FilterXSS {

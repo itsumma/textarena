@@ -23,7 +23,7 @@ export default class Intervaler {
   }
 
   cut(offset: number, length?: number): void {
-    this.intervals = [];
+    const intervals: Interval[] = [];
     this.intervals.forEach((interval) => {
       /**
        * 0123456789
@@ -31,7 +31,7 @@ export default class Intervaler {
        * [ ] 0-2
        */
       if (interval.end < offset) {
-        this.intervals.push(interval);
+        intervals.push(interval);
         return;
       }
       /**
@@ -44,7 +44,7 @@ export default class Intervaler {
        * 012789
        */
       if (interval.start < offset) {
-        this.intervals.push({
+        intervals.push({
           start: interval.start,
           end: length ? Math.max(offset - 1, interval.end - length) : offset - 1,
         });
@@ -65,12 +65,13 @@ export default class Intervaler {
       if (length
         && interval.start >= offset
         && interval.end >= offset + length) {
-        this.intervals.push({
+        intervals.push({
           start: offset,
           end: interval.end - length,
         });
       }
     });
+    this.intervals = intervals;
   }
 
   merge(intervaler: Intervaler, offset: number): void {

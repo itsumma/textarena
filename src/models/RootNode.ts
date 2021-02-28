@@ -59,4 +59,8 @@ export default class RootNode implements ArenaNodeAncestor {
   public removeChild(index: number): void {
     this.children.splice(index, 1);
   }
+
+  public removeChildren(start: number, length?: number): void {
+    this.children.splice(start, length);
+  }
 }

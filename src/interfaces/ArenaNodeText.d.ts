@@ -7,4 +7,8 @@ export default interface ArenaNodeText extends ArenaNodeScion {
   arena: ArenaWithText | ArenaWithRichText;
 
   removeText(start: number, end?: number): void;
+
+  getText(): string;
+
+  getTextLength(): number;
 }

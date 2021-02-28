@@ -18,13 +18,21 @@ export default class RichNode
     return [this, this.richTextManager.insertText(text, offset, formatings)];
   }
 
-  getText(): TemplateResult | string {
+  getTemplate(): TemplateResult | string {
     return html`
       ${unsafeHTML(this.richTextManager.getHtml())}
     `;
   }
 
+  getText(): string {
+    return this.richTextManager.getText();
+  }
+
   removeText(start: number, end?: number): void {
     this.richTextManager.removeText(start, end);
+  }
+
+  getTextLength(): number {
+    return this.richTextManager.text.length;
   }
 }

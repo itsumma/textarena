@@ -14,6 +14,10 @@ export default class RichTextManager {
 
   text = '';
 
+  getText(): string {
+    return this.text;
+  }
+
   insertFormating(name: string, start: number, end: number): void {
     if (!this.formatings[name]) {
       this.formatings[name] = new Intervaler();
@@ -79,7 +83,11 @@ export default class RichTextManager {
   }
 
   removeText(start: number, end?: number): void {
-    this.text.slice(start, end);
+    if (end === undefined) {
+      this.text = this.text.slice(0, start);
+    } else {
+      this.text = this.text.slice(0, start) + this.text.slice(end);
+    }
     this.cutFormatings(start, end ? end - start : undefined);
   }
 }

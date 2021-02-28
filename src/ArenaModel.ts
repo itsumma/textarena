@@ -1,14 +1,15 @@
 /* eslint-disable no-console */
 import Arena, { ArenaWithRichText } from 'interfaces/Arena';
-import ArenaNodeCore from 'interfaces/ArenaNodeCore';
 import RootNode from 'models/RootNode';
 import { TemplateResult, html } from 'lit-html';
 import Textarena from 'Textarena';
 import ArenaNodeText from 'interfaces/ArenaNodeText';
 import ArenaNode from 'interfaces/ArenaNode';
 import ArenaSelection from 'ArenaSelection';
+import { Direction } from 'events/RemoveEvent';
 import ArenaNodeAncestor from 'interfaces/ArenaNodeAncestor';
 import ArenaNodeScion from 'interfaces/ArenaNodeScion';
+import RichNode from 'models/RichNode';
 
 type TagAndAttributes = {
   tag: string,
@@ -237,46 +238,122 @@ export default class ArenaModel {
     if (commonMaxDeep === 0) {
       return undefined;
     }
-    let i = 0;
     let result;
-    while (ancestorsForA[i] === ancestorsForB[i]) {
-      result = ancestorsForA[i];
-      i += 1;
+    for (let i = 0; i < commonMaxDeep; i += 1) {
+      if (ancestorsForA[i] === ancestorsForB[i]) {
+        result = ancestorsForA[i];
+      } else {
+        break;
+      }
     }
     return result;
   }
 
-  public removeSelection(selection: ArenaSelection): void {
-    if (selection.startNode === selection.endNode) {
+  public insertText(selection: ArenaSelection, text: string): ArenaSelection {
+    let newSelection = selection;
+    if (!selection.isCollapsed()) {
+      newSelection = this.removeSelection(selection, 'backward');
+    }
+    const result = newSelection.startNode.insertText(text, newSelection.startOffset);
+    if (result) {
+      newSelection.startOffset += text.length;
+      newSelection.endOffset = newSelection.startOffset;
+    }
+    return newSelection;
+  }
+
+  public removeSelection(selection: ArenaSelection, direction: Direction): ArenaSelection {
+    if (selection.isCollapsed()) {
+      const newSelection = selection;
+      if (direction === 'forward') {
+        selection.startNode.removeText(selection.startOffset, selection.startOffset + 1);
+      } else if (selection.startOffset > 0) {
+        selection.startNode.removeText(selection.startOffset - 1, selection.startOffset);
+        newSelection.startOffset -= 1;
+        newSelection.endOffset = selection.startOffset;
+      }
+      return newSelection;
+    }
+    if (selection.isSameNode()) {
+      console.log('remove text', selection.startOffset, selection.endOffset);
       selection.startNode.removeText(selection.startOffset, selection.endOffset);
-      return;
+      selection.collapse();
+      return selection;
     }
     const commonAncestor = this.getCommonAncestor(selection.startNode, selection.endNode);
     if (!commonAncestor) {
-      return;
+      return selection;
     }
 
-    if (selection.startOffset === 0) {
-      selection.startNode.remove();
-    } else {
-      selection.startNode.removeText(selection.startOffset);
-    }
-    if (selection.startNode.parent === commonAncestor) {
-
+    if (commonAncestor === selection.startNode.parent
+      && commonAncestor === selection.endNode.parent
+      && 'hasChildren' in commonAncestor) {
+      const startIndex = selection.startNode.getIndex();
       const endIndex = selection.endNode.getIndex();
-    }
-    if (selection.startNode.parent !== commonAncestor) {
-      selection.startNode.parent.children
-    }
-
-    let cursor: ArenaNode = selection.startNode;
-    cursor = cursor.parent;
-    while (cursor !== commonAncestor) {
-      if ('hasParent' in cursor) {
-        cursor = cursor.parent;
+      selection.startNode.removeText(selection.startOffset);
+      selection.endNode.removeText(0, selection.endOffset);
+      if (selection.endNode instanceof RichNode) {
+        selection.startNode.insertText(
+          selection.endNode.richTextManager.text,
+          selection.startOffset,
+          selection.endNode.richTextManager,
+        );
       } else {
-        return;
+        selection.startNode.insertText(
+          selection.endNode.getText(),
+          selection.startOffset,
+        );
+      }
+      const removeLength = endIndex - startIndex;
+      if (removeLength) {
+        commonAncestor.removeChildren(startIndex + 1, removeLength);
+      }
+      const newSelection = selection;
+      newSelection.collapseBackward();
+      return newSelection;
+    }
+    selection.startNode.removeText(selection.startOffset);
+    let startIndex = selection.startNode.getIndex();
+    let startCursor:
+      ArenaNodeAncestor
+      | (ArenaNodeAncestor & ArenaNodeScion)
+      | undefined = selection.startNode.parent;
+    while (startCursor && startCursor !== commonAncestor) {
+      startCursor.removeChildren(startIndex + 1);
+      if ('hasParent' in startCursor) {
+        startIndex = startCursor.getIndex();
+        startCursor = startCursor.parent;
+      } else {
+        startCursor = undefined;
       }
     }
+
+    selection.endNode.removeText(0, selection.endOffset);
+    let endIndex = selection.endNode.getIndex();
+    let endCursor:
+      ArenaNodeAncestor
+      | (ArenaNodeAncestor & ArenaNodeScion)
+      | undefined = selection.endNode.parent;
+    while (endCursor && endCursor !== commonAncestor) {
+      endCursor.removeChildren(0, endIndex);
+      if ('hasParent' in endCursor) {
+        endIndex = endCursor.getIndex();
+        endCursor = endCursor.parent;
+      } else {
+        endCursor = undefined;
+      }
+    }
+    if (commonAncestor === startCursor
+      && commonAncestor === endCursor
+      && 'hasChildren' in commonAncestor) {
+      const removeLength = endIndex - startIndex - 1;
+      if (removeLength) {
+        commonAncestor.removeChildren(startIndex + 1, removeLength);
+      }
+    }
+
+    const newSelection = selection;
+    newSelection.collapse();
+    return newSelection;
   }
 }

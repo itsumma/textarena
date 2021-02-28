@@ -34,12 +34,12 @@ export default abstract class AbstractNodeScion implements ArenaNodeScion {
     return [this, offset + text.length];
   }
 
-  getText(): TemplateResult | string {
+  getTemplate(): TemplateResult | string {
     return '';
   }
 
   getHtml(): TemplateResult | string {
-    return this.arena.template(this.getText(), this.getGlobalIndex());
+    return this.arena.template(this.getTemplate(), this.getGlobalIndex());
   }
 
   remove(): void {

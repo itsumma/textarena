@@ -56,4 +56,8 @@ export default abstract class AbstractNodeAncestor {
   public removeChild(index: number): void {
     this.children.splice(index, 1);
   }
+
+  public removeChildren(start: number, length?: number): void {
+    this.children.splice(start, length);
+  }
 }

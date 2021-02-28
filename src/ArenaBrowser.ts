@@ -1,3 +1,8 @@
+import InputEvent from 'events/InputEvent';
+import RemoveEvent from 'events/RemoveEvent';
+import SelectionEvent from 'events/SelectionEvent';
+import ShortCutEvent from 'events/ShortCutEvent';
+import ArenaKeyboardEvent from 'interfaces/ArenaKeyboardEvent';
 import Textarena from 'Textarena';
 
 const modifiersKeys = {
@@ -24,7 +29,6 @@ const typeKeys = {
 };
 
 const removeKeys = {
-  space: 32,
   backspace: 8,
   delete: 46,
 };
@@ -145,7 +149,7 @@ export default class ArenaBrowser {
     // this.textarena.logger.info('mouseUp');
   }
 
-  checkEvent(e: KeyboardEvent): 'prevent' | 'input' | 'selection' {
+  checkEvent(prefix: string, e: KeyboardEvent): ArenaKeyboardEvent | undefined {
     const modifiers = {
       shift: e.shiftKey,
       ctrl: e.ctrlKey,
@@ -155,39 +159,44 @@ export default class ArenaBrowser {
     const code = e.keyCode || e.which;
     const character = code ? String.fromCharCode(code).toLowerCase() : undefined;
     if (modifiersCodes[code]) {
-      this.textarena.logger.info(`keyDown modifier: ${modifiersCodes[code]}`);
-      // nothing to do
-    } else if (specialCodes[code]) {
-      this.textarena.logger.info(`keyDown specialCode: ${specialCodes[code]}`);
-      // TODO special code
-    } else if (selectionCodes[code]) {
-      this.textarena.logger.info(`keyDown selectionCode: ${selectionCodes[code]}`);
-      // nothing to do
-      return 'selection';
-    } else if (removeCodes[code]) {
-      this.textarena.logger.info(`keyDown removeCode: ${removeCodes[code]}`);
-      // TODO custom remove
-    } else if (modifiers.alt || modifiers.ctrl || modifiers.meta) {
-      const mod = Object.entries(modifiers).filter(([, t]) => t).map(([m]) => m).join(', ');
-      this.textarena.logger.info(`keyDown modifier ${mod} + ${character}`, code, e);
-      // TODO modifier + character
-    } else {
-      this.textarena.logger.info(`keyDown true: ${character}`, code, e);
-
-      // TODO observe changes
-      return 'input';
+      this.textarena.logger.info(`${prefix} modifier: ${modifiersCodes[code]}`);
+      return undefined;
     }
-    return 'prevent';
+    if (specialCodes[code]) {
+      this.textarena.logger.info(`${prefix} specialCode: ${specialCodes[code]}`);
+      // TODO special code
+      return undefined;
+    }
+    if (selectionCodes[code]) {
+      this.textarena.logger.info(`${prefix} selectionCode: ${selectionCodes[code]}`);
+      return new SelectionEvent(e);
+    }
+    if (removeCodes[code]) {
+      this.textarena.logger.info(`${prefix} removeCode: ${removeCodes[code]}`);
+      return new RemoveEvent(
+        e,
+        removeCodes[code] === 'delete' ? 'forward' : 'backward',
+      );
+    }
+    if (modifiers.alt || modifiers.ctrl || modifiers.meta) {
+      const mod = Object.entries(modifiers).filter(([, t]) => t).map(([m]) => m);
+      this.textarena.logger.info(`${prefix} modifier ${mod.join(', ')} + ${character}`, code, e);
+      // TODO modifier + character
+      if (character) {
+        return new ShortCutEvent(e, mod, character);
+      }
+      return undefined;
+    }
+    this.textarena.logger.info(`${prefix} input: ${character}`, code, e);
+    // TODO observe changes
+    if (character) {
+      return new InputEvent(e, character);
+    }
+    return undefined;
   }
 
   keyUpListener(e: KeyboardEvent): void {
-    const result = this.checkEvent(e);
-    if (result === 'input') {
-      const s = window.getSelection();
-      const range = s ? s.getRangeAt(0) : undefined;
-      const isCollapsed = s && s.isCollapsed;
-      this.textarena.logger.log('oserve', e, isCollapsed, range?.startContainer, range?.endContainer);
-    }
+    //
   }
 
   keyPressListener(e: KeyboardEvent): void {
@@ -197,24 +206,33 @@ export default class ArenaBrowser {
   }
 
   keyDownListener(e: KeyboardEvent): void {
-    const result = this.checkEvent(e);
-    if (result === 'input') {
-      const s = window.getSelection();
-      const range = s ? s.getRangeAt(0) : undefined;
-      const isCollapsed = s && s.isCollapsed;
-      if (!isCollapsed) {
-        // TODO remove selection
-        const selection = this.textarena.parser.getSelectionModel();
-        this.textarena.model.removeSelection(selection);
-      }
+    const event = this.checkEvent('keyDown', e);
+    if (event instanceof SelectionEvent) {
+      // allow
+      return;
     }
-    if (result === 'prevent') {
-      e.cancelBubble = true;
-      e.returnValue = false;
-      if (e.stopPropagation) {
-        e.stopPropagation();
-        e.preventDefault();
-      }
+    e.cancelBubble = true;
+    e.returnValue = false;
+    e.stopPropagation();
+    e.preventDefault();
+    if (!event) {
+      return;
+    }
+    if (event instanceof ShortCutEvent) {
+      // TODO shortcut
+      return;
+    }
+    const selection = this.textarena.view.getArenaSelection();
+    if (!selection) {
+      return;
+    }
+    if (event instanceof InputEvent) {
+      const newSelection = this.textarena.model.insertText(selection, event.character);
+      this.textarena.view.render(newSelection);
+    }
+    if (event instanceof RemoveEvent) {
+      const newSelection = this.textarena.model.removeSelection(selection, event.direction);
+      this.textarena.view.render(newSelection);
     }
   }
 

@@ -4,7 +4,7 @@ import ArenaNodeCore from './ArenaNodeCore';
 export default interface ArenaNodeScion extends ArenaNodeCore {
   hasParent: true;
 
-  parent: ArenaNodeAncestor;
+  parent: ArenaNodeAncestor | (ArenaNodeAncestor & ArenaNodeScion);
 
   remove(): void
 
