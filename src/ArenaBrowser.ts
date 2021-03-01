@@ -4,6 +4,7 @@ import SelectionEvent from 'events/SelectionEvent';
 import ShortCutEvent from 'events/ShortCutEvent';
 import ArenaKeyboardEvent from 'interfaces/ArenaKeyboardEvent';
 import Textarena from 'Textarena';
+import SpecialEvent from 'events/SpecialEvent';
 
 const modifiersKeys = {
   shift: 16,
@@ -36,7 +37,6 @@ const removeKeys = {
 const specialKeys = {
   escape: 27,
   tab: 9,
-  return: 13,
   enter: 13,
 
   scrolllock: 145,
@@ -157,15 +157,15 @@ export default class ArenaBrowser {
       meta: e.metaKey,
     };
     const code = e.keyCode || e.which;
-    const character = code ? String.fromCharCode(code).toLowerCase() : undefined;
+    // const character = code ? String.fromCharCode(code).toLowerCase() : undefined;
+    const character = e.key;
     if (modifiersCodes[code]) {
       this.textarena.logger.info(`${prefix} modifier: ${modifiersCodes[code]}`);
       return undefined;
     }
     if (specialCodes[code]) {
       this.textarena.logger.info(`${prefix} specialCode: ${specialCodes[code]}`);
-      // TODO special code
-      return undefined;
+      return new SpecialEvent(e, specialCodes[code]);
     }
     if (selectionCodes[code]) {
       this.textarena.logger.info(`${prefix} selectionCode: ${selectionCodes[code]}`);
@@ -224,6 +224,11 @@ export default class ArenaBrowser {
     }
     const selection = this.textarena.view.getArenaSelection();
     if (!selection) {
+      return;
+    }
+    if (event instanceof SpecialEvent) {
+      const newSelection = this.textarena.commandManager.exec(selection, event);
+      this.textarena.view.render(newSelection);
       return;
     }
     if (event instanceof InputEvent) {

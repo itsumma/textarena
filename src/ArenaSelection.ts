@@ -30,6 +30,13 @@ export default class ArenaSelection {
     return this;
   }
 
+  setBoth(
+    node: ArenaNodeText,
+    offset: number,
+  ): ArenaSelection {
+    return this.setStartNode(node, offset).setEndNode(node, offset);
+  }
+
   isCollapsed(): boolean {
     return this.startNode === this.endNode && this.startOffset === this.endOffset;
   }

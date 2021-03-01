@@ -20,6 +20,8 @@ import ArenaBrowser from 'ArenaBrowser';
 import { TemplateResult, html } from 'lit-html';
 import ArenaModel from 'ArenaModel';
 import ArenaView from 'ArenaView';
+import ArenaCommandManager from 'ArenaCommandManager';
+import headersPlugin from 'plugins/headersPlugin';
 
 // FIXME как инициализировать кмопоненты.
 const callout = new Callout();
@@ -50,6 +52,14 @@ const defaultOptions: TextarenaOptions = {
       // 'blockquote',
     ],
   },
+  plugins: {
+    headers: headersPlugin,
+  },
+  pluginOptions: {
+    headers: {
+      tags: ['h2', 'h3', 'h4'],
+    },
+  },
 };
 
 class Textarena {
@@ -64,6 +74,8 @@ class Textarena {
   browser: ArenaBrowser;
 
   view: ArenaView;
+
+  commandManager: ArenaCommandManager;
 
   parser: ArenaParser;
 
@@ -91,6 +103,7 @@ class Textarena {
     this.model = new ArenaModel(this);
     this.browser = new ArenaBrowser(this);
     this.view = new ArenaView(this);
+    this.commandManager = new ArenaCommandManager(this);
 
     // this.manipulator = new Manipulator(this.editor, this.eventManager, this.parser);
     // this.toolbar = new Toolbar(this.container, this.editor, this.eventManager);
@@ -127,7 +140,7 @@ class Textarena {
       this.setOnReady(options.onReady);
     }
     if (options.plugins) {
-      this.setPlugins(options.plugins);
+      this.setPlugins(options.plugins, options.pluginOptions);
     }
     if (options.toolbar !== undefined) {
       this.setToolbarOptions(options.toolbar);
@@ -194,9 +207,12 @@ class Textarena {
     this.options.onReady = onReady;
   }
 
-  setPlugins(plugins: ArenaPlugin[]): void {
-    plugins.forEach((plugin) => {
-      plugin.register(this);
+  setPlugins(
+    plugins: {[key: string]: ArenaPlugin},
+    options?: {[key: string]: any},
+  ): void {
+    Object.entries(plugins).forEach(([name, plugin]) => {
+      plugin.register(this, options && options[name] ? options[name] : undefined);
     });
   }
 

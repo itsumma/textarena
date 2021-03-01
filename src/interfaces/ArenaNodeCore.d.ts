@@ -1,18 +1,18 @@
 import { TemplateResult } from 'lit-html';
 import RichTextManager from 'RichTextManager';
 import Arena from './Arena';
+import ArenaNode from './ArenaNode';
 
 export default interface ArenaNodeCore {
   arena: Arena;
 
   insertText(
-    text: string,
+    text: string | RichTextManager,
     offset: number,
-    formatings?: RichTextManager,
-  ): [ArenaNodeCore, number] | undefined;
+  ): [ArenaNode, number] | undefined;
 
   createAndInsertNode(arena: Arena, offset: number): [
-    ArenaNodeCore, ArenaNodeCore, number,
+    ArenaNode, ArenaNode, number,
   ] | undefined;
 
   getHtml(): TemplateResult | string;

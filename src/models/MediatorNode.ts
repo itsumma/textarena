@@ -2,7 +2,7 @@ import ArenaNodeAncestor from 'interfaces/ArenaNodeAncestor';
 import Arena, {
   ArenaWithChildText, ArenaWithNodes,
 } from 'interfaces/Arena';
-import ArenaNodeCore from 'interfaces/ArenaNodeCore';
+import ArenaNode from 'interfaces/ArenaNode';
 import ArenaNodeScion from 'interfaces/ArenaNodeScion';
 import RichTextManager from 'RichTextManager';
 import AbstractNodeAncestor from './AbstractNodeAncestor';
@@ -32,19 +32,18 @@ export default class MediatorNode
   }
 
   insertText(
-    text: string,
+    text: string | RichTextManager,
     offset: number,
-    formatings?: RichTextManager,
-  ): [ArenaNodeCore, number] | undefined {
-    const result = super.insertText(text, offset, formatings);
+  ): [ArenaNode, number] | undefined {
+    const result = super.insertText(text, offset);
     if (result) {
       return result;
     }
-    return this.parent.insertText(text, this.getIndex() + 1, formatings);
+    return this.parent.insertText(text, this.getIndex() + 1);
   }
 
   createAndInsertNode(arena: Arena, offset: number): [
-    ArenaNodeCore, ArenaNodeCore, number,
+    ArenaNode, ArenaNode, number,
   ] | undefined {
     const result = super.createAndInsertNode(arena, offset);
     if (result) {

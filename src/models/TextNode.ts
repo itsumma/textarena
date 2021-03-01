@@ -1,6 +1,7 @@
 import { TemplateResult } from 'lit-html';
+import RichTextManager from 'RichTextManager';
 import Arena from 'interfaces/Arena';
-import ArenaNodeCore from 'interfaces/ArenaNodeCore';
+import ArenaNode from 'interfaces/ArenaNode';
 import ArenaNodeText from 'interfaces/ArenaNodeText';
 import AbstractNodeText from './AbstractNodeText';
 
@@ -18,21 +19,34 @@ export default class TextNode
   }
 
   createAndInsertNode(arena: Arena): [
-    ArenaNodeCore, ArenaNodeCore, number,
+    ArenaNode, ArenaNode, number,
   ] | undefined {
     return this.parent.createAndInsertNode(arena, this.getIndex() + 1);
   }
 
   insertText(
-    text: string,
+    text: string | RichTextManager,
     offset = 0,
-  ): [ArenaNodeCore, number] | undefined {
-    this.text = this.text.slice(0, offset) + text + this.text.slice(offset);
-    return [this, offset + text.length];
+  ): [ArenaNode, number] | undefined {
+    const textStr = typeof text === 'string' ? text : text.getText();
+    this.text = this.text.slice(0, offset) + textStr + this.text.slice(offset);
+    return [this, offset + textStr.length];
   }
 
   getText(): string {
     return this.text;
+  }
+
+  cutText(start: number, end?: number): string {
+    let result;
+    if (end === undefined) {
+      result = this.text.slice(start);
+      this.text = this.text.slice(0, start);
+    } else {
+      result = this.text.slice(start, end);
+      this.text = this.text.slice(0, start) + this.text.slice(end);
+    }
+    return result;
   }
 
   getTemplate(): TemplateResult | string {

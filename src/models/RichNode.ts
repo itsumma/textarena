@@ -1,6 +1,6 @@
 import { TemplateResult, html } from 'lit-html';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html';
-import ArenaNodeCore from 'interfaces/ArenaNodeCore';
+import ArenaNode from 'interfaces/ArenaNode';
 import ArenaNodeText from 'interfaces/ArenaNodeText';
 import RichTextManager from 'RichTextManager';
 import AbstractNodeText from './AbstractNodeText';
@@ -11,11 +11,10 @@ export default class RichNode
   richTextManager = new RichTextManager();
 
   insertText(
-    text: string,
+    text: string | RichTextManager,
     offset: number,
-    formatings?: RichTextManager,
-  ): [ArenaNodeCore, number] | undefined {
-    return [this, this.richTextManager.insertText(text, offset, formatings)];
+  ): [ArenaNode, number] | undefined {
+    return [this, this.richTextManager.insertText(text, offset)];
   }
 
   getTemplate(): TemplateResult | string {
@@ -28,11 +27,19 @@ export default class RichNode
     return this.richTextManager.getText();
   }
 
+  getFormatings(): string {
+    return this.richTextManager.getText();
+  }
+
+  cutText(start: number, end?: number): string | RichTextManager {
+    return this.richTextManager.cutText(start, end);
+  }
+
   removeText(start: number, end?: number): void {
     this.richTextManager.removeText(start, end);
   }
 
   getTextLength(): number {
-    return this.richTextManager.text.length;
+    return this.richTextManager.getTextLength();
   }
 }

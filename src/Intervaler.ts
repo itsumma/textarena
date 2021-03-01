@@ -22,8 +22,9 @@ export default class Intervaler {
     });
   }
 
-  cut(offset: number, length?: number): void {
+  cut(offset: number, length?: number): Intervaler {
     const intervals: Interval[] = [];
+    const intervaler = new Intervaler();
     this.intervals.forEach((interval) => {
       /**
        * 0123456789
@@ -48,6 +49,7 @@ export default class Intervaler {
           start: interval.start,
           end: length ? Math.max(offset - 1, interval.end - length) : offset - 1,
         });
+        intervaler.addInterval(0, interval.end - offset);
         return;
       }
       /**
@@ -66,12 +68,20 @@ export default class Intervaler {
         && interval.start >= offset
         && interval.end >= offset + length) {
         intervals.push({
-          start: offset,
+          start: Math.max(offset, interval.start - length),
           end: interval.end - length,
         });
       }
+      if (interval.start >= offset) {
+        if (!length) {
+          intervaler.addInterval(interval.start - offset, interval.end - offset);
+        } else if (interval.start < offset + length) {
+          intervaler.addInterval(interval.start - offset, Math.min(length, interval.end - offset));
+        }
+      }
     });
     this.intervals = intervals;
+    return intervaler;
   }
 
   merge(intervaler: Intervaler, offset: number): void {

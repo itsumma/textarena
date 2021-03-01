@@ -87,22 +87,7 @@ export default class ArenaModel {
       [ArenaModel.rootArenaName],
     );
     this.model = new RootNode(this.rootArena);
-    this.registerArena(
-      {
-        name: 'header2',
-        tag: 'H2',
-        template: (child: TemplateResult | string, id: string) => html`<h2 observe-id="${id}">${child}</h2>`,
-        attributes: [],
-        allowText: true,
-      },
-      [
-        {
-          tag: 'H2',
-          attributes: [],
-        },
-      ],
-      [ArenaModel.rootArenaName],
-    );
+
     this.registerFormating(
       {
         name: 'strong',
@@ -263,14 +248,38 @@ export default class ArenaModel {
   }
 
   public removeSelection(selection: ArenaSelection, direction: Direction): ArenaSelection {
+    const {
+      startNode,
+      startOffset,
+      endNode,
+      endOffset,
+    } = selection;
     if (selection.isCollapsed()) {
       const newSelection = selection;
       if (direction === 'forward') {
-        selection.startNode.removeText(selection.startOffset, selection.startOffset + 1);
-      } else if (selection.startOffset > 0) {
-        selection.startNode.removeText(selection.startOffset - 1, selection.startOffset);
-        newSelection.startOffset -= 1;
-        newSelection.endOffset = selection.startOffset;
+        if (startNode.getTextLength() === startOffset) {
+          const nextSibling = startNode.parent.getChild(startNode.getIndex() + 1);
+          if (nextSibling && 'hasText' in nextSibling) {
+            this.mergeNodes(startNode, nextSibling);
+          }
+        } else {
+          selection.startNode.removeText(selection.startOffset, selection.startOffset + 1);
+        }
+      }
+      if (direction === 'backward') {
+        if (selection.startOffset === 0) {
+          if (startNode.getIndex() > 0) {
+            const prevSibling = startNode.parent.getChild(startNode.getIndex() - 1);
+            if (prevSibling && 'hasText' in prevSibling) {
+              newSelection.setBoth(prevSibling, prevSibling.getTextLength());
+              this.mergeNodes(prevSibling, startNode);
+            }
+          }
+        } else {
+          selection.startNode.removeText(selection.startOffset - 1, selection.startOffset);
+          newSelection.startOffset -= 1;
+          newSelection.endOffset = selection.startOffset;
+        }
       }
       return newSelection;
     }
@@ -294,9 +303,8 @@ export default class ArenaModel {
       selection.endNode.removeText(0, selection.endOffset);
       if (selection.endNode instanceof RichNode) {
         selection.startNode.insertText(
-          selection.endNode.richTextManager.text,
-          selection.startOffset,
           selection.endNode.richTextManager,
+          selection.startOffset,
         );
       } else {
         selection.startNode.insertText(
@@ -355,5 +363,27 @@ export default class ArenaModel {
     const newSelection = selection;
     newSelection.collapse();
     return newSelection;
+  }
+
+  breakSelection(selection: ArenaSelection): ArenaSelection {
+    let newSelection = selection;
+    if (!selection.isCollapsed()) {
+      newSelection = this.removeSelection(selection, 'backward');
+    }
+    const { startNode } = selection;
+    const text = startNode.cutText(selection.startOffset);
+    const result = startNode.parent.createAndInsertNode(startNode.arena, startNode.getIndex() + 1);
+    if (result && 'hasText' in result[0]) {
+      const newNode = result[0];
+      newNode.insertText(text, 0);
+      newSelection.setStartNode(newNode, 0);
+      newSelection.setEndNode(newNode, 0);
+    }
+    return newSelection;
+  }
+
+  mergeNodes(nodeA: ArenaNodeText, nodeB: ArenaNodeText): void {
+    nodeA.insertText(nodeB.getText(), nodeA.getTextLength());
+    nodeB.remove();
   }
 }

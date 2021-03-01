@@ -3,6 +3,8 @@ import Arena from 'interfaces/Arena';
 import ArenaNodeCore from 'interfaces/ArenaNodeCore';
 import ArenaNodeScion from 'interfaces/ArenaNodeScion';
 import ArenaNodeAncestor from 'interfaces/ArenaNodeAncestor';
+import ArenaNode from 'interfaces/ArenaNode';
+import RichTextManager from 'RichTextManager';
 
 export default abstract class AbstractNodeScion implements ArenaNodeScion {
   hasParent: true = true;
@@ -22,16 +24,16 @@ export default abstract class AbstractNodeScion implements ArenaNodeScion {
   }
 
   createAndInsertNode(arena: Arena): [
-    ArenaNodeCore, ArenaNodeCore, number,
+    ArenaNode, ArenaNode, number,
   ] | undefined {
     return this.parent.createAndInsertNode(arena, this.getIndex() + 1);
   }
 
   insertText(
-    text: string,
+    text: string | RichTextManager,
     offset: number,
-  ): [ArenaNodeCore, number] | undefined {
-    return [this, offset + text.length];
+  ): [ArenaNode, number] | undefined {
+    return [this, offset];
   }
 
   getTemplate(): TemplateResult | string {

@@ -18,12 +18,12 @@
 
   if (elem && (typeof Textarena !== 'undefined')) {
     let initData;
-    const storedData = localStorage.getItem('data');
-    try {
-      if (storedData) {
-        initData = JSON.parse(storedData);
-      }
-    } catch {}
+    // const storedData = localStorage.getItem('data');
+    // try {
+    //   if (storedData) {
+    //     initData = JSON.parse(storedData);
+    //   }
+    // } catch {}
     if (!initData) {
       initData = {
         // content: '<h2>Простой визуальный редактор</h2><p>Textarena адаптирована для быстрой работы. Все функции доступны с помощью горячих клавиш.</p><figure><img src="https://www.itsumma.ru/img/services/musthave.png"></figure><p>Выделите текст, появится панель для форматирования.</p><hr /><p>Зажмите Ctrl (⌘ для Mac) или Alt (⌥ для Mac) и вы увидите подсказки.</p><p>Ctrl (⌘) + B — изменит <b>жирность</b> выделенного текста.</p><p>Ctrl (⌘) + I — выделенный текст станет <i>италиком</i>. Повторное нажатие уберёт италик.</p><p>И так далее…</p><p>Alt (⌥) + O — переключает между обычным текстом и нумерованным списком.</p><h2>Легко доступные стили оформления текста</h2><h3>Заголовки</h3><ol><li>H2 — второй по величине.</li><li>H3 — третий по величине.</li><li>H4 — четвёртый.</li></ol><p>Почему нет первого? Во-первых, какие заголовки доступны в редакторе, настраивается. Во-вторых, не рекомендуется на странице использовать более одного заголовка первого уровня. На этой странице уже есть — «TEXTARENA» — в верху страницы.</p>',

@@ -1,7 +1,7 @@
 import { TemplateResult, html } from 'lit-html';
 import { repeat } from 'lit-html/directives/repeat';
 import Arena, { ArenaWithNodes, ArenaWithChildText } from 'interfaces/Arena';
-import ArenaNodeCore from 'interfaces/ArenaNodeCore';
+import ArenaNode from 'interfaces/ArenaNode';
 import ArenaNodeScion from 'interfaces/ArenaNodeScion';
 import RichTextManager from 'RichTextManager';
 import NodeFactory from './NodeFactory';
@@ -27,23 +27,21 @@ export default abstract class AbstractNodeAncestor {
   }
 
   insertText(
-    text: string,
+    text: string | RichTextManager,
     offset: number,
-    formatings?: RichTextManager,
-  ): [ArenaNodeCore, number] | undefined {
+  ): [ArenaNode, number] | undefined {
     if ('arenaForText' in this.arena) {
       const result = this.createAndInsertNode(this.arena.arenaForText, offset);
       if (result) {
         const [newNode] = result;
-        newNode.insertText(text, 0, formatings);
-        return [newNode, text.length];
+        return newNode.insertText(text, 0);
       }
     }
     return undefined;
   }
 
   createAndInsertNode(arena: Arena, offset: number): [
-    ArenaNodeCore, ArenaNodeCore, number,
+    ArenaNode, ArenaNode, number,
   ] | undefined {
     if (this.arena.allowedArenas.includes(arena)) {
       const node = NodeFactory.createNode(arena, this);

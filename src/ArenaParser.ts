@@ -4,8 +4,6 @@ import ArenaNodeCore from 'interfaces/ArenaNodeCore';
 import RichTextManager from 'RichTextManager';
 import Textarena from 'Textarena';
 import { ArenaFormating } from 'ArenaModel';
-import ArenaSelection from 'ArenaSelection';
-import ArenaNodeText from 'interfaces/ArenaNodeText';
 
 export default class ArenaParser {
   private filterXSS: FilterXSS | undefined;
@@ -81,7 +79,7 @@ export default class ArenaParser {
         text = text.replace(/[\s\n]+$/, '');
       }
       this.textarena.logger.log('insert text', text);
-      return arenaNode.insertText(text, offset, undefined);
+      return arenaNode.insertText(text, offset);
     }
     if (node.nodeType === Node.ELEMENT_NODE) {
       const elementNode = node as HTMLElement;
@@ -105,9 +103,9 @@ export default class ArenaParser {
       const formating = this.checkFormatingMark(elementNode);
       if (formating) {
         const formatings = this.getText(elementNode);
-        formatings.insertFormating(formating.name, 0, formatings.text.length);
+        formatings.insertFormating(formating.name, 0, formatings.getTextLength());
         this.textarena.logger.log('this is formating', formatings);
-        return arenaNode.insertText(formatings.text, offset, formatings);
+        return arenaNode.insertText(formatings, offset);
       }
       return this.insertChildren(elementNode, arenaNode, offset);
     }
@@ -165,15 +163,15 @@ export default class ArenaParser {
     let offset = 0;
     node.childNodes.forEach((childNode) => {
       if (childNode.nodeType === Node.TEXT_NODE) {
-        offset = formatings.insertText(childNode.textContent || '', offset, undefined);
+        offset = formatings.insertText(childNode.textContent || '', offset);
       } else if (childNode.nodeType === Node.ELEMENT_NODE) {
         const elementNode = childNode as HTMLElement;
         const newFormatings = this.getText(elementNode);
         const formating = this.checkFormatingMark(elementNode);
         if (formating) {
-          newFormatings.insertFormating(formating.name, 0, newFormatings.text.length);
+          newFormatings.insertFormating(formating.name, 0, newFormatings.getTextLength());
         }
-        offset = formatings.insertText(newFormatings.text, offset, newFormatings);
+        offset = formatings.insertText(newFormatings, offset);
       } else {
         this.textarena.logger.error('unaccepted node type, remove', childNode);
       }

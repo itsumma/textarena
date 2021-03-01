@@ -1,6 +1,6 @@
 import Intervaler from 'Intervaler';
 
-type Formatings = {
+export type Formatings = {
   [name: string]: Intervaler
 };
 
@@ -10,12 +10,38 @@ type Insertion = {
 };
 
 export default class RichTextManager {
-  private formatings: Formatings = { };
+  protected formatings: Formatings;
 
-  text = '';
+  protected text: string;
+
+  constructor(text?: string, formatings?: Formatings) {
+    this.text = text || '';
+    this.formatings = formatings || {};
+  }
 
   getText(): string {
     return this.text;
+  }
+
+  getFormatings(): Formatings {
+    return this.formatings;
+  }
+
+  getTextLength(): number {
+    return this.text.length;
+  }
+
+  cutText(start: number, end?: number): RichTextManager {
+    let text;
+    if (end === undefined) {
+      text = this.text.slice(start);
+      this.text = this.text.slice(0, start);
+    } else {
+      text = this.text.slice(start, end);
+      this.text = this.text.slice(0, start) + this.text.slice(end);
+    }
+    const formatings = this.cutFormatings(start, end);
+    return new RichTextManager(text, formatings);
   }
 
   insertFormating(name: string, start: number, end: number): void {
@@ -29,8 +55,12 @@ export default class RichTextManager {
     Object.values(this.formatings).forEach((intervaler) => intervaler.shift(offset, step));
   }
 
-  cutFormatings(offset: number, length?: number): void {
-    Object.values(this.formatings).forEach((intervaler) => intervaler.cut(offset, length));
+  cutFormatings(offset: number, length?: number): Formatings {
+    const formatings: Formatings = {};
+    Object.entries(this.formatings).forEach(([name, intervaler]) => {
+      formatings[name] = intervaler.cut(offset, length);
+    });
+    return formatings;
   }
 
   merge(formatings: RichTextManager, offset: number): void {
@@ -43,14 +73,14 @@ export default class RichTextManager {
   }
 
   insertText(
-    text: string,
+    rtm: string | RichTextManager,
     offset = 0,
-    formatings?: RichTextManager,
   ): number {
+    const text = typeof rtm === 'string' ? rtm : rtm.getText();
     this.text = this.text.slice(0, offset) + text + this.text.slice(offset);
     this.shiftFormatings(offset, text.length);
-    if (formatings) {
-      this.merge(formatings, offset);
+    if (rtm instanceof RichTextManager) {
+      this.merge(rtm, offset);
     }
     return offset + text.length;
   }
@@ -78,7 +108,6 @@ export default class RichTextManager {
     this.getInsertions().forEach((insertion) => {
       text = text.slice(0, insertion.offset) + insertion.tag + text.slice(insertion.offset);
     });
-    console.log(text);
     return text;
   }
 
