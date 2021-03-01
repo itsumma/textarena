@@ -58,4 +58,8 @@ export default abstract class AbstractNodeAncestor {
   public removeChildren(start: number, length?: number): void {
     this.children.splice(start, length);
   }
+
+  public getChild(index: number): ArenaNodeScion | undefined {
+    return this.children[index] || undefined;
+  }
 }

@@ -9,7 +9,7 @@ export default interface ArenaNodeText extends ArenaNodeScion {
 
   removeText(start: number, end?: number): void;
 
-  getText(): string;
+  getText(): string | RichTextManager;
 
   cutText(start: number, end?: number): string | RichTextManager;
 

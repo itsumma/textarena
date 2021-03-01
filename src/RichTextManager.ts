@@ -51,13 +51,15 @@ export default class RichTextManager {
     this.formatings[name].addInterval(start, end);
   }
 
-  shiftFormatings(offset: number, step: number): void {
-    Object.values(this.formatings).forEach((intervaler) => intervaler.shift(offset, step));
+  shiftFormatings(offset: number, step: number, keepFormatings = false): void {
+    Object.values(this.formatings)
+      .forEach((intervaler) => intervaler.shift(offset, step, keepFormatings));
   }
 
   cutFormatings(offset: number, length?: number): Formatings {
     const formatings: Formatings = {};
     Object.entries(this.formatings).forEach(([name, intervaler]) => {
+      console.log('cut intrvls', name, offset, length);
       formatings[name] = intervaler.cut(offset, length);
     });
     return formatings;
@@ -75,10 +77,11 @@ export default class RichTextManager {
   insertText(
     rtm: string | RichTextManager,
     offset = 0,
+    keepFormatings = false,
   ): number {
     const text = typeof rtm === 'string' ? rtm : rtm.getText();
     this.text = this.text.slice(0, offset) + text + this.text.slice(offset);
-    this.shiftFormatings(offset, text.length);
+    this.shiftFormatings(offset, text.length, keepFormatings);
     if (rtm instanceof RichTextManager) {
       this.merge(rtm, offset);
     }

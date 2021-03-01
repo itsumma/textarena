@@ -10,9 +10,9 @@ export default class Intervaler {
     return this.intervals;
   }
 
-  shift(offset: number, step: number): void {
+  shift(offset: number, step: number, keep = false): void {
     this.intervals = this.intervals.map((interval) => {
-      if (interval.end <= offset) {
+      if (keep ? interval.end < offset : interval.end <= offset) {
         return interval;
       }
       return {
@@ -47,9 +47,11 @@ export default class Intervaler {
       if (interval.start < offset) {
         intervals.push({
           start: interval.start,
-          end: length ? Math.max(offset - 1, interval.end - length) : offset - 1,
+          end: length ? Math.max(offset, interval.end - length) : offset,
         });
-        intervaler.addInterval(0, interval.end - offset);
+        if (offset < interval.end) {
+          intervaler.addInterval(0, interval.end - offset);
+        }
         return;
       }
       /**
@@ -80,6 +82,9 @@ export default class Intervaler {
         }
       }
     });
+    console.log([...this.intervals]);
+    console.log([...intervals]);
+    console.log([...intervaler.getIntervals()]);
     this.intervals = intervals;
     return intervaler;
   }

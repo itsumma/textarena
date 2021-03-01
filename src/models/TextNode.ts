@@ -33,7 +33,7 @@ export default class TextNode
     return [this, offset + textStr.length];
   }
 
-  getText(): string {
+  getText(): string | RichTextManager {
     return this.text;
   }
 
@@ -50,11 +50,10 @@ export default class TextNode
   }
 
   getTemplate(): TemplateResult | string {
-    return this.getText();
+    return this.getText() as string;
   }
 
   getHtml(): TemplateResult | string {
-    console.log('getHtml', this, this.getTemplate());
     return this.arena.template(this.getTemplate(), this.getGlobalIndex());
   }
 

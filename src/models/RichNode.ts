@@ -13,8 +13,9 @@ export default class RichNode
   insertText(
     text: string | RichTextManager,
     offset: number,
+    keepFormatings = false,
   ): [ArenaNode, number] | undefined {
-    return [this, this.richTextManager.insertText(text, offset)];
+    return [this, this.richTextManager.insertText(text, offset, keepFormatings)];
   }
 
   getTemplate(): TemplateResult | string {
@@ -23,8 +24,8 @@ export default class RichNode
     `;
   }
 
-  getText(): string {
-    return this.richTextManager.getText();
+  getText(): string | RichTextManager {
+    return this.richTextManager;
   }
 
   getFormatings(): string {

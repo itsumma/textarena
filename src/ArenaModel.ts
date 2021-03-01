@@ -239,7 +239,7 @@ export default class ArenaModel {
     if (!selection.isCollapsed()) {
       newSelection = this.removeSelection(selection, 'backward');
     }
-    const result = newSelection.startNode.insertText(text, newSelection.startOffset);
+    const result = newSelection.startNode.insertText(text, newSelection.startOffset, true);
     if (result) {
       newSelection.startOffset += text.length;
       newSelection.endOffset = newSelection.startOffset;
@@ -263,11 +263,11 @@ export default class ArenaModel {
             this.mergeNodes(startNode, nextSibling);
           }
         } else {
-          selection.startNode.removeText(selection.startOffset, selection.startOffset + 1);
+          startNode.removeText(startOffset, startOffset + 1);
         }
       }
       if (direction === 'backward') {
-        if (selection.startOffset === 0) {
+        if (startOffset === 0) {
           if (startNode.getIndex() > 0) {
             const prevSibling = startNode.parent.getChild(startNode.getIndex() - 1);
             if (prevSibling && 'hasText' in prevSibling) {
@@ -276,9 +276,8 @@ export default class ArenaModel {
             }
           }
         } else {
-          selection.startNode.removeText(selection.startOffset - 1, selection.startOffset);
-          newSelection.startOffset -= 1;
-          newSelection.endOffset = selection.startOffset;
+          startNode.removeText(startOffset - 1, startOffset);
+          newSelection.setBoth(startNode, startOffset - 1);
         }
       }
       return newSelection;

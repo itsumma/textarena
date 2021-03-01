@@ -9,6 +9,7 @@ export default interface ArenaNodeCore {
   insertText(
     text: string | RichTextManager,
     offset: number,
+    keepFormatings: boolean,
   ): [ArenaNode, number] | undefined;
 
   createAndInsertNode(arena: Arena, offset: number): [
