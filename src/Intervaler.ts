@@ -158,4 +158,17 @@ export default class Intervaler {
     }
     this.intervals = newIntervals;
   }
+
+  hasInterval(start: number, end: number): boolean {
+    for (let i = 0; i < this.intervals.length; i += 1) {
+      const interval = this.intervals[i];
+      if (interval.start <= start && interval.end >= end) {
+        return true;
+      }
+      if (interval.start > start) {
+        return false;
+      }
+    }
+    return false;
+  }
 }

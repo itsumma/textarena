@@ -33,6 +33,14 @@ export default class TextNode
     return [this, offset + textStr.length];
   }
 
+  insertFormating(name: string, start: number, end: number): void {
+    //
+  }
+
+  toggleFormating(name: string, start: number, end: number): void {
+    //
+  }
+
   getText(): string | RichTextManager {
     return this.text;
   }

@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import Arena, { ArenaWithRichText } from 'interfaces/Arena';
+import Arena, { ArenaWithRichText, ArenaWithNodes, ArenaWithChildText } from 'interfaces/Arena';
 import RootNode from 'models/RootNode';
 import { TemplateResult, html } from 'lit-html';
 import Textarena from 'Textarena';
@@ -45,25 +45,17 @@ export default class ArenaModel {
 
   formatingMarks: { [tag: string]: FormatingMark[] } = { };
 
-  rootArena: Arena;
+  rootArena: ArenaWithChildText;
 
   model: RootNode;
 
   constructor(private textarena: Textarena) {
-    const paragraph: ArenaWithRichText = {
-      name: 'paragraph',
-      tag: 'P',
-      template: (child: TemplateResult | string, id: string) => html`<p observe-id="${id}">${child}</p>`,
-      attributes: [],
-      allowText: true,
-      allowFormating: true,
-    };
     this.rootArena = {
       name: ArenaModel.rootArenaName,
       tag: '',
       template: (child: TemplateResult | string) => child,
       attributes: [],
-      arenaForText: paragraph,
+      arenaForText: undefined,
       allowedArenas: [
       ],
     };
@@ -72,79 +64,14 @@ export default class ArenaModel {
       [],
       [],
     );
-    this.registerArena(
-      paragraph,
-      [
-        {
-          tag: 'P',
-          attributes: [],
-        },
-        {
-          tag: 'DIV',
-          attributes: [],
-        },
-      ],
-      [ArenaModel.rootArenaName],
-    );
     this.model = new RootNode(this.rootArena);
-
-    this.registerFormating(
-      {
-        name: 'strong',
-        tag: 'STRONG',
-        attributes: [],
-      },
-      [
-        {
-          tag: 'B',
-          attributes: [],
-        },
-        {
-          tag: 'STRONG',
-          attributes: [],
-        },
-        {
-          tag: 'SPAN',
-          attributes: [
-            'style=fontWeight:bold',
-            'style=fontWeight:900',
-            'style=fontWeight:800',
-            'style=fontWeight:700',
-            'style=fontWeight:600',
-          ],
-        },
-      ],
-    );
-    this.registerFormating(
-      {
-        name: 'italic',
-        tag: 'EM',
-        attributes: [],
-      },
-      [
-        {
-          tag: 'I',
-          attributes: [],
-        },
-        {
-          tag: 'EM',
-          attributes: [],
-        },
-        {
-          tag: 'SPAN',
-          attributes: [
-            'style=fontStyle:italic',
-          ],
-        },
-      ],
-    );
   }
 
   public registerArena(
     arena: Arena,
     markers: TagAndAttributes[],
     parentArenas: string[],
-  ): void {
+  ): Arena {
     this.arenas.push(arena);
     this.arenasByName[arena.name] = arena;
     parentArenas.forEach((parentName) => {
@@ -162,12 +89,13 @@ export default class ArenaModel {
         arena,
       });
     });
+    return arena;
   }
 
   public registerFormating(
     formating: ArenaFormating,
     markers: TagAndAttributes[],
-  ): void {
+  ): ArenaFormating {
     this.formatings.push(formating);
     markers.forEach(({ tag, attributes }) => {
       if (!this.formatingMarks[tag]) {
@@ -178,6 +106,7 @@ export default class ArenaModel {
         formating,
       });
     });
+    return formating;
   }
 
   public getArenaMarks(tagName: string): ArenaMark[] | undefined {
@@ -375,8 +304,7 @@ export default class ArenaModel {
     if (result && 'hasText' in result[0]) {
       const newNode = result[0];
       newNode.insertText(text, 0);
-      newSelection.setStartNode(newNode, 0);
-      newSelection.setEndNode(newNode, 0);
+      newSelection.setBoth(newNode, 0);
     }
     return newSelection;
   }
@@ -384,5 +312,40 @@ export default class ArenaModel {
   mergeNodes(nodeA: ArenaNodeText, nodeB: ArenaNodeText): void {
     nodeA.insertText(nodeB.getText(), nodeA.getTextLength());
     nodeB.remove();
+  }
+
+  transformModel(selection: ArenaSelection, arena: Arena): ArenaSelection {
+    const {
+      startNode,
+      startOffset,
+      endNode,
+      endOffset,
+    } = selection;
+    const newSelection = selection;
+    if (selection.isCollapsed() || selection.isSameNode()) {
+      const result = startNode.parent.createAndInsertNode(arena, startNode.getIndex());
+      if (result) {
+        const newNode = result[0];
+        newNode.insertText(startNode.getText(), 0, false);
+        startNode.remove();
+        newSelection.setStartNode(newNode as ArenaNodeText, startOffset);
+        newSelection.setEndNode(newNode as ArenaNodeText, endOffset);
+        return newSelection;
+      }
+    }
+    return selection;
+  }
+
+  formatingModel(selection: ArenaSelection, formating: ArenaFormating): ArenaSelection {
+    const {
+      startNode,
+      startOffset,
+      endNode,
+      endOffset,
+    } = selection;
+    if (selection.isCollapsed() || selection.isSameNode()) {
+      startNode.toggleFormating(formating.name, startOffset, endOffset);
+    }
+    return selection;
   }
 }

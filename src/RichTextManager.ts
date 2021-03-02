@@ -51,6 +51,19 @@ export default class RichTextManager {
     this.formatings[name].addInterval(start, end);
   }
 
+  toggleFormating(name: string, start: number, end: number): void {
+    if (!this.formatings[name]) {
+      this.formatings[name] = new Intervaler();
+      this.formatings[name].addInterval(start, end);
+    } else {
+      if (this.formatings[name].hasInterval(start, end)) {
+        this.formatings[name].cut(start, end);
+      } else {
+        this.formatings[name].addInterval(start, end);
+      }
+    }
+  }
+
   shiftFormatings(offset: number, step: number, keepFormatings = false): void {
     Object.values(this.formatings)
       .forEach((intervaler) => intervaler.shift(offset, step, keepFormatings));

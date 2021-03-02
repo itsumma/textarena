@@ -16,7 +16,7 @@ export type ArenaWithText = AbstractArena & {
 };
 
 export type ArenaWithChildText = ArenaWithNodes & {
-  arenaForText: ArenaWithText,
+  arenaForText: ArenaWithText | undefined,
 };
 
 export type ArenaWithRichText = ArenaWithText & {

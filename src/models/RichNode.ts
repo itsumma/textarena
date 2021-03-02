@@ -18,6 +18,14 @@ export default class RichNode
     return [this, this.richTextManager.insertText(text, offset, keepFormatings)];
   }
 
+  insertFormating(name: string, start: number, end: number): void {
+    this.richTextManager.insertFormating(name, start, end);
+  }
+
+  toggleFormating(name: string, start: number, end: number): void {
+    this.richTextManager.toggleFormating(name, start, end);
+  }
+
   getTemplate(): TemplateResult | string {
     return html`
       ${unsafeHTML(this.richTextManager.getHtml())}

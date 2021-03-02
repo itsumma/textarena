@@ -2,6 +2,7 @@ import { TemplateResult, html } from 'lit-html';
 import Textarena from 'Textarena';
 import ArenaPlugin from 'interfaces/ArenaPlugin';
 import ArenaModel from 'ArenaModel';
+import ArenaSelection from 'ArenaSelection';
 
 const posibleTags = ['h1', 'h2', 'h3', 'h4'];
 
@@ -14,21 +15,26 @@ const headersPlugin: ArenaPlugin = {
     const options = { ...defaultOptions, ...(opts || {}) };
     options.tags.forEach((type: string) => {
       if (posibleTags.includes(type)) {
-        textarena.model.registerArena(
+        const number = parseInt(type[1], 10);
+        const arena = textarena.model.registerArena(
           {
-            name: 'header2',
-            tag: 'H2',
+            name: `header${number}`,
+            tag: `H${number}`,
             template: (child: TemplateResult | string, id: string) => html`<h2 observe-id="${id}">${child}</h2>`,
             attributes: [],
             allowText: true,
           },
           [
             {
-              tag: 'H2',
+              tag: `H${number}`,
               attributes: [],
             },
           ],
           [ArenaModel.rootArenaName],
+        );
+        textarena.commandManager.registerCommand(
+          `Alt + Digit${number}`,
+          (ta: Textarena, selection: ArenaSelection) => ta.model.transformModel(selection, arena),
         );
       }
     });

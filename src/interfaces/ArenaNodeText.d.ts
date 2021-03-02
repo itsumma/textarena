@@ -14,4 +14,8 @@ export default interface ArenaNodeText extends ArenaNodeScion {
   cutText(start: number, end?: number): string | RichTextManager;
 
   getTextLength(): number;
+
+  insertFormating(name: string, start: number, end: number): void;
+
+  toggleFormating(name: string, start: number, end: number): void;
 }

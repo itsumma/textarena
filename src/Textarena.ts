@@ -22,6 +22,8 @@ import ArenaModel from 'ArenaModel';
 import ArenaView from 'ArenaView';
 import ArenaCommandManager from 'ArenaCommandManager';
 import headersPlugin from 'plugins/headersPlugin';
+import paragraphPlugin from 'plugins/paragraphPlugin';
+import formatingsPlugin from 'plugins/formatingsPlugin';
 
 // FIXME как инициализировать кмопоненты.
 const callout = new Callout();
@@ -54,10 +56,15 @@ const defaultOptions: TextarenaOptions = {
   },
   plugins: {
     headers: headersPlugin,
+    paragraph: paragraphPlugin,
+    formatings: formatingsPlugin,
   },
   pluginOptions: {
     headers: {
       tags: ['h2', 'h3', 'h4'],
+    },
+    formatings: {
+      tags: ['b', 'i'],
     },
   },
 };

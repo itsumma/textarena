@@ -1,16 +1,15 @@
 import InputEvent from 'events/InputEvent';
 import RemoveEvent from 'events/RemoveEvent';
 import SelectionEvent from 'events/SelectionEvent';
-import ShortCutEvent from 'events/ShortCutEvent';
+import CommandEvent, { keyboardKeys } from 'events/CommandEvent';
 import ArenaKeyboardEvent from 'interfaces/ArenaKeyboardEvent';
 import Textarena from 'Textarena';
-import SpecialEvent from 'events/SpecialEvent';
 
 const modifiersKeys = {
-  shift: 16,
-  ctrl: 17,
-  alt: 18,
-  meta: 91,
+  Shift: 16,
+  Ctrl: 17,
+  Alt: 18,
+  Meta: 91,
 };
 
 const selectionKeys = {
@@ -151,43 +150,37 @@ export default class ArenaBrowser {
 
   checkEvent(prefix: string, e: KeyboardEvent): ArenaKeyboardEvent | undefined {
     const modifiers = {
-      shift: e.shiftKey,
-      ctrl: e.ctrlKey,
-      alt: e.altKey,
-      meta: e.metaKey,
+      Shift: e.shiftKey,
+      Ctrl: e.ctrlKey,
+      Alt: e.altKey,
+      Meta: e.metaKey,
     };
-    const code = e.keyCode || e.which;
-    // const character = code ? String.fromCharCode(code).toLowerCase() : undefined;
+    const { keyCode, code } = e;
     const character = e.key;
-    if (modifiersCodes[code]) {
-      this.textarena.logger.info(`${prefix} modifier: ${modifiersCodes[code]}`);
+    if (modifiersCodes[keyCode]) {
+      // this.textarena.logger.info(`${prefix} modifier: ${modifiersCodes[keyCode]}`);
       return undefined;
     }
-    if (specialCodes[code]) {
-      this.textarena.logger.info(`${prefix} specialCode: ${specialCodes[code]}`);
-      return new SpecialEvent(e, specialCodes[code]);
-    }
-    if (selectionCodes[code]) {
-      this.textarena.logger.info(`${prefix} selectionCode: ${selectionCodes[code]}`);
+    if (selectionCodes[keyCode]) {
+      this.textarena.logger.info(`${prefix} selectionCode: ${selectionCodes[keyCode]}`);
       return new SelectionEvent(e);
     }
-    if (removeCodes[code]) {
-      this.textarena.logger.info(`${prefix} removeCode: ${removeCodes[code]}`);
+    if (removeCodes[keyCode]) {
+      this.textarena.logger.info(`${prefix} removeCode: ${removeCodes[keyCode]}`);
       return new RemoveEvent(
         e,
-        removeCodes[code] === 'delete' ? 'forward' : 'backward',
+        removeCodes[keyCode] === 'delete' ? 'forward' : 'backward',
       );
     }
-    if (modifiers.alt || modifiers.ctrl || modifiers.meta) {
+    if (specialCodes[keyCode] || modifiers.Alt || modifiers.Ctrl || modifiers.Meta) {
       const mod = Object.entries(modifiers).filter(([, t]) => t).map(([m]) => m);
-      this.textarena.logger.info(`${prefix} modifier ${mod.join(', ')} + ${character}`, code, e);
-      // TODO modifier + character
-      if (character) {
-        return new ShortCutEvent(e, mod, character);
+      this.textarena.logger.info(`${prefix} command ${mod.join(' + ')} + ${code}`, e);
+      if (code && keyboardKeys.includes(code)) {
+        return new CommandEvent(e, code, mod);
       }
       return undefined;
     }
-    this.textarena.logger.info(`${prefix} input: ${character}`, code, e);
+    this.textarena.logger.info(`${prefix} input: ${character}`, keyCode, e);
     // TODO observe changes
     if (character) {
       return new InputEvent(e, character);
@@ -218,15 +211,11 @@ export default class ArenaBrowser {
     if (!event) {
       return;
     }
-    if (event instanceof ShortCutEvent) {
-      // TODO shortcut
-      return;
-    }
     const selection = this.textarena.view.getArenaSelection();
     if (!selection) {
       return;
     }
-    if (event instanceof SpecialEvent) {
+    if (event instanceof CommandEvent) {
       const newSelection = this.textarena.commandManager.exec(selection, event);
       this.textarena.view.render(newSelection);
       return;
