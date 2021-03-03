@@ -34,8 +34,8 @@ const defaultOptions: TextarenaOptions = {
   toolbar: {
     enabled: true,
     tools: [
-      // 'bold',
-      // 'italic',
+      'bold',
+      'italic',
       // 'underline',
       // 'strikethrough',
       // 'list',
@@ -90,7 +90,7 @@ class Textarena {
 
   // manipulator: Manipulator;
 
-  // toolbar: Toolbar;
+  toolbar: Toolbar;
 
   // creatorBar: CreatorBar;
 
@@ -111,13 +111,11 @@ class Textarena {
     this.browser = new ArenaBrowser(this);
     this.view = new ArenaView(this);
     this.commandManager = new ArenaCommandManager(this);
-
+    this.container.appendChild(this.editor.getElem());
+    this.toolbar = new Toolbar(this);
     // this.manipulator = new Manipulator(this.editor, this.eventManager, this.parser);
-    // this.toolbar = new Toolbar(this.container, this.editor, this.eventManager);
     // this.creatorBar = new CreatorBar(this.editor, this.eventManager, this.parser);
     // this.container.appendChild(this.creatorBar.getElem());
-    this.container.appendChild(this.editor.getElem());
-    // this.container.appendChild(this.toolbar.getElem());
     // this.setPlugins([new Hr(), new Image(), new Quote()]);
     this.setOptions(options ? { ...defaultOptions, ...options } : defaultOptions);
     this.start();
@@ -224,7 +222,7 @@ class Textarena {
   }
 
   setToolbarOptions(toolbarOptions: ToolbarOptions): void {
-    // this.toolbar.setOptions(toolbarOptions);
+    this.toolbar.setOptions(toolbarOptions);
   }
 
   setCreatorBarOptions(creatorBarOptions: CreatorBarOptions): void {

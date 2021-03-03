@@ -4,6 +4,12 @@ import SelectionEvent from 'events/SelectionEvent';
 import CommandEvent, { keyboardKeys } from 'events/CommandEvent';
 import ArenaKeyboardEvent from 'interfaces/ArenaKeyboardEvent';
 import Textarena from 'Textarena';
+import { isDescendant } from 'utils';
+
+enum SelectionStatus {
+  Selected,
+  Unselected,
+}
 
 const modifiersKeys = {
   Shift: 16,
@@ -96,6 +102,10 @@ export default class ArenaBrowser {
 
   pasteListenerInstance: ((event: ClipboardEvent) => void);
 
+  lastSelectionStatus: SelectionStatus = SelectionStatus.Unselected;
+
+  lastSelectionRange: Range | undefined;
+
   constructor(
     private textarena: Textarena,
   ) {
@@ -145,7 +155,7 @@ export default class ArenaBrowser {
   }
 
   mouseUpListener(): void {
-    // this.textarena.logger.info('mouseUp');
+    this.checkSelection();
   }
 
   checkEvent(prefix: string, e: KeyboardEvent): ArenaKeyboardEvent | undefined {
@@ -189,7 +199,7 @@ export default class ArenaBrowser {
   }
 
   keyUpListener(e: KeyboardEvent): void {
-    //
+    this.checkSelection();
   }
 
   keyPressListener(e: KeyboardEvent): void {
@@ -201,6 +211,7 @@ export default class ArenaBrowser {
   keyDownListener(e: KeyboardEvent): void {
     const event = this.checkEvent('keyDown', e);
     if (event instanceof SelectionEvent) {
+      this.textarena.eventManager.fire('textSelected');
       // allow
       return;
     }
@@ -242,6 +253,39 @@ export default class ArenaBrowser {
   }
 
   selectListener(): void {
-    // this.textarena.logger.info('select');
+    this.checkSelection();
+  }
+
+  checkSelection(): void {
+    const s = window.getSelection();
+    if (!s) {
+      return;
+    }
+
+    if (this.lastSelectionStatus === SelectionStatus.Selected
+      && s.isCollapsed) {
+      this.lastSelectionStatus = SelectionStatus.Unselected;
+      this.textarena.eventManager.fire('textUnselected');
+      this.lastSelectionRange = undefined;
+      return;
+    }
+    if (!s.isCollapsed
+      && s.anchorNode
+      && isDescendant(this.textarena.editor, s.anchorNode)) {
+      if (this.lastSelectionStatus === SelectionStatus.Unselected) {
+        this.lastSelectionStatus = SelectionStatus.Selected;
+        this.textarena.eventManager.fire('textSelected');
+        this.lastSelectionRange = s.getRangeAt(0);
+      } else if (this.lastSelectionRange) {
+        const newRange = s.getRangeAt(0);
+        if (newRange.startContainer !== this.lastSelectionRange.startContainer
+          || newRange.startOffset !== this.lastSelectionRange.startOffset
+          || newRange.endContainer !== this.lastSelectionRange.endContainer
+          || newRange.endOffset !== this.lastSelectionRange.endOffset) {
+          this.textarena.eventManager.fire('selectionChanged');
+          this.lastSelectionRange = newRange;
+        }
+      }
+    }
   }
 }

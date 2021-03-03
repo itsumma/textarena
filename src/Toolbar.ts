@@ -1,6 +1,6 @@
+import Textarena from 'Textarena';
 import { IMAGE_WRAPPER } from 'common/constants';
 import ElementHelper from './ElementHelper';
-import EventManager from './EventManager';
 import ToolbarOptions from './interfaces/ToolbarOptions';
 import ToolOptions from './interfaces/ToolOptions';
 import tools from './tools';
@@ -44,9 +44,7 @@ export default class Toolbar {
   keyDownListenerInstance: ((e: KeyboardEvent) => void);
 
   constructor(
-    private container: ElementHelper,
-    private root: ElementHelper,
-    private eventManager: EventManager,
+    private textarena: Textarena,
   ) {
     this.elem = new ElementHelper('DIV', 'textarena-toolbar');
     this.pointer = new ElementHelper('DIV', 'textarena-toolbar__pointer');
@@ -54,25 +52,26 @@ export default class Toolbar {
     this.elem.appendChild(this.list);
     this.elem.appendChild(this.pointer);
     this.hide();
-    this.eventManager.subscribe('textSelected', () => {
+    this.textarena.eventManager.subscribe('textSelected', () => {
       this.show();
     });
-    this.eventManager.subscribe('textUnselected', () => {
+    this.textarena.eventManager.subscribe('textUnselected', () => {
       this.hide();
     });
-    this.eventManager.subscribe('selectionChanged', () => {
+    this.textarena.eventManager.subscribe('selectionChanged', () => {
       this.show();
     });
     this.keyUpListenerInstance = this.keyUpListener.bind(this);
     this.keyDownListenerInstance = this.keyDownListener.bind(this);
-    this.eventManager.subscribe('turnOn', () => {
-      this.root.addEventListener('keyup', this.keyUpListenerInstance, false);
-      this.root.addEventListener('keydown', this.keyDownListenerInstance, false);
+    this.textarena.eventManager.subscribe('turnOn', () => {
+      this.textarena.editor.addEventListener('keyup', this.keyUpListenerInstance, false);
+      this.textarena.editor.addEventListener('keydown', this.keyDownListenerInstance, false);
     });
-    this.eventManager.subscribe('turnOff', () => {
-      this.root.removeEventListener('keyup', this.keyUpListenerInstance);
-      this.root.removeEventListener('keydown', this.keyDownListenerInstance);
+    this.textarena.eventManager.subscribe('turnOff', () => {
+      this.textarena.editor.removeEventListener('keyup', this.keyUpListenerInstance);
+      this.textarena.editor.removeEventListener('keydown', this.keyDownListenerInstance);
     });
+    this.textarena.container.appendChild(this.getElem());
   }
 
   keyUpListener(): void {
@@ -204,7 +203,7 @@ export default class Toolbar {
     }
     const range = s.getRangeAt(0);
     const rect = range.getBoundingClientRect();
-    const containerRect = this.container.getBoundingClientRect();
+    const containerRect = this.textarena.container.getBoundingClientRect();
     let positionTop = true;
     if (rect.y < window.innerHeight / 2) {
       positionTop = rect.top >= window.innerHeight - rect.bottom;

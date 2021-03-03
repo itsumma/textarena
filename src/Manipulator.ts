@@ -10,10 +10,6 @@ import * as utils from './utils';
 export const emptyStrs = ['<p><br></p>', '<p><br/></p>', '<p></p>'];
 
 // eslint-disable-next-line no-shadow
-enum SelectionStatus {
-  Selected,
-  Unselected,
-}
 
 export default class Manipulator {
   inputListenerInstance: ((e: Event) => void);
