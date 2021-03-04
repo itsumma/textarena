@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 import Arena, { ArenaWithRichText, ArenaWithNodes, ArenaWithChildText } from 'interfaces/Arena';
 import RootNode from 'models/RootNode';
-import { TemplateResult, html } from 'lit-html';
+import { TemplateResult } from 'lit-html';
 import Textarena from 'Textarena';
 import ArenaNodeText from 'interfaces/ArenaNodeText';
 import ArenaNode from 'interfaces/ArenaNode';
@@ -161,6 +161,22 @@ export default class ArenaModel {
       }
     }
     return result;
+  }
+
+  public insertHtml(selection: ArenaSelection, html: string): ArenaSelection {
+    let newSelection = selection;
+    if (!selection.isCollapsed()) {
+      newSelection = this.removeSelection(selection, 'backward');
+    }
+    const result = this.textarena.parser.insertHtmlToModel(
+      html,
+      newSelection.startNode,
+      newSelection.startOffset,
+    );
+    if (result) {
+      newSelection.setBoth(result[0], result[1]);
+    }
+    return newSelection;
   }
 
   public insertText(selection: ArenaSelection, text: string): ArenaSelection {

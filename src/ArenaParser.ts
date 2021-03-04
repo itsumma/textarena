@@ -1,6 +1,6 @@
 import { FilterXSS } from 'xss';
 import Arena from 'interfaces/Arena';
-import ArenaNodeCore from 'interfaces/ArenaNodeCore';
+import ArenaNode from 'interfaces/ArenaNode';
 import RichTextManager from 'RichTextManager';
 import Textarena from 'Textarena';
 import { ArenaFormating } from 'ArenaModel';
@@ -24,9 +24,9 @@ export default class ArenaParser {
 
   public insertHtmlToModel(
     htmlString: string,
-    arenaNode: ArenaNodeCore,
+    arenaNode: ArenaNode,
     offset: number,
-  ): [ArenaNodeCore, number] | undefined {
+  ): [ArenaNode, number] | undefined {
     const node = document.createElement('DIV');
     node.innerHTML = htmlString;
     return this.insertChildren(node, arenaNode, offset);
@@ -34,22 +34,27 @@ export default class ArenaParser {
 
   private insertChildren(
     node: HTMLElement,
-    arenaNode: ArenaNodeCore,
+    arenaNode: ArenaNode,
     offset: number,
-  ): [ArenaNodeCore, number] | undefined {
+  ): [ArenaNode, number] | undefined {
     let currentNode = arenaNode;
     let currentOffset = offset;
+    let firstTextNode = true;
     node.childNodes.forEach((childNode, i) => {
       const result = this.insertChildNode(
         childNode,
         currentNode,
         currentOffset,
+        firstTextNode,
         i === 0,
         i === node.childNodes.length - 1,
       );
 
       if (result) {
         [currentNode, currentOffset] = result;
+        if (result[2] && firstTextNode) {
+          firstTextNode = false;
+        }
       } else {
         return undefined;
       }
@@ -59,18 +64,20 @@ export default class ArenaParser {
 
   private insertChildNode(
     node: ChildNode,
-    arenaNode: ArenaNodeCore,
+    arenaNode: ArenaNode,
     offset: number,
+    firstTextNode: boolean,
     first: boolean,
     last: boolean,
-  ): [ArenaNodeCore, number] | undefined {
+  ): [ArenaNode, number, boolean] | undefined {
     console.log('isert', node, arenaNode);
     if (node.nodeType === Node.TEXT_NODE) {
       let text = node.textContent || '';
       const dontInsertEmptyString = first || last || !('hasText' in arenaNode);
       console.log('test', dontInsertEmptyString, text, /^[\s\n]*$/.test(text));
+      // TODO except char 160
       if (dontInsertEmptyString && /^[\s\n]*$/.test(text)) {
-        return [arenaNode, offset];
+        return [arenaNode, offset, false];
       }
       if (first) {
         text = text.replace(/^[\s\n]+/, '');
@@ -79,12 +86,24 @@ export default class ArenaParser {
         text = text.replace(/[\s\n]+$/, '');
       }
       this.textarena.logger.log('insert text', text);
-      return arenaNode.insertText(text, offset);
+      const result = arenaNode.insertText(text, offset);
+      if (result) {
+        return [...result, true];
+      }
+      return undefined;
     }
     if (node.nodeType === Node.ELEMENT_NODE) {
       const elementNode = node as HTMLElement;
       const arena = this.checkArenaMark(elementNode);
       if (arena) {
+        // TODO check if arena for text
+        if ('hasText' in arenaNode && firstTextNode) {
+          const result = this.insertChildren(elementNode, arenaNode, offset);
+          if (result) {
+            return [...result, true];
+          }
+          return undefined;
+        }
         const result = arenaNode.createAndInsertNode(arena, offset);
         if (result) {
           const [
@@ -94,23 +113,36 @@ export default class ArenaParser {
           ] = result;
           if (newArenaNode) {
             this.insertChildren(elementNode, newArenaNode, 0);
-            return [currentNode, currentOffset];
+            return [currentNode, currentOffset, true];
           }
         }
         this.textarena.logger.log('this is arena');
-        return this.insertChildren(elementNode, arenaNode, offset);
+        const res = this.insertChildren(elementNode, arenaNode, offset);
+        if (res) {
+          return [...res, true];
+        }
+        return undefined;
       }
       const formating = this.checkFormatingMark(elementNode);
       if (formating) {
         const formatings = this.getText(elementNode);
         formatings.insertFormating(formating.name, 0, formatings.getTextLength());
         this.textarena.logger.log('this is formating', formatings);
-        return arenaNode.insertText(formatings, offset);
+        const res = arenaNode.insertText(formatings, offset);
+        if (res) {
+          return [...res, true];
+        } else {
+          return undefined;
+        }
       }
-      return this.insertChildren(elementNode, arenaNode, offset);
+      const res = this.insertChildren(elementNode, arenaNode, offset);
+      if (res) {
+        return [...res, true];
+      } else {
+        return undefined;
+      }
     }
-    this.textarena.logger.error('unaccepted node type, remove', node);
-    return [arenaNode, offset];
+    return [arenaNode, offset, false];
   }
 
   private checkArenaMark(node: HTMLElement): Arena | undefined {

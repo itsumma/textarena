@@ -1,3 +1,4 @@
+/* eslint-disable no-bitwise */
 import InputEvent from 'events/InputEvent';
 import RemoveEvent from 'events/RemoveEvent';
 import SelectionEvent from 'events/SelectionEvent';
@@ -5,11 +6,22 @@ import CommandEvent, { keyboardKeys } from 'events/CommandEvent';
 import ArenaKeyboardEvent from 'interfaces/ArenaKeyboardEvent';
 import Textarena from 'Textarena';
 import { isDescendant } from 'utils';
+import PasteEvent from 'events/PasteEvent';
+import CopyEvent from 'events/CopyEvent';
+import CutEvent from 'events/CutEvent';
+import BrowserCommandEvent from 'events/BrowserCommandEvent';
 
 enum SelectionStatus {
   Selected,
   Unselected,
 }
+
+const Modifiers = {
+  Shift: 1,
+  Ctrl: 2,
+  Alt: 4,
+  Meta: 8,
+};
 
 const modifiersKeys = {
   Shift: 16,
@@ -43,7 +55,9 @@ const specialKeys = {
   escape: 27,
   tab: 9,
   enter: 13,
+};
 
+const reservedKeys = {
   scrolllock: 145,
   capslock: 20,
   numlock: 144,
@@ -85,26 +99,28 @@ const removeCodes = invertObject(removeKeys);
 
 const specialCodes = invertObject(specialKeys);
 
+const reservedCodes = invertObject(reservedKeys);
+
 export default class ArenaBrowser {
-  inputListenerInstance: ((e: Event) => void);
+  private inputListenerInstance: ((e: Event) => void);
 
-  beforeinputListenerInstance: ((e: Event) => void);
+  private beforeinputListenerInstance: ((e: Event) => void);
 
-  mouseUpListenerInstance: (() => void);
+  private mouseUpListenerInstance: ((e: MouseEvent) => void);
 
-  keyUpListenerInstance: ((e: KeyboardEvent) => void);
+  private keyUpListenerInstance: ((e: KeyboardEvent) => void);
 
-  keyPressListenerInstance: ((e: KeyboardEvent) => void);
+  private keyPressListenerInstance: ((e: KeyboardEvent) => void);
 
-  keyDownListenerInstance: ((e: KeyboardEvent) => void);
+  private keyDownListenerInstance: ((e: KeyboardEvent) => void);
 
-  selectListenerInstance: (() => void);
+  private selectListenerInstance: ((e: Event) => void);
 
-  pasteListenerInstance: ((event: ClipboardEvent) => void);
+  private pasteListenerInstance: ((event: ClipboardEvent) => void);
 
-  lastSelectionStatus: SelectionStatus = SelectionStatus.Unselected;
+  private lastSelectionStatus: SelectionStatus = SelectionStatus.Unselected;
 
-  lastSelectionRange: Range | undefined;
+  private lastSelectionRange: Range | undefined;
 
   constructor(
     private textarena: Textarena,
@@ -140,123 +156,7 @@ export default class ArenaBrowser {
     });
   }
 
-  inputListener(e: Event): void {
-    // this.textarena.logger.info('input', e);
-    // e.preventDefault();
-    // e.stopPropagation();
-  }
-
-  beforeinputListener(e: Event): void {
-    // this.textarena.logger.info('beforeinput', e);
-    // if (e.inputType === 'formatBold') {
-    //   e.preventDefault();
-    //   e.stopPropagation();
-    // }
-  }
-
-  mouseUpListener(): void {
-    this.checkSelection();
-  }
-
-  checkEvent(prefix: string, e: KeyboardEvent): ArenaKeyboardEvent | undefined {
-    const modifiers = {
-      Shift: e.shiftKey,
-      Ctrl: e.ctrlKey,
-      Alt: e.altKey,
-      Meta: e.metaKey,
-    };
-    const { keyCode, code } = e;
-    const character = e.key;
-    if (modifiersCodes[keyCode]) {
-      // this.textarena.logger.info(`${prefix} modifier: ${modifiersCodes[keyCode]}`);
-      return undefined;
-    }
-    if (selectionCodes[keyCode]) {
-      this.textarena.logger.info(`${prefix} selectionCode: ${selectionCodes[keyCode]}`);
-      return new SelectionEvent(e);
-    }
-    if (removeCodes[keyCode]) {
-      this.textarena.logger.info(`${prefix} removeCode: ${removeCodes[keyCode]}`);
-      return new RemoveEvent(
-        e,
-        removeCodes[keyCode] === 'delete' ? 'forward' : 'backward',
-      );
-    }
-    if (specialCodes[keyCode] || modifiers.Alt || modifiers.Ctrl || modifiers.Meta) {
-      const mod = Object.entries(modifiers).filter(([, t]) => t).map(([m]) => m);
-      this.textarena.logger.info(`${prefix} command ${mod.join(' + ')} + ${code}`, e);
-      if (code && keyboardKeys.includes(code)) {
-        return new CommandEvent(e, code, mod);
-      }
-      return undefined;
-    }
-    this.textarena.logger.info(`${prefix} input: ${character}`, keyCode, e);
-    // TODO observe changes
-    if (character) {
-      return new InputEvent(e, character);
-    }
-    return undefined;
-  }
-
-  keyUpListener(e: KeyboardEvent): void {
-    this.checkSelection();
-  }
-
-  keyPressListener(e: KeyboardEvent): void {
-    // this.textarena.logger.info('keyPress', e);
-    // e.preventDefault();
-    // e.stopPropagation();
-  }
-
-  keyDownListener(e: KeyboardEvent): void {
-    const event = this.checkEvent('keyDown', e);
-    if (event instanceof SelectionEvent) {
-      this.textarena.eventManager.fire('textSelected');
-      // allow
-      return;
-    }
-    e.cancelBubble = true;
-    e.returnValue = false;
-    e.stopPropagation();
-    e.preventDefault();
-    if (!event) {
-      return;
-    }
-    const selection = this.textarena.view.getArenaSelection();
-    if (!selection) {
-      return;
-    }
-    if (event instanceof CommandEvent) {
-      const newSelection = this.textarena.commandManager.exec(selection, event);
-      this.textarena.view.render(newSelection);
-      return;
-    }
-    if (event instanceof InputEvent) {
-      const newSelection = this.textarena.model.insertText(selection, event.character);
-      this.textarena.view.render(newSelection);
-    }
-    if (event instanceof RemoveEvent) {
-      const newSelection = this.textarena.model.removeSelection(selection, event.direction);
-      this.textarena.view.render(newSelection);
-    }
-  }
-
-  pasteListener(e: ClipboardEvent): void {
-    e.preventDefault();
-    this.textarena.logger.info('pasteListener', e);
-    const s = window.getSelection();
-    const isCollapsed = s && s.isCollapsed;
-    if (!isCollapsed) {
-      // TODO remove selection
-    }
-    // TODO paste
-  }
-
-  selectListener(): void {
-    this.checkSelection();
-  }
-
-  checkSelection(): void {
+  protected checkSelection(): void {
     const s = window.getSelection();
     if (!s) {
       return;
@@ -287,5 +187,201 @@ export default class ArenaBrowser {
         }
       }
     }
+  }
+
+  protected checkKeyboardEvent(prefix: string, e: KeyboardEvent): ArenaKeyboardEvent | undefined {
+    const {
+      keyCode,
+      code,
+      shiftKey,
+      ctrlKey,
+      altKey,
+      metaKey,
+    } = e;
+    const modifiers = {
+      Shift: shiftKey,
+      Ctrl: ctrlKey,
+      Alt: altKey,
+      Meta: metaKey,
+    };
+    const modifiersSum = (shiftKey ? Modifiers.Shift : 0)
+      | (ctrlKey ? Modifiers.Ctrl : 0)
+      | (altKey ? Modifiers.Alt : 0)
+      | (metaKey ? Modifiers.Meta : 0);
+    const character = e.key;
+    if (modifiersCodes[keyCode]) {
+      return undefined;
+    }
+    if (reservedCodes[keyCode]) {
+      return new BrowserCommandEvent(e);
+    }
+    if (code === 'KeyD' && modifiersSum === Modifiers.Ctrl) {
+      return new BrowserCommandEvent(e);
+    }
+    if (code === 'KeyF' && modifiersSum === Modifiers.Ctrl) {
+      return new BrowserCommandEvent(e);
+    }
+    if (code === 'KeyG'
+      && (modifiersSum ^ (Modifiers.Ctrl | Modifiers.Shift) & modifiersSum) === 0) {
+      return new BrowserCommandEvent(e);
+    }
+    if (code === 'KeyH' && modifiersSum === Modifiers.Ctrl) {
+      return new BrowserCommandEvent(e);
+    }
+    if (code === 'KeyJ' && modifiersSum === Modifiers.Ctrl) {
+      return new BrowserCommandEvent(e);
+    }
+    if (code === 'KeyO' && modifiersSum === Modifiers.Ctrl) {
+      return new BrowserCommandEvent(e);
+    }
+    // if (code === 'KeyP' && modifiersSum === Modifiers.Ctrl) {
+    //   return new BrowserCommandEvent(e);
+    // }
+    // if (code === 'KeyS' && modifiersSum === Modifiers.Ctrl) {
+    //   return new BrowserCommandEvent(e);
+    // }
+    if (code === 'KeyE' && modifiersSum === Modifiers.Ctrl) {
+      return new BrowserCommandEvent(e);
+    }
+    if (code === 'KeyK' && modifiersSum === Modifiers.Ctrl) {
+      return new BrowserCommandEvent(e);
+    }
+    if (code === 'Delete' && modifiersSum === (Modifiers.Ctrl | Modifiers.Shift)) {
+      return new BrowserCommandEvent(e);
+    }
+    if (code === 'KeyF' && modifiersSum === Modifiers.Alt) {
+      return new BrowserCommandEvent(e);
+    }
+    if (/^Digit\d$/.test(code) && modifiersSum === Modifiers.Ctrl) {
+      return new BrowserCommandEvent(e);
+    }
+
+    if (selectionCodes[keyCode]) {
+      return new SelectionEvent(e);
+    }
+    if (code === 'KeyA' && modifiersSum === Modifiers.Ctrl) {
+      return new SelectionEvent(e);
+    }
+    if (code === 'KeyC' && modifiersSum === Modifiers.Ctrl) {
+      return new CopyEvent(e);
+    }
+    if (code === 'KeyV' && modifiersSum === Modifiers.Ctrl) {
+      return new PasteEvent(e);
+    }
+    if (code === 'KeyX' && modifiersSum === Modifiers.Ctrl) {
+      return new CutEvent(e);
+    }
+    if (removeCodes[keyCode]) {
+      return new RemoveEvent(
+        e,
+        removeCodes[keyCode] === 'delete' ? 'forward' : 'backward',
+      );
+    }
+    if (specialCodes[keyCode] || modifiersSum > Modifiers.Shift) {
+      const mod = Object.entries(modifiers).filter(([, t]) => t).map(([m]) => m);
+      this.textarena.logger.info(`${prefix} command ${mod.join(' + ')} + ${code}`, e);
+      if (code && keyboardKeys.includes(code)) {
+        return new CommandEvent(e, code, mod);
+      }
+      return undefined;
+    }
+    if (character) {
+      return new InputEvent(e, character);
+    }
+    return undefined;
+  }
+
+  private inputListener(e: Event): void {
+    this.textarena.logger.log('Input event', e);
+  }
+
+  private beforeinputListener(e: Event): void {
+    this.textarena.logger.log('Beforeinput event', e);
+  }
+
+  private mouseUpListener(e: MouseEvent): void {
+    this.textarena.logger.log('MouseUp event', e);
+    this.checkSelection();
+  }
+
+  private keyUpListener(e: KeyboardEvent): void {
+    this.textarena.logger.log('KeyUp event', e);
+  }
+
+  private keyPressListener(e: KeyboardEvent): void {
+    this.textarena.logger.log('KeyPress event', e);
+  }
+
+  private keyDownListener(e: KeyboardEvent): void {
+    const event = this.checkKeyboardEvent('keyDown', e);
+    this.textarena.logger.log('KeyDown event', event, e);
+    if (event instanceof SelectionEvent
+      || event instanceof BrowserCommandEvent
+      || event instanceof CopyEvent
+      || event instanceof PasteEvent) {
+      // allow
+      return;
+    }
+    e.cancelBubble = true;
+    e.returnValue = false;
+    e.stopPropagation();
+    e.preventDefault();
+    if (!event) {
+      return;
+    }
+    const selection = this.textarena.view.getArenaSelection();
+    if (!selection) {
+      return;
+    }
+    if (event instanceof CommandEvent) {
+      const newSelection = this.textarena.commandManager.exec(selection, event);
+      this.textarena.view.render(newSelection);
+      return;
+    }
+    if (event instanceof InputEvent) {
+      const newSelection = this.textarena.model.insertText(selection, event.character);
+      this.textarena.view.render(newSelection);
+    }
+    if (event instanceof RemoveEvent) {
+      const newSelection = this.textarena.model.removeSelection(selection, event.direction);
+      this.textarena.view.render(newSelection);
+    }
+  }
+
+  private pasteListener(e: ClipboardEvent): void {
+    this.textarena.logger.log('Paste event', e);
+    e.preventDefault();
+    const { clipboardData } = e;
+    if (!clipboardData) {
+      return;
+    }
+    const types: string[] = [...clipboardData.types || []];
+    if (types.includes('text/html')) {
+      const html = clipboardData.getData('text/html');
+      if (!html) {
+        return;
+      }
+      console.log(e, html);
+      const selection = this.textarena.view.getArenaSelection();
+      if (selection) {
+        const newSelection = this.textarena.model.insertHtml(selection, html);
+        this.textarena.view.render(newSelection);
+      }
+    } else if (types.includes('text/plain')) {
+      const text = clipboardData.getData('text/plain');
+      if (!text) {
+        return;
+      }
+      const selection = this.textarena.view.getArenaSelection();
+      if (selection) {
+        const newSelection = this.textarena.model.insertText(selection, text);
+        this.textarena.view.render(newSelection);
+      }
+    }
+  }
+
+  private selectListener(e: Event): void {
+    this.textarena.logger.log('Select event', e);
+    this.checkSelection();
   }
 }
