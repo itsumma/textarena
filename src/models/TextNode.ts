@@ -1,4 +1,5 @@
-import { TemplateResult } from 'lit-html';
+import { TemplateResult, html } from 'lit-html';
+import { unsafeHTML } from 'lit-html/directives/unsafe-html';
 import RichTextManager from 'RichTextManager';
 import Arena from 'interfaces/Arena';
 import ArenaNode from 'interfaces/ArenaNode';
@@ -58,7 +59,20 @@ export default class TextNode
   }
 
   getTemplate(): TemplateResult | string {
-    return this.getText() as string;
+    let { text } = this;
+    if (text === '') {
+      return html`<br/>`;
+    }
+    text = text
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;')
+      .replace(/^\s/, '&nbsp;')
+      .replace(/\s&/, '&nbsp;')
+      .replace(/\s\s/g, ' &nbsp;');
+    return html`${unsafeHTML(text)}`;
   }
 
   getHtml(): TemplateResult | string {

@@ -121,6 +121,11 @@ export default class RichTextManager {
 
   getHtml(): string {
     let { text } = this;
+    if (text === '') {
+      return '<br/>';
+    }
+    // TODO escape text
+    // FIXME nesting formatings
     this.getInsertions().forEach((insertion) => {
       text = text.slice(0, insertion.offset) + insertion.tag + text.slice(insertion.offset);
     });

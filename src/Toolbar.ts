@@ -87,27 +87,11 @@ export default class Toolbar {
     const MACOS = isMac();
     const ctrlKey = MACOS ? e.metaKey : e.ctrlKey;
     const key = MACOS ? 'Meta' : 'Control';
-    if (e.code === 'Tab' && !e.altKey && !ctrlKey) {
-      const el = utils.getFocusElement();
-      if (utils.isElementParent(el, ['UL', 'OL'], 3)) return;
-      e.preventDefault();
-      // TODO запретить отступ для простого текста. Сделать удаление отступа с шифтом.
-      document.execCommand('indent');
-    }
-    if (e.altKey && this.altKeys[e.code]) {
-      e.preventDefault();
-      this.executeTool(this.altKeys[e.code]);
-    } else
-    if (ctrlKey && !e.altKey && this.controlKeys[e.code]) {
-      e.preventDefault();
-      this.executeTool(this.controlKeys[e.code]);
-    } else
     if (!this.controlKeyShowed && this.showed && e.key === key && !e.altKey && !e.shiftKey) {
       e.preventDefault();
       this.elem.addClass('textarena-toolbar_show-control-key');
       this.controlKeyShowed = true;
-    } else
-    if (!this.altKeyShowed && this.showed && e.key === 'Alt') {
+    } else if (!this.altKeyShowed && this.showed && e.key === 'Alt') {
       e.preventDefault();
       this.elem.addClass('textarena-toolbar_show-alt-key');
       this.altKeyShowed = true;
@@ -155,6 +139,10 @@ export default class Toolbar {
         return tool;
       });
     }
+  }
+
+  registerTool(name: string) {
+
   }
 
   executeTool(tool: Tool): void {

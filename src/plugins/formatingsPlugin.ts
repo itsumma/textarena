@@ -2,20 +2,29 @@ import Textarena from 'Textarena';
 import ArenaPlugin from 'interfaces/ArenaPlugin';
 import ArenaSelection from 'ArenaSelection';
 
-const defaultOptions = {
-  tags: [],
+type MarkOptions = {
+  tag: string,
+  attributes: string[];
 };
 
-const formatingsPlugin: ArenaPlugin = {
-  register(textarena: Textarena, opts: any): void {
-    const options = { ...defaultOptions, ...(opts || {}) };
-    const formatingB = textarena.model.registerFormating(
-      {
-        name: 'strong',
-        tag: 'STRONG',
-        attributes: [],
-      },
-      [
+type FormatingsOptions = {
+  name: string,
+  tag: string,
+  attributes: string[];
+  keys: string,
+  marks: MarkOptions[],
+};
+
+const defaultOptions: {
+  formatings: FormatingsOptions[],
+} = {
+  formatings: [
+    {
+      name: 'strong',
+      tag: 'STRONG',
+      attributes: [],
+      keys: 'Ctrl + KeyB',
+      marks: [
         {
           tag: 'B',
           attributes: [],
@@ -35,18 +44,13 @@ const formatingsPlugin: ArenaPlugin = {
           ],
         },
       ],
-    );
-    textarena.commandManager.registerCommand(
-      'Ctrl + KeyB',
-      (ta: Textarena, selection: ArenaSelection) => ta.model.formatingModel(selection, formatingB),
-    );
-    const formatingI = textarena.model.registerFormating(
-      {
-        name: 'italic',
-        tag: 'EM',
-        attributes: [],
-      },
-      [
+    },
+    {
+      name: 'italic',
+      tag: 'EM',
+      attributes: [],
+      keys: 'Ctrl + KeyI',
+      marks: [
         {
           tag: 'I',
           attributes: [],
@@ -62,11 +66,30 @@ const formatingsPlugin: ArenaPlugin = {
           ],
         },
       ],
-    );
-    textarena.commandManager.registerCommand(
-      'Ctrl + KeyI',
-      (ta: Textarena, selection: ArenaSelection) => ta.model.formatingModel(selection, formatingI),
-    );
+    },
+  ],
+};
+
+const formatingsPlugin: ArenaPlugin = {
+  register(textarena: Textarena, opts: any): void {
+    const options = { ...defaultOptions, ...(opts || {}) };
+    options.formatings.forEach((frm: FormatingsOptions) => {
+      const formating = textarena.model.registerFormating(
+        {
+          name: frm.name,
+          tag: frm.tag,
+          attributes: frm.attributes,
+        },
+        frm.marks,
+      );
+      textarena.commandManager.registerCommand(
+        frm.keys,
+        (ta: Textarena, selection: ArenaSelection) => ta.model.formatingModel(selection, formating),
+      );
+      textarena.toolbar.registerTool(
+        frm.name,
+      );
+    });
   },
 };
 
