@@ -334,7 +334,9 @@ export default class ArenaBrowser {
       return;
     }
     if (event instanceof CommandEvent) {
-      const newSelection = this.textarena.commandManager.exec(selection, event);
+      const { command, modifiers } = event;
+      const shortcut = [...modifiers, command].join(' + ');
+      const newSelection = this.textarena.commandManager.execShortcut(selection, shortcut);
       this.textarena.view.render(newSelection);
       return;
     }

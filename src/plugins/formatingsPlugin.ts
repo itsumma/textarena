@@ -11,8 +11,13 @@ type FormatingsOptions = {
   name: string,
   tag: string,
   attributes: string[];
-  keys: string,
+  shortcut: string,
+  command: string,
   marks: MarkOptions[],
+  tool?: {
+    icon: string;
+    title: string;
+  },
 };
 
 const defaultOptions: {
@@ -23,7 +28,8 @@ const defaultOptions: {
       name: 'strong',
       tag: 'STRONG',
       attributes: [],
-      keys: 'Ctrl + KeyB',
+      shortcut: 'Ctrl + KeyB',
+      command: 'format-strong',
       marks: [
         {
           tag: 'B',
@@ -44,12 +50,17 @@ const defaultOptions: {
           ],
         },
       ],
+      tool: {
+        title: 'Strong (bold)',
+        icon: '<b>B</b>',
+      },
     },
     {
-      name: 'italic',
+      name: 'emphasized',
       tag: 'EM',
       attributes: [],
-      keys: 'Ctrl + KeyI',
+      command: 'format-emphasized',
+      shortcut: 'Ctrl + KeyI',
       marks: [
         {
           tag: 'I',
@@ -66,6 +77,56 @@ const defaultOptions: {
           ],
         },
       ],
+      tool: {
+        title: 'Italic (emphasized)',
+        icon: '<i>I</i>',
+      },
+    },
+    {
+      name: 'underline',
+      tag: 'U',
+      attributes: [],
+      shortcut: 'Ctrl + KeyU',
+      command: 'format-underline',
+      marks: [
+        {
+          tag: 'U',
+          attributes: [],
+        },
+        {
+          tag: 'SPAN',
+          attributes: [
+            'style=textDecoration:underline;',
+          ],
+        },
+      ],
+      tool: {
+        title: 'Underline',
+        icon: '<u>U</u>',
+      },
+    },
+    {
+      name: 'strikethrough',
+      tag: 'S',
+      attributes: [],
+      shortcut: 'Alt + KeyS',
+      command: 'format-strikethrough',
+      marks: [
+        {
+          tag: 'S',
+          attributes: [],
+        },
+        {
+          tag: 'SPAN',
+          attributes: [
+            'style=textDecoration:line-through;',
+          ],
+        },
+      ],
+      tool: {
+        title: 'Strikethrough',
+        icon: '<s>S</s>',
+      },
     },
   ],
 };
@@ -73,22 +134,40 @@ const defaultOptions: {
 const formatingsPlugin: ArenaPlugin = {
   register(textarena: Textarena, opts: any): void {
     const options = { ...defaultOptions, ...(opts || {}) };
-    options.formatings.forEach((frm: FormatingsOptions) => {
+    options.formatings.forEach(({
+      name,
+      tag,
+      attributes,
+      shortcut,
+      command,
+      marks,
+      tool,
+    }: FormatingsOptions) => {
       const formating = textarena.model.registerFormating(
         {
-          name: frm.name,
-          tag: frm.tag,
-          attributes: frm.attributes,
+          name,
+          tag,
+          attributes,
         },
-        frm.marks,
+        marks,
       );
       textarena.commandManager.registerCommand(
-        frm.keys,
+        command,
         (ta: Textarena, selection: ArenaSelection) => ta.model.formatingModel(selection, formating),
       );
-      textarena.toolbar.registerTool(
-        frm.name,
+      textarena.commandManager.registerShortcut(
+        shortcut,
+        command,
       );
+      if (tool) {
+        textarena.toolbar.registerTool({
+          ...tool,
+          name,
+          command,
+          shortcut,
+          formating,
+        });
+      }
     });
   },
 };

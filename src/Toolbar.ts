@@ -3,7 +3,6 @@ import { IMAGE_WRAPPER } from 'common/constants';
 import ElementHelper from './ElementHelper';
 import ToolbarOptions from './interfaces/ToolbarOptions';
 import ToolOptions from './interfaces/ToolOptions';
-import tools from './tools';
 import * as utils from './utils';
 import { isMac } from './utils';
 
@@ -21,10 +20,6 @@ export default class Toolbar {
 
   controlKeyShowed = false;
 
-  controlKeys: KeysForTool = {};
-
-  altKeys: KeysForTool = {};
-
   altKeyShowed = false;
 
   elem: ElementHelper;
@@ -32,6 +27,10 @@ export default class Toolbar {
   list: ElementHelper;
 
   pointer: ElementHelper;
+
+  availableTools: {
+    [key: string]: ToolOptions,
+  } = {};
 
   tools: Tool[] = [];
 
@@ -102,18 +101,11 @@ export default class Toolbar {
     // TODO use enabler parameter
     if (toolbarOptions.tools) {
       this.list.setInnerHTML('');
-      this.controlKeys = {};
-      this.tools = toolbarOptions.tools.map((toolOptions: ToolOptions | string) => {
-        let options: ToolOptions;
-        if (typeof toolOptions === 'string') {
-          if (tools[toolOptions]) {
-            options = tools[toolOptions];
-          } else {
-            throw Error(`Tool "${toolOptions}" not found`);
-          }
-        } else {
-          options = toolOptions;
+      this.tools = toolbarOptions.tools.map((toolOptions: string) => {
+        if (!this.availableTools[toolOptions]) {
+          throw Error(`Tool "${toolOptions}" not found`);
         }
+        const options = this.availableTools[toolOptions];
         const elem = new ElementHelper('DIV', 'textarena-toolbar__item');
         const tool = {
           elem,
@@ -127,11 +119,9 @@ export default class Toolbar {
           elem.setInnerHTML(options.icon);
         }
         if (options.controlKey) {
-          this.controlKeys[utils.getCodeForKey(options.controlKey)] = tool;
           const controlKey = new ElementHelper('DIV', 'textarena-toolbar__control-key', options.controlKey);
           elem.appendChild(controlKey);
         } else if (options.altKey) {
-          this.altKeys[utils.getCodeForKey(options.altKey)] = tool;
           const altKey = new ElementHelper('DIV', 'textarena-toolbar__alt-key', options.altKey);
           elem.appendChild(altKey);
         }
@@ -141,20 +131,14 @@ export default class Toolbar {
     }
   }
 
-  registerTool(name: string) {
-
+  registerTool(opts: ToolOptions): void {
+    this.availableTools[opts.name] = opts;
   }
 
   executeTool(tool: Tool): void {
     const { options, elem } = tool;
-    options.processor(this, options.config || {});
-    if (options.state) {
-      if (options.state({}, options.config || {})) {
-        elem.addClass('textarena-toolbar__item_active');
-      } else {
-        elem.removeClass('textarena-toolbar__item_active');
-      }
-    }
+    this.textarena.commandManager.execCommand(options.command);
+    this.textarena.view.render();
     this.hide();
   }
 

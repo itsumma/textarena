@@ -5,6 +5,7 @@ import ArenaNodeScion from 'interfaces/ArenaNodeScion';
 import ArenaNodeAncestor from 'interfaces/ArenaNodeAncestor';
 import ArenaNode from 'interfaces/ArenaNode';
 import RichTextManager from 'RichTextManager';
+import ArenaModel from 'ArenaModel';
 
 export default abstract class AbstractNodeScion implements ArenaNodeScion {
   hasParent: true = true;
@@ -36,12 +37,12 @@ export default abstract class AbstractNodeScion implements ArenaNodeScion {
     return [this, offset];
   }
 
-  getTemplate(): TemplateResult | string {
+  getTemplate(model: ArenaModel): TemplateResult | string {
     return '';
   }
 
-  getHtml(): TemplateResult | string {
-    return this.arena.template(this.getTemplate(), this.getGlobalIndex());
+  getHtml(model: ArenaModel): TemplateResult | string {
+    return this.arena.template(this.getTemplate(model), this.getGlobalIndex());
   }
 
   remove(): void {

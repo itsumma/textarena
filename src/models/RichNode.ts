@@ -4,6 +4,7 @@ import ArenaNode from 'interfaces/ArenaNode';
 import ArenaNodeText from 'interfaces/ArenaNodeText';
 import RichTextManager from 'RichTextManager';
 import AbstractNodeText from './AbstractNodeText';
+import ArenaModel from 'ArenaModel';
 
 export default class RichNode
   extends AbstractNodeText
@@ -26,9 +27,9 @@ export default class RichNode
     this.richTextManager.toggleFormating(name, start, end);
   }
 
-  getTemplate(): TemplateResult | string {
+  getTemplate(model: ArenaModel): TemplateResult | string {
     return html`
-      ${unsafeHTML(this.richTextManager.getHtml())}
+      ${unsafeHTML(this.richTextManager.getHtml(model))}
     `;
   }
 

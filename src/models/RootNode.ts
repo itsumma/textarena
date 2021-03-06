@@ -1,5 +1,6 @@
 import { TemplateResult, html } from 'lit-html';
 import { repeat } from 'lit-html/directives/repeat';
+import ArenaModel from 'ArenaModel';
 import Arena, { ArenaWithNodes, ArenaWithChildText } from 'interfaces/Arena';
 import ArenaNode from 'interfaces/ArenaNode';
 import ArenaNodeScion from 'interfaces/ArenaNodeScion';
@@ -23,9 +24,9 @@ export default class RootNode implements ArenaNodeAncestor {
     return '0';
   }
 
-  getHtml(): TemplateResult | string {
+  getHtml(model: ArenaModel): TemplateResult | string {
     return this.arena.template(html`
-      ${repeat(this.children, (c, index) => index, (child) => child.getHtml())}
+      ${repeat(this.children, (c, index) => index, (child) => child.getHtml(model))}
     `, this.getGlobalIndex());
   }
 

@@ -34,9 +34,15 @@ const paragraphPlugin: ArenaPlugin = {
     // TODO convert arena to class
     textarena.model.rootArena.arenaForText = arena;
     textarena.commandManager.registerCommand(
-      'Alt + KeyP',
+      'Alt + Digit0',
       (ta: Textarena, selection: ArenaSelection) => ta.model.transformModel(selection, arena),
     );
+    textarena.toolbar.registerTool({
+      name: 'paragraph',
+      title: 'Paragraph',
+      icon: '<b>¶</b>',
+      altKey: '0',
+    });
   },
 };
 

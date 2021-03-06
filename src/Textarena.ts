@@ -24,6 +24,7 @@ import ArenaCommandManager from 'ArenaCommandManager';
 import headersPlugin from 'plugins/headersPlugin';
 import paragraphPlugin from 'plugins/paragraphPlugin';
 import formatingsPlugin from 'plugins/formatingsPlugin';
+import commonPlugin from 'plugins/commonPlugin';
 
 // FIXME как инициализировать кмопоненты.
 const callout = new Callout();
@@ -34,10 +35,10 @@ const defaultOptions: TextarenaOptions = {
   toolbar: {
     enabled: true,
     tools: [
-      'bold',
-      'italic',
-      // 'underline',
-      // 'strikethrough',
+      'strong',
+      'emphasized',
+      'underline',
+      'strikethrough',
       // 'list',
       // 'orderedlist',
       // 'h2',
@@ -55,9 +56,10 @@ const defaultOptions: TextarenaOptions = {
     ],
   },
   plugins: {
-    headers: headersPlugin,
+    common: commonPlugin,
     paragraph: paragraphPlugin,
     formatings: formatingsPlugin,
+    headers: headersPlugin,
   },
   pluginOptions: {
     headers: {

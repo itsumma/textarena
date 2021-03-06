@@ -1,3 +1,4 @@
+import ArenaModel from 'ArenaModel';
 import { TemplateResult } from 'lit-html';
 import RichTextManager from 'RichTextManager';
 import Arena from './Arena';
@@ -16,7 +17,7 @@ export default interface ArenaNodeCore {
     ArenaNode, ArenaNode, number,
   ] | undefined;
 
-  getHtml(): TemplateResult | string;
+  getHtml(model: ArenaModel): TemplateResult | string;
 
   getGlobalIndex(): string;
 }

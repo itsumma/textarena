@@ -1,3 +1,4 @@
+import ArenaModel, { ArenaFormatings } from 'ArenaModel';
 import Intervaler from 'Intervaler';
 
 export type Formatings = {
@@ -101,32 +102,35 @@ export default class RichTextManager {
     return offset + text.length;
   }
 
-  getInsertions(): Insertion[] {
+  getInsertions(frms: ArenaFormatings): Insertion[] {
     const insertions: Insertion[] = [];
     Object.entries(this.formatings).forEach(([name, intervaler]) => {
-      const tag = name === 'italic' ? 'em' : 'strong'; // FIXME
-      intervaler.getIntervals().forEach((interval) => {
-        insertions.push({
-          offset: interval.start,
-          tag: `<${tag}>`,
+      if (frms[name]) {
+        const { tag, attributes } = frms[name];
+        intervaler.getIntervals().forEach((interval) => {
+          insertions.push({
+            offset: interval.start,
+            tag: `<${tag}>`,
+          });
+          insertions.push({
+            offset: interval.end,
+            tag: `</${tag}>`,
+          });
         });
-        insertions.push({
-          offset: interval.end,
-          tag: `</${tag}>`,
-        });
-      });
+      }
     });
     return insertions.sort((a, b) => b.offset - a.offset);
   }
 
-  getHtml(): string {
+  getHtml(model: ArenaModel): string {
     let { text } = this;
     if (text === '') {
       return '<br/>';
     }
+    const frms = model.getFormatings();
     // TODO escape text
     // FIXME nesting formatings
-    this.getInsertions().forEach((insertion) => {
+    this.getInsertions(frms).forEach((insertion) => {
       text = text.slice(0, insertion.offset) + insertion.tag + text.slice(insertion.offset);
     });
     return text;

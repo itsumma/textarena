@@ -22,6 +22,10 @@ export type ArenaFormating = {
   attributes: string[],
 };
 
+export type ArenaFormatings = {
+  [key: string]: ArenaFormating,
+};
+
 type ArenaMark = {
   attributes: string[],
   arena: Arena,
@@ -40,6 +44,8 @@ export default class ArenaModel {
   arenasByName: { [name: string]: Arena } = { };
 
   formatings: ArenaFormating[] = [];
+
+  formatingsByName: ArenaFormatings = {};
 
   areanMarks: { [tag: string]: ArenaMark[] } = { };
 
@@ -97,6 +103,7 @@ export default class ArenaModel {
     markers: TagAndAttributes[],
   ): ArenaFormating {
     this.formatings.push(formating);
+    this.formatingsByName[formating.name] = formating;
     markers.forEach(({ tag, attributes }) => {
       if (!this.formatingMarks[tag]) {
         this.formatingMarks[tag] = [];
@@ -107,6 +114,10 @@ export default class ArenaModel {
       });
     });
     return formating;
+  }
+
+  public getFormatings(): ArenaFormatings {
+    return this.formatingsByName;
   }
 
   public getArenaMarks(tagName: string): ArenaMark[] | undefined {
@@ -135,7 +146,7 @@ export default class ArenaModel {
     return undefined;
   }
 
-  getAncestors(node: ArenaNode): ArenaNodeAncestor[] {
+  public getAncestors(node: ArenaNode): ArenaNodeAncestor[] {
     if ('hasParent' in node) {
       return [...this.getAncestors(node.parent), node.parent];
     }

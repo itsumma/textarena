@@ -9,7 +9,7 @@ export default class ArenaView implements ArenaServiceInterface {
   }
 
   public render(selection?: ArenaSelection): void {
-    const result = this.textarena.model.model.getHtml();
+    const result = this.textarena.model.model.getHtml(this.textarena.model);
     const container = this.textarena.editor.getElem();
     render(result, container);
     if (selection) {
