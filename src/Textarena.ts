@@ -26,6 +26,7 @@ import paragraphPlugin from 'plugins/paragraphPlugin';
 import formatingsPlugin from 'plugins/formatingsPlugin';
 import commonPlugin from 'plugins/commonPlugin';
 import hrPlugin from 'plugins/hrPlugin';
+import listsPlugin from 'plugins/listsPlugin';
 
 // FIXME как инициализировать кмопоненты.
 const callout = new Callout();
@@ -62,6 +63,7 @@ const defaultOptions: TextarenaOptions = {
     formatings: formatingsPlugin,
     headers: headersPlugin,
     hr: hrPlugin,
+    lists: listsPlugin,
   },
   pluginOptions: {
     headers: {

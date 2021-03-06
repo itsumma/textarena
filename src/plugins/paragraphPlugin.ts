@@ -34,14 +34,20 @@ const paragraphPlugin: ArenaPlugin = {
     // TODO convert arena to class
     textarena.model.rootArena.arenaForText = arena;
     textarena.commandManager.registerCommand(
-      'Alt + Digit0',
+      'convert-to-paragraph',
       (ta: Textarena, selection: ArenaSelection) => ta.model.transformModel(selection, arena),
+    );
+    textarena.commandManager.registerShortcut(
+      'Alt + Digit0',
+      'convert-to-paragraph',
     );
     textarena.toolbar.registerTool({
       name: 'paragraph',
       title: 'Paragraph',
       icon: '<b>¶</b>',
-      altKey: '0',
+      shortcut: 'Alt + Digit0',
+      hint: '0',
+      command: 'convert-to-paragraph',
     });
   },
 };
