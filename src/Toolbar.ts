@@ -1,21 +1,20 @@
 import Textarena from 'Textarena';
+import { MediaEvent } from 'EventManager';
 import { IMAGE_WRAPPER } from 'common/constants';
 import ElementHelper from './ElementHelper';
 import ToolbarOptions from './interfaces/ToolbarOptions';
 import ToolOptions from './interfaces/ToolOptions';
 import * as utils from './utils';
-import { isMac } from './utils';
 
 type Tool = {
   elem: ElementHelper;
   options: ToolOptions;
-};
-
-type KeysForTool = {
-  [key: string]: Tool;
+  modifiers: number;
 };
 
 export default class Toolbar {
+  enabled = false;
+
   showed = false;
 
   controlKeyShowed = false;
@@ -38,12 +37,8 @@ export default class Toolbar {
 
   rightPadding = 30;
 
-  keyUpListenerInstance: ((e: KeyboardEvent) => void);
-
-  keyDownListenerInstance: ((e: KeyboardEvent) => void);
-
   constructor(
-    private textarena: Textarena,
+    private ta: Textarena,
   ) {
     this.elem = new ElementHelper('DIV', 'textarena-toolbar');
     this.pointer = new ElementHelper('DIV', 'textarena-toolbar__pointer');
@@ -51,54 +46,21 @@ export default class Toolbar {
     this.elem.appendChild(this.list);
     this.elem.appendChild(this.pointer);
     this.hide();
-    this.textarena.eventManager.subscribe('textSelected', () => {
+    this.ta.eventManager.subscribe('textSelected', () => {
       this.show();
     });
-    this.textarena.eventManager.subscribe('textUnselected', () => {
+    this.ta.eventManager.subscribe('textUnselected', () => {
       this.hide();
     });
-    this.textarena.eventManager.subscribe('selectionChanged', () => {
+    this.ta.eventManager.subscribe('selectionChanged', () => {
       this.show();
     });
-    this.keyUpListenerInstance = this.keyUpListener.bind(this);
-    this.keyDownListenerInstance = this.keyDownListener.bind(this);
-    this.textarena.eventManager.subscribe('turnOn', () => {
-      this.textarena.editor.addEventListener('keyup', this.keyUpListenerInstance, false);
-      this.textarena.editor.addEventListener('keydown', this.keyDownListenerInstance, false);
-    });
-    this.textarena.eventManager.subscribe('turnOff', () => {
-      this.textarena.editor.removeEventListener('keyup', this.keyUpListenerInstance);
-      this.textarena.editor.removeEventListener('keydown', this.keyDownListenerInstance);
-    });
-    this.textarena.container.appendChild(this.getElem());
+    this.ta.eventManager.subscribe('keyDown', this.keyListener.bind(this));
+    this.ta.eventManager.subscribe('keyUp', this.keyListener.bind(this));
+    this.ta.container.appendChild(this.getElem());
   }
 
-  keyUpListener(): void {
-    if (this.altKeyShowed || this.controlKeyShowed) {
-      this.elem.removeClass('textarena-toolbar_show-control-key');
-      this.elem.removeClass('textarena-toolbar_show-alt-key');
-      this.controlKeyShowed = false;
-      this.altKeyShowed = false;
-    }
-  }
-
-  keyDownListener(e: KeyboardEvent): void {
-    const MACOS = isMac();
-    const ctrlKey = MACOS ? e.metaKey : e.ctrlKey;
-    const key = MACOS ? 'Meta' : 'Control';
-    if (!this.controlKeyShowed && this.showed && e.key === key && !e.altKey && !e.shiftKey) {
-      e.preventDefault();
-      this.elem.addClass('textarena-toolbar_show-control-key');
-      this.controlKeyShowed = true;
-    } else if (!this.altKeyShowed && this.showed && e.key === 'Alt') {
-      e.preventDefault();
-      this.elem.addClass('textarena-toolbar_show-alt-key');
-      this.altKeyShowed = true;
-    }
-  }
-
-  setOptions(toolbarOptions: ToolbarOptions): void {
-    // TODO use enabler parameter
+  public setOptions(toolbarOptions: ToolbarOptions): void {
     if (toolbarOptions.tools) {
       this.list.setInnerHTML('');
       this.tools = toolbarOptions.tools.map((toolOptions: string) => {
@@ -107,9 +69,11 @@ export default class Toolbar {
         }
         const options = this.availableTools[toolOptions];
         const elem = new ElementHelper('DIV', 'textarena-toolbar__item');
+        const [modifiers] = this.ta.commandManager.parseShortcut(options.shortcut);
         const tool = {
           elem,
           options,
+          modifiers,
         };
         elem.onClick((e) => {
           e.preventDefault();
@@ -118,27 +82,43 @@ export default class Toolbar {
         if (options.icon) {
           elem.setInnerHTML(options.icon);
         }
-        if (options.controlKey) {
-          const controlKey = new ElementHelper('DIV', 'textarena-toolbar__control-key', options.controlKey);
-          elem.appendChild(controlKey);
-        } else if (options.altKey) {
-          const altKey = new ElementHelper('DIV', 'textarena-toolbar__alt-key', options.altKey);
-          elem.appendChild(altKey);
+        if (options.hint) {
+          const keyElem = new ElementHelper('DIV', 'textarena-toolbar__hint', options.hint);
+          elem.appendChild(keyElem);
         }
         this.list.appendChild(elem);
         return tool;
       });
     }
+    this.enabled = !!toolbarOptions.enabled;
+    if (!this.enabled) {
+      this.hide();
+    }
   }
 
-  registerTool(opts: ToolOptions): void {
+  public registerTool(opts: ToolOptions): void {
     this.availableTools[opts.name] = opts;
   }
 
-  executeTool(tool: Tool): void {
+  private keyListener(event?: string | MediaEvent): void {
+    if (!this.enabled) {
+      return;
+    }
+    if (typeof event === 'object' && typeof event.data === 'number') {
+      this.tools.forEach((tool: Tool) => {
+        if (tool.modifiers === event.data) {
+          tool.elem.addClass('textarena-toolbar__item_show-hint');
+        } else {
+          tool.elem.removeClass('textarena-toolbar__item_show-hint');
+        }
+      });
+    }
+  }
+
+  private executeTool(tool: Tool): void {
     const { options, elem } = tool;
-    this.textarena.commandManager.execCommand(options.command);
-    this.textarena.view.render();
+    this.ta.commandManager.execCommand(options.command);
+    this.ta.view.render();
     this.hide();
   }
 
@@ -160,7 +140,10 @@ export default class Toolbar {
     return this.elem.getElem();
   }
 
-  show(): void {
+  private show(): void {
+    if (!this.enabled) {
+      return;
+    }
     const s = window.getSelection();
     if (!s || s.isCollapsed || s.rangeCount === 0) {
       return;
@@ -175,7 +158,7 @@ export default class Toolbar {
     }
     const range = s.getRangeAt(0);
     const rect = range.getBoundingClientRect();
-    const containerRect = this.textarena.container.getBoundingClientRect();
+    const containerRect = this.ta.container.getBoundingClientRect();
     let positionTop = true;
     if (rect.y < window.innerHeight / 2) {
       positionTop = rect.top >= window.innerHeight - rect.bottom;
@@ -242,7 +225,7 @@ export default class Toolbar {
     this.showed = true;
   }
 
-  hide(): void {
+  private hide(): void {
     this.elem.css({
       display: 'none',
     });

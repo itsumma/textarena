@@ -4,8 +4,7 @@ export default interface CreatorOptions<T = unknown> {
   name: string;
   icon: string;
   title: string;
-  config?: T;
-  controlKey?: string;
-  altKey?: string;
-  processor: CreatorProcessor<T>;
+  command: string;
+  hint: string;
+  shortcut: string;
 }

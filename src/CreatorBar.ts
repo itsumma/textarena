@@ -1,40 +1,27 @@
-import { IMAGE_WRAPPER } from 'common/constants';
+import Textarena from 'Textarena';
+import ArenaSelection from 'ArenaSelection';
 import ElementHelper from 'ElementHelper';
-import ArenaParser from 'ArenaParser';
-import EventManager, { MediaEvent } from './EventManager';
 import CreatorBarOptions from './interfaces/CreatorBarOptions';
-import CreatorContext from './interfaces/CreatorContext';
 import CreatorOptions from './interfaces/CreatorOptions';
-import { getFocusElement, isMac } from './utils';
-import * as utils from './utils';
 
 type Creator = {
   elem: ElementHelper;
   options: CreatorOptions;
-};
-
-type KeysForTool = {
-  [key: string]: CreatorOptions;
+  modifiers: number;
 };
 
 export default class CreatorBar {
+  enabled = false;
+
   elem: ElementHelper;
 
   list: ElementHelper;
 
-  controlKeyShowed = false;
-
-  controlKeys: KeysForTool = {};
-
-  altKeyShowed = false;
-
-  altKeys: KeysForTool = {};
-
-  creators: {
+  availableCreators: {
     [key: string]: CreatorOptions,
   } = {};
 
-  controls: Creator[] = [];
+  creators: Creator[] = [];
 
   showed = false;
 
@@ -47,9 +34,7 @@ export default class CreatorBar {
   keyUpListenerInstance: ((e: KeyboardEvent) => void);
 
   constructor(
-    private root: ElementHelper,
-    private eventManager: EventManager,
-    private parser: ArenaParser,
+    private ta: Textarena,
   ) {
     this.elem = new ElementHelper('DIV', 'textarena-creator');
     this.elem.onClick(() => {
@@ -79,181 +64,112 @@ export default class CreatorBar {
     this.elem.appendChild(createButton);
     this.elem.appendChild(this.list);
     this.elem.appendChild(placeholder);
-
-    this.eventManager.subscribe('textChanged', () => {
-      const focusElement = getFocusElement();
-      if (focusElement) {
-        this.handleElementChange(focusElement);
-      }
+    this.ta.container.appendChild(this.getElem());
+    this.ta.eventManager.subscribe('moveCursor', () => {
+      this.handleChangeSelection();
     });
-    this.eventManager.subscribe('changeFocusElement', (event?: string | MediaEvent) => {
-      if (typeof event === 'object' && event.target) {
-        this.handleElementChange(event.target);
-      }
-    });
+    this.ta.commandManager.registerCommand(
+      'open-creator-list',
+      (t, selection: ArenaSelection) => {
+        this.openList();
+        return selection;
+      },
+    );
+    this.ta.commandManager.registerShortcut('Alt + KeyQ', 'open-creator-list');
     this.keyDownListenerInstance = this.keyDownListener.bind(this);
-    this.eventManager.subscribe('turnOn', () => {
-      this.root.addEventListener('keydown', this.keyDownListenerInstance, false);
+    this.keyUpListenerInstance = this.keyDownListener.bind(this);
+    this.ta.eventManager.subscribe('turnOn', () => {
       this.elem.addEventListener('keydown', this.keyDownListenerInstance, false);
       this.elem.addEventListener('keyup', this.keyUpListenerInstance, false);
     });
     this.keyUpListenerInstance = this.keyUpListener.bind(this);
-    this.eventManager.subscribe('turnOff', () => {
-      this.root.removeEventListener('keydown', this.keyDownListenerInstance);
+    this.ta.eventManager.subscribe('turnOff', () => {
       this.elem.removeEventListener('keydown', this.keyDownListenerInstance);
       this.elem.removeEventListener('keyup', this.keyUpListenerInstance);
     });
   }
 
-  setOptions(options: CreatorBarOptions): void {
-    // TODO use enabler parameter
-    if (options.creators) {
+  public setOptions(creatorBarOptions: CreatorBarOptions): void {
+    if (creatorBarOptions.creators) {
       this.list.setInnerHTML('');
-      this.controls = [];
-      options.creators.forEach((creatorOptions: string) => {
-        this.setupCreator(creatorOptions);
+      this.creators = [];
+      creatorBarOptions.creators.forEach((name: string) => {
+        if (!this.availableCreators[name]) {
+          throw Error(`Tool "${name}" not found`);
+        }
+        const options = this.availableCreators[name];
+        const elem = new ElementHelper('BUTTON', 'textarena-creator__item');
+        const [modifiers] = this.ta.commandManager.parseShortcut(options.shortcut);
+        elem.onClick((e) => {
+          e.preventDefault();
+          this.executeTool(options);
+        });
+        if (options.icon) {
+          elem.setInnerHTML(options.icon);
+        }
+        if (options.hint) {
+          const keyElem = new ElementHelper('DIV', 'textarena-creator__hint', options.hint);
+          elem.appendChild(keyElem);
+        }
+        this.list.append(elem);
+        this.creators.push({
+          elem,
+          options,
+          modifiers,
+        });
       });
     }
-  }
-
-  handleElementChange(element: HTMLElement): void {
-    if (!element) return;
-    if ([IMAGE_WRAPPER, 'LI'].includes(element.tagName)) {
-      this.hide();
-    } else if (!element.textContent) {
-      this.currentFocusElement = element;
-      this.show(element);
-    } else {
-      this.currentFocusElement = undefined;
+    this.enabled = !!creatorBarOptions.enabled;
+    if (!this.enabled) {
       this.hide();
     }
   }
 
-  keyDownListener(e: KeyboardEvent): void {
-    if (this.showed && !this.active && e.code === 'KeyQ' && e.altKey) {
-      this.openList();
-      return;
-    }
-    if (this.showed && this.active && e.key === 'Escape') {
-      this.closeList();
-      return;
-    }
-    if (this.showed && this.active && e.key === 'ArrowRight') {
-      const activeCreator = this.controls.find(
-        (some) => some.elem.getElem() === document.activeElement,
-      );
-      if (activeCreator) {
-        const index = this.controls.indexOf(activeCreator);
-        if (index === this.controls.length - 1) {
-          this.controls[0].elem.focus();
-        } else {
-          this.controls[index + 1].elem.focus();
-        }
-      } else if (this.controls.length > 0) {
-        this.controls[0].elem.focus();
+  public registerCreator(opts: CreatorOptions): void {
+    this.availableCreators[opts.name] = opts;
+  }
+
+  private showHints(sum: number): void {
+    this.creators.forEach((tool: Creator) => {
+      if (tool.modifiers === sum) {
+        tool.elem.addClass('textarena-creator__item_show-hint');
+      } else {
+        tool.elem.removeClass('textarena-creator__item_show-hint');
       }
+    });
+  }
+
+  handleChangeSelection(): void {
+    if (!this.enabled) {
       return;
     }
-    if (this.showed && this.active && e.key === 'ArrowLeft') {
-      const activeCreator = this.controls.find(
-        (some) => some.elem.getElem() === document.activeElement,
-      );
-      if (activeCreator) {
-        const index = this.controls.indexOf(activeCreator);
-        if (index === 0) {
-          this.controls[this.controls.length - 1].elem.focus();
-        } else {
-          this.controls[index - 1].elem.focus();
-        }
-      } else if (this.controls.length > 0) {
-        this.controls[this.controls.length - 1].elem.focus();
+    const selection = this.ta.view.getArenaSelection();
+    if (selection
+      && selection.isCollapsed()
+      && selection.startNode.getTextLength() === 0) {
+      const target = this.ta.view.findElementById(selection.startNode.getGlobalIndex());
+      if (target) {
+        this.show(target as HTMLElement);
+        return;
       }
-      return;
     }
-    const MACOS = isMac();
-    const ctrlKey = MACOS ? e.metaKey : e.ctrlKey;
-    const key = MACOS ? 'Meta' : 'Control';
-    if (!this.controlKeyShowed && this.showed && this.active && e.key === key && !e.altKey) {
-      e.preventDefault();
-      this.elem.addClass('textarena-creator_show-control-key');
-      this.controlKeyShowed = true;
-    } else if (!this.altKeyShowed && this.showed && this.active && e.key === 'Alt') {
-      e.preventDefault();
-      this.elem.addClass('textarena-creator_show-alt-key');
-      this.altKeyShowed = true;
-    }
-    let opts;
-    if (this.showed && e.altKey && this.altKeys[e.code]) {
-      opts = this.altKeys[e.code];
-    } else if (this.showed && ctrlKey && !e.altKey && this.controlKeys[e.code]) {
-      opts = this.controlKeys[e.code];
-    }
-    if (opts) {
-      e.preventDefault();
-      opts.processor(this.getContext(), opts.config || {});
-      this.eventManager.fire('textChanged');
-    }
+    this.hide();
   }
 
-  keyUpListener(): void {
-    if (this.altKeyShowed || this.controlKeyShowed) {
-      this.elem.removeClass('textarena-creator_show-control-key');
-      this.elem.removeClass('textarena-creator_show-alt-key');
-      this.controlKeyShowed = false;
-      this.altKeyShowed = false;
-    }
+  private keyUpListener(e: KeyboardEvent): void {
+    const modifiersSum = this.ta.browser.getModifiersSum(e);
+    this.showHints(modifiersSum);
   }
 
-  getContext(): CreatorContext {
-    return {
-      focusElement: this.currentFocusElement,
-      eventManager: this.eventManager,
-      parser: this.parser,
-    };
+  private keyDownListener(e: KeyboardEvent): void {
+    const modifiersSum = this.ta.browser.getModifiersSum(e);
+    this.showHints(modifiersSum);
   }
 
-  registerCreator(name: string, creatorOptions: CreatorOptions): void {
-    this.creators[name] = creatorOptions;
-  }
-
-  setupCreator(creatorOptions: string): void {
-    let opts: CreatorOptions;
-    if (this.creators[creatorOptions]) {
-      opts = this.creators[creatorOptions];
-    } else {
-      throw Error(`Tool "${creatorOptions}" not found`);
-    }
-    const elem = new ElementHelper('BUTTON', 'textarena-creator__item');
-    elem.onClick((e) => {
-      e.preventDefault();
-      opts.processor(this.getContext(), opts.config || {});
-      this.eventManager.fire('textChanged');
-    });
-    if (opts.icon) {
-      elem.setInnerHTML(opts.icon);
-    }
-    if (opts.controlKey) {
-      this.controlKeys[utils.getCodeForKey(opts.controlKey)] = opts;
-      const controlKey = new ElementHelper(
-        'DIV',
-        'textarena-creator__control-key',
-        opts.controlKey,
-      );
-      elem.appendChild(controlKey);
-    } else if (opts.altKey) {
-      this.altKeys[utils.getCodeForKey(opts.altKey)] = opts;
-      const altKey = new ElementHelper(
-        'DIV',
-        'textarena-creator__alt-key',
-        opts.altKey,
-      );
-      elem.appendChild(altKey);
-    }
-    this.list.append(elem);
-    this.controls.push({
-      elem,
-      options: opts,
-    });
+  executeTool(options: CreatorOptions): void {
+    this.ta.commandManager.execCommand(options.command);
+    this.ta.view.render();
+    this.hide();
   }
 
   getElem(): HTMLElement {
@@ -278,16 +194,18 @@ export default class CreatorBar {
   }
 
   openList(): void {
-    this.active = true;
-    this.elem.addClass('textarena-creator_active');
-    if (this.controls.length > 0) {
-      this.controls[0].elem.focus();
+    if (this.showed) {
+      this.active = true;
+      this.elem.addClass('textarena-creator_active');
+      if (this.creators.length > 0) {
+        this.creators[0].elem.focus();
+      }
     }
   }
 
   closeList(): void {
     this.active = false;
     this.elem.removeClass('textarena-creator_active');
-    this.root.focus();
+    this.ta.editor.focus();
   }
 }

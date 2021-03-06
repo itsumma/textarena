@@ -12,6 +12,7 @@ type FormatingsOptions = {
   tag: string,
   attributes: string[];
   shortcut: string,
+  hint: string,
   command: string,
   marks: MarkOptions[],
   tool?: {
@@ -29,6 +30,7 @@ const defaultOptions: {
       tag: 'STRONG',
       attributes: [],
       shortcut: 'Ctrl + KeyB',
+      hint: 'b',
       command: 'format-strong',
       marks: [
         {
@@ -61,6 +63,7 @@ const defaultOptions: {
       attributes: [],
       command: 'format-emphasized',
       shortcut: 'Ctrl + KeyI',
+      hint: 'i',
       marks: [
         {
           tag: 'I',
@@ -87,6 +90,7 @@ const defaultOptions: {
       tag: 'U',
       attributes: [],
       shortcut: 'Ctrl + KeyU',
+      hint: 'u',
       command: 'format-underline',
       marks: [
         {
@@ -110,6 +114,7 @@ const defaultOptions: {
       tag: 'S',
       attributes: [],
       shortcut: 'Alt + KeyS',
+      hint: 's',
       command: 'format-strikethrough',
       marks: [
         {
@@ -139,6 +144,7 @@ const formatingsPlugin: ArenaPlugin = {
       tag,
       attributes,
       shortcut,
+      hint,
       command,
       marks,
       tool,
@@ -164,6 +170,7 @@ const formatingsPlugin: ArenaPlugin = {
           ...tool,
           name,
           command,
+          hint,
           shortcut,
           formating,
         });

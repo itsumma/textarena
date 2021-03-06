@@ -3,6 +3,7 @@ import Textarena from 'Textarena';
 export type MediaEvent = {
   name: string,
   target?: HTMLElement,
+  data?: any,
 };
 
 type Handler = (event?: string | MediaEvent) => void;

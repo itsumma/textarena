@@ -7,6 +7,10 @@ export type AbstractArena = {
   attributes: string[],
 };
 
+export type ArenaSingle = AbstractArena & {
+  single: true,
+};
+
 export type ArenaWithNodes = AbstractArena & {
   allowedArenas: AbstractArena[]
 };
@@ -23,6 +27,6 @@ export type ArenaWithRichText = ArenaWithText & {
   allowFormating: true,
 };
 
-type Arena = ArenaWithNodes | ArenaWithChildText | ArenaWithText | ArenaWithRichText;
+type Arena = ArenaSingle | ArenaWithNodes | ArenaWithChildText | ArenaWithText | ArenaWithRichText;
 
 export default Arena;

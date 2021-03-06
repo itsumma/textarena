@@ -131,16 +131,14 @@ export default class ArenaParser {
         const res = arenaNode.insertText(formatings, offset);
         if (res) {
           return [...res, true];
-        } else {
-          return undefined;
         }
+        return undefined;
       }
       const res = this.insertChildren(elementNode, arenaNode, offset);
       if (res) {
         return [...res, true];
-      } else {
-        return undefined;
       }
+      return undefined;
     }
     return [arenaNode, offset, false];
   }

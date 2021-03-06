@@ -25,6 +25,7 @@ import headersPlugin from 'plugins/headersPlugin';
 import paragraphPlugin from 'plugins/paragraphPlugin';
 import formatingsPlugin from 'plugins/formatingsPlugin';
 import commonPlugin from 'plugins/commonPlugin';
+import hrPlugin from 'plugins/hrPlugin';
 
 // FIXME как инициализировать кмопоненты.
 const callout = new Callout();
@@ -50,7 +51,7 @@ const defaultOptions: TextarenaOptions = {
   creatorBar: {
     enabled: true,
     creators: [
-      // 'hr',
+      'hr',
       // 'img',
       // 'blockquote',
     ],
@@ -60,6 +61,7 @@ const defaultOptions: TextarenaOptions = {
     paragraph: paragraphPlugin,
     formatings: formatingsPlugin,
     headers: headersPlugin,
+    hr: hrPlugin,
   },
   pluginOptions: {
     headers: {
@@ -94,7 +96,7 @@ class Textarena {
 
   toolbar: Toolbar;
 
-  // creatorBar: CreatorBar;
+  creatorBar: CreatorBar;
 
   options: TextarenaOptions = {};
 
@@ -115,9 +117,9 @@ class Textarena {
     this.commandManager = new ArenaCommandManager(this);
     this.container.appendChild(this.editor.getElem());
     this.toolbar = new Toolbar(this);
+    this.creatorBar = new CreatorBar(this);
     // this.manipulator = new Manipulator(this.editor, this.eventManager, this.parser);
-    // this.creatorBar = new CreatorBar(this.editor, this.eventManager, this.parser);
-    // this.container.appendChild(this.creatorBar.getElem());
+
     // this.setPlugins([new Hr(), new Image(), new Quote()]);
     this.setOptions(options ? { ...defaultOptions, ...options } : defaultOptions);
     this.start();
@@ -228,7 +230,7 @@ class Textarena {
   }
 
   setCreatorBarOptions(creatorBarOptions: CreatorBarOptions): void {
-    // this.creatorBar.setOptions(creatorBarOptions);
+    this.creatorBar.setOptions(creatorBarOptions);
   }
 
   // TODO вынести это в плагин для картинок
