@@ -1,7 +1,6 @@
 import { TemplateResult, html } from 'lit-html';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html';
 import RichTextManager from 'RichTextManager';
-import Arena from 'interfaces/Arena';
 import ArenaNode from 'interfaces/ArenaNode';
 import ArenaNodeText from 'interfaces/ArenaNodeText';
 import AbstractNodeText from './AbstractNodeText';
@@ -10,20 +9,6 @@ export default class TextNode
   extends AbstractNodeText
   implements ArenaNodeText {
   protected text = '';
-
-  getIndex(): number {
-    return this.parent.children.indexOf(this);
-  }
-
-  getGlobalIndex(): string {
-    return `${this.parent.getGlobalIndex()}.${this.getIndex().toString()}`;
-  }
-
-  createAndInsertNode(arena: Arena): [
-    ArenaNode, ArenaNode, number,
-  ] | undefined {
-    return this.parent.createAndInsertNode(arena, this.getIndex() + 1);
-  }
 
   insertText(
     text: string | RichTextManager,

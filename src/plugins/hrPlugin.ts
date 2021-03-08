@@ -16,7 +16,7 @@ const defaultOptions = {
 };
 
 const hrPlugin: ArenaPlugin = {
-  register(textarena: Textarena, opts: any): void {
+  register(textarena: Textarena, opts: typeof defaultOptions): void {
     const {
       name, icon, title, tag, attributes, shortcut, hint, command,
     } = { ...defaultOptions, ...(opts || {}) };
@@ -24,7 +24,6 @@ const hrPlugin: ArenaPlugin = {
       {
         name,
         tag,
-        template: () => html`<hr/>`,
         attributes,
         single: true,
       },

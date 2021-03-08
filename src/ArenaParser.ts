@@ -1,9 +1,10 @@
+/* eslint-disable consistent-return */
 import { FilterXSS } from 'xss';
-import Arena from 'interfaces/Arena';
 import ArenaNode from 'interfaces/ArenaNode';
 import RichTextManager from 'RichTextManager';
 import Textarena from 'Textarena';
 import { ArenaFormating } from 'ArenaModel';
+import Arena from 'interfaces/Arena';
 
 export default class ArenaParser {
   private filterXSS: FilterXSS | undefined;

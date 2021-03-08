@@ -1,11 +1,11 @@
 import ArenaModel from 'ArenaModel';
 import { TemplateResult } from 'lit-html';
 import RichTextManager from 'RichTextManager';
-import Arena from './Arena';
 import ArenaNode from './ArenaNode';
+import Arena from './Arena';
 
 export default interface ArenaNodeCore {
-  arena: Arena;
+  readonly arena: Arena;
 
   insertText(
     text: string | RichTextManager,

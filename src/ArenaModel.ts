@@ -1,7 +1,6 @@
 /* eslint-disable no-console */
-import Arena, { ArenaWithRichText, ArenaWithNodes, ArenaWithChildText } from 'interfaces/Arena';
+import ArenaOptions, { ArenaOptionsAncestor } from 'interfaces/ArenaOptions';
 import RootNode from 'models/RootNode';
-import { TemplateResult } from 'lit-html';
 import Textarena from 'Textarena';
 import ArenaNodeText from 'interfaces/ArenaNodeText';
 import ArenaNode from 'interfaces/ArenaNode';
@@ -10,6 +9,9 @@ import { Direction } from 'events/RemoveEvent';
 import ArenaNodeAncestor from 'interfaces/ArenaNodeAncestor';
 import ArenaNodeScion from 'interfaces/ArenaNodeScion';
 import RichNode from 'models/RichNode';
+import Arena, { ArenaRoot } from 'interfaces/Arena';
+import ArenaFactory from 'arenas/ArenaFactory';
+import RootArena from 'arenas/RootArena';
 
 type TagAndAttributes = {
   tag: string,
@@ -51,50 +53,51 @@ export default class ArenaModel {
 
   formatingMarks: { [tag: string]: FormatingMark[] } = { };
 
-  rootArena: ArenaWithChildText;
+  rootArena: ArenaRoot;
 
   model: RootNode;
 
   constructor(private textarena: Textarena) {
-    this.rootArena = {
+    this.rootArena = this.registerArena({
       name: ArenaModel.rootArenaName,
       tag: '',
-      template: (child: TemplateResult | string) => child,
       attributes: [],
-      arenaForText: undefined,
-      allowedArenas: [
-      ],
-    };
-    this.registerArena(
-      this.rootArena,
-      [],
-      [],
-    );
+      hasChildren: true,
+    }) as ArenaRoot;
     this.model = new RootNode(this.rootArena);
   }
 
   public registerArena(
-    arena: Arena,
-    markers: TagAndAttributes[],
-    parentArenas: string[],
+    arenaOptions: ArenaOptions,
+    markers?: TagAndAttributes[],
+    parentArenas?: string[],
   ): Arena {
+    const arena = ArenaFactory.create(arenaOptions);
     this.arenas.push(arena);
     this.arenasByName[arena.name] = arena;
-    parentArenas.forEach((parentName) => {
-      const parentArena = this.arenasByName[parentName];
-      if (parentArena && 'allowedArenas' in parentArena) {
-        parentArena.allowedArenas.push(arena);
-      }
-    });
-    markers.forEach(({ tag, attributes }) => {
-      if (!this.areanMarks[tag]) {
-        this.areanMarks[tag] = [];
-      }
-      this.areanMarks[tag].push({
-        attributes,
-        arena,
+    if (parentArenas) {
+      parentArenas.forEach((parentName) => {
+        const parentArena = this.arenasByName[parentName];
+        if (!parentArena) {
+          throw new Error(`Arena "${parentName}" not found`);
+        }
+        if (!('hasChildren' in parentArena)) {
+          throw new Error(`Arena "${parentName}" has not children`);
+        }
+        parentArena.addAllowedChild(arena);
       });
-    });
+    }
+    if (markers) {
+      markers.forEach(({ tag, attributes }) => {
+        if (!this.areanMarks[tag]) {
+          this.areanMarks[tag] = [];
+        }
+        this.areanMarks[tag].push({
+          attributes,
+          arena,
+        });
+      });
+    }
     return arena;
   }
 
@@ -185,7 +188,7 @@ export default class ArenaModel {
       newSelection.startOffset,
     );
     if (result) {
-      newSelection.setBoth(result[0], result[1]);
+      newSelection.setBoth(result[0] as ArenaNodeText, result[1]);
     }
     return newSelection;
   }

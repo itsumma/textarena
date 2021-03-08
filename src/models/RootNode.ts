@@ -1,7 +1,7 @@
 import { TemplateResult, html } from 'lit-html';
 import { repeat } from 'lit-html/directives/repeat';
 import ArenaModel from 'ArenaModel';
-import Arena, { ArenaWithNodes, ArenaWithChildText } from 'interfaces/Arena';
+import Arena, { ArenaAncestor } from 'interfaces/Arena';
 import ArenaNode from 'interfaces/ArenaNode';
 import ArenaNodeScion from 'interfaces/ArenaNodeScion';
 import ArenaNodeAncestor from 'interfaces/ArenaNodeAncestor';
@@ -16,7 +16,7 @@ export default class RootNode implements ArenaNodeAncestor {
   public children: ArenaNodeScion[] = [];
 
   constructor(
-    public arena: ArenaWithNodes | ArenaWithChildText,
+    public arena: ArenaAncestor,
   ) {
   }
 
@@ -25,7 +25,7 @@ export default class RootNode implements ArenaNodeAncestor {
   }
 
   getHtml(model: ArenaModel): TemplateResult | string {
-    return this.arena.template(html`
+    return this.arena.getTemplate(html`
       ${repeat(this.children, (c, index) => index, (child) => child.getHtml(model))}
     `, this.getGlobalIndex());
   }
@@ -34,7 +34,7 @@ export default class RootNode implements ArenaNodeAncestor {
     text: string | RichTextManager,
     offset: number,
   ): [ArenaNode, number] | undefined {
-    if ('arenaForText' in this.arena) {
+    if (this.arena.arenaForText) {
       const result = this.createAndInsertNode(this.arena.arenaForText, offset);
       if (result) {
         const [newNode] = result;

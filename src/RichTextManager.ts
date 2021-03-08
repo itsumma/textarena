@@ -1,3 +1,4 @@
+/* eslint-disable no-lonely-if */
 import ArenaModel, { ArenaFormatings } from 'ArenaModel';
 import Intervaler from 'Intervaler';
 
@@ -129,6 +130,15 @@ export default class RichTextManager {
     }
     const frms = model.getFormatings();
     // TODO escape text
+    // text = text
+    //   .replace(/&/g, '&amp;')
+    //   .replace(/</g, '&lt;')
+    //   .replace(/>/g, '&gt;')
+    //   .replace(/"/g, '&quot;')
+    //   .replace(/'/g, '&#039;')
+    //   .replace(/^\s/, '&nbsp;')
+    //   .replace(/\s&/, '&nbsp;')
+    //   .replace(/\s\s/g, ' &nbsp;');
     // FIXME nesting formatings
     this.getInsertions(frms).forEach((insertion) => {
       text = text.slice(0, insertion.offset) + insertion.tag + text.slice(insertion.offset);

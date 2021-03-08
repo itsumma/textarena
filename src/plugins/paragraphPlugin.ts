@@ -1,8 +1,8 @@
-import { TemplateResult, html } from 'lit-html';
 import Textarena from 'Textarena';
 import ArenaPlugin from 'interfaces/ArenaPlugin';
 import ArenaModel from 'ArenaModel';
 import ArenaSelection from 'ArenaSelection';
+import { ArenaWithText } from 'interfaces/Arena';
 
 const defaultOptions = {
 };
@@ -14,7 +14,6 @@ const paragraphPlugin: ArenaPlugin = {
       {
         name: 'paragraph',
         tag: 'P',
-        template: (child: TemplateResult | string, id: string) => html`<p observe-id="${id}">${child}</p>`,
         attributes: [],
         allowText: true,
         allowFormating: true,
@@ -31,8 +30,7 @@ const paragraphPlugin: ArenaPlugin = {
       ],
       [ArenaModel.rootArenaName],
     );
-    // TODO convert arena to class
-    textarena.model.rootArena.arenaForText = arena;
+    textarena.model.rootArena.setArenaForText(arena as ArenaWithText);
     textarena.commandManager.registerCommand(
       'convert-to-paragraph',
       (ta: Textarena, selection: ArenaSelection) => ta.model.transformModel(selection, arena),

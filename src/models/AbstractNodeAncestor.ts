@@ -1,8 +1,9 @@
 import { TemplateResult, html } from 'lit-html';
 import { repeat } from 'lit-html/directives/repeat';
-import Arena, { ArenaWithNodes, ArenaWithChildText } from 'interfaces/Arena';
 import ArenaNode from 'interfaces/ArenaNode';
 import ArenaNodeScion from 'interfaces/ArenaNodeScion';
+import { ArenaAncestor } from 'interfaces/Arena';
+import ArenaModel from 'ArenaModel';
 import RichTextManager from 'RichTextManager';
 import NodeFactory from './NodeFactory';
 
@@ -12,7 +13,7 @@ export default abstract class AbstractNodeAncestor {
   public children: ArenaNodeScion[] = [];
 
   constructor(
-    public arena: ArenaWithNodes | ArenaWithChildText,
+    public arena: ArenaAncestor,
   ) {
   }
 

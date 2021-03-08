@@ -1,4 +1,3 @@
-import { TemplateResult, html } from 'lit-html';
 import Textarena from 'Textarena';
 import ArenaPlugin from 'interfaces/ArenaPlugin';
 import ArenaModel from 'ArenaModel';
@@ -15,7 +14,6 @@ const listsPlugin: ArenaPlugin = {
       {
         name: 'li',
         tag: 'LI',
-        template: (child: TemplateResult | string, id: string) => html`<li observe-id="${id}">${child}</li>`,
         attributes: [],
         allowText: true,
         allowFormating: true,
@@ -26,16 +24,15 @@ const listsPlugin: ArenaPlugin = {
           attributes: [],
         },
       ],
-      [ArenaModel.rootArenaName],
     );
     const ul = textarena.model.registerArena(
       {
         name: 'ul',
         tag: 'UL',
-        template: (child: TemplateResult | string, id: string) => html`<ul observe-id="${id}">${child}</ul>`,
         attributes: [],
         allowedArenas: [li],
         arenaForText: li as ArenaWithText,
+        hasChildren: true,
       },
       [
         {
