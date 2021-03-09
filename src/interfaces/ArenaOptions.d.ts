@@ -1,10 +1,12 @@
 import Arena, { ArenaWithText } from './Arena';
+import ArenaNode from './ArenaNode';
 
 export type AbstractArena = {
   readonly name: string,
   readonly tag: string,
   // template: (child: TemplateResult | string, id: string) => TemplateResult | string,
   readonly attributes: string[],
+  init?: (node: ArenaNode) => ArenaNode;
 };
 
 export type ArenaOptionsSingle = AbstractArena & {

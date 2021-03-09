@@ -2,7 +2,6 @@ import ArenaParser from 'ArenaParser';
 import CreatorBar from 'CreatorBar';
 import ElementHelper from 'ElementHelper';
 import EventManager from 'EventManager';
-import Manipulator from 'Manipulator';
 import Toolbar from 'Toolbar';
 import ChangeDataListener from 'interfaces/ChangeHandler';
 import CreatorBarOptions from 'interfaces/CreatorBarOptions';
@@ -12,12 +11,7 @@ import TextarenaOptions from 'interfaces/TextarenaOptions';
 import ToolbarOptions from 'interfaces/ToolbarOptions';
 import ArenaLogger from 'ArenaLogger';
 import ArenaPlugin from 'interfaces/ArenaPlugin';
-import Hr from 'plugins/Hr';
-import Image from 'plugins/Image';
-import Quote from 'plugins/Blockquote';
-import Callout from 'components/Callout';
 import ArenaBrowser from 'ArenaBrowser';
-import { TemplateResult, html } from 'lit-html';
 import ArenaModel from 'ArenaModel';
 import ArenaView from 'ArenaView';
 import ArenaCommandManager from 'ArenaCommandManager';
@@ -27,9 +21,7 @@ import formatingsPlugin from 'plugins/formatingsPlugin';
 import commonPlugin from 'plugins/commonPlugin';
 import hrPlugin from 'plugins/hrPlugin';
 import listsPlugin from 'plugins/listsPlugin';
-
-// FIXME как инициализировать кмопоненты.
-const callout = new Callout();
+import calloutPlugin from 'plugins/calloutPlugin';
 
 const defaultOptions: TextarenaOptions = {
   editable: true,
@@ -54,6 +46,7 @@ const defaultOptions: TextarenaOptions = {
     enabled: true,
     creators: [
       'hr',
+      'callout',
       // 'img',
       // 'blockquote',
     ],
@@ -65,6 +58,7 @@ const defaultOptions: TextarenaOptions = {
     headers: headersPlugin,
     hr: hrPlugin,
     lists: listsPlugin,
+    callout: calloutPlugin,
   },
   pluginOptions: {
     headers: {
@@ -126,7 +120,7 @@ class Textarena {
     // this.setPlugins([new Hr(), new Image(), new Quote()]);
     this.setOptions(options ? { ...defaultOptions, ...options } : defaultOptions);
     this.start();
-    window['ta'] = this;
+    window.ta = this;
   }
 
   start(): void {

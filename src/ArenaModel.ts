@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import ArenaOptions, { ArenaOptionsAncestor } from 'interfaces/ArenaOptions';
+import ArenaOptions from 'interfaces/ArenaOptions';
 import RootNode from 'models/RootNode';
 import Textarena from 'Textarena';
 import ArenaNodeText from 'interfaces/ArenaNodeText';
@@ -8,10 +8,8 @@ import ArenaSelection from 'ArenaSelection';
 import { Direction } from 'events/RemoveEvent';
 import ArenaNodeAncestor from 'interfaces/ArenaNodeAncestor';
 import ArenaNodeScion from 'interfaces/ArenaNodeScion';
-import RichNode from 'models/RichNode';
 import Arena, { ArenaRoot } from 'interfaces/Arena';
 import ArenaFactory from 'arenas/ArenaFactory';
-import RootArena from 'arenas/RootArena';
 
 type TagAndAttributes = {
   tag: string,
@@ -119,6 +117,10 @@ export default class ArenaModel {
     return formating;
   }
 
+  getArena(name: string): Arena | undefined {
+    return this.arenasByName[name];
+  }
+
   public getFormatings(): ArenaFormatings {
     return this.formatingsByName;
   }
@@ -133,7 +135,7 @@ export default class ArenaModel {
 
   public getTextNodeById(id: string): ArenaNodeText | undefined {
     const path = id.split('.').map((i) => parseInt(i, 10));
-    let cursor: ArenaNode | undefined = this.model;
+    let cursor: ArenaNode | RootNode | undefined = this.model;
     if (path.shift() === 0) {
       path.forEach((i) => {
         if (cursor && 'hasChildren' in cursor) {
@@ -142,7 +144,7 @@ export default class ArenaModel {
           cursor = undefined;
         }
       });
-      if ('hasText' in cursor) {
+      if (cursor && 'hasText' in cursor) {
         return cursor;
       }
     }
@@ -259,17 +261,10 @@ export default class ArenaModel {
       const endIndex = selection.endNode.getIndex();
       selection.startNode.removeText(selection.startOffset);
       selection.endNode.removeText(0, selection.endOffset);
-      if (selection.endNode instanceof RichNode) {
-        selection.startNode.insertText(
-          selection.endNode.richTextManager,
-          selection.startOffset,
-        );
-      } else {
-        selection.startNode.insertText(
-          selection.endNode.getText(),
-          selection.startOffset,
-        );
-      }
+      selection.startNode.insertText(
+        selection.endNode.getText(),
+        selection.startOffset,
+      );
       const removeLength = endIndex - startIndex;
       if (removeLength) {
         commonAncestor.removeChildren(startIndex + 1, removeLength);
@@ -330,9 +325,8 @@ export default class ArenaModel {
     }
     const { startNode } = selection;
     const text = startNode.cutText(selection.startOffset);
-    const result = startNode.parent.createAndInsertNode(startNode.arena, startNode.getIndex() + 1);
-    if (result && 'hasText' in result[0]) {
-      const newNode = result[0];
+    const newNode = startNode.parent.createAndInsertNode(startNode.arena, startNode.getIndex() + 1);
+    if (newNode && 'hasText' in newNode) {
       newNode.insertText(text, 0);
       newSelection.setBoth(newNode, 0);
     }
@@ -348,18 +342,16 @@ export default class ArenaModel {
     const {
       startNode,
       startOffset,
-      endNode,
-      endOffset,
     } = selection;
     const newSelection = selection;
     if (selection.isCollapsed() || selection.isSameNode()) {
-      const result = startNode.parent.createAndInsertNode(arena, startNode.getIndex());
-      if (result) {
-        const newNode = result[0];
-        newNode.insertText(startNode.getText(), 0, false);
+      const newNode = startNode.parent.createAndInsertNode(arena, startNode.getIndex());
+      if (newNode) {
+        const result = newNode.insertText(startNode.getText(), 0, false);
+        const resultNode = result ? result[0] : newNode;
+        const resultOffset = result ? result[1] : startOffset;
         startNode.remove();
-        newSelection.setStartNode(newNode as ArenaNodeText, startOffset);
-        newSelection.setEndNode(newNode as ArenaNodeText, endOffset);
+        newSelection.setBoth(resultNode as ArenaNodeText, resultOffset);
         return newSelection;
       }
     }

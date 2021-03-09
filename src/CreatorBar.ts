@@ -166,9 +166,9 @@ export default class CreatorBar {
     this.showHints(modifiersSum);
   }
 
-  executeTool(options: CreatorOptions): void {
-    this.ta.commandManager.execCommand(options.command);
-    this.ta.view.render();
+  private executeTool(options: CreatorOptions): void {
+    const newSelection = this.ta.commandManager.execCommand(options.command);
+    this.ta.view.render(newSelection);
     this.hide();
   }
 

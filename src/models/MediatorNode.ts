@@ -4,6 +4,7 @@ import { repeat } from 'lit-html/directives/repeat';
 import ArenaNodeAncestor from 'interfaces/ArenaNodeAncestor';
 import ArenaNode from 'interfaces/ArenaNode';
 import ArenaNodeScion from 'interfaces/ArenaNodeScion';
+import ArenaNodeText from 'interfaces/ArenaNodeText';
 import Arena, { ArenaAncestor } from 'interfaces/Arena';
 import ArenaModel from 'ArenaModel';
 import RichTextManager from 'RichTextManager';
@@ -14,9 +15,9 @@ import NodeFactory from './NodeFactory';
 // или quote (title, section).
 
 export default class MediatorNode implements ArenaNodeScion, ArenaNodeAncestor {
-  hasParent: true = true;
+  readonly hasParent: true = true;
 
-  hasChildren: true = true;
+  readonly hasChildren: true = true;
 
   public children: ArenaNodeScion[] = [];
 
@@ -24,6 +25,10 @@ export default class MediatorNode implements ArenaNodeScion, ArenaNodeAncestor {
     public arena: ArenaAncestor,
     public parent: ArenaNodeAncestor,
   ) {
+    arena.init(this);
+    // if ('protectedChildren' in arena) {
+    //   arena.
+    // }
   }
 
   public getIndex(): number {
@@ -45,22 +50,26 @@ export default class MediatorNode implements ArenaNodeScion, ArenaNodeAncestor {
     offset: number,
   ): [ArenaNode, number] | undefined {
     if (this.arena.arenaForText) {
-      const result = this.createAndInsertNode(this.arena.arenaForText, offset);
-      if (result) {
-        const [newNode] = result;
+      const newNode = this.createAndInsertNode(this.arena.arenaForText, offset);
+      if (newNode) {
         return newNode.insertText(text, 0);
       }
     }
     return this.parent.insertText(text, this.getIndex() + 1);
   }
 
-  public createAndInsertNode(arena: Arena, offset: number): [
-    ArenaNode, ArenaNode, number,
-  ] | undefined {
+  public getTextNode(): ArenaNodeText | undefined {
+    return undefined;
+  }
+
+  public createAndInsertNode(
+    arena: Arena,
+    offset: number,
+  ): ArenaNodeScion | ArenaNodeText | undefined {
     if (this.arena.allowedArenas.includes(arena)) {
       const node = NodeFactory.createNode(arena, this);
       this.children.splice(offset, 0, node);
-      return [node, this, offset + 1];
+      return node;
     }
     return this.parent.createAndInsertNode(arena, this.getIndex() + 1);
   }

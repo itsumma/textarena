@@ -1,4 +1,5 @@
 import { TemplateResult } from 'lit-html';
+import ArenaNode from './ArenaNode';
 
 interface ArenaCore {
   readonly name: string;
@@ -8,6 +9,8 @@ interface ArenaCore {
   readonly attributes: string[];
 
   getTemplate(children: TemplateResult | string, id: string): TemplateResult | string;
+
+  init(node: ArenaNode): ArenaNode;
 }
 
 export interface ArenaSingle extends ArenaCore {

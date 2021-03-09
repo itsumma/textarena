@@ -11,6 +11,8 @@ export default class AncestorArena
 
   public arenaForText: ArenaAncestor | ArenaWithText | undefined;
 
+  readonly protectedChildren = [];
+
   constructor(options: ArenaOptionsAncestor) {
     super(options);
     this.arenaForText = options.arenaForText;

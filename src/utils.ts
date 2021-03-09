@@ -2,7 +2,6 @@ import { IMAGE_WRAPPER } from 'common/constants';
 import ElementHelper from 'ElementHelper';
 import EventManager from 'EventManager';
 import CreatorContext from 'interfaces/CreatorContext';
-import HTMLLicker from './HTMLLicker';
 
 export function getFocusElement(): HTMLElement | undefined {
   const s = window.getSelection();
@@ -65,14 +64,6 @@ export function insert(html: string): void {
     s.removeAllRanges();
     s.addRange(newRange);
   }
-}
-
-export function convertToHTML(html: string): string {
-  return new HTMLLicker(html).xssFull().getHtml();
-}
-
-export function clearHtml(html: string): string {
-  return new HTMLLicker(html).sanitize().getHtml();
 }
 
 export function isMac(): boolean {

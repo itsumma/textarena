@@ -117,23 +117,23 @@ export default class Toolbar {
 
   private executeTool(tool: Tool): void {
     const { options, elem } = tool;
-    this.ta.commandManager.execCommand(options.command);
-    this.ta.view.render();
+    const newSelection = this.ta.commandManager.execCommand(options.command);
+    this.ta.view.render(newSelection);
     this.hide();
   }
 
   private updateState() {
-    this.tools.forEach((tool: Tool) => {
-      const { options, elem } = tool;
-      if (!options.state) {
-        return;
-      }
-      if (options.state({}, options.config || {})) {
-        elem.addClass('textarena-toolbar__item_active');
-      } else {
-        elem.removeClass('textarena-toolbar__item_active');
-      }
-    });
+    // this.tools.forEach((tool: Tool) => {
+    //   const { options, elem } = tool;
+    //   if (!options.state) {
+    //     return;
+    //   }
+    //   if (options.state({}, options.config || {})) {
+    //     elem.addClass('textarena-toolbar__item_active');
+    //   } else {
+    //     elem.removeClass('textarena-toolbar__item_active');
+    //   }
+    // });
   }
 
   getElem(): HTMLElement {

@@ -105,17 +105,10 @@ export default class ArenaParser {
           }
           return undefined;
         }
-        const result = arenaNode.createAndInsertNode(arena, offset);
-        if (result) {
-          const [
-            newArenaNode,
-            currentNode,
-            currentOffset,
-          ] = result;
-          if (newArenaNode) {
-            this.insertChildren(elementNode, newArenaNode, 0);
-            return [currentNode, currentOffset, true];
-          }
+        const newArenaNode = arenaNode.createAndInsertNode(arena, offset);
+        if (newArenaNode) {
+          this.insertChildren(elementNode, newArenaNode, 0);
+          return [newArenaNode.parent, newArenaNode.getIndex() + 1, true];
         }
         this.textarena.logger.log('this is arena');
         const res = this.insertChildren(elementNode, arenaNode, offset);
