@@ -1,28 +1,38 @@
 import { TemplateResult } from 'lit-html';
+import ArenaNode from './ArenaNode';
 
-export type AbstractArena = {
-  name: string,
-  tag: string,
-  template: (child: TemplateResult | string, id: string) => TemplateResult | string,
-  attributes: string[],
-};
+interface ArenaCore {
+  readonly name: string;
 
-export type ArenaWithNodes = AbstractArena & {
-  allowedArenas: AbstractArena[]
-};
+  readonly tag: string;
 
-export type ArenaWithText = AbstractArena & {
-  allowText: true,
-};
+  readonly attributes: string[];
 
-export type ArenaWithChildText = ArenaWithNodes & {
-  arenaForText: ArenaWithText | undefined,
-};
+  getTemplate(children: TemplateResult | string, id: string): TemplateResult | string;
 
-export type ArenaWithRichText = ArenaWithText & {
-  allowFormating: true,
-};
+  init(node: ArenaNode): ArenaNode;
+}
 
-type Arena = ArenaWithNodes | ArenaWithChildText | ArenaWithText | ArenaWithRichText;
+export interface ArenaSingle extends ArenaCore {
+  readonly single: true;
+}
+
+export interface ArenaWithText extends ArenaCore {
+  readonly allowText: true;
+}
+
+export interface ArenaAncestor extends ArenaCore {
+  readonly hasChildren: true;
+  readonly arenaForText: ArenaAncestor | ArenaWithText | undefined
+  readonly allowedArenas: (ArenaSingle | ArenaAncestor | ArenaWithText)[];
+  addAllowedChild(arena: ArenaSingle | ArenaAncestor | ArenaWithText): void;
+  setArenaForText(arena: ArenaAncestor | ArenaWithText): void;
+}
+
+export interface ArenaRoot extends ArenaAncestor {
+  readonly root: true;
+}
+
+type Arena = ArenaSingle | ArenaAncestor | ArenaWithText;
 
 export default Arena;

@@ -3,9 +3,9 @@ import ArenaNodeScion from './ArenaNodeScion';
 import ArenaNode from './ArenaNode';
 
 export default interface ArenaNodeAncestor extends ArenaNodeCore {
-  hasChildren: true;
+  readonly hasChildren: true;
 
-  children: (ArenaNode & ArenaNodeScion)[];
+  readonly children: (ArenaNode & ArenaNodeScion)[];
 
   removeChild(index: number): void;
 

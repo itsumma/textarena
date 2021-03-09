@@ -1,3 +1,5 @@
+/* eslint-disable no-lonely-if */
+import ArenaModel, { ArenaFormatings } from 'ArenaModel';
 import Intervaler from 'Intervaler';
 
 export type Formatings = {
@@ -101,27 +103,44 @@ export default class RichTextManager {
     return offset + text.length;
   }
 
-  getInsertions(): Insertion[] {
+  getInsertions(frms: ArenaFormatings): Insertion[] {
     const insertions: Insertion[] = [];
     Object.entries(this.formatings).forEach(([name, intervaler]) => {
-      const tag = name === 'italic' ? 'em' : 'strong'; // FIXME
-      intervaler.getIntervals().forEach((interval) => {
-        insertions.push({
-          offset: interval.start,
-          tag: `<${tag}>`,
+      if (frms[name]) {
+        const { tag, attributes } = frms[name];
+        intervaler.getIntervals().forEach((interval) => {
+          insertions.push({
+            offset: interval.start,
+            tag: `<${tag}>`,
+          });
+          insertions.push({
+            offset: interval.end,
+            tag: `</${tag}>`,
+          });
         });
-        insertions.push({
-          offset: interval.end,
-          tag: `</${tag}>`,
-        });
-      });
+      }
     });
     return insertions.sort((a, b) => b.offset - a.offset);
   }
 
-  getHtml(): string {
+  getHtml(model: ArenaModel): string {
     let { text } = this;
-    this.getInsertions().forEach((insertion) => {
+    if (text === '') {
+      return '<br/>';
+    }
+    const frms = model.getFormatings();
+    // TODO escape text
+    // text = text
+    //   .replace(/&/g, '&amp;')
+    //   .replace(/</g, '&lt;')
+    //   .replace(/>/g, '&gt;')
+    //   .replace(/"/g, '&quot;')
+    //   .replace(/'/g, '&#039;')
+    //   .replace(/^\s/, '&nbsp;')
+    //   .replace(/\s&/, '&nbsp;')
+    //   .replace(/\s\s/g, ' &nbsp;');
+    // FIXME nesting formatings
+    this.getInsertions(frms).forEach((insertion) => {
       text = text.slice(0, insertion.offset) + insertion.tag + text.slice(insertion.offset);
     });
     return text;

@@ -115,18 +115,9 @@
     margin-right: 0.5rem;
   }
 
-  &__control-key,
-  &__alt-key { @include key; }
+  &__hint { @include key; }
 
-  &_show-control-key {
-    .textarena-creator__control-key {
-      display: block;
-    }
-  }
-
-  &_show-alt-key {
-    .textarena-creator__alt-key {
-      display: block;
-    }
+  &__item_show-hint &__hint {
+    display: block;
   }
 }

@@ -1,15 +1,11 @@
-import ToolProcessor from './ToolProcessor';
-import ToolState from './ToolState';
+import { ArenaFormating } from 'ArenaModel';
 
-export type ToolOptionsType = { [key: string]: string|number|Element };
-
-export default interface ToolOptions<T = ToolOptionsType> {
+export default interface ToolOptions {
   name: string;
   icon: string;
   title: string;
-  config?: T;
-  controlKey?: string;
-  altKey?: string;
-  state?: ToolState<T>;
-  processor: ToolProcessor<T>;
+  command: string;
+  hint: string;
+  shortcut: string;
+  formating?: ArenaFormating;
 }

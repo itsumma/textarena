@@ -1,9 +1,10 @@
+/* eslint-disable consistent-return */
 import { FilterXSS } from 'xss';
-import Arena from 'interfaces/Arena';
 import ArenaNode from 'interfaces/ArenaNode';
 import RichTextManager from 'RichTextManager';
 import Textarena from 'Textarena';
 import { ArenaFormating } from 'ArenaModel';
+import Arena from 'interfaces/Arena';
 
 export default class ArenaParser {
   private filterXSS: FilterXSS | undefined;
@@ -104,17 +105,10 @@ export default class ArenaParser {
           }
           return undefined;
         }
-        const result = arenaNode.createAndInsertNode(arena, offset);
-        if (result) {
-          const [
-            newArenaNode,
-            currentNode,
-            currentOffset,
-          ] = result;
-          if (newArenaNode) {
-            this.insertChildren(elementNode, newArenaNode, 0);
-            return [currentNode, currentOffset, true];
-          }
+        const newArenaNode = arenaNode.createAndInsertNode(arena, offset);
+        if (newArenaNode) {
+          this.insertChildren(elementNode, newArenaNode, 0);
+          return [newArenaNode.parent, newArenaNode.getIndex() + 1, true];
         }
         this.textarena.logger.log('this is arena');
         const res = this.insertChildren(elementNode, arenaNode, offset);
@@ -131,16 +125,14 @@ export default class ArenaParser {
         const res = arenaNode.insertText(formatings, offset);
         if (res) {
           return [...res, true];
-        } else {
-          return undefined;
         }
+        return undefined;
       }
       const res = this.insertChildren(elementNode, arenaNode, offset);
       if (res) {
         return [...res, true];
-      } else {
-        return undefined;
       }
+      return undefined;
     }
     return [arenaNode, offset, false];
   }

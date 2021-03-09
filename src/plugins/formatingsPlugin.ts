@@ -2,20 +2,37 @@ import Textarena from 'Textarena';
 import ArenaPlugin from 'interfaces/ArenaPlugin';
 import ArenaSelection from 'ArenaSelection';
 
-const defaultOptions = {
-  tags: [],
+type MarkOptions = {
+  tag: string,
+  attributes: string[];
 };
 
-const formatingsPlugin: ArenaPlugin = {
-  register(textarena: Textarena, opts: any): void {
-    const options = { ...defaultOptions, ...(opts || {}) };
-    const formatingB = textarena.model.registerFormating(
-      {
-        name: 'strong',
-        tag: 'STRONG',
-        attributes: [],
-      },
-      [
+type FormatingsOptions = {
+  name: string,
+  tag: string,
+  attributes: string[];
+  shortcut: string,
+  hint: string,
+  command: string,
+  marks: MarkOptions[],
+  tool?: {
+    icon: string;
+    title: string;
+  },
+};
+
+const defaultOptions: {
+  formatings: FormatingsOptions[],
+} = {
+  formatings: [
+    {
+      name: 'strong',
+      tag: 'STRONG',
+      attributes: [],
+      shortcut: 'Ctrl + KeyB',
+      hint: 'b',
+      command: 'format-strong',
+      marks: [
         {
           tag: 'B',
           attributes: [],
@@ -35,18 +52,19 @@ const formatingsPlugin: ArenaPlugin = {
           ],
         },
       ],
-    );
-    textarena.commandManager.registerCommand(
-      'Ctrl + KeyB',
-      (ta: Textarena, selection: ArenaSelection) => ta.model.formatingModel(selection, formatingB),
-    );
-    const formatingI = textarena.model.registerFormating(
-      {
-        name: 'italic',
-        tag: 'EM',
-        attributes: [],
+      tool: {
+        title: 'Strong (bold)',
+        icon: '<b>B</b>',
       },
-      [
+    },
+    {
+      name: 'emphasized',
+      tag: 'EM',
+      attributes: [],
+      command: 'format-emphasized',
+      shortcut: 'Ctrl + KeyI',
+      hint: 'i',
+      marks: [
         {
           tag: 'I',
           attributes: [],
@@ -62,11 +80,102 @@ const formatingsPlugin: ArenaPlugin = {
           ],
         },
       ],
-    );
-    textarena.commandManager.registerCommand(
-      'Ctrl + KeyI',
-      (ta: Textarena, selection: ArenaSelection) => ta.model.formatingModel(selection, formatingI),
-    );
+      tool: {
+        title: 'Italic (emphasized)',
+        icon: '<i>I</i>',
+      },
+    },
+    {
+      name: 'underline',
+      tag: 'U',
+      attributes: [],
+      shortcut: 'Ctrl + KeyU',
+      hint: 'u',
+      command: 'format-underline',
+      marks: [
+        {
+          tag: 'U',
+          attributes: [],
+        },
+        {
+          tag: 'SPAN',
+          attributes: [
+            'style=textDecoration:underline;',
+          ],
+        },
+      ],
+      tool: {
+        title: 'Underline',
+        icon: '<u>U</u>',
+      },
+    },
+    {
+      name: 'strikethrough',
+      tag: 'S',
+      attributes: [],
+      shortcut: 'Alt + KeyS',
+      hint: 's',
+      command: 'format-strikethrough',
+      marks: [
+        {
+          tag: 'S',
+          attributes: [],
+        },
+        {
+          tag: 'SPAN',
+          attributes: [
+            'style=textDecoration:line-through;',
+          ],
+        },
+      ],
+      tool: {
+        title: 'Strikethrough',
+        icon: '<s>S</s>',
+      },
+    },
+  ],
+};
+
+const formatingsPlugin: ArenaPlugin = {
+  register(textarena: Textarena, opts: any): void {
+    const options = { ...defaultOptions, ...(opts || {}) };
+    options.formatings.forEach(({
+      name,
+      tag,
+      attributes,
+      shortcut,
+      hint,
+      command,
+      marks,
+      tool,
+    }: FormatingsOptions) => {
+      const formating = textarena.model.registerFormating(
+        {
+          name,
+          tag,
+          attributes,
+        },
+        marks,
+      );
+      textarena.commandManager.registerCommand(
+        command,
+        (ta: Textarena, selection: ArenaSelection) => ta.model.formatingModel(selection, formating),
+      );
+      textarena.commandManager.registerShortcut(
+        shortcut,
+        command,
+      );
+      if (tool) {
+        textarena.toolbar.registerTool({
+          ...tool,
+          name,
+          command,
+          hint,
+          shortcut,
+          formating,
+        });
+      }
+    });
   },
 };
 

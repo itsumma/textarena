@@ -1,9 +1,11 @@
 import { TemplateResult, html } from 'lit-html';
 import { repeat } from 'lit-html/directives/repeat';
-import Arena, { ArenaWithNodes, ArenaWithChildText } from 'interfaces/Arena';
+import ArenaModel from 'ArenaModel';
+import Arena, { ArenaAncestor } from 'interfaces/Arena';
 import ArenaNode from 'interfaces/ArenaNode';
 import ArenaNodeScion from 'interfaces/ArenaNodeScion';
 import ArenaNodeAncestor from 'interfaces/ArenaNodeAncestor';
+import ArenaNodeText from 'interfaces/ArenaNodeText';
 import RichTextManager from 'RichTextManager';
 import NodeFactory from './NodeFactory';
 
@@ -15,7 +17,7 @@ export default class RootNode implements ArenaNodeAncestor {
   public children: ArenaNodeScion[] = [];
 
   constructor(
-    public arena: ArenaWithNodes | ArenaWithChildText,
+    public arena: ArenaAncestor,
   ) {
   }
 
@@ -23,9 +25,9 @@ export default class RootNode implements ArenaNodeAncestor {
     return '0';
   }
 
-  getHtml(): TemplateResult | string {
-    return this.arena.template(html`
-      ${repeat(this.children, (c, index) => index, (child) => child.getHtml())}
+  getHtml(model: ArenaModel): TemplateResult | string {
+    return this.arena.getTemplate(html`
+      ${repeat(this.children, (c, index) => index, (child) => child.getHtml(model))}
     `, this.getGlobalIndex());
   }
 
@@ -33,23 +35,24 @@ export default class RootNode implements ArenaNodeAncestor {
     text: string | RichTextManager,
     offset: number,
   ): [ArenaNode, number] | undefined {
-    if ('arenaForText' in this.arena) {
-      const result = this.createAndInsertNode(this.arena.arenaForText, offset);
-      if (result) {
-        const [newNode] = result;
+    if (this.arena.arenaForText) {
+      const newNode = this.createAndInsertNode(this.arena.arenaForText, offset);
+      if (newNode) {
         return newNode.insertText(text, 0);
       }
     }
     return undefined;
   }
 
-  createAndInsertNode(arena: Arena, offset: number): [
-    ArenaNode, ArenaNode, number,
-  ] | undefined {
+  getTextNode(): ArenaNodeText | undefined {
+    return undefined;
+  }
+
+  createAndInsertNode(arena: Arena, offset: number): ArenaNodeScion | ArenaNodeText | undefined {
     if (this.arena.allowedArenas.includes(arena)) {
       const node = NodeFactory.createNode(arena, this);
       this.children.splice(offset, 0, node);
-      return [node, this, offset + 1];
+      return node;
     }
     return undefined;
   }

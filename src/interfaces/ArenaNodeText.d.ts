@@ -1,11 +1,11 @@
 import RichTextManager from 'RichTextManager';
-import { ArenaWithText, ArenaWithRichText } from './Arena';
 import ArenaNodeScion from './ArenaNodeScion';
+import { ArenaWithText } from './Arena';
 
 export default interface ArenaNodeText extends ArenaNodeScion {
   hasText: true;
 
-  arena: ArenaWithText | ArenaWithRichText;
+  readonly arena: ArenaWithText;
 
   removeText(start: number, end?: number): void;
 

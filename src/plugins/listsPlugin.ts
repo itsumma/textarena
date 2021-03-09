@@ -7,47 +7,58 @@ import { ArenaWithText } from 'interfaces/Arena';
 const defaultOptions = {
 };
 
-const paragraphPlugin: ArenaPlugin = {
+const listsPlugin: ArenaPlugin = {
   register(textarena: Textarena, opts: any): void {
     const options = { ...defaultOptions, ...(opts || {}) };
-    const arena = textarena.model.registerArena(
+    const li = textarena.model.registerArena(
       {
-        name: 'paragraph',
-        tag: 'P',
+        name: 'li',
+        tag: 'LI',
         attributes: [],
         allowText: true,
         allowFormating: true,
       },
       [
         {
-          tag: 'P',
+          tag: 'li',
           attributes: [],
         },
+      ],
+    );
+    const ul = textarena.model.registerArena(
+      {
+        name: 'ul',
+        tag: 'UL',
+        attributes: [],
+        allowedArenas: [li],
+        arenaForText: li as ArenaWithText,
+        hasChildren: true,
+      },
+      [
         {
-          tag: 'DIV',
+          tag: 'UL',
           attributes: [],
         },
       ],
       [ArenaModel.rootArenaName],
     );
-    textarena.model.rootArena.setArenaForText(arena as ArenaWithText);
     textarena.commandManager.registerCommand(
-      'convert-to-paragraph',
-      (ta: Textarena, selection: ArenaSelection) => ta.model.transformModel(selection, arena),
+      'convert-to-list',
+      (ta: Textarena, selection: ArenaSelection) => ta.model.transformModel(selection, ul),
     );
     textarena.commandManager.registerShortcut(
-      'Alt + Digit0',
-      'convert-to-paragraph',
+      'Alt + KeyL',
+      'convert-to-list',
     );
     textarena.toolbar.registerTool({
-      name: 'paragraph',
-      title: 'Paragraph',
-      icon: '<b>¶</b>',
-      shortcut: 'Alt + Digit0',
-      hint: '0',
-      command: 'convert-to-paragraph',
+      name: 'list',
+      title: 'List',
+      icon: '≣',
+      shortcut: 'Alt + KeyL',
+      command: 'convert-to-list',
+      hint: 'l',
     });
   },
 };
 
-export default paragraphPlugin;
+export default listsPlugin;

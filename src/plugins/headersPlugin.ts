@@ -20,9 +20,9 @@ const headersPlugin: ArenaPlugin = {
           {
             name: `header${number}`,
             tag: `H${number}`,
-            template: (child: TemplateResult | string, id: string) => html`<h2 observe-id="${id}">${child}</h2>`,
             attributes: [],
             allowText: true,
+            allowFormating: false,
           },
           [
             {
@@ -33,9 +33,21 @@ const headersPlugin: ArenaPlugin = {
           [ArenaModel.rootArenaName],
         );
         textarena.commandManager.registerCommand(
-          `Alt + Digit${number}`,
+          `convert-to-header${number}`,
           (ta: Textarena, selection: ArenaSelection) => ta.model.transformModel(selection, arena),
         );
+        textarena.commandManager.registerShortcut(
+          `Alt + Digit${number}`,
+          `convert-to-header${number}`,
+        );
+        textarena.toolbar.registerTool({
+          name: `header${number}`,
+          title: `Header ${number}`,
+          icon: `<b>H${number}</b>`,
+          shortcut: `Alt + Digit${number}`,
+          hint: number.toString(),
+          command: `convert-to-header${number}`,
+        });
       }
     });
   },

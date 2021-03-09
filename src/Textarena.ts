@@ -2,7 +2,6 @@ import ArenaParser from 'ArenaParser';
 import CreatorBar from 'CreatorBar';
 import ElementHelper from 'ElementHelper';
 import EventManager from 'EventManager';
-import Manipulator from 'Manipulator';
 import Toolbar from 'Toolbar';
 import ChangeDataListener from 'interfaces/ChangeHandler';
 import CreatorBarOptions from 'interfaces/CreatorBarOptions';
@@ -12,21 +11,17 @@ import TextarenaOptions from 'interfaces/TextarenaOptions';
 import ToolbarOptions from 'interfaces/ToolbarOptions';
 import ArenaLogger from 'ArenaLogger';
 import ArenaPlugin from 'interfaces/ArenaPlugin';
-import Hr from 'plugins/Hr';
-import Image from 'plugins/Image';
-import Quote from 'plugins/Blockquote';
-import Callout from 'components/Callout';
 import ArenaBrowser from 'ArenaBrowser';
-import { TemplateResult, html } from 'lit-html';
 import ArenaModel from 'ArenaModel';
 import ArenaView from 'ArenaView';
 import ArenaCommandManager from 'ArenaCommandManager';
 import headersPlugin from 'plugins/headersPlugin';
 import paragraphPlugin from 'plugins/paragraphPlugin';
 import formatingsPlugin from 'plugins/formatingsPlugin';
-
-// FIXME как инициализировать кмопоненты.
-const callout = new Callout();
+import commonPlugin from 'plugins/commonPlugin';
+import hrPlugin from 'plugins/hrPlugin';
+import listsPlugin from 'plugins/listsPlugin';
+import calloutPlugin from 'plugins/calloutPlugin';
 
 const defaultOptions: TextarenaOptions = {
   editable: true,
@@ -34,30 +29,36 @@ const defaultOptions: TextarenaOptions = {
   toolbar: {
     enabled: true,
     tools: [
-      'bold',
-      'italic',
-      // 'underline',
-      // 'strikethrough',
-      // 'list',
+      'strong',
+      'emphasized',
+      'underline',
+      'strikethrough',
+      'paragraph',
+      'list',
       // 'orderedlist',
-      // 'h2',
-      // 'h3',
-      // 'h4',
+      'header2',
+      'header3',
+      'header4',
       // 'link',
     ],
   },
   creatorBar: {
     enabled: true,
     creators: [
-      // 'hr',
+      'hr',
+      'callout',
       // 'img',
       // 'blockquote',
     ],
   },
   plugins: {
-    headers: headersPlugin,
+    common: commonPlugin,
     paragraph: paragraphPlugin,
     formatings: formatingsPlugin,
+    headers: headersPlugin,
+    hr: hrPlugin,
+    lists: listsPlugin,
+    callout: calloutPlugin,
   },
   pluginOptions: {
     headers: {
@@ -92,7 +93,7 @@ class Textarena {
 
   toolbar: Toolbar;
 
-  // creatorBar: CreatorBar;
+  creatorBar: CreatorBar;
 
   options: TextarenaOptions = {};
 
@@ -113,13 +114,13 @@ class Textarena {
     this.commandManager = new ArenaCommandManager(this);
     this.container.appendChild(this.editor.getElem());
     this.toolbar = new Toolbar(this);
+    this.creatorBar = new CreatorBar(this);
     // this.manipulator = new Manipulator(this.editor, this.eventManager, this.parser);
-    // this.creatorBar = new CreatorBar(this.editor, this.eventManager, this.parser);
-    // this.container.appendChild(this.creatorBar.getElem());
+
     // this.setPlugins([new Hr(), new Image(), new Quote()]);
     this.setOptions(options ? { ...defaultOptions, ...options } : defaultOptions);
     this.start();
-    window['ta'] = this;
+    window.ta = this;
   }
 
   start(): void {
@@ -226,7 +227,7 @@ class Textarena {
   }
 
   setCreatorBarOptions(creatorBarOptions: CreatorBarOptions): void {
-    // this.creatorBar.setOptions(creatorBarOptions);
+    this.creatorBar.setOptions(creatorBarOptions);
   }
 
   // TODO вынести это в плагин для картинок
