@@ -15,6 +15,7 @@ export default interface ArenaNodeCore {
     keepFormatings?: boolean,
   ): ArenaCursor;
 
+  // tot merge neighbors
   createAndInsertNode(arena: Arena, offset: number): ArenaNodeScion | ArenaNodeText | undefined;
 
   getHtml(model: ArenaModel): TemplateResult | string;

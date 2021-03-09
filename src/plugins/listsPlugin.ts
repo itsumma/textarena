@@ -109,6 +109,14 @@ const listsPlugin: ArenaPlugin = {
           return newCursor;
         }
       }
+      if (/^- $/.test(text)) {
+        const newNode = cursor.node.createAndInsertNode(ul, 0);
+        if (newNode) {
+          const newCursor = newNode.insertText('', 0);
+          cursor.node.remove();
+          return newCursor;
+        }
+      }
       return cursor;
     });
   },
