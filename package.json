@@ -25,6 +25,7 @@
     "eslint-plugin-import": "^2.22.1",
     "extract-loader": "^5.1.0",
     "file-loader": "^6.1.1",
+    "jest": "^26.6.3",
     "rimraf": "^3.0.2",
     "sass": "^1.26.11",
     "sass-loader": "^10.0.3",
@@ -45,6 +46,6 @@
     "build:types": "tsc --emitDeclarationOnly",
     "build:js": "babel src --out-dir lib --extensions \".ts,.tsx\" --source-maps inline",
     "build:bundle": "yarn webpack",
-    "test": "yarn lint"
+    "test": "jest"
   }
 }

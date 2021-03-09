@@ -23,69 +23,46 @@ export default class Intervaler {
   }
 
   cut(offset: number, length?: number): Intervaler {
-    const intervals: Interval[] = [];
     const intervaler = new Intervaler();
+    if (!length) length = offset;
     this.intervals.forEach((interval) => {
-      /**
-       * 0123456789
-       * ---[  ]-- offset: 3, length 4
-       * [ ] 0-2
-       */
+      // I - current interval
+      // C - current cut
+      // C includes I && C > I
+      if (interval.start > offset && interval.end < length) {
+        return;
+      }
+      // I doesn't includes C
+      if (interval.start > length) {
+        intervaler.addInterval(interval.start, interval.end);
+        return;
+      }
+      // I doesn't includes C
       if (interval.end < offset) {
-        intervals.push(interval);
+        intervaler.addInterval(interval.start, interval.end);
         return;
       }
-      /**
-       * 0123456789
-       * ---[  ]-- offset: 3, length 4
-       * [  ] 0-3 → 0-2
-       * [    ] 0-5 → 0-2
-       * [     ] 0-6 → 0-2
-       * [        ] 0-9 → 0-5
-       * 012789
-       */
-      if (interval.start < offset) {
-        intervals.push({
-          start: interval.start,
-          end: length ? Math.max(offset, interval.end - length) : offset,
-        });
-        if (offset < interval.end) {
-          intervaler.addInterval(0, interval.end - offset);
-        }
+      // I includes C && I === C
+      if (interval.start === offset && interval.end === length) {
         return;
       }
-      /**
-       * 0123456789
-       * ---[  ]-- offset: 3, length 4
-       *    H 3-3 → ×
-       *    [ ] 3-5 → ×
-       *    [  ] 3-6 → ×
-       *    [   ] 3-7 → 3-3
-       *     [    ] 4-9 → 3-5
-       *        [ ] 7-9 → 3-5
-       *         [] 8-9 → 4-5
-       * 012789
-       */
-      if (length
-        && interval.start >= offset
-        && interval.end >= offset + length) {
-        intervals.push({
-          start: Math.max(offset, interval.start - length),
-          end: interval.end - length,
-        });
+      // I includes C
+      if (interval.start < offset && interval.end > length) {
+        intervaler.addInterval(interval.start, offset);
+        intervaler.addInterval(length, interval.end);
+        return;
       }
-      if (interval.start >= offset) {
-        if (!length) {
-          intervaler.addInterval(interval.start - offset, interval.end - offset);
-        } else if (interval.start < offset + length) {
-          intervaler.addInterval(interval.start - offset, Math.min(length, interval.end - offset));
-        }
+      // I includes C (left)
+      if (interval.start >= offset && interval.start <= length) {
+        intervaler.addInterval(length, interval.end);
+        return;
+      }
+      // I includes C (right)
+      if (interval.end >= offset && interval.end <= length) {
+        intervaler.addInterval(interval.start, offset);
       }
     });
-    console.log([...this.intervals]);
-    console.log([...intervals]);
-    console.log([...intervaler.getIntervals()]);
-    this.intervals = intervals;
+    this.intervals = intervaler.getIntervals();
     return intervaler;
   }
 
