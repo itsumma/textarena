@@ -86,23 +86,23 @@ test('{2, 5} - {2, 4}', () => {
   expect(i.getIntervals()).toEqual([{ start: 4, end: 5 }]);
 });
 test('simple shift', () => {
-    const i = new Intervaler();
-    i.addInterval(2, 5);
-    i.shift(3, 1)
-    expect(i.getIntervals()).toEqual([{ start: 2, end: 6 }]);
+  const i = new Intervaler();
+  i.addInterval(2, 5);
+  i.shift(3, 1);
+  expect(i.getIntervals()).toEqual([{ start: 2, end: 6 }]);
 });
 test('simple merge', () => {
-    const i = new Intervaler();
-    i.addInterval(2, 5);
-    i.addInterval(7, 10);
-    i.merge(i, 5)
-    expect(i.getIntervals()).toEqual([{ start: 2, end: 5 }, { start: 7, end: 10 }, { start: 12, end: 15 }]);
+  const i = new Intervaler();
+  i.addInterval(2, 5);
+  i.addInterval(7, 10);
+  i.merge(i, 5);
+  expect(i.getIntervals()).toEqual([{ start: 2, end: 5 }, { start: 7, end: 10 }, { start: 12, end: 15 }]);
 });
 
 test('hasInterval check', () => {
-    const i = new Intervaler();
-    i.addInterval(2, 5);
-    expect(i.hasInterval(3, 1)).toBe(true);
-    expect(i.hasInterval(10, 11)).toBe(false);
-    expect(i.hasInterval(5, 10)).toBe(false);
+  const i = new Intervaler();
+  i.addInterval(2, 5);
+  expect(i.hasInterval(3, 1)).toBe(true);
+  expect(i.hasInterval(10, 11)).toBe(false);
+  expect(i.hasInterval(5, 10)).toBe(false);
 });
