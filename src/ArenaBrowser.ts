@@ -146,6 +146,10 @@ export default class ArenaBrowser {
     if (!s) {
       return;
     }
+    if (!s.anchorNode || !isDescendant(this.ta.editor, s.anchorNode)) {
+      return;
+    }
+
     this.ta.eventManager.fire('moveCursor');
 
     if (this.lastSelectionStatus && s.isCollapsed) {
@@ -154,9 +158,7 @@ export default class ArenaBrowser {
       this.lastSelectionRange = undefined;
       return;
     }
-    if (!s.isCollapsed
-      && s.anchorNode
-      && isDescendant(this.ta.editor, s.anchorNode)) {
+    if (!s.isCollapsed) {
       if (!this.lastSelectionStatus) {
         this.lastSelectionStatus = true;
         this.ta.eventManager.fire('textSelected');

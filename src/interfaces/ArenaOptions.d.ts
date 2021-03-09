@@ -16,6 +16,7 @@ export type ArenaOptionsSingle = AbstractArena & {
 export type ArenaOptionsWithText = AbstractArena & {
   readonly allowText: true,
   readonly allowFormating: boolean,
+  nextArena: ArenaWithText | undefined,
 };
 
 export type ArenaOptionsAncestor = AbstractArena & {

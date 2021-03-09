@@ -19,6 +19,7 @@ export interface ArenaSingle extends ArenaCore {
 
 export interface ArenaWithText extends ArenaCore {
   readonly allowText: true;
+  readonly nextArena: ArenaWithText;
 }
 
 export interface ArenaAncestor extends ArenaCore {

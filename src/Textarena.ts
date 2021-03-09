@@ -124,7 +124,7 @@ class Textarena {
   }
 
   start(): void {
-    this.eventManager.subscribe('textChanged', () => {
+    this.eventManager.subscribe('modelChanged', () => {
       if (this.options.onChange) {
         this.options.onChange(this.getData());
       }

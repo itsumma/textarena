@@ -1,8 +1,8 @@
-import { TemplateResult, html } from 'lit-html';
 import Textarena from 'Textarena';
 import ArenaPlugin from 'interfaces/ArenaPlugin';
 import ArenaModel from 'ArenaModel';
 import ArenaSelection from 'ArenaSelection';
+import { ArenaWithText } from 'interfaces/Arena';
 
 const posibleTags = ['h1', 'h2', 'h3', 'h4'];
 
@@ -16,6 +16,10 @@ const headersPlugin: ArenaPlugin = {
     options.tags.forEach((type: string) => {
       if (posibleTags.includes(type)) {
         const number = parseInt(type[1], 10);
+        const paragraph = textarena.model.getArena('paragraph');
+        if (!paragraph) {
+          throw new Error('Arena "paragraph" not found');
+        }
         const arena = textarena.model.registerArena(
           {
             name: `header${number}`,
@@ -23,6 +27,7 @@ const headersPlugin: ArenaPlugin = {
             attributes: [],
             allowText: true,
             allowFormating: false,
+            nextArena: paragraph as ArenaWithText,
           },
           [
             {

@@ -17,10 +17,11 @@ const listsPlugin: ArenaPlugin = {
         attributes: [],
         allowText: true,
         allowFormating: true,
+        nextArena: undefined,
       },
       [
         {
-          tag: 'li',
+          tag: 'LI',
           attributes: [],
         },
       ],
@@ -57,6 +58,39 @@ const listsPlugin: ArenaPlugin = {
       shortcut: 'Alt + KeyL',
       command: 'convert-to-list',
       hint: 'l',
+    });
+    const ol = textarena.model.registerArena(
+      {
+        name: 'ol',
+        tag: 'OL',
+        attributes: [],
+        allowedArenas: [li],
+        arenaForText: li as ArenaWithText,
+        hasChildren: true,
+      },
+      [
+        {
+          tag: 'OL',
+          attributes: [],
+        },
+      ],
+      [ArenaModel.rootArenaName],
+    );
+    textarena.commandManager.registerCommand(
+      'convert-to-ordered-list',
+      (ta: Textarena, selection: ArenaSelection) => ta.model.transformModel(selection, ol),
+    );
+    textarena.commandManager.registerShortcut(
+      'Alt + KeyO',
+      'convert-to-ordered-list',
+    );
+    textarena.toolbar.registerTool({
+      name: 'ordered-list',
+      title: 'Ordered list',
+      icon: '<b>1.</b>',
+      shortcut: 'Alt + KeyO',
+      command: 'convert-to-ordered-list',
+      hint: 'o',
     });
   },
 };
