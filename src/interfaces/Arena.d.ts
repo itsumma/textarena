@@ -1,5 +1,8 @@
 import { TemplateResult } from 'lit-html';
 import ArenaNode from './ArenaNode';
+import ArenaCursor from './ArenaCursor';
+
+export type Middleware = (cursor: ArenaCursor) => ArenaCursor;
 
 interface ArenaCore {
   readonly name: string;
@@ -19,7 +22,9 @@ export interface ArenaSingle extends ArenaCore {
 
 export interface ArenaWithText extends ArenaCore {
   readonly allowText: true;
-  readonly nextArena: ArenaWithText;
+  readonly nextArena: ArenaWithText | undefined;
+  middlewares: Middleware[];
+  registerMiddleware: (middleware: Middleware) => void;
 }
 
 export interface ArenaAncestor extends ArenaCore {

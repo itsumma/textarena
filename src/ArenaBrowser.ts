@@ -335,7 +335,7 @@ export default class ArenaBrowser {
       return;
     }
     if (event instanceof InputEvent) {
-      const newSelection = this.ta.model.insertText(selection, event.character);
+      const newSelection = this.ta.model.insertTextToModel(selection, event.character, true);
       this.ta.view.render(newSelection);
     }
     if (event instanceof RemoveEvent) {
@@ -369,7 +369,7 @@ export default class ArenaBrowser {
       }
       const selection = this.ta.view.getArenaSelection();
       if (selection) {
-        const newSelection = this.ta.model.insertText(selection, text);
+        const newSelection = this.ta.model.insertTextToModel(selection, text);
         this.ta.view.render(newSelection);
       }
     }

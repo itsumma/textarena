@@ -1,4 +1,4 @@
-import { ArenaWithText } from 'interfaces/Arena';
+import { ArenaWithText, Middleware } from 'interfaces/Arena';
 import { ArenaOptionsWithText } from 'interfaces/ArenaOptions';
 import AbstractArena from './AbstractArena';
 
@@ -7,14 +7,19 @@ export default class TextArena
   implements ArenaWithText {
   readonly allowText = true;
 
-  readonly nextArena: ArenaWithText;
+  readonly nextArena: ArenaWithText | undefined;
 
   readonly allowFormating: boolean;
 
+  middlewares: Middleware[] = [];
+
   constructor(options: ArenaOptionsWithText) {
     super(options);
-    console.log(options);
     this.allowFormating = options.allowFormating;
     this.nextArena = options.nextArena;
+  }
+
+  registerMiddleware(middleware: Middleware): void {
+    this.middlewares.push(middleware);
   }
 }

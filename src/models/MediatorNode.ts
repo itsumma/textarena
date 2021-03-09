@@ -2,7 +2,7 @@ import { TemplateResult, html } from 'lit-html';
 import { repeat } from 'lit-html/directives/repeat';
 
 import ArenaNodeAncestor from 'interfaces/ArenaNodeAncestor';
-import ArenaNode from 'interfaces/ArenaNode';
+import ArenaCursor from 'interfaces/ArenaCursor';
 import ArenaNodeScion from 'interfaces/ArenaNodeScion';
 import ArenaNodeText from 'interfaces/ArenaNodeText';
 import Arena, { ArenaAncestor } from 'interfaces/Arena';
@@ -48,7 +48,7 @@ export default class MediatorNode implements ArenaNodeScion, ArenaNodeAncestor {
   public insertText(
     text: string | RichTextManager,
     offset: number,
-  ): [ArenaNode, number] | undefined {
+  ): ArenaCursor {
     if (this.arena.arenaForText) {
       const newNode = this.createAndInsertNode(this.arena.arenaForText, offset);
       if (newNode) {

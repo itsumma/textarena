@@ -1,10 +1,10 @@
+import { TemplateResult } from 'lit-html';
 import ArenaNodeAncestor from 'interfaces/ArenaNodeAncestor';
-import ArenaNode from 'interfaces/ArenaNode';
 import ArenaNodeScion from 'interfaces/ArenaNodeScion';
 import Arena, { ArenaSingle } from 'interfaces/Arena';
-import RichTextManager from 'RichTextManager';
-import { TemplateResult } from 'lit-html';
 import ArenaNodeText from 'interfaces/ArenaNodeText';
+import ArenaCursor from 'interfaces/ArenaCursor';
+import RichTextManager from 'RichTextManager';
 
 export default class SingleNode implements ArenaNodeScion {
   readonly hasParent: true = true;
@@ -25,7 +25,7 @@ export default class SingleNode implements ArenaNodeScion {
 
   public insertText(
     text: string | RichTextManager,
-  ): [ArenaNode, number] | undefined {
+  ): ArenaCursor {
     return this.parent.insertText(text, this.getIndex() + 1);
   }
 

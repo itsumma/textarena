@@ -10,6 +10,7 @@ import ArenaNodeAncestor from 'interfaces/ArenaNodeAncestor';
 import ArenaNodeScion from 'interfaces/ArenaNodeScion';
 import Arena, { ArenaRoot } from 'interfaces/Arena';
 import ArenaFactory from 'arenas/ArenaFactory';
+import ArenaCursor from 'interfaces/ArenaCursor';
 
 type TagAndAttributes = {
   tag: string,
@@ -196,16 +197,31 @@ export default class ArenaModel {
     return newSelection;
   }
 
-  public insertText(selection: ArenaSelection, text: string): ArenaSelection {
+  private applyMiddlewares(cursor: ArenaCursor): ArenaCursor {
+    let result = cursor;
+    if ('allowText' in cursor.node.arena) {
+      const { middlewares } = cursor.node.arena;
+      for (let i = 0; i < middlewares.length; i += 1) {
+        result = middlewares[i](result);
+      }
+    }
+    return result;
+  }
+
+  public insertTextToModel(
+    selection: ArenaSelection,
+    text: string,
+    typing = false,
+  ): ArenaSelection {
     let newSelection = selection;
     if (!selection.isCollapsed()) {
       newSelection = this.removeSelection(selection, 'backward');
     }
-    const result = newSelection.startNode.insertText(text, newSelection.startOffset, true);
-    if (result) {
-      newSelection.startOffset += text.length;
-      newSelection.endOffset = newSelection.startOffset;
+    let cursor = newSelection.startNode.insertText(text, newSelection.startOffset, true);
+    if (typing) {
+      cursor = this.applyMiddlewares(cursor);
     }
+    newSelection.setCursor(cursor);
     this.textarena.eventManager.fire('modelChanged');
     return newSelection;
   }
@@ -350,17 +366,14 @@ export default class ArenaModel {
   transformModel(selection: ArenaSelection, arena: Arena): ArenaSelection {
     const {
       startNode,
-      startOffset,
     } = selection;
     const newSelection = selection;
     if (selection.isCollapsed() || selection.isSameNode()) {
       const newNode = startNode.parent.createAndInsertNode(arena, startNode.getIndex());
       if (newNode) {
-        const result = newNode.insertText(startNode.getText(), 0, false);
-        const resultNode = result ? result[0] : newNode;
-        const resultOffset = result ? result[1] : startOffset;
+        const cursor = newNode.insertText(startNode.getText(), 0, false);
         startNode.remove();
-        newSelection.setBoth(resultNode as ArenaNodeText, resultOffset);
+        newSelection.setCursor(cursor);
         return newSelection;
       }
     }

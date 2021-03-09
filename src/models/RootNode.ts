@@ -2,7 +2,7 @@ import { TemplateResult, html } from 'lit-html';
 import { repeat } from 'lit-html/directives/repeat';
 import ArenaModel from 'ArenaModel';
 import Arena, { ArenaAncestor } from 'interfaces/Arena';
-import ArenaNode from 'interfaces/ArenaNode';
+import ArenaCursor from 'interfaces/ArenaCursor';
 import ArenaNodeScion from 'interfaces/ArenaNodeScion';
 import ArenaNodeAncestor from 'interfaces/ArenaNodeAncestor';
 import ArenaNodeText from 'interfaces/ArenaNodeText';
@@ -34,14 +34,15 @@ export default class RootNode implements ArenaNodeAncestor {
   insertText(
     text: string | RichTextManager,
     offset: number,
-  ): [ArenaNode, number] | undefined {
-    if (this.arena.arenaForText) {
-      const newNode = this.createAndInsertNode(this.arena.arenaForText, offset);
-      if (newNode) {
-        return newNode.insertText(text, 0);
-      }
+  ): ArenaCursor {
+    if (!this.arena.arenaForText) {
+      throw new Error('Arena for text not found');
     }
-    return undefined;
+    const newNode = this.createAndInsertNode(this.arena.arenaForText, offset);
+    if (!newNode) {
+      throw new Error(`Arena "${this.arena.arenaForText.name}" was not created`);
+    }
+    return newNode.insertText(text, 0);
   }
 
   getTextNode(): ArenaNodeText | undefined {

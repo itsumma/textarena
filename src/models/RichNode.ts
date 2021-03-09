@@ -1,12 +1,12 @@
 import { TemplateResult, html } from 'lit-html';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html';
 import Arena, { ArenaWithText } from 'interfaces/Arena';
-import ArenaNode from 'interfaces/ArenaNode';
 import ArenaNodeText from 'interfaces/ArenaNodeText';
 import ArenaModel from 'ArenaModel';
 import RichTextManager from 'RichTextManager';
 import ArenaNodeAncestor from 'interfaces/ArenaNodeAncestor';
 import ArenaNodeScion from 'interfaces/ArenaNodeScion';
+import ArenaCursor from 'interfaces/ArenaCursor';
 
 export default class RichNode implements ArenaNodeText {
   readonly hasParent: true = true;
@@ -45,8 +45,11 @@ export default class RichNode implements ArenaNodeText {
     text: string | RichTextManager,
     offset: number,
     keepFormatings = false,
-  ): [ArenaNode, number] | undefined {
-    return [this, this.richTextManager.insertText(text, offset, keepFormatings)];
+  ): ArenaCursor {
+    return {
+      node: this,
+      offset: this.richTextManager.insertText(text, offset, keepFormatings),
+    };
   }
 
   public insertFormating(name: string, start: number, end: number): void {
@@ -70,6 +73,10 @@ export default class RichNode implements ArenaNodeText {
 
   public getText(): string | RichTextManager {
     return this.richTextManager;
+  }
+
+  public getRawText(): string {
+    return this.richTextManager.getText();
   }
 
   public cutText(start: number, end?: number): string | RichTextManager {
