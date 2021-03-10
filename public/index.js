@@ -28,16 +28,26 @@
       initData = {
         content: `<h2>Простой визуальный редактор</h2>
         <p>Textarena адаптирована для быстрой работы. Все функции доступны с помощью горячих клавиш.</p>
+        <arena-callout>
+          <p slot="title">
+            Внимание!
+          </p>
+          <arena-callout-body slot="body">
+            <ul>
+            <li>
+            Это удобно
+            </li><li>
+            Это быстро
+            </li>
+            </ul>
+          </arena-callout-body>
+        </arena-callout>
         <ul>
         <li>Быстро.</li>
         <li>Удобно.</li>
         <li>Настраиваемо.</li>
         </ul>
         <figure><img src="https://www.itsumma.ru/img/services/musthave.png"></figure>
-        <arena-callout>
-          <p slot="title">Внимание!</p>
-          <p slot="body">Говорит Германия</p>
-        </arena-callout>
         <p>Выделите текст, появится панель для форматирования.</p>
         <hr />
         <p>Зажмите Ctrl (⌘ для Mac) или Alt (⌥ для Mac) и вы увидите подсказки.</p>

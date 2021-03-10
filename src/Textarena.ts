@@ -171,7 +171,7 @@ class Textarena {
         .replace(/<!--(?!-->)*-->/g, '')
         .replace(/^[\s\n]+/, '')
         .replace(/[\s\n]+$/, '')
-        .replace(/(<\w+)\s+observe-id="[\d.]+"/g, '$1')
+        .replace(/(<[\w-]+)\s+observe-id="[\d.]+"/g, '$1')
         .replace(/(<p)/g, '\n$1')
         // .replace(/>[\s\n]+</g, '')
         ,

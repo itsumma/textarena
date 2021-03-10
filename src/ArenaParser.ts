@@ -157,14 +157,15 @@ export default class ArenaParser {
       const [name, value] = attribute.split('=');
       if (name === 'style') {
         const [styleName, styleValue] = value.split(':');
-        if (styleName in node.style
-          && node.style[styleName] === styleValue.trim().toLowerCase()) {
-          return true;
+        if (!(styleName in node.style)
+          || node.style[styleName as any] !== styleValue.trim().toLowerCase()) {
+          return false;
         }
+      } else if (node.getAttribute(name) !== value) {
+        return false;
       }
-      // TODO more
     }
-    return false;
+    return true;
   }
 
   private getText(node: HTMLElement): RichTextManager {

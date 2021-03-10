@@ -95,6 +95,7 @@ export default class ArenaModel {
           attributes,
           arena,
         });
+        this.areanMarks[tag].sort((a, b) => b.attributes.length - a.attributes.length);
       });
     }
     return arena;

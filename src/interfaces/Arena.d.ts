@@ -29,6 +29,8 @@ export interface ArenaWithText extends ArenaCore {
 
 export interface ArenaAncestor extends ArenaCore {
   readonly hasChildren: true;
+  readonly protected: boolean;
+  readonly protectedChildren: (ArenaSingle | ArenaAncestor | ArenaWithText)[];
   readonly arenaForText: ArenaAncestor | ArenaWithText | undefined
   readonly allowedArenas: (ArenaSingle | ArenaAncestor | ArenaWithText)[];
   addAllowedChild(arena: ArenaSingle | ArenaAncestor | ArenaWithText): void;

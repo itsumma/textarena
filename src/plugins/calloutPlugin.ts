@@ -1,5 +1,5 @@
 import {
-  LitElement, html, css, customElement, property,
+  LitElement, html, css, customElement, property, TemplateResult,
 } from 'lit-element';
 import Textarena from 'Textarena';
 import ArenaPlugin from 'interfaces/ArenaPlugin';
@@ -18,7 +18,7 @@ export class Callout extends LitElement {
 
   static styles = css`
     :host {
-      baclgrund: lightgray;
+      background: lightgray;
       border: 1px solid red;
       display: block;
       padding: 1em;
@@ -45,7 +45,7 @@ export class Callout extends LitElement {
     }`;
 
   // Render element DOM by returning a `lit-html` template.
-  render() {
+  render(): TemplateResult {
     return html`<div>
       <div class="nb">N. B.</div>
       <slot name="title"></slot>
@@ -71,10 +71,6 @@ const calloutPlugin: ArenaPlugin = {
     const {
       name, icon, title, tag, attributes, shortcut, hint, command,
     } = { ...defaultOptions, ...(opts || {}) };
-    const paragraph = textarena.model.getArena('paragraph');
-    if (!paragraph) {
-      throw new Error('Paragraph not found');
-    }
     const calloutTitleParagraph = textarena.model.registerArena(
       {
         name: 'callout-title-paragraph',
@@ -95,19 +91,36 @@ const calloutPlugin: ArenaPlugin = {
       ],
       [ArenaModel.rootArenaName],
     );
-    const calloutBodyParagraph = textarena.model.registerArena(
+    const paragraph = textarena.model.getArena('paragraph');
+
+    if (!paragraph) {
+      throw new Error('Paragraph not found');
+    }
+    const ol = textarena.model.getArena('ol');
+    const ul = textarena.model.getArena('ul');
+    const allowedArenas = [
+      paragraph,
+    ];
+    if (ol) {
+      allowedArenas.push(ol);
+    }
+    if (ul) {
+      allowedArenas.push(ul);
+    }
+    const calloutBodyContainer = textarena.model.registerArena(
       {
-        name: 'callout-body-paragraph',
-        tag: 'P',
+        name: 'callout-body-container',
+        tag: 'ARENA-CALLOUT-BODY',
         attributes: [
-          'slot=title',
+          'slot=body',
         ],
-        allowText: true,
-        allowFormating: true,
+        hasChildren: true,
+        allowedArenas,
+        arenaForText: paragraph as ArenaWithText,
       },
       [
         {
-          tag: 'P',
+          tag: 'ARENA-CALLOUT-BODY',
           attributes: [
             'slot=body',
           ],
@@ -121,13 +134,18 @@ const calloutPlugin: ArenaPlugin = {
         tag,
         attributes,
         hasChildren: true,
-        arenaForText: calloutBodyParagraph as ArenaWithText,
-        allowedArenas: [calloutTitleParagraph, calloutBodyParagraph],
+        protectedChildren: [
+          calloutTitleParagraph,
+          calloutBodyContainer,
+        ],
+        arenaForText: calloutBodyContainer as ArenaWithText,
+        allowedArenas: [
+          calloutTitleParagraph,
+          calloutBodyContainer,
+        ],
         init: (node: ArenaNode) => {
-          const result = node.createAndInsertNode(calloutBodyParagraph, 0);
-          if (result) {
-            return result;
-          }
+          node.createAndInsertNode(calloutBodyContainer, 0);
+          node.createAndInsertNode(calloutTitleParagraph, 0);
           return node;
         },
       },

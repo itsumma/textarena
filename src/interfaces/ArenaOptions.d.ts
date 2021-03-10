@@ -2,31 +2,32 @@ import Arena, { ArenaWithText } from './Arena';
 import ArenaNode from './ArenaNode';
 
 export type AbstractArena = {
-  readonly name: string,
-  readonly tag: string,
+  name: string,
+  tag: string,
   // template: (child: TemplateResult | string, id: string) => TemplateResult | string,
-  readonly attributes: string[],
+  attributes: string[],
   init?: (node: ArenaNode) => ArenaNode;
 };
 
 export type ArenaOptionsSingle = AbstractArena & {
-  readonly single: true,
+  single: true,
 };
 
 export type ArenaOptionsWithText = AbstractArena & {
-  readonly allowText: true,
-  readonly allowFormating: boolean,
-  nextArena: ArenaWithText | undefined,
+  allowText: true,
+  allowFormating: boolean,
+  nextArena?: ArenaWithText,
 };
 
 export type ArenaOptionsAncestor = AbstractArena & {
-  readonly hasChildren: true,
-  readonly allowedArenas?: Arena[],
-  readonly arenaForText?: ArenaWithText,
+  hasChildren: true,
+  allowedArenas?: Arena[],
+  arenaForText?: ArenaWithText,
+  protectedChildren?: Arena[]
 };
 
 export type ArenaOptionsRoot = ArenaOptionsAncestor & {
-  readonly root: true,
+  root: true,
 };
 
 type ArenaOptions = ArenaOptionsSingle |

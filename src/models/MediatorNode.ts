@@ -25,10 +25,11 @@ export default class MediatorNode implements ArenaNodeScion, ArenaNodeAncestor {
     public arena: ArenaAncestor,
     public parent: ArenaNodeAncestor,
   ) {
-    arena.init(this);
-    // if ('protectedChildren' in arena) {
-    //   arena.
-    // }
+    if (arena.protected) {
+      this.children = arena.protectedChildren.map(
+        (childArena) => NodeFactory.createNode(childArena, this),
+      );
+    }
   }
 
   public getIndex(): number {
@@ -66,7 +67,14 @@ export default class MediatorNode implements ArenaNodeScion, ArenaNodeAncestor {
     arena: Arena,
     offset: number,
   ): ArenaNodeScion | ArenaNodeText | undefined {
-    if (this.arena.allowedArenas.includes(arena)) {
+    if (this.arena.protected) {
+      const { protectedChildren } = this.arena;
+      for (let i = 0; i < protectedChildren.length; i += 1) {
+        if (protectedChildren[i] === arena) {
+          return this.children[i];
+        }
+      }
+    } else if (this.arena.allowedArenas.includes(arena)) {
       const node = NodeFactory.createNode(arena, this);
       this.children.splice(offset, 0, node);
       return node;
