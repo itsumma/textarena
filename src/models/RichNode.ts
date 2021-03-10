@@ -1,12 +1,14 @@
 import { TemplateResult, html } from 'lit-html';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html';
-import Arena, { ArenaWithText } from 'interfaces/Arena';
+import Arena from 'interfaces/Arena';
 import ArenaNodeText from 'interfaces/ArenaNodeText';
 import ArenaModel from 'ArenaModel';
 import RichTextManager from 'RichTextManager';
 import ArenaNodeAncestor from 'interfaces/ArenaNodeAncestor';
 import ArenaNodeScion from 'interfaces/ArenaNodeScion';
 import ArenaCursor from 'interfaces/ArenaCursor';
+import ArenaCursorAncestor from 'interfaces/ArenaCursorAncestor';
+import ArenaWithText from 'interfaces/ArenaWithText';
 
 export default class RichNode implements ArenaNodeText {
   readonly hasParent: true = true;
@@ -29,12 +31,22 @@ export default class RichNode implements ArenaNodeText {
     return `${this.parent.getGlobalIndex()}.${this.getIndex().toString()}`;
   }
 
+  public getUnprotectedParent(): ArenaCursorAncestor {
+    if (this.parent.arena.protected) {
+      return this.parent.getUnprotectedParent();
+    }
+    return { node: this.parent, offset: this.getIndex() };
+  }
+
   public remove(): void {
     this.parent.removeChild(this.getIndex());
   }
 
-  public getTextNode(): ArenaNodeText | undefined {
-    return undefined;
+  getTextCursor(index: number): ArenaCursor {
+    return {
+      node: this,
+      offset: index === -1 ? this.getTextLength() : index,
+    };
   }
 
   public createAndInsertNode(arena: Arena): ArenaNodeScion | ArenaNodeText | undefined {
@@ -71,7 +83,7 @@ export default class RichNode implements ArenaNodeText {
     return this.arena.getTemplate(this.getTemplate(model), this.getGlobalIndex());
   }
 
-  public getText(): string | RichTextManager {
+  public getText(): RichTextManager {
     return this.richTextManager;
   }
 

@@ -81,12 +81,15 @@ export default class ArenaView implements ArenaServiceInterface {
     return undefined;
   }
 
-  private isEmptyNode(node: ChildNode): boolean {
+  private isEmptyNode(node: Node): boolean {
     if (node.nodeType === Node.TEXT_NODE) {
       const text = node.textContent || '';
       return /^[\s\n]*$/.test(text);
     }
     if (node.nodeType === Node.ELEMENT_NODE) {
+      if ((node as HTMLElement).tagName === 'BR') {
+        return true;
+      }
       return false;
     }
     return true;

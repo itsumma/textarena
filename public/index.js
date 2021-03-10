@@ -127,8 +127,9 @@
         //   ],
         // },
         // toolbar: {
+        //   enabled: true,
         //   tools: [
-        //     'bold',
+        //     'strong',
         //     'italic',
         //     'underline',
         //     'strikethrough',
@@ -141,7 +142,7 @@
         //       },
         //       processor: foreColor,
         //     },
-        //   ],
+          // ],
         // }
       },
     );
