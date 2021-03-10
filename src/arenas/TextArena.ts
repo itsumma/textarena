@@ -1,4 +1,4 @@
-import { ArenaWithText, Middleware } from 'interfaces/Arena';
+import { ArenaAncestor, ArenaWithText, Middleware } from 'interfaces/Arena';
 import { ArenaOptionsWithText } from 'interfaces/ArenaOptions';
 import AbstractArena from './AbstractArena';
 
@@ -7,7 +7,7 @@ export default class TextArena
   implements ArenaWithText {
   readonly allowText = true;
 
-  readonly nextArena: ArenaWithText | undefined;
+  readonly nextArena: ArenaWithText | ArenaAncestor | undefined;
 
   readonly allowFormating: boolean;
 

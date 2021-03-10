@@ -1,4 +1,4 @@
-import Arena, { ArenaWithText } from './Arena';
+import Arena, { ArenaAncestor, ArenaWithText } from './Arena';
 import ArenaNode from './ArenaNode';
 
 export type AbstractArena = {
@@ -16,7 +16,7 @@ export type ArenaOptionsSingle = AbstractArena & {
 export type ArenaOptionsWithText = AbstractArena & {
   allowText: true,
   allowFormating: boolean,
-  nextArena?: ArenaWithText,
+  nextArena?: ArenaWithText | ArenaAncestor,
 };
 
 export type ArenaOptionsAncestor = AbstractArena & {

@@ -109,10 +109,10 @@ const listsPlugin: ArenaPlugin = {
           return newCursor;
         }
       }
-      if (/^- $/.test(text)) {
+      if (/^- /.test(text)) {
         const newNode = cursor.node.createAndInsertNode(ul, 0);
         if (newNode) {
-          const newCursor = newNode.insertText('', 0);
+          const newCursor = newNode.insertText(text.slice(2), 0);
           cursor.node.remove();
           return newCursor;
         }

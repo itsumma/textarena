@@ -347,13 +347,23 @@ export default class ArenaModel {
     if (!selection.isCollapsed()) {
       newSelection = this.removeSelection(selection, 'backward');
     }
-    const { startNode } = selection;
-    const text = startNode.cutText(selection.startOffset);
-    const nextArena = startNode.arena.nextArena || startNode.arena;
-    const newNode = startNode.parent.createAndInsertNode(nextArena, startNode.getIndex() + 1);
-    if (newNode && 'hasText' in newNode) {
-      newNode.insertText(text, 0);
-      newSelection.setBoth(newNode, 0);
+    const { startNode, startOffset } = newSelection;
+    const { parent } = startNode;
+    const textLength = startNode.getTextLength();
+    if (textLength === 0 && 'hasParent' in parent) {
+      const grandpa = parent.parent;
+      startNode.remove();
+      const cursor = grandpa.insertText('', parent.getIndex() + 1);
+      newSelection.setCursor(cursor);
+    } else {
+      const nextArena = startNode.arena.nextArena || startNode.arena;
+      const newNode = parent.createAndInsertNode(nextArena, startNode.getIndex() + 1);
+      // TODO get textnode from newNode focus() instead insertText('', 0)
+      if (newNode) {
+        const text = startNode.cutText(startOffset);
+        const cursor = newNode.insertText(text, 0);
+        newSelection.setCursor(cursor);
+      }
     }
     this.textarena.eventManager.fire('modelChanged');
     return newSelection;

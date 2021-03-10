@@ -71,28 +71,7 @@ const calloutPlugin: ArenaPlugin = {
     const {
       name, icon, title, tag, attributes, shortcut, hint, command,
     } = { ...defaultOptions, ...(opts || {}) };
-    const calloutTitleParagraph = textarena.model.registerArena(
-      {
-        name: 'callout-title-paragraph',
-        tag: 'P',
-        attributes: [
-          'slot=title',
-        ],
-        allowText: true,
-        allowFormating: true,
-      },
-      [
-        {
-          tag: 'P',
-          attributes: [
-            'slot=title',
-          ],
-        },
-      ],
-      [ArenaModel.rootArenaName],
-    );
     const paragraph = textarena.model.getArena('paragraph');
-
     if (!paragraph) {
       throw new Error('Paragraph not found');
     }
@@ -128,6 +107,27 @@ const calloutPlugin: ArenaPlugin = {
       ],
       [ArenaModel.rootArenaName],
     );
+    const calloutTitleParagraph = textarena.model.registerArena(
+      {
+        name: 'callout-title-paragraph',
+        tag: 'P',
+        attributes: [
+          'slot=title',
+        ],
+        allowText: true,
+        allowFormating: true,
+        nextArena: calloutBodyContainer,
+      },
+      [
+        {
+          tag: 'P',
+          attributes: [
+            'slot=title',
+          ],
+        },
+      ],
+      [ArenaModel.rootArenaName],
+    );
     const arena = textarena.model.registerArena(
       {
         name,
@@ -143,11 +143,6 @@ const calloutPlugin: ArenaPlugin = {
           calloutTitleParagraph,
           calloutBodyContainer,
         ],
-        init: (node: ArenaNode) => {
-          node.createAndInsertNode(calloutBodyContainer, 0);
-          node.createAndInsertNode(calloutTitleParagraph, 0);
-          return node;
-        },
       },
       [
         {
