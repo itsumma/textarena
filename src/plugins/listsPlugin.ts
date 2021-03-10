@@ -2,7 +2,10 @@ import Textarena from 'Textarena';
 import ArenaPlugin from 'interfaces/ArenaPlugin';
 import ArenaModel from 'ArenaModel';
 import ArenaSelection from 'ArenaSelection';
-import { ArenaWithText } from 'interfaces/Arena';
+import { ArenaWithText, Middleware } from 'interfaces/Arena';
+import ArenaNode from 'interfaces/ArenaNode';
+import ArenaCursor from 'interfaces/ArenaCursor';
+import ArenaNodeText from 'interfaces/ArenaNodeText';
 
 const defaultOptions = {
 };
@@ -17,10 +20,11 @@ const listsPlugin: ArenaPlugin = {
         attributes: [],
         allowText: true,
         allowFormating: true,
+        nextArena: undefined,
       },
       [
         {
-          tag: 'li',
+          tag: 'LI',
           attributes: [],
         },
       ],
@@ -57,6 +61,63 @@ const listsPlugin: ArenaPlugin = {
       shortcut: 'Alt + KeyL',
       command: 'convert-to-list',
       hint: 'l',
+    });
+    const ol = textarena.model.registerArena(
+      {
+        name: 'ol',
+        tag: 'OL',
+        attributes: [],
+        allowedArenas: [li],
+        arenaForText: li as ArenaWithText,
+        hasChildren: true,
+      },
+      [
+        {
+          tag: 'OL',
+          attributes: [],
+        },
+      ],
+      [ArenaModel.rootArenaName],
+    );
+    textarena.commandManager.registerCommand(
+      'convert-to-ordered-list',
+      (ta: Textarena, selection: ArenaSelection) => ta.model.transformModel(selection, ol),
+    );
+    textarena.commandManager.registerShortcut(
+      'Alt + KeyO',
+      'convert-to-ordered-list',
+    );
+    textarena.toolbar.registerTool({
+      name: 'ordered-list',
+      title: 'Ordered list',
+      icon: '<b>1.</b>',
+      shortcut: 'Alt + KeyO',
+      command: 'convert-to-ordered-list',
+      hint: 'o',
+    });
+    const paragraph = textarena.model.getArena('paragraph');
+    if (!paragraph) {
+      throw new Error('Arena "paragraph" not found');
+    }
+    (paragraph as ArenaWithText).registerMiddleware((cursor: ArenaCursor) => {
+      const text = cursor.node.getRawText();
+      if (/^\d+\. $/.test(text)) {
+        const newNode = cursor.node.createAndInsertNode(ol, 0);
+        if (newNode) {
+          const newCursor = newNode.insertText('', 0);
+          cursor.node.remove();
+          return newCursor;
+        }
+      }
+      if (/^- /.test(text)) {
+        const newNode = cursor.node.createAndInsertNode(ul, 0);
+        if (newNode) {
+          const newCursor = newNode.insertText(text.slice(2), 0);
+          cursor.node.remove();
+          return newCursor;
+        }
+      }
+      return cursor;
     });
   },
 };

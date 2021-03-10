@@ -10,6 +10,7 @@ import ArenaNodeAncestor from 'interfaces/ArenaNodeAncestor';
 import ArenaNodeScion from 'interfaces/ArenaNodeScion';
 import Arena, { ArenaRoot } from 'interfaces/Arena';
 import ArenaFactory from 'arenas/ArenaFactory';
+import ArenaCursor from 'interfaces/ArenaCursor';
 
 type TagAndAttributes = {
   tag: string,
@@ -94,6 +95,7 @@ export default class ArenaModel {
           attributes,
           arena,
         });
+        this.areanMarks[tag].sort((a, b) => b.attributes.length - a.attributes.length);
       });
     }
     return arena;
@@ -192,19 +194,36 @@ export default class ArenaModel {
     if (result) {
       newSelection.setBoth(result[0] as ArenaNodeText, result[1]);
     }
+    this.textarena.eventManager.fire('modelChanged');
     return newSelection;
   }
 
-  public insertText(selection: ArenaSelection, text: string): ArenaSelection {
+  private applyMiddlewares(cursor: ArenaCursor): ArenaCursor {
+    let result = cursor;
+    if ('allowText' in cursor.node.arena) {
+      const { middlewares } = cursor.node.arena;
+      for (let i = 0; i < middlewares.length; i += 1) {
+        result = middlewares[i](result);
+      }
+    }
+    return result;
+  }
+
+  public insertTextToModel(
+    selection: ArenaSelection,
+    text: string,
+    typing = false,
+  ): ArenaSelection {
     let newSelection = selection;
     if (!selection.isCollapsed()) {
       newSelection = this.removeSelection(selection, 'backward');
     }
-    const result = newSelection.startNode.insertText(text, newSelection.startOffset, true);
-    if (result) {
-      newSelection.startOffset += text.length;
-      newSelection.endOffset = newSelection.startOffset;
+    let cursor = newSelection.startNode.insertText(text, newSelection.startOffset, true);
+    if (typing) {
+      cursor = this.applyMiddlewares(cursor);
     }
+    newSelection.setCursor(cursor);
+    this.textarena.eventManager.fire('modelChanged');
     return newSelection;
   }
 
@@ -241,16 +260,19 @@ export default class ArenaModel {
           newSelection.setBoth(startNode, startOffset - 1);
         }
       }
+      this.textarena.eventManager.fire('modelChanged');
       return newSelection;
     }
     if (selection.isSameNode()) {
       console.log('remove text', selection.startOffset, selection.endOffset);
       selection.startNode.removeText(selection.startOffset, selection.endOffset);
       selection.collapse();
+      this.textarena.eventManager.fire('modelChanged');
       return selection;
     }
     const commonAncestor = this.getCommonAncestor(selection.startNode, selection.endNode);
     if (!commonAncestor) {
+      this.textarena.eventManager.fire('modelChanged');
       return selection;
     }
 
@@ -271,6 +293,7 @@ export default class ArenaModel {
       }
       const newSelection = selection;
       newSelection.collapseBackward();
+      this.textarena.eventManager.fire('modelChanged');
       return newSelection;
     }
     selection.startNode.removeText(selection.startOffset);
@@ -315,6 +338,7 @@ export default class ArenaModel {
 
     const newSelection = selection;
     newSelection.collapse();
+    this.textarena.eventManager.fire('modelChanged');
     return newSelection;
   }
 
@@ -323,13 +347,25 @@ export default class ArenaModel {
     if (!selection.isCollapsed()) {
       newSelection = this.removeSelection(selection, 'backward');
     }
-    const { startNode } = selection;
-    const text = startNode.cutText(selection.startOffset);
-    const newNode = startNode.parent.createAndInsertNode(startNode.arena, startNode.getIndex() + 1);
-    if (newNode && 'hasText' in newNode) {
-      newNode.insertText(text, 0);
-      newSelection.setBoth(newNode, 0);
+    const { startNode, startOffset } = newSelection;
+    const { parent } = startNode;
+    const textLength = startNode.getTextLength();
+    if (textLength === 0 && 'hasParent' in parent) {
+      const grandpa = parent.parent;
+      startNode.remove();
+      const cursor = grandpa.insertText('', parent.getIndex() + 1);
+      newSelection.setCursor(cursor);
+    } else {
+      const nextArena = startNode.arena.nextArena || startNode.arena;
+      const newNode = parent.createAndInsertNode(nextArena, startNode.getIndex() + 1);
+      // TODO get textnode from newNode focus() instead insertText('', 0)
+      if (newNode) {
+        const text = startNode.cutText(startOffset);
+        const cursor = newNode.insertText(text, 0);
+        newSelection.setCursor(cursor);
+      }
     }
+    this.textarena.eventManager.fire('modelChanged');
     return newSelection;
   }
 
@@ -341,20 +377,18 @@ export default class ArenaModel {
   transformModel(selection: ArenaSelection, arena: Arena): ArenaSelection {
     const {
       startNode,
-      startOffset,
     } = selection;
     const newSelection = selection;
     if (selection.isCollapsed() || selection.isSameNode()) {
       const newNode = startNode.parent.createAndInsertNode(arena, startNode.getIndex());
       if (newNode) {
-        const result = newNode.insertText(startNode.getText(), 0, false);
-        const resultNode = result ? result[0] : newNode;
-        const resultOffset = result ? result[1] : startOffset;
+        const cursor = newNode.insertText(startNode.getText(), 0, false);
         startNode.remove();
-        newSelection.setBoth(resultNode as ArenaNodeText, resultOffset);
+        newSelection.setCursor(cursor);
         return newSelection;
       }
     }
+    this.textarena.eventManager.fire('modelChanged');
     return selection;
   }
 
@@ -368,6 +402,7 @@ export default class ArenaModel {
     if (selection.isCollapsed() || selection.isSameNode()) {
       startNode.toggleFormating(formating.name, startOffset, endOffset);
     }
+    this.textarena.eventManager.fire('modelChanged');
     return selection;
   }
 }

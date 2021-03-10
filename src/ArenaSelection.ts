@@ -1,4 +1,5 @@
 import ArenaNodeText from 'interfaces/ArenaNodeText';
+import ArenaCursor from 'interfaces/ArenaCursor';
 
 export type ArenaSelectionDiection = 'forward' | 'backward';
 
@@ -35,6 +36,10 @@ export default class ArenaSelection {
     offset: number,
   ): ArenaSelection {
     return this.setStartNode(node, offset).setEndNode(node, offset);
+  }
+
+  setCursor(cursor: ArenaCursor): ArenaSelection {
+    return this.setBoth(cursor.node, cursor.offset);
   }
 
   isCollapsed(): boolean {

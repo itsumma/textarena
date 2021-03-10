@@ -1,10 +1,10 @@
 import ArenaModel from 'ArenaModel';
 import { TemplateResult } from 'lit-html';
 import RichTextManager from 'RichTextManager';
-import ArenaNode from './ArenaNode';
 import Arena from './Arena';
 import ArenaNodeText from './ArenaNodeText';
 import ArenaNodeScion from './ArenaNodeScion';
+import ArenaCursor from './ArenaCursor';
 
 export default interface ArenaNodeCore {
   readonly arena: Arena;
@@ -13,8 +13,9 @@ export default interface ArenaNodeCore {
     text: string | RichTextManager,
     offset: number,
     keepFormatings?: boolean,
-  ): [ArenaNode, number] | undefined;
+  ): ArenaCursor;
 
+  // tot merge neighbors
   createAndInsertNode(arena: Arena, offset: number): ArenaNodeScion | ArenaNodeText | undefined;
 
   getHtml(model: ArenaModel): TemplateResult | string;
