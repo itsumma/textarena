@@ -1,6 +1,7 @@
 /.vscode
 /.cache
 /dist
+/.idea
 /lib
 /node_modules
 yarn.lock

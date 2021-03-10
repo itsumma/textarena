@@ -48,5 +48,15 @@
     "import/resolver": {
       "typescript": {} // this loads <rootdir>/tsconfig.json to eslint
     }
-  }
+  },
+  "overrides": [
+    {
+      "files": [
+        "**/*.test.js"
+      ],
+      "env": {
+        "jest": true
+      }
+    }
+  ]
 }
