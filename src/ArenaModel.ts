@@ -284,14 +284,14 @@ export default class ArenaModel {
   }
 
   public removeSelection(selection: ArenaSelection, direction: Direction): ArenaSelection {
+    const newSelection = selection;
     const {
       startNode,
       startOffset,
       endNode,
       endOffset,
-    } = selection;
+    } = newSelection;
     if (selection.isCollapsed()) {
-      const newSelection = selection;
       if (direction === 'forward') {
         if (startNode.getTextLength() === startOffset) {
           const nextSibling = startNode.parent.getChild(startNode.getIndex() + 1);
@@ -333,81 +333,27 @@ export default class ArenaModel {
       this.textarena.eventManager.fire('modelChanged');
       return newSelection;
     }
-    if (selection.isSameNode()) {
-      console.log('remove text', selection.startOffset, selection.endOffset);
-      selection.startNode.removeText(selection.startOffset, selection.endOffset);
-      selection.collapse();
-      this.textarena.eventManager.fire('modelChanged');
-      return selection;
-    }
-    const commonAncestor = this.getCommonAncestor(selection.startNode, selection.endNode);
-    if (!commonAncestor) {
-      this.textarena.eventManager.fire('modelChanged');
-      return selection;
-    }
-
-    if (commonAncestor === selection.startNode.parent
-      && commonAncestor === selection.endNode.parent
-      && 'hasChildren' in commonAncestor) {
-      const startIndex = selection.startNode.getIndex();
-      const endIndex = selection.endNode.getIndex();
-      selection.startNode.removeText(selection.startOffset);
-      selection.endNode.removeText(0, selection.endOffset);
-      selection.startNode.insertText(
-        selection.endNode.getText(),
-        selection.startOffset,
+    this.runNodesOfSelection(
+      newSelection,
+      (node: ArenaNode, start?: number, end?: number) => {
+        console.log('remove', node, start, end);
+        if (start === undefined && end === undefined) {
+          if ('hasParent' in node) {
+            node.remove();
+          }
+        } else if ('hasText' in node) {
+          node.removeText(start || 0, end);
+        }
+      },
+    );
+    if (startNode !== endNode) {
+      startNode.insertText(
+        endNode.getText(),
+        startOffset,
       );
-      const removeLength = endIndex - startIndex;
-      if (removeLength) {
-        commonAncestor.removeChildren(startIndex + 1, removeLength);
-      }
-      const newSelection = selection;
-      newSelection.collapseBackward();
-      this.textarena.eventManager.fire('modelChanged');
-      return newSelection;
+      endNode.remove();
+      newSelection.setBoth(startNode, startOffset);
     }
-    selection.startNode.removeText(selection.startOffset);
-    let startIndex = selection.startNode.getIndex();
-    let startCursor:
-      ArenaNodeAncestor
-      | (ArenaNodeAncestor & ArenaNodeScion)
-      | undefined = selection.startNode.parent;
-    while (startCursor && startCursor !== commonAncestor) {
-      startCursor.removeChildren(startIndex + 1);
-      if ('hasParent' in startCursor) {
-        startIndex = startCursor.getIndex();
-        startCursor = startCursor.parent;
-      } else {
-        startCursor = undefined;
-      }
-    }
-
-    selection.endNode.removeText(0, selection.endOffset);
-    let endIndex = selection.endNode.getIndex();
-    let endCursor:
-      ArenaNodeAncestor
-      | (ArenaNodeAncestor & ArenaNodeScion)
-      | undefined = selection.endNode.parent;
-    while (endCursor && endCursor !== commonAncestor) {
-      endCursor.removeChildren(0, endIndex);
-      if ('hasParent' in endCursor) {
-        endIndex = endCursor.getIndex();
-        endCursor = endCursor.parent;
-      } else {
-        endCursor = undefined;
-      }
-    }
-    if (commonAncestor === startCursor
-      && commonAncestor === endCursor
-      && 'hasChildren' in commonAncestor) {
-      const removeLength = endIndex - startIndex - 1;
-      if (removeLength) {
-        commonAncestor.removeChildren(startIndex + 1, removeLength);
-      }
-    }
-
-    const newSelection = selection;
-    newSelection.collapse();
     this.textarena.eventManager.fire('modelChanged');
     return newSelection;
   }
