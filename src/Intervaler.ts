@@ -22,71 +22,99 @@ export default class Intervaler {
     });
   }
 
-  cut(offset: number, length?: number): Intervaler {
-    const intervals: Interval[] = [];
+  cut(start: number, end?: number): Intervaler {
     const intervaler = new Intervaler();
+    if (end && end <= start) {
+      return intervaler;
+    }
+    const intervals: Interval[] = [];
     this.intervals.forEach((interval) => {
       /**
        * 0123456789
-       * ---[  ]-- offset: 3, length 4
-       * [ ] 0-2
+       * ---[  ]-- start: 3, end 6
+       *    H 3-3 → ×, cut: ×
+       * [ ] 0-2 → 0-2, cut: ×
+       * [  ] 0-3 → 0-3, cut: ×
        */
-      if (interval.end < offset) {
-        intervals.push(interval);
+      if (interval.end <= start) {
+        if (interval.start < start) {
+          intervals.push(interval);
+        }
         return;
       }
       /**
        * 0123456789
-       * ---[  ]-- offset: 3, length 4
-       * [  ] 0-3 → 0-2
-       * [    ] 0-5 → 0-2
-       * [     ] 0-6 → 0-2
-       * [        ] 0-9 → 0-5
+       * ---[  ]-- start: 3, end 6
+       * [   ] 0-4 → 0-3, cut: 0-1
+       *   [   ] 2-6 → 2-3, cut: 0-3
+       * [      ] 0-7 → 0-4, cut: 0-3
+       * [        ] 0-9 → 0-6, cut: 0-3
+       *   [      ] 2-9 → 2-6, cut: 0-3
        * 012789
        */
-      if (interval.start < offset) {
+      if (interval.start < start) {
         intervals.push({
           start: interval.start,
-          end: length ? Math.max(offset, interval.end - length) : offset,
+          end: end ? start + Math.max(0, interval.end - end) : start,
         });
-        if (offset < interval.end) {
-          intervaler.addInterval(0, interval.end - offset);
+        if (start < interval.end) {
+          intervaler.addInterval(
+            0,
+            end ? Math.min(end - start, interval.end - start) : interval.end - start,
+          );
         }
         return;
       }
       /**
        * 0123456789
-       * ---[  ]-- offset: 3, length 4
-       *    H 3-3 → ×
-       *    [ ] 3-5 → ×
-       *    [  ] 3-6 → ×
-       *    [   ] 3-7 → 3-3
-       *     [    ] 4-9 → 3-5
-       *        [ ] 7-9 → 3-5
-       *         [] 8-9 → 4-5
+       * ---[  ]-- start: 3, end 6
+       *    [ ] 3-5 → ×, cut: 0-2
+       *    [  ] 3-6 → ×, cut: 0-3
+       *     [] 4-5 → ×, cut: 1-2
+       *    [   ] 3-7 → 3-4, cut: 0-3
+       *     [    ] 4-9 → 3-6, cut: 1-3
+       *       [  ] 6-9 → 3-6, cut: ×
+       *         [] 8-9 → 5-6, cut: ×
        * 012789
        */
-      if (length
-        && interval.start >= offset
-        && interval.end >= offset + length) {
+      if (end
+        && interval.end > end) {
         intervals.push({
-          start: Math.max(offset, interval.start - length),
-          end: interval.end - length,
+          start: Math.max(start, interval.start - (end - start)),
+          end: interval.end - (end - start),
         });
       }
-      if (interval.start >= offset) {
-        if (!length) {
-          intervaler.addInterval(interval.start - offset, interval.end - offset);
-        } else if (interval.start < offset + length) {
-          intervaler.addInterval(interval.start - offset, Math.min(length, interval.end - offset));
-        }
+      if (!end) {
+        intervaler.addInterval(
+          interval.start - start,
+          interval.end - start,
+        );
+      } else if (interval.start < end && interval.end > start) {
+        intervaler.addInterval(
+          interval.start - start,
+          Math.min(end - start, interval.end - start),
+        );
       }
     });
-    console.log([...this.intervals]);
-    console.log([...intervals]);
-    console.log([...intervaler.getIntervals()]);
-    this.intervals = intervals;
+    this.intervals = this.checkIntersection(intervals);
     return intervaler;
+  }
+
+  protected checkIntersection(intervals: Interval[]): Interval[] {
+    const result: Interval[] = [];
+    let lastInterval: Interval | undefined;
+    intervals.forEach((interval) => {
+      lastInterval = result.length ? result[result.length - 1] : undefined;
+      if (lastInterval && lastInterval.end >= interval.start) {
+        result[result.length - 1] = {
+          start: lastInterval.start,
+          end: interval.end,
+        };
+      } else {
+        result.push(interval);
+      }
+    });
+    return result;
   }
 
   merge(intervaler: Intervaler, offset: number): void {

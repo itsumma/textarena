@@ -34,6 +34,7 @@ export default class RichTextManager {
   }
 
   cutText(start: number, end?: number): RichTextManager {
+    console.log('cutText', start, end);
     let text;
     if (end === undefined) {
       text = this.text.slice(start);
@@ -88,7 +89,7 @@ export default class RichTextManager {
       this.formatings[name].addInterval(start, end);
     } else {
       if (this.formatings[name].hasInterval(start, end)) {
-        this.formatings[name].cut(start, end);
+        const result = this.formatings[name].cut(start, end);
       } else {
         this.formatings[name].addInterval(start, end);
       }
@@ -100,11 +101,13 @@ export default class RichTextManager {
       .forEach((intervaler) => intervaler.shift(offset, step, keepFormatings));
   }
 
-  cutFormatings(offset: number, length?: number): Formatings {
+  cutFormatings(start: number, end?: number): Formatings {
     const formatings: Formatings = {};
     Object.entries(this.formatings).forEach(([name, intervaler]) => {
-      console.log('cut intrvls', name, offset, length);
-      formatings[name] = intervaler.cut(offset, length);
+      console.log('cut intrvls', name, start, end);
+      formatings[name] = intervaler.cut(start, end);
+      console.log('\tcut', formatings[name].getIntervals());
+      console.log('\trest', this.formatings[name].getIntervals());
     });
     return formatings;
   }
@@ -159,16 +162,16 @@ export default class RichTextManager {
     }
     const frms = model.getFormatings();
     // TODO escape text
-    text = text
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#039;')
-      .replace(/^\s/, '&nbsp;')
-      .replace(/\s$/, '&nbsp;')
-      .replace(/\s\s/g, ' &nbsp;');
-    return text;
+    // text = text
+    //   .replace(/&/g, '&amp;')
+    //   .replace(/</g, '&lt;')
+    //   .replace(/>/g, '&gt;')
+    //   .replace(/"/g, '&quot;')
+    //   .replace(/'/g, '&#039;')
+    //   .replace(/^\s/, '&nbsp;')
+    //   .replace(/\s$/, '&nbsp;')
+    //   .replace(/\s\s/g, ' &nbsp;');
+    // return text;
     // FIXME nesting formatings
     this.getInsertions(frms).forEach((insertion) => {
       text = text.slice(0, insertion.offset) + insertion.tag + text.slice(insertion.offset);
@@ -182,6 +185,6 @@ export default class RichTextManager {
     } else {
       this.text = this.text.slice(0, start) + this.text.slice(end);
     }
-    this.cutFormatings(start, end ? end - start : undefined);
+    this.cutFormatings(start, end);
   }
 }

@@ -1,6 +1,6 @@
 {
   "name": "textarena",
-  "license": "AGPL",
+  "license": "AGPL-3.0-only",
   "dependencies": {
     "lit-element": "^2.4.0",
     "lit-html": "^1.3.0",
@@ -47,6 +47,6 @@
     "build:types": "tsc --emitDeclarationOnly",
     "build:js": "babel src --out-dir lib --extensions \".ts,.tsx\" --source-maps inline",
     "build:bundle": "yarn webpack",
-    "test": "yarn lint"
+    "test": "yarn jest"
   }
 }

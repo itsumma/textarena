@@ -19,11 +19,11 @@ test('{11, 11}', () => {
   expect(i.getIntervals()).toEqual([{ start: 11, end: 11 }]);
 });
 
-test('{0, 3} + {5, 9}', () => {
+test('{5, 9} + {1, 6}', () => {
   const i = new Intervaler();
-  i.addInterval(0, 3);
   i.addInterval(5, 9);
-  expect(i.getIntervals()).toEqual([{ start: 0, end: 3 }, { start: 5, end: 9 }]);
+  i.addInterval(1, 6);
+  expect(i.getIntervals()).toEqual([{ start: 1, end: 9 }]);
 });
 
 test('{5, 8} + {3, 5} + {3, 9} + {7, 8} + {7, 9}', () => {
@@ -44,59 +44,151 @@ test('{6, 9} + {8, 11} + {10, 12}', () => {
   expect(i.getIntervals()).toEqual([{ start: 6, end: 12 }]);
 });
 
-test('simple cut', () => {
-  const i = new Intervaler();
-  i.addInterval(1, 9);
-  i.cut(3, 6);
-  expect(i.getIntervals()).toEqual([{ start: 1, end: 3 }, { start: 6, end: 9 }]);
-});
-
 test('cut from empty interval', () => {
-    const i = new Intervaler();
-    i.cut(11, 11);
-    expect(i.getIntervals()).toEqual([]);
-});
-
-test('{1, 3} - {5, 6}', () => {
   const i = new Intervaler();
-  i.addInterval(1, 3);
-  i.cut(5, 6);
-  expect(i.getIntervals()).toEqual([{ start: 1, end: 3 }]);
-});
-
-test('{2, 5} - {1, 4}', () => {
-  const i = new Intervaler();
-  i.addInterval(2, 5);
-  i.cut(1, 4);
-  expect(i.getIntervals()).toEqual([{ start: 4, end: 5 }]);
-});
-
-test('{2, 5} - {4, 7}', () => {
-  const i = new Intervaler();
-  i.addInterval(2, 5);
-  i.cut(4, 7);
-  expect(i.getIntervals()).toEqual([{ start: 2, end: 4 }]);
-});
-
-test('{2, 5} - {4, 7} - {1, 3}', () => {
-  const i = new Intervaler();
-  i.addInterval(2, 5);
-  i.cut(4, 7);
-  i.cut(1, 3);
-  expect(i.getIntervals()).toEqual([{ start: 3, end: 4 }]);
-});
-test('{2, 5} - {2, 5}', () => {
-  const i = new Intervaler();
-  i.addInterval(2, 5);
-  i.cut(2, 5);
+  const result = i.cut(11, 11);
+  expect(result.getIntervals()).toEqual([]);
   expect(i.getIntervals()).toEqual([]);
 });
-test('{2, 5} - {2, 4}', () => {
+
+test('[0-2] - [1-1]', () => {
   const i = new Intervaler();
-  i.addInterval(2, 5);
-  i.cut(2, 4);
-  expect(i.getIntervals()).toEqual([{ start: 4, end: 5 }]);
+  i.addInterval(0, 2);
+  const result = i.cut(1, 1);
+  expect(result.getIntervals()).toEqual([]);
+  expect(i.getIntervals()).toEqual([{ start: 0, end: 2 }]);
 });
+
+test('[0-2] - [3-6]', () => {
+  const i = new Intervaler();
+  i.addInterval(0, 2);
+  const result = i.cut(3, 6);
+  expect(result.getIntervals()).toEqual([]);
+  expect(i.getIntervals()).toEqual([{ start: 0, end: 2 }]);
+});
+
+test('[0-3] - [3-6]', () => {
+  const i = new Intervaler();
+  i.addInterval(0, 3);
+  const result = i.cut(3, 6);
+  expect(result.getIntervals()).toEqual([]);
+  expect(i.getIntervals()).toEqual([{ start: 0, end: 3 }]);
+});
+
+test('[0-4] - [3-6]', () => {
+  const i = new Intervaler();
+  i.addInterval(0, 4);
+  const result = i.cut(3, 6);
+  expect(result.getIntervals()).toEqual([{ start: 0, end: 1 }]);
+  expect(i.getIntervals()).toEqual([{ start: 0, end: 3 }]);
+});
+
+test('[2-6] - [3-6]', () => {
+  const i = new Intervaler();
+  i.addInterval(2, 6);
+  const result = i.cut(3, 6);
+  expect(result.getIntervals()).toEqual([{ start: 0, end: 3 }]);
+  expect(i.getIntervals()).toEqual([{ start: 2, end: 3 }]);
+});
+
+test('[0-7] - [3-6]', () => {
+  const i = new Intervaler();
+  i.addInterval(0, 7);
+  const result = i.cut(3, 6);
+  expect(result.getIntervals()).toEqual([{ start: 0, end: 3 }]);
+  expect(i.getIntervals()).toEqual([{ start: 0, end: 4 }]);
+});
+
+test('[2-9] - [3-6]', () => {
+  const i = new Intervaler();
+  i.addInterval(2, 9);
+  const result = i.cut(3, 6);
+  expect(result.getIntervals()).toEqual([{ start: 0, end: 3 }]);
+  expect(i.getIntervals()).toEqual([{ start: 2, end: 6 }]);
+});
+
+test('[3-3] - [3-6]', () => {
+  const i = new Intervaler();
+  i.addInterval(3, 3);
+  const result = i.cut(3, 6);
+  expect(result.getIntervals()).toEqual([]);
+  expect(i.getIntervals()).toEqual([]);
+});
+
+test('[3-5] - [3-6]', () => {
+  const i = new Intervaler();
+  i.addInterval(3, 5);
+  const result = i.cut(3, 6);
+  expect(result.getIntervals()).toEqual([{ start: 0, end: 2 }]);
+  expect(i.getIntervals()).toEqual([]);
+});
+
+test('[3-6] - [3-6]', () => {
+  const i = new Intervaler();
+  i.addInterval(3, 6);
+  const result = i.cut(3, 6);
+  expect(result.getIntervals()).toEqual([{ start: 0, end: 3 }]);
+  expect(i.getIntervals()).toEqual([]);
+});
+
+test('[4-5] - [3-6]', () => {
+  const i = new Intervaler();
+  i.addInterval(4, 5);
+  const result = i.cut(3, 6);
+  expect(result.getIntervals()).toEqual([{ start: 1, end: 2 }]);
+  expect(i.getIntervals()).toEqual([]);
+});
+
+test('[3-7] - [3-6]', () => {
+  const i = new Intervaler();
+  i.addInterval(3, 7);
+  const result = i.cut(3, 6);
+  expect(result.getIntervals()).toEqual([{ start: 0, end: 3 }]);
+  expect(i.getIntervals()).toEqual([{ start: 3, end: 4 }]);
+});
+
+test('[4-9] - [3-6]', () => {
+  const i = new Intervaler();
+  i.addInterval(4, 9);
+  const result = i.cut(3, 6);
+  expect(result.getIntervals()).toEqual([{ start: 1, end: 3 }]);
+  expect(i.getIntervals()).toEqual([{ start: 3, end: 6 }]);
+});
+
+test('[6-9] - [3-6]', () => {
+  const i = new Intervaler();
+  i.addInterval(6, 9);
+  const result = i.cut(3, 6);
+  expect(result.getIntervals()).toEqual([]);
+  expect(i.getIntervals()).toEqual([{ start: 3, end: 6 }]);
+});
+
+test('[8-9] - [3-6]', () => {
+  const i = new Intervaler();
+  i.addInterval(8, 9);
+  const result = i.cut(3, 6);
+  expect(result.getIntervals()).toEqual([]);
+  expect(i.getIntervals()).toEqual([{ start: 5, end: 6 }]);
+});
+
+test('[1-3][6,9] - [3-6]', () => {
+  const i = new Intervaler();
+  i.addInterval(1, 3);
+  i.addInterval(6, 9);
+  const result = i.cut(3, 6);
+  expect(result.getIntervals()).toEqual([]);
+  expect(i.getIntervals()).toEqual([{ start: 1, end: 6 }]);
+});
+
+test('[1-4][5,9] - [3-6]', () => {
+  const i = new Intervaler();
+  i.addInterval(1, 4);
+  i.addInterval(5, 9);
+  const result = i.cut(3, 6);
+  expect(result.getIntervals()).toEqual([{ start: 0, end: 1 }, { start: 2, end: 3 }]);
+  expect(i.getIntervals()).toEqual([{ start: 1, end: 6 }]);
+});
+
 test('simple shift', () => {
   const i = new Intervaler();
   i.addInterval(2, 5);
