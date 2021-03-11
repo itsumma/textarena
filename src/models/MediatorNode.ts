@@ -42,6 +42,10 @@ export default class MediatorNode implements ArenaNodeScion, ArenaNodeAncestor {
     return `${this.parent.getGlobalIndex()}.${this.getIndex().toString()}`;
   }
 
+  public getParent(): ArenaCursorAncestor {
+    return { node: this.parent, offset: this.getIndex() };
+  }
+
   public getUnprotectedParent(): ArenaCursorAncestor {
     if (this.parent.arena.protected) {
       return this.parent.getUnprotectedParent();

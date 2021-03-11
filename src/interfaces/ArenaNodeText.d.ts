@@ -20,4 +20,10 @@ export default interface ArenaNodeText extends ArenaNodeScion {
   insertFormating(name: string, start: number, end: number): void;
 
   toggleFormating(name: string, start: number, end: number): void;
+
+  ltrim(): void;
+
+  rtrim(): void;
+
+  clearSpaces(): void;
 }

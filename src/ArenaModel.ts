@@ -12,6 +12,7 @@ import Arena from 'interfaces/Arena';
 import ArenaFactory from 'arenas/ArenaFactory';
 import ArenaCursor from 'interfaces/ArenaCursor';
 import ArenaRoot from 'interfaces/ArenaRoot';
+import ArenaCursorAncestor from 'interfaces/ArenaCursorAncestor';
 
 type TagAndAttributes = {
   tag: string,
@@ -184,81 +185,56 @@ export default class ArenaModel {
 
   protected runNodesOfSelection(
     selection: ArenaSelection,
-    callback: (node, start, end) => void,
+    callback: (node: ArenaNode, start?: number, end?: number) => void,
   ): void {
+    const {
+      startNode,
+      startOffset,
+      endNode,
+      endOffset,
+    } = selection;
     if (selection.isSameNode()) {
-      callback(selection.startNode, selection.startOffset, selection.endOffset);
+      callback(startNode, startOffset, endOffset);
       return;
     }
-    const commonAncestor = this.getCommonAncestor(selection.startNode, selection.endNode);
+    const commonAncestor = this.getCommonAncestor(startNode, endNode);
     if (!commonAncestor) {
       return;
     }
 
-    if (commonAncestor === selection.startNode.parent
-      && commonAncestor === selection.endNode.parent
-      && 'hasChildren' in commonAncestor) {
-      const startIndex = selection.startNode.getIndex();
-      const endIndex = selection.endNode.getIndex();
-      selection.startNode.removeText(selection.startOffset);
-      selection.endNode.removeText(0, selection.endOffset);
-      selection.startNode.insertText(
-        selection.endNode.getText(),
-        selection.startOffset,
-      );
-      const removeLength = endIndex - startIndex;
-      if (removeLength) {
-        commonAncestor.removeChildren(startIndex + 1, removeLength);
+    let startCursor: ArenaCursorAncestor = startNode.getParent();
+    while (startCursor.node !== commonAncestor) {
+      const len = startCursor.node.children.length;
+      for (let i = startCursor.offset + 1; i < len; i += 1) {
+        const child = startCursor.node.getChild(i);
+        if (child) {
+          callback(child);
+        }
       }
-      const newSelection = selection;
-      newSelection.collapseBackward();
-      this.textarena.eventManager.fire('modelChanged');
-      return newSelection;
+      startCursor = startCursor.node.getParent();
     }
-    selection.startNode.removeText(selection.startOffset);
-    let startIndex = selection.startNode.getIndex();
-    let startCursor:
-      ArenaNode
-      | (ArenaNodeAncestor & ArenaNodeScion)
-      | undefined = selection.startNode;
-    while (startCursor && startCursor !== commonAncestor) {
-      startCursor.removeChildren(startIndex + 1);
-      if ('hasParent' in startCursor) {
-        startIndex = startCursor.getIndex();
-        startCursor = startCursor.parent;
-      } else {
-        startCursor = undefined;
+
+    let endCursor: ArenaCursorAncestor = endNode.getParent();
+    while (endCursor.node !== commonAncestor) {
+      const len = endCursor.node.children.length;
+      for (let i = endCursor.offset + 1; i < len; i += 1) {
+        const child = endCursor.node.getChild(i);
+        if (child) {
+          callback(child);
+        }
+      }
+      endCursor = endCursor.node.getParent();
+    }
+
+    for (let i = startCursor.offset + 1; i < endCursor.offset; i += 1) {
+      const child = commonAncestor.getChild(i);
+      if (child) {
+        callback(child);
       }
     }
 
-    selection.endNode.removeText(0, selection.endOffset);
-    let endIndex = selection.endNode.getIndex();
-    let endCursor:
-      ArenaNodeAncestor
-      | (ArenaNodeAncestor & ArenaNodeScion)
-      | undefined = selection.endNode.parent;
-    while (endCursor && endCursor !== commonAncestor) {
-      endCursor.removeChildren(0, endIndex);
-      if ('hasParent' in endCursor) {
-        endIndex = endCursor.getIndex();
-        endCursor = endCursor.parent;
-      } else {
-        endCursor = undefined;
-      }
-    }
-    if (commonAncestor === startCursor
-      && commonAncestor === endCursor
-      && 'hasChildren' in commonAncestor) {
-      const removeLength = endIndex - startIndex - 1;
-      if (removeLength) {
-        commonAncestor.removeChildren(startIndex + 1, removeLength);
-      }
-    }
-
-    const newSelection = selection;
-    newSelection.collapse();
-    this.textarena.eventManager.fire('modelChanged');
-    return;
+    callback(startNode, startOffset);
+    callback(endNode, 0, endOffset);
   }
 
   public insertHtml(selection: ArenaSelection, html: string): ArenaSelection {

@@ -25,5 +25,7 @@ export default interface ArenaNodeCore {
 
   getTextCursor(index: number): ArenaCursor;
 
+  getParent(): ArenaCursorAncestor;
+
   getUnprotectedParent(): ArenaCursorAncestor;
 }

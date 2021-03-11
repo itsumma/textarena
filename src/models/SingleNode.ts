@@ -21,6 +21,10 @@ export default class SingleNode implements ArenaNodeScion {
     return this.parent.children.indexOf(this);
   }
 
+  public getParent(): ArenaCursorAncestor {
+    return { node: this.parent, offset: this.getIndex() };
+  }
+
   public getUnprotectedParent(): ArenaCursorAncestor {
     if (this.parent.arena.protected) {
       return this.parent.getUnprotectedParent();

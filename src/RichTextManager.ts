@@ -46,6 +46,35 @@ export default class RichTextManager {
     return new RichTextManager(text, formatings);
   }
 
+  public ltrim(): void {
+    const match = this.text.match(/^( +)/g);
+    if (!match) {
+      return;
+    }
+    const len = match[0].length;
+    this.cutText(0, len);
+  }
+
+  public rtrim(): void {
+    const match = this.text.match(/( +)$/g);
+    if (!match) {
+      return;
+    }
+    const len = match[0].length;
+    const start = this.text.length - len;
+    this.cutText(start, start + len);
+  }
+
+  public clearSpaces(): void {
+    let match;
+    // eslint-disable-next-line no-cond-assign
+    while (match = / {2,}/.exec(this.text)) {
+      const start = match.index;
+      const end = start + match[0].length - 1;
+      this.cutText(start, end);
+    }
+  }
+
   insertFormating(name: string, start: number, end: number): void {
     if (!this.formatings[name]) {
       this.formatings[name] = new Intervaler();
@@ -130,15 +159,16 @@ export default class RichTextManager {
     }
     const frms = model.getFormatings();
     // TODO escape text
-    // text = text
-    //   .replace(/&/g, '&amp;')
-    //   .replace(/</g, '&lt;')
-    //   .replace(/>/g, '&gt;')
-    //   .replace(/"/g, '&quot;')
-    //   .replace(/'/g, '&#039;')
-    //   .replace(/^\s/, '&nbsp;')
-    //   .replace(/\s&/, '&nbsp;')
-    //   .replace(/\s\s/g, ' &nbsp;');
+    text = text
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;')
+      .replace(/^\s/, '&nbsp;')
+      .replace(/\s$/, '&nbsp;')
+      .replace(/\s\s/g, ' &nbsp;');
+    return text;
     // FIXME nesting formatings
     this.getInsertions(frms).forEach((insertion) => {
       text = text.slice(0, insertion.offset) + insertion.tag + text.slice(insertion.offset);

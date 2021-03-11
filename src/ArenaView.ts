@@ -57,6 +57,9 @@ export default class ArenaView implements ArenaServiceInterface {
       const elementNode = node as HTMLElement;
       const id = elementNode.getAttribute('observe-id');
       if (id) {
+        if (!node.textContent || /^[\s\n]*$/g.test(node.textContent)) {
+          return [id, 0];
+        }
         return [id, offset];
       }
     }
@@ -159,6 +162,6 @@ export default class ArenaView implements ArenaServiceInterface {
         }
       }
     }
-    return reachedOffset;
+    return [element, reachedOffset];
   }
 }

@@ -27,6 +27,10 @@ export default class RootNode implements ArenaNodeAncestor {
     return '0';
   }
 
+  public getParent(): ArenaCursorAncestor {
+    return { node: this, offset: 0 };
+  }
+
   public getUnprotectedParent(): ArenaCursorAncestor {
     return { node: this, offset: 0 };
   }

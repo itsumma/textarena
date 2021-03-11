@@ -31,6 +31,10 @@ export default class RichNode implements ArenaNodeText {
     return `${this.parent.getGlobalIndex()}.${this.getIndex().toString()}`;
   }
 
+  public getParent(): ArenaCursorAncestor {
+    return { node: this.parent, offset: this.getIndex() };
+  }
+
   public getUnprotectedParent(): ArenaCursorAncestor {
     if (this.parent.arena.protected) {
       return this.parent.getUnprotectedParent();
@@ -68,12 +72,25 @@ export default class RichNode implements ArenaNodeText {
     this.richTextManager.insertFormating(name, start, end);
   }
 
+  public ltrim(): void {
+    this.richTextManager.ltrim();
+  }
+
+  public rtrim(): void {
+    this.richTextManager.rtrim();
+  }
+
+  public clearSpaces(): void {
+    this.richTextManager.clearSpaces();
+  }
+
   public toggleFormating(name: string, start: number, end: number): void {
     this.richTextManager.toggleFormating(name, start, end);
   }
 
   protected getTemplate(model: ArenaModel): TemplateResult | string {
     const content = this.richTextManager.getHtml(model);
+    console.log('RTM Content', content);
     return html`
       ${unsafeHTML(content)}
     `;

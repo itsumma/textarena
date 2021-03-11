@@ -5,6 +5,7 @@ import RichTextManager from 'RichTextManager';
 import Textarena from 'Textarena';
 import { ArenaFormating } from 'ArenaModel';
 import Arena from 'interfaces/Arena';
+import ArenaNodeText from 'interfaces/ArenaNodeText';
 
 export default class ArenaParser {
   private filterXSS: FilterXSS | undefined;
@@ -42,7 +43,7 @@ export default class ArenaParser {
     let currentOffset = offset;
     let firstTextNode = true;
     node.childNodes.forEach((childNode, i) => {
-      const result = this.insertChildNode(
+      const result = this.insertChild(
         childNode,
         currentNode,
         currentOffset,
@@ -63,7 +64,7 @@ export default class ArenaParser {
     return [currentNode, currentOffset];
   }
 
-  private insertChildNode(
+  private insertChild(
     node: ChildNode,
     arenaNode: ArenaNode,
     offset: number,
@@ -71,22 +72,17 @@ export default class ArenaParser {
     first: boolean,
     last: boolean,
   ): [ArenaNode, number, boolean] {
-    console.log('isert', node, arenaNode);
+    // console.log('isert', node, arenaNode);
     if (node.nodeType === Node.TEXT_NODE) {
-      let text = node.textContent || '';
-      const dontInsertEmptyString = first || last || !('hasText' in arenaNode);
-      console.log('test', dontInsertEmptyString, text, /^[\s\n]*$/.test(text));
-      // TODO except char 160
-      if (dontInsertEmptyString && /^[\s\n]*$/.test(text)) {
+      const text = this.clearText(
+        node.textContent,
+        first,
+        last,
+        !('hasText' in arenaNode),
+      );
+      if (text.length === 0) {
         return [arenaNode, offset, false];
       }
-      if (first) {
-        text = text.replace(/^[\s\n]+/, '');
-      }
-      if (last) {
-        text = text.replace(/[\s\n]+$/, '');
-      }
-      this.textarena.logger.log('insert text', text);
       const result = arenaNode.insertText(text, offset);
       return [result.node, result.offset, true];
     }
@@ -102,6 +98,7 @@ export default class ArenaParser {
         const newArenaNode = arenaNode.createAndInsertNode(arena, offset);
         if (newArenaNode) {
           this.insertChildren(elementNode, newArenaNode, 0);
+          this.clearTextNode(newArenaNode as ArenaNodeText);
           return [newArenaNode.parent, newArenaNode.getIndex() + 1, true];
         }
         this.textarena.logger.log('this is arena');
@@ -173,7 +170,8 @@ export default class ArenaParser {
     let offset = 0;
     node.childNodes.forEach((childNode) => {
       if (childNode.nodeType === Node.TEXT_NODE) {
-        offset = formatings.insertText(childNode.textContent || '', offset);
+        const text = this.clearText(childNode.textContent);
+        offset = formatings.insertText(text, offset);
       } else if (childNode.nodeType === Node.ELEMENT_NODE) {
         const elementNode = childNode as HTMLElement;
         const newFormatings = this.getText(elementNode);
@@ -188,6 +186,42 @@ export default class ArenaParser {
       // [currentNode, currentOffset] = this.parseNode(childNode, currentNode, currentOffset);
     });
     return formatings;
+  }
+
+  clearText(
+    text: string | null,
+    first = false,
+    last = false,
+    ignoreEmpty = false,
+  ): string {
+    let result = text || '';
+    // const dontInsertEmptyString = first || last || !('hasText' in arenaNode);
+    // console.log('Clear text', `«${result}»`, `fisrt: ${first}`, `last: ${first}`,
+    // console.log('Clear text', `«${result}»`,
+    //   `ignoreEmpty: ${ignoreEmpty}`);
+    //  `dontInsertEmptyString: ${dontInsertEmptyString}`);
+    // TODO except char 160
+    if (ignoreEmpty && /^[\s\n]*$/.test(result)) {
+      // console.log('\tDont insert');
+      return '';
+    }
+    result = result.replace(/\n/g, ' ');
+    result = result.replace(/\s{2,}/g, ' ');
+    // if (first) {
+    //   result = result.replace(/^[\s\n]+/, '');
+    // }
+    // if (last) {
+    //   result = result.replace(/[\s\n]+$/, '');
+    // }
+    console.log(`\tResult «${result}»`);
+    return result;
+  }
+
+  clearTextNode(newArenaNode: ArenaNodeText): void {
+    console.log('clear node', newArenaNode.getText(), newArenaNode);
+    newArenaNode.ltrim();
+    newArenaNode.rtrim();
+    newArenaNode.clearSpaces();
   }
 
   getFilterXSS(): FilterXSS {
