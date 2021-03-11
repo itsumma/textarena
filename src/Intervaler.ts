@@ -187,6 +187,9 @@ export default class Intervaler {
     this.intervals = newIntervals;
   }
 
+  removeInterval(start: number, end: number): void {
+  }
+
   hasInterval(start: number, end: number): boolean {
     for (let i = 0; i < this.intervals.length; i += 1) {
       const interval = this.intervals[i];

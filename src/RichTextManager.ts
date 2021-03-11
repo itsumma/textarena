@@ -84,12 +84,13 @@ export default class RichTextManager {
   }
 
   toggleFormating(name: string, start: number, end: number): void {
+    console.log('toggleFormating', start, end, this.formatings[name]);
     if (!this.formatings[name]) {
       this.formatings[name] = new Intervaler();
       this.formatings[name].addInterval(start, end);
     } else {
       if (this.formatings[name].hasInterval(start, end)) {
-        const result = this.formatings[name].cut(start, end);
+        this.formatings[name].removeInterval(start, end);
       } else {
         this.formatings[name].addInterval(start, end);
       }
