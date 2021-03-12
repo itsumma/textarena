@@ -261,3 +261,24 @@ test('[5,15] remove [10,20]', () => {
     { start: 5, end: 10 },
   ]);
 });
+
+test('[5,15] remove [5,15]', () => {
+  const i = new Intervaler();
+  i.addInterval(5, 15);
+  i.removeInterval(5, 15);
+  expect(i.getIntervals()).toEqual([]);
+});
+
+test('[5,15] remove [1,20]', () => {
+  const i = new Intervaler();
+  i.addInterval(5, 15);
+  i.removeInterval(1, 20);
+  expect(i.getIntervals()).toEqual([]);
+});
+
+test('[5,15] remove [10,10]', () => {
+  const i = new Intervaler();
+  i.addInterval(5, 15);
+  i.removeInterval(10, 10);
+  expect(i.getIntervals()).toEqual([{ start: 5, end: 10 }, { start: 10, end: 15 }]);
+});
