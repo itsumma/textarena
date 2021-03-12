@@ -2,10 +2,8 @@ import Textarena from 'Textarena';
 import ArenaPlugin from 'interfaces/ArenaPlugin';
 import ArenaModel from 'ArenaModel';
 import ArenaSelection from 'ArenaSelection';
-import { ArenaWithText, Middleware } from 'interfaces/Arena';
-import ArenaNode from 'interfaces/ArenaNode';
 import ArenaCursor from 'interfaces/ArenaCursor';
-import ArenaNodeText from 'interfaces/ArenaNodeText';
+import ArenaWithText from 'interfaces/ArenaWithText';
 
 const defaultOptions = {
 };

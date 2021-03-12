@@ -23,4 +23,32 @@ context('Actions', () => {
       cy.get('#html').contains('<em>');
     });
   });
+
+  it('break string', () => {
+    cy.get('@example').then((example:any) => {
+      cy.get('@root').focus().clear()
+        .type('{alt+0}')
+        .type(example.title)
+        .type('{leftarrow}')
+        .type('{leftarrow}')
+        .type('{leftarrow}')
+        .type('{enter}')
+        .type('123');
+
+      cy.window()
+        .its('ta.model.model.children.length')
+        .should('equal', 2);
+      cy.get('@root').contains(`123${example.title.slice(-3)}`);
+      // cy.window()
+      //   .its('ta.getData().content')
+      //   .should('equal', 2);
+      // cy.get('@root').contains(example.title);
+      // cy.focused().should('equal', example.title.slice(-3));
+      cy.get('@root')
+        .type('{movetostart}')
+        .type('{enter}')
+        .type('456');
+      cy.get('@root').contains(`456${example.title.slice(0, -3)}`);
+    });
+  });
 });
