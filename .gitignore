@@ -1,6 +1,7 @@
 /.vscode
 /.idea
 /.cache
+/cypress/videos
 /dist
 /.idea
 /lib
