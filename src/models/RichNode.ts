@@ -108,7 +108,7 @@ export default class RichNode implements ArenaNodeText {
     return this.richTextManager.getText();
   }
 
-  public cutText(start: number, end?: number): string | RichTextManager {
+  public cutText(start: number, end?: number): RichTextManager {
     return this.richTextManager.cutText(start, end);
   }
 

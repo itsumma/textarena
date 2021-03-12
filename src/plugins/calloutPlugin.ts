@@ -5,8 +5,8 @@ import Textarena from 'Textarena';
 import ArenaPlugin from 'interfaces/ArenaPlugin';
 import ArenaModel from 'ArenaModel';
 import ArenaSelection from 'ArenaSelection';
-import { ArenaWithText } from 'interfaces/Arena';
-import ArenaNode from 'interfaces/ArenaNode';
+import ArenaAncestor from 'interfaces/ArenaAncestor';
+import ArenaWithText from 'interfaces/ArenaWithText';
 
 // This decorator defines the element.
 @customElement('arena-callout')
@@ -116,7 +116,7 @@ const calloutPlugin: ArenaPlugin = {
         ],
         allowText: true,
         allowFormating: true,
-        nextArena: calloutBodyContainer,
+        nextArena: calloutBodyContainer as ArenaAncestor,
       },
       [
         {

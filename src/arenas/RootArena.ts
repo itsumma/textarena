@@ -1,4 +1,4 @@
-import { ArenaRoot } from 'interfaces/Arena';
+import ArenaRoot from 'interfaces/ArenaRoot';
 import AncestorArena from './AncestorArena';
 
 export default class RootArena
