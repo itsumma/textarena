@@ -114,7 +114,9 @@ export default class MediatorNode implements ArenaNodeScion, ArenaNodeAncestor {
   }
 
   public removeChild(index: number): void {
-    this.children.splice(index, 1);
+    if (!this.arena.protected) {
+      this.children.splice(index, 1);
+    }
   }
 
   public removeChildren(start: number, length?: number): void {

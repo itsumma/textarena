@@ -303,7 +303,7 @@ export default class ArenaModel {
             startNode.remove();
             newSelection.setCursor(cursor);
           } else {
-            startNode.insertText(cursor.node.getText(), startOffset);
+            startNode.insertText(cursor.node.cutText(0), startOffset);
             cursor.node.remove();
           }
         } else {

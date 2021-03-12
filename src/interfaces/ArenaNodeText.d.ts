@@ -13,7 +13,7 @@ export default interface ArenaNodeText extends ArenaNodeScion {
 
   getRawText(): string;
 
-  cutText(start: number, end?: number): string | RichTextManager;
+  cutText(start: number, end?: number): RichTextManager;
 
   getTextLength(): number;
 

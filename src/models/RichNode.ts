@@ -109,7 +109,6 @@ export default class RichNode implements ArenaNodeText {
   }
 
   public cutText(start: number, end?: number): string | RichTextManager {
-    console.log('RichNode cutText', start, end);
     return this.richTextManager.cutText(start, end);
   }
 

@@ -34,7 +34,6 @@ export default class RichTextManager {
   }
 
   cutText(start: number, end?: number): RichTextManager {
-    console.log('cutText', start, end);
     let text;
     if (end === undefined) {
       text = this.text.slice(start);
