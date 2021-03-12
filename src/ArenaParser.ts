@@ -98,7 +98,9 @@ export default class ArenaParser {
         const newArenaNode = arenaNode.createAndInsertNode(arena, offset);
         if (newArenaNode) {
           this.insertChildren(elementNode, newArenaNode, 0);
-          this.clearTextNode(newArenaNode as ArenaNodeText);
+          if ('hasText' in newArenaNode) {
+            this.clearTextNode(newArenaNode);
+          }
           return [newArenaNode.parent, newArenaNode.getIndex() + 1, true];
         }
         this.textarena.logger.log('this is arena');

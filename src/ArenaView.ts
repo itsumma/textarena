@@ -20,8 +20,15 @@ export default class ArenaView implements ArenaServiceInterface {
   public setArenaSelection(selection: ArenaSelection): ArenaView {
     const s = window.getSelection();
     if (s) {
-      const startResult = this.getElementAndOffset(selection.startNode, selection.startOffset);
-      const endResult = this.getElementAndOffset(selection.endNode, selection.endOffset);
+      const {
+        startNode,
+        startOffset,
+        endNode,
+        endOffset,
+      } = selection;
+      const startResult = this.getElementAndOffset(startNode, startOffset);
+      const endResult = selection.isSameNode()
+        ? startResult : this.getElementAndOffset(endNode, endOffset);
       if (startResult && endResult) {
         const [anchorNode, anchorOffset] = startResult;
         const [focusNode, focusOffset] = endResult;
@@ -57,7 +64,9 @@ export default class ArenaView implements ArenaServiceInterface {
       const elementNode = node as HTMLElement;
       const id = elementNode.getAttribute('observe-id');
       if (id) {
-        if (!node.textContent || /^[\s\n]*$/g.test(node.textContent)) {
+        if (!node.textContent
+          || (!/\u00A0/.test(node.textContent) && /^[\s\n]*$/g.test(node.textContent))
+        ) {
           return [id, 0];
         }
         return [id, offset];
@@ -123,6 +132,9 @@ export default class ArenaView implements ArenaServiceInterface {
     if (!element) {
       return undefined;
     }
+    if (offset === 0) {
+      return [element, 0];
+    }
     const result = this.reachOffset(element, offset);
     if (typeof result === 'number') {
       return undefined;
@@ -162,6 +174,6 @@ export default class ArenaView implements ArenaServiceInterface {
         }
       }
     }
-    return [element, reachedOffset];
+    return reachedOffset;
   }
 }
