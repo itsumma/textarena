@@ -12,28 +12,66 @@ type Insertion = {
 };
 
 export default class RichTextManager {
-  protected formatings: Formatings;
-
-  protected text: string;
-
   constructor(text?: string, formatings?: Formatings) {
     this.text = text || '';
     this.formatings = formatings || {};
   }
 
-  getText(): string {
+  public getText(): string {
     return this.text;
   }
 
-  getFormatings(): Formatings {
-    return this.formatings;
-  }
-
-  getTextLength(): number {
+  public getTextLength(): number {
     return this.text.length;
   }
 
-  cutText(start: number, end?: number): RichTextManager {
+  public getFormatings(): Formatings {
+    return this.formatings;
+  }
+
+  public getHtml(model: ArenaModel): string {
+    let { text } = this;
+    if (text === '') {
+      return '<br/>';
+    }
+    const frms = model.getFormatings();
+    // TODO escape text
+    // text = text
+    //   .replace(/&/g, '&amp;')
+    //   .replace(/</g, '&lt;')
+    //   .replace(/>/g, '&gt;')
+    //   .replace(/"/g, '&quot;')
+    //   .replace(/'/g, '&#039;')
+    //   .replace(/^\s/, '&nbsp;')
+    //   .replace(/\s$/, '&nbsp;')
+    //   .replace(/\s\s/g, ' &nbsp;');
+    // return text;
+    // FIXME nesting formatings
+    this.getInsertions(frms).forEach((insertion) => {
+      text = text.slice(0, insertion.offset) + insertion.tag + text.slice(insertion.offset);
+    });
+    return text;
+  }
+
+  public insertText(
+    rtm: string | RichTextManager,
+    offset = 0,
+    keepFormatings = false,
+  ): number {
+    const text = typeof rtm === 'string' ? rtm : rtm.getText();
+    this.text = this.text.slice(0, offset) + text + this.text.slice(offset);
+    this.shiftFormatings(offset, text.length, keepFormatings);
+    if (rtm instanceof RichTextManager) {
+      this.merge(rtm, offset);
+    }
+    return offset + text.length;
+  }
+
+  public removeText(start: number, end?: number): void {
+    this.cutText(start, end);
+  }
+
+  public cutText(start: number, end?: number): RichTextManager {
     let text;
     if (end === undefined) {
       text = this.text.slice(start);
@@ -44,6 +82,27 @@ export default class RichTextManager {
     }
     const formatings = this.cutFormatings(start, end);
     return new RichTextManager(text, formatings);
+  }
+
+  public insertFormating(name: string, start: number, end: number): void {
+    if (!this.formatings[name]) {
+      this.formatings[name] = new Intervaler();
+    }
+    this.formatings[name].addInterval(start, end);
+  }
+
+  public toggleFormating(name: string, start: number, end: number): void {
+    console.log('toggleFormating', start, end, this.formatings[name]);
+    if (!this.formatings[name]) {
+      this.formatings[name] = new Intervaler();
+      this.formatings[name].addInterval(start, end);
+    } else {
+      if (this.formatings[name].hasInterval(start, end)) {
+        this.formatings[name].removeInterval(start, end);
+      } else {
+        this.formatings[name].addInterval(start, end);
+      }
+    }
   }
 
   public ltrim(): void {
@@ -75,33 +134,11 @@ export default class RichTextManager {
     }
   }
 
-  insertFormating(name: string, start: number, end: number): void {
-    if (!this.formatings[name]) {
-      this.formatings[name] = new Intervaler();
-    }
-    this.formatings[name].addInterval(start, end);
-  }
+  protected formatings: Formatings;
 
-  toggleFormating(name: string, start: number, end: number): void {
-    console.log('toggleFormating', start, end, this.formatings[name]);
-    if (!this.formatings[name]) {
-      this.formatings[name] = new Intervaler();
-      this.formatings[name].addInterval(start, end);
-    } else {
-      if (this.formatings[name].hasInterval(start, end)) {
-        this.formatings[name].removeInterval(start, end);
-      } else {
-        this.formatings[name].addInterval(start, end);
-      }
-    }
-  }
+  protected text: string;
 
-  shiftFormatings(offset: number, step: number, keepFormatings = false): void {
-    Object.values(this.formatings)
-      .forEach((intervaler) => intervaler.shift(offset, step, keepFormatings));
-  }
-
-  cutFormatings(start: number, end?: number): Formatings {
+  protected cutFormatings(start: number, end?: number): Formatings {
     const formatings: Formatings = {};
     Object.entries(this.formatings).forEach(([name, intervaler]) => {
       console.log('cut intrvls', name, start, end);
@@ -112,30 +149,7 @@ export default class RichTextManager {
     return formatings;
   }
 
-  merge(formatings: RichTextManager, offset: number): void {
-    Object.entries(formatings.formatings).forEach(([name, intervaler]) => {
-      if (!this.formatings[name]) {
-        this.formatings[name] = new Intervaler();
-      }
-      this.formatings[name].merge(intervaler, offset);
-    });
-  }
-
-  insertText(
-    rtm: string | RichTextManager,
-    offset = 0,
-    keepFormatings = false,
-  ): number {
-    const text = typeof rtm === 'string' ? rtm : rtm.getText();
-    this.text = this.text.slice(0, offset) + text + this.text.slice(offset);
-    this.shiftFormatings(offset, text.length, keepFormatings);
-    if (rtm instanceof RichTextManager) {
-      this.merge(rtm, offset);
-    }
-    return offset + text.length;
-  }
-
-  getInsertions(frms: ArenaFormatings): Insertion[] {
+  protected getInsertions(frms: ArenaFormatings): Insertion[] {
     const insertions: Insertion[] = [];
     Object.entries(this.formatings).forEach(([name, intervaler]) => {
       if (frms[name]) {
@@ -155,36 +169,17 @@ export default class RichTextManager {
     return insertions.sort((a, b) => b.offset - a.offset);
   }
 
-  getHtml(model: ArenaModel): string {
-    let { text } = this;
-    if (text === '') {
-      return '<br/>';
-    }
-    const frms = model.getFormatings();
-    // TODO escape text
-    // text = text
-    //   .replace(/&/g, '&amp;')
-    //   .replace(/</g, '&lt;')
-    //   .replace(/>/g, '&gt;')
-    //   .replace(/"/g, '&quot;')
-    //   .replace(/'/g, '&#039;')
-    //   .replace(/^\s/, '&nbsp;')
-    //   .replace(/\s$/, '&nbsp;')
-    //   .replace(/\s\s/g, ' &nbsp;');
-    // return text;
-    // FIXME nesting formatings
-    this.getInsertions(frms).forEach((insertion) => {
-      text = text.slice(0, insertion.offset) + insertion.tag + text.slice(insertion.offset);
-    });
-    return text;
+  protected shiftFormatings(offset: number, step: number, keepFormatings = false): void {
+    Object.values(this.formatings)
+      .forEach((intervaler) => intervaler.shift(offset, step, keepFormatings));
   }
 
-  removeText(start: number, end?: number): void {
-    if (end === undefined) {
-      this.text = this.text.slice(0, start);
-    } else {
-      this.text = this.text.slice(0, start) + this.text.slice(end);
-    }
-    this.cutFormatings(start, end);
+  protected merge(formatings: RichTextManager, offset: number): void {
+    Object.entries(formatings.formatings).forEach(([name, intervaler]) => {
+      if (!this.formatings[name]) {
+        this.formatings[name] = new Intervaler();
+      }
+      this.formatings[name].merge(intervaler, offset);
+    });
   }
 }
