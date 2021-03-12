@@ -38,6 +38,13 @@ export default class ArenaSelection {
     return this.setStartNode(node, offset).setEndNode(node, offset);
   }
 
+  getCursor(): ArenaCursor {
+    return {
+      node: this.direction === 'forward' ? this.endNode : this.startNode,
+      offset: this.direction === 'forward' ? this.endOffset : this.startOffset,
+    };
+  }
+
   setCursor(cursor: ArenaCursor): ArenaSelection {
     return this.setBoth(cursor.node, cursor.offset);
   }

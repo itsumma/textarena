@@ -1,12 +1,14 @@
 import { TemplateResult, html } from 'lit-html';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html';
-import Arena, { ArenaWithText } from 'interfaces/Arena';
+import Arena from 'interfaces/Arena';
 import ArenaNodeText from 'interfaces/ArenaNodeText';
 import ArenaModel from 'ArenaModel';
 import RichTextManager from 'RichTextManager';
 import ArenaNodeAncestor from 'interfaces/ArenaNodeAncestor';
 import ArenaNodeScion from 'interfaces/ArenaNodeScion';
 import ArenaCursor from 'interfaces/ArenaCursor';
+import ArenaCursorAncestor from 'interfaces/ArenaCursorAncestor';
+import ArenaWithText from 'interfaces/ArenaWithText';
 
 export default class RichNode implements ArenaNodeText {
   readonly hasParent: true = true;
@@ -29,12 +31,26 @@ export default class RichNode implements ArenaNodeText {
     return `${this.parent.getGlobalIndex()}.${this.getIndex().toString()}`;
   }
 
+  public getParent(): ArenaCursorAncestor {
+    return { node: this.parent, offset: this.getIndex() };
+  }
+
+  public getUnprotectedParent(): ArenaCursorAncestor {
+    if (this.parent.arena.protected) {
+      return this.parent.getUnprotectedParent();
+    }
+    return { node: this.parent, offset: this.getIndex() };
+  }
+
   public remove(): void {
     this.parent.removeChild(this.getIndex());
   }
 
-  public getTextNode(): ArenaNodeText | undefined {
-    return undefined;
+  getTextCursor(index: number): ArenaCursor {
+    return {
+      node: this,
+      offset: index === -1 ? this.getTextLength() : index,
+    };
   }
 
   public createAndInsertNode(arena: Arena): ArenaNodeScion | ArenaNodeText | undefined {
@@ -56,12 +72,25 @@ export default class RichNode implements ArenaNodeText {
     this.richTextManager.insertFormating(name, start, end);
   }
 
+  public ltrim(): void {
+    this.richTextManager.ltrim();
+  }
+
+  public rtrim(): void {
+    this.richTextManager.rtrim();
+  }
+
+  public clearSpaces(): void {
+    this.richTextManager.clearSpaces();
+  }
+
   public toggleFormating(name: string, start: number, end: number): void {
     this.richTextManager.toggleFormating(name, start, end);
   }
 
   protected getTemplate(model: ArenaModel): TemplateResult | string {
     const content = this.richTextManager.getHtml(model);
+    console.log('RTM Content', content);
     return html`
       ${unsafeHTML(content)}
     `;
@@ -71,7 +100,7 @@ export default class RichNode implements ArenaNodeText {
     return this.arena.getTemplate(this.getTemplate(model), this.getGlobalIndex());
   }
 
-  public getText(): string | RichTextManager {
+  public getText(): RichTextManager {
     return this.richTextManager;
   }
 

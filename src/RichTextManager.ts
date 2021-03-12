@@ -46,6 +46,35 @@ export default class RichTextManager {
     return new RichTextManager(text, formatings);
   }
 
+  public ltrim(): void {
+    const match = this.text.match(/^( +)/g);
+    if (!match) {
+      return;
+    }
+    const len = match[0].length;
+    this.cutText(0, len);
+  }
+
+  public rtrim(): void {
+    const match = this.text.match(/( +)$/g);
+    if (!match) {
+      return;
+    }
+    const len = match[0].length;
+    const start = this.text.length - len;
+    this.cutText(start, start + len);
+  }
+
+  public clearSpaces(): void {
+    let match;
+    // eslint-disable-next-line no-cond-assign
+    while (match = / {2,}/.exec(this.text)) {
+      const start = match.index;
+      const end = start + match[0].length - 1;
+      this.cutText(start, end);
+    }
+  }
+
   insertFormating(name: string, start: number, end: number): void {
     if (!this.formatings[name]) {
       this.formatings[name] = new Intervaler();
@@ -54,12 +83,13 @@ export default class RichTextManager {
   }
 
   toggleFormating(name: string, start: number, end: number): void {
+    console.log('toggleFormating', start, end, this.formatings[name]);
     if (!this.formatings[name]) {
       this.formatings[name] = new Intervaler();
       this.formatings[name].addInterval(start, end);
     } else {
       if (this.formatings[name].hasInterval(start, end)) {
-        this.formatings[name].cut(start, end);
+        this.formatings[name].removeInterval(start, end);
       } else {
         this.formatings[name].addInterval(start, end);
       }
@@ -71,11 +101,13 @@ export default class RichTextManager {
       .forEach((intervaler) => intervaler.shift(offset, step, keepFormatings));
   }
 
-  cutFormatings(offset: number, length?: number): Formatings {
+  cutFormatings(start: number, end?: number): Formatings {
     const formatings: Formatings = {};
     Object.entries(this.formatings).forEach(([name, intervaler]) => {
-      console.log('cut intrvls', name, offset, length);
-      formatings[name] = intervaler.cut(offset, length);
+      console.log('cut intrvls', name, start, end);
+      formatings[name] = intervaler.cut(start, end);
+      console.log('\tcut', formatings[name].getIntervals());
+      console.log('\trest', this.formatings[name].getIntervals());
     });
     return formatings;
   }
@@ -137,8 +169,9 @@ export default class RichTextManager {
     //   .replace(/"/g, '&quot;')
     //   .replace(/'/g, '&#039;')
     //   .replace(/^\s/, '&nbsp;')
-    //   .replace(/\s&/, '&nbsp;')
+    //   .replace(/\s$/, '&nbsp;')
     //   .replace(/\s\s/g, ' &nbsp;');
+    // return text;
     // FIXME nesting formatings
     this.getInsertions(frms).forEach((insertion) => {
       text = text.slice(0, insertion.offset) + insertion.tag + text.slice(insertion.offset);
@@ -152,6 +185,6 @@ export default class RichTextManager {
     } else {
       this.text = this.text.slice(0, start) + this.text.slice(end);
     }
-    this.cutFormatings(start, end ? end - start : undefined);
+    this.cutFormatings(start, end);
   }
 }

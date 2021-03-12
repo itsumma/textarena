@@ -5,6 +5,7 @@ import Arena from './Arena';
 import ArenaNodeText from './ArenaNodeText';
 import ArenaNodeScion from './ArenaNodeScion';
 import ArenaCursor from './ArenaCursor';
+import ArenaCursorAncestor from './ArenaCursorAncestor';
 
 export default interface ArenaNodeCore {
   readonly arena: Arena;
@@ -22,5 +23,9 @@ export default interface ArenaNodeCore {
 
   getGlobalIndex(): string;
 
-  getTextNode(): ArenaNodeText | undefined;
+  getTextCursor(index: number): ArenaCursor;
+
+  getParent(): ArenaCursorAncestor;
+
+  getUnprotectedParent(): ArenaCursorAncestor;
 }

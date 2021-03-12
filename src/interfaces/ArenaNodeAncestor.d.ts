@@ -1,11 +1,15 @@
 import ArenaNodeCore from './ArenaNodeCore';
 import ArenaNodeScion from './ArenaNodeScion';
 import ArenaNode from './ArenaNode';
+import ArenaNodeText from './ArenaNodeText';
+import ArenaAncestor from './ArenaAncestor';
 
 export default interface ArenaNodeAncestor extends ArenaNodeCore {
+  readonly arena: ArenaAncestor;
+
   readonly hasChildren: true;
 
-  readonly children: (ArenaNode & ArenaNodeScion)[];
+  readonly children: (ArenaNodeScion | ArenaNodeText)[];
 
   removeChild(index: number): void;
 

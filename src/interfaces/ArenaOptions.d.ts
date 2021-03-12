@@ -1,5 +1,7 @@
-import Arena, { ArenaAncestor, ArenaWithText } from './Arena';
+import Arena from './Arena';
 import ArenaNode from './ArenaNode';
+import ArenaWithText from './ArenaWithText';
+import ArenaAncestor from './ArenaAncestor';
 
 export type AbstractArena = {
   name: string,

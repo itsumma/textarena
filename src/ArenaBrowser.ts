@@ -314,6 +314,14 @@ export default class ArenaBrowser {
       // allow
       return;
     }
+    if (event instanceof CutEvent) {
+      const selection = this.ta.view.getArenaSelection();
+      if (selection) {
+        const newSelection = this.ta.model.removeSelection(selection, selection.direction);
+        this.ta.view.render(newSelection);
+      }
+      return;
+    }
     e.cancelBubble = true;
     e.returnValue = false;
     e.stopPropagation();
@@ -331,6 +339,7 @@ export default class ArenaBrowser {
     if (event instanceof CommandEvent) {
       const { command, modifiersSum } = event;
       const newSelection = this.ta.commandManager.execShortcut(selection, modifiersSum, command);
+      console.log(newSelection);
       this.ta.view.render(newSelection);
       return;
     }
@@ -353,12 +362,21 @@ export default class ArenaBrowser {
     }
     const types: string[] = [...clipboardData.types || []];
     if (types.includes('text/html')) {
-      const html = clipboardData.getData('text/html');
+      let html = clipboardData.getData('text/html');
       if (!html) {
         return;
       }
       const selection = this.ta.view.getArenaSelection();
       if (selection) {
+        const matchStart = /<!--StartFragment-->/.exec(html);
+        if (matchStart) {
+          html = html.slice(matchStart.index + matchStart[0].length);
+        }
+        const matchEnd = /<!--EndFragment-->/.exec(html);
+        if (matchEnd) {
+          html = html.slice(0, matchEnd.index);
+        }
+        console.log(`insert html «${html}»`);
         const newSelection = this.ta.model.insertHtml(selection, html);
         this.ta.view.render(newSelection);
       }

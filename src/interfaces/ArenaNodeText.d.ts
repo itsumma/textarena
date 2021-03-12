@@ -1,6 +1,6 @@
 import RichTextManager from 'RichTextManager';
 import ArenaNodeScion from './ArenaNodeScion';
-import { ArenaWithText } from './Arena';
+import ArenaWithText from './ArenaWithText';
 
 export default interface ArenaNodeText extends ArenaNodeScion {
   hasText: true;
@@ -9,15 +9,21 @@ export default interface ArenaNodeText extends ArenaNodeScion {
 
   removeText(start: number, end?: number): void;
 
-  getText(): string | RichTextManager;
+  getText(): RichTextManager;
 
   getRawText(): string;
 
-  cutText(start: number, end?: number): string | RichTextManager;
+  cutText(start: number, end?: number): RichTextManager;
 
   getTextLength(): number;
 
   insertFormating(name: string, start: number, end: number): void;
 
   toggleFormating(name: string, start: number, end: number): void;
+
+  ltrim(): void;
+
+  rtrim(): void;
+
+  clearSpaces(): void;
 }

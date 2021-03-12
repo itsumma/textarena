@@ -2,7 +2,7 @@ import Textarena from 'Textarena';
 import ArenaPlugin from 'interfaces/ArenaPlugin';
 import ArenaModel from 'ArenaModel';
 import ArenaSelection from 'ArenaSelection';
-import { ArenaWithText } from 'interfaces/Arena';
+import ArenaWithText from 'interfaces/ArenaWithText';
 
 const posibleTags = ['h1', 'h2', 'h3', 'h4'];
 

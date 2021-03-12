@@ -1,11 +1,13 @@
 import { TemplateResult, html } from 'lit-html';
 import { repeat } from 'lit-html/directives/repeat';
 
+import Arena from 'interfaces/Arena';
+import ArenaAncestor from 'interfaces/ArenaAncestor';
 import ArenaNodeAncestor from 'interfaces/ArenaNodeAncestor';
 import ArenaCursor from 'interfaces/ArenaCursor';
+import ArenaCursorAncestor from 'interfaces/ArenaCursorAncestor';
 import ArenaNodeScion from 'interfaces/ArenaNodeScion';
 import ArenaNodeText from 'interfaces/ArenaNodeText';
-import Arena, { ArenaAncestor } from 'interfaces/Arena';
 import ArenaModel from 'ArenaModel';
 import RichTextManager from 'RichTextManager';
 import NodeFactory from './NodeFactory';
@@ -19,7 +21,7 @@ export default class MediatorNode implements ArenaNodeScion, ArenaNodeAncestor {
 
   readonly hasChildren: true = true;
 
-  public children: ArenaNodeScion[] = [];
+  public children: (ArenaNodeScion | ArenaNodeText)[] = [];
 
   constructor(
     public arena: ArenaAncestor,
@@ -38,6 +40,17 @@ export default class MediatorNode implements ArenaNodeScion, ArenaNodeAncestor {
 
   public getGlobalIndex(): string {
     return `${this.parent.getGlobalIndex()}.${this.getIndex().toString()}`;
+  }
+
+  public getParent(): ArenaCursorAncestor {
+    return { node: this.parent, offset: this.getIndex() };
+  }
+
+  public getUnprotectedParent(): ArenaCursorAncestor {
+    if (this.parent.arena.protected) {
+      return this.parent.getUnprotectedParent();
+    }
+    return { node: this.parent, offset: this.getIndex() };
   }
 
   public getHtml(model: ArenaModel): TemplateResult | string {
@@ -59,8 +72,26 @@ export default class MediatorNode implements ArenaNodeScion, ArenaNodeAncestor {
     return this.parent.insertText(text, this.getIndex() + 1);
   }
 
-  public getTextNode(): ArenaNodeText | undefined {
-    return undefined;
+  getTextCursor(index: number): ArenaCursor {
+    if (!this.arena.arenaForText) {
+      return this.parent.getTextCursor(this.getIndex());
+    }
+    const start = index === -1 ? this.children.length - 1 : 0;
+    const end = index === -1 ? 0 : this.children.length - 1;
+    for (let i = start; i <= end; i += 1) {
+      const { arena } = this.children[i];
+      if ('allowText' in arena || ('arenaForText' in arena && arena.arenaForText)) {
+        return this.children[i].getTextCursor(index === -1 ? -1 : 0);
+      }
+    }
+    const newNode = this.createAndInsertNode(
+      this.arena.arenaForText,
+      index === -1 ? this.children.length : index,
+    );
+    if (newNode) {
+      return newNode.getTextCursor(0);
+    }
+    throw new Error('Arena for text was not created');
   }
 
   public createAndInsertNode(
@@ -83,7 +114,9 @@ export default class MediatorNode implements ArenaNodeScion, ArenaNodeAncestor {
   }
 
   public removeChild(index: number): void {
-    this.children.splice(index, 1);
+    if (!this.arena.protected) {
+      this.children.splice(index, 1);
+    }
   }
 
   public removeChildren(start: number, length?: number): void {
