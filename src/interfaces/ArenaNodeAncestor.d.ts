@@ -13,6 +13,10 @@ export default interface ArenaNodeAncestor extends ArenaNodeCore {
 
   removeChild(index: number): void;
 
+  insertChildren(nodes: (ArenaNodeScion | ArenaNodeText)[]): void;
+
+  cutChildren(start: number, length?: number): (ArenaNodeScion | ArenaNodeText)[];
+
   removeChildren(start: number, length?: number): void;
 
   getChild(index: number): (ArenaNode & ArenaNodeScion) | undefined;

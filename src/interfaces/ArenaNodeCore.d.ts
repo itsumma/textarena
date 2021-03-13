@@ -6,6 +6,7 @@ import ArenaNodeText from './ArenaNodeText';
 import ArenaNodeScion from './ArenaNodeScion';
 import ArenaCursor from './ArenaCursor';
 import ArenaCursorAncestor from './ArenaCursorAncestor';
+import ArenaNode from './ArenaNode';
 
 export default interface ArenaNodeCore {
   readonly arena: Arena;
@@ -17,7 +18,8 @@ export default interface ArenaNodeCore {
   ): ArenaCursor;
 
   // tot merge neighbors
-  createAndInsertNode(arena: Arena, offset: number): ArenaNodeScion | ArenaNodeText | undefined;
+  createAndInsertNode(arena: Arena, offset: number):
+    ArenaNode & (ArenaNodeScion | ArenaNodeText) | undefined;
 
   getHtml(model: ArenaModel): TemplateResult | string;
 

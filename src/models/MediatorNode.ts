@@ -38,12 +38,20 @@ export default class MediatorNode implements ArenaNodeScion, ArenaNodeAncestor {
     return this.parent.children.indexOf(this);
   }
 
+  public isLastChild(): boolean {
+    return this.parent.children.indexOf(this) === this.parent.children.length - 1;
+  }
+
   public getGlobalIndex(): string {
     return `${this.parent.getGlobalIndex()}.${this.getIndex().toString()}`;
   }
 
   public getParent(): ArenaCursorAncestor {
     return { node: this.parent, offset: this.getIndex() };
+  }
+
+  public setParent(parent: ArenaNodeAncestor | (ArenaNodeAncestor & ArenaNodeScion)): void {
+    this.parent = parent;
   }
 
   public getUnprotectedParent(): ArenaCursorAncestor {
@@ -119,8 +127,24 @@ export default class MediatorNode implements ArenaNodeScion, ArenaNodeAncestor {
     }
   }
 
+  insertChildren(nodes: (ArenaNodeScion | ArenaNodeText)[]): void {
+    nodes.forEach((node) => {
+      if (this.arena.allowedArenas.includes(node.arena)) {
+        node.setParent(this);
+        this.children.push(node);
+      }
+    });
+  }
+
+  cutChildren(start: number, length?: number): (ArenaNodeScion | ArenaNodeText)[] {
+    if (length === undefined) {
+      return this.children.splice(start);
+    }
+    return this.children.splice(start, length);
+  }
+
   public removeChildren(start: number, length?: number): void {
-    this.children.splice(start, length);
+    this.cutChildren(start, length);
   }
 
   public getChild(index: number): ArenaNodeScion | undefined {

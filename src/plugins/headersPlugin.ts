@@ -53,6 +53,14 @@ const headersPlugin: ArenaPlugin = {
           hint: number.toString(),
           command: `convert-to-header${number}`,
         });
+        textarena.creatorBar.registerCreator({
+          name: `header${number}`,
+          title: `Header ${number}`,
+          icon: `<b>H${number}</b>`,
+          shortcut: `Alt + Digit${number}`,
+          hint: number.toString(),
+          command: `convert-to-header${number}`,
+        });
       }
     });
   },

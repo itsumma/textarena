@@ -90,8 +90,23 @@ export default class RootNode implements ArenaNodeAncestor {
     this.children.splice(index, 1);
   }
 
+  cutChildren(start: number, length?: number): (ArenaNodeScion | ArenaNodeText)[] {
+    if (length === undefined) {
+      return this.children.splice(start);
+    }
+    return this.children.splice(start, length);
+  }
+
+  insertChildren(nodes: (ArenaNodeScion | ArenaNodeText)[]): void {
+    nodes.forEach((node) => {
+      if (this.arena.allowedArenas.includes(node.arena)) {
+        this.children.push(node);
+      }
+    });
+  }
+
   public removeChildren(start: number, length?: number): void {
-    this.children.splice(start, length);
+    this.cutChildren(start, length);
   }
 
   public getChild(index: number): ArenaNodeScion | undefined {

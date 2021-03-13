@@ -95,7 +95,7 @@ export default class CreatorBar {
       this.creators = [];
       creatorBarOptions.creators.forEach((name: string) => {
         if (!this.availableCreators[name]) {
-          throw Error(`Tool "${name}" not found`);
+          throw Error(`Creator "${name}" not found`);
         }
         const options = this.availableCreators[name];
         const elem = new ElementHelper('BUTTON', 'textarena-creator__item');

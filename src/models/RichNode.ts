@@ -27,12 +27,20 @@ export default class RichNode implements ArenaNodeText {
     return this.parent.children.indexOf(this);
   }
 
+  public isLastChild(): boolean {
+    return this.parent.children.indexOf(this) === this.parent.children.length - 1;
+  }
+
   public getGlobalIndex(): string {
     return `${this.parent.getGlobalIndex()}.${this.getIndex().toString()}`;
   }
 
   public getParent(): ArenaCursorAncestor {
     return { node: this.parent, offset: this.getIndex() };
+  }
+
+  public setParent(parent: ArenaNodeAncestor | (ArenaNodeAncestor & ArenaNodeScion)): void {
+    this.parent = parent;
   }
 
   public getUnprotectedParent(): ArenaCursorAncestor {

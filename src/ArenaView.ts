@@ -74,8 +74,13 @@ export default class ArenaView implements ArenaServiceInterface {
     }
     if (node.parentElement) {
       let newOffset = offset;
-      const siblings = node.parentElement.childNodes;
-      const myIndex = Array.from(siblings).indexOf(node as ChildNode);
+      const siblings = this.getChildNodes(node.parentElement);
+      const myIndex = siblings.indexOf(node as ChildNode);
+      if (node.nodeType === Node.TEXT_NODE
+        && myIndex === siblings.length - 1
+        && this.isEmptyNode(node)) {
+        newOffset = 0;
+      }
       let stillEmpty = true;
       for (let i = 0; i < myIndex; i += 1) {
         const sibling = siblings[i];
@@ -91,6 +96,11 @@ export default class ArenaView implements ArenaServiceInterface {
       return this.getNodeIdAndOffset(node.parentElement, newOffset);
     }
     return undefined;
+  }
+
+  private getChildNodes(node: HTMLElement): ChildNode[] {
+    return Array.from(node.childNodes)
+      .filter((child) => [Node.TEXT_NODE, Node.ELEMENT_NODE].includes(child.nodeType));
   }
 
   private isEmptyNode(node: Node): boolean {
