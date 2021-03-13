@@ -32,7 +32,7 @@
     "no-useless-constructor": "off",
     "import/prefer-default-export": 0,
     "@typescript-eslint/no-useless-constructor": ["error"],
-    // "class-methods-use-this": 0,
+    "class-methods-use-this": 0,
     // "quotes": [
     //   "error",
     //   "single",
@@ -48,5 +48,15 @@
     "import/resolver": {
       "typescript": {} // this loads <rootdir>/tsconfig.json to eslint
     }
-  }
+  },
+  "overrides": [
+    {
+      "files": [
+        "**/*.test.js"
+      ],
+      "env": {
+        "jest": true
+      }
+    }
+  ]
 }

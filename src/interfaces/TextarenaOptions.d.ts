@@ -11,7 +11,12 @@ export default interface TextarenaOptions {
   onChange?: ChangeDataListener;
   onReady?: ReadyDataListener;
   initData?: TextarenaData;
-  plugins?: ArenaPlugin[];
+  plugins?: {
+    [key: string]: ArenaPlugin,
+  };
+  pluginOptions?: {
+    [key: string]: any,
+  };
   toolbar?: ToolbarOptions;
   creatorBar?: CreatorBarOptions;
 }

@@ -2,7 +2,6 @@ import ArenaParser from 'ArenaParser';
 import CreatorBar from 'CreatorBar';
 import ElementHelper from 'ElementHelper';
 import EventManager from 'EventManager';
-import Manipulator from 'Manipulator';
 import Toolbar from 'Toolbar';
 import ChangeDataListener from 'interfaces/ChangeHandler';
 import CreatorBarOptions from 'interfaces/CreatorBarOptions';
@@ -12,13 +11,17 @@ import TextarenaOptions from 'interfaces/TextarenaOptions';
 import ToolbarOptions from 'interfaces/ToolbarOptions';
 import ArenaLogger from 'ArenaLogger';
 import ArenaPlugin from 'interfaces/ArenaPlugin';
-import Hr from 'plugins/Hr';
-import Image from 'plugins/Image';
-import Quote from 'plugins/Blockquote';
-import Callout from 'components/Callout';
-
-// FIXME как инициализировать кмопоненты.
-const callout = new Callout();
+import ArenaBrowser from 'ArenaBrowser';
+import ArenaModel from 'ArenaModel';
+import ArenaView from 'ArenaView';
+import ArenaCommandManager from 'ArenaCommandManager';
+import headersPlugin from 'plugins/headersPlugin';
+import paragraphPlugin from 'plugins/paragraphPlugin';
+import formatingsPlugin from 'plugins/formatingsPlugin';
+import commonPlugin from 'plugins/commonPlugin';
+import hrPlugin from 'plugins/hrPlugin';
+import listsPlugin from 'plugins/listsPlugin';
+import calloutPlugin from 'plugins/calloutPlugin';
 
 const defaultOptions: TextarenaOptions = {
   editable: true,
@@ -26,25 +29,44 @@ const defaultOptions: TextarenaOptions = {
   toolbar: {
     enabled: true,
     tools: [
-      'bold',
-      'italic',
+      'strong',
+      'emphasized',
       'underline',
       'strikethrough',
+      'paragraph',
       'list',
-      'orderedlist',
-      'h2',
-      'h3',
-      'h4',
-      'link',
+      // 'orderedlist',
+      'header2',
+      'header3',
+      'header4',
+      // 'link',
     ],
   },
   creatorBar: {
     enabled: true,
     creators: [
       'hr',
-      'img',
-      'blockquote',
+      'callout',
+      // 'img',
+      // 'blockquote',
     ],
+  },
+  plugins: {
+    common: commonPlugin,
+    paragraph: paragraphPlugin,
+    formatings: formatingsPlugin,
+    headers: headersPlugin,
+    hr: hrPlugin,
+    lists: listsPlugin,
+    callout: calloutPlugin,
+  },
+  pluginOptions: {
+    headers: {
+      tags: ['h2', 'h3', 'h4'],
+    },
+    formatings: {
+      tags: ['b', 'i'],
+    },
   },
 };
 
@@ -57,9 +79,17 @@ class Textarena {
 
   eventManager: EventManager;
 
+  browser: ArenaBrowser;
+
+  view: ArenaView;
+
+  commandManager: ArenaCommandManager;
+
   parser: ArenaParser;
 
-  manipulator: Manipulator;
+  model: ArenaModel;
+
+  // manipulator: Manipulator;
 
   toolbar: Toolbar;
 
@@ -70,24 +100,31 @@ class Textarena {
   meta: MetaData = {};
 
   constructor(container: HTMLElement, options?: TextarenaOptions) {
+    // DOM Elements
     this.container = new ElementHelper(container, 'textarena-container', '');
     this.editor = new ElementHelper('DIV', 'textarena-editor');
+
+    // Services
+    this.eventManager = new EventManager(this);
     this.logger = new ArenaLogger();
-    this.eventManager = new EventManager(this.logger);
-    this.parser = new ArenaParser(this.editor, this.logger);
-    this.manipulator = new Manipulator(this.editor, this.eventManager, this.parser);
-    this.toolbar = new Toolbar(this.container, this.editor, this.eventManager);
-    this.creatorBar = new CreatorBar(this.editor, this.eventManager, this.parser);
-    this.container.appendChild(this.creatorBar.getElem());
+    this.parser = new ArenaParser(this);
+    this.model = new ArenaModel(this);
+    this.browser = new ArenaBrowser(this);
+    this.view = new ArenaView(this);
+    this.commandManager = new ArenaCommandManager(this);
     this.container.appendChild(this.editor.getElem());
-    this.container.appendChild(this.toolbar.getElem());
-    this.setPlugins([new Hr(), new Image(), new Quote()]);
+    this.toolbar = new Toolbar(this);
+    this.creatorBar = new CreatorBar(this);
+    // this.manipulator = new Manipulator(this.editor, this.eventManager, this.parser);
+
+    // this.setPlugins([new Hr(), new Image(), new Quote()]);
     this.setOptions(options ? { ...defaultOptions, ...options } : defaultOptions);
     this.start();
+    window.ta = this;
   }
 
   start(): void {
-    this.eventManager.subscribe('textChanged', () => {
+    this.eventManager.subscribe('modelChanged', () => {
       if (this.options.onChange) {
         this.options.onChange(this.getData());
       }
@@ -109,7 +146,7 @@ class Textarena {
       this.setOnReady(options.onReady);
     }
     if (options.plugins) {
-      this.setPlugins(options.plugins);
+      this.setPlugins(options.plugins, options.pluginOptions);
     }
     if (options.toolbar !== undefined) {
       this.setToolbarOptions(options.toolbar);
@@ -130,14 +167,24 @@ class Textarena {
 
   getData(): TextarenaData {
     return {
-      content: this.editor.getInnerHTML(),
+      content: this.editor.getInnerHTML()
+        .replace(/<!--(?!-->)*-->/g, '')
+        .replace(/^[\s\n]+/, '')
+        .replace(/[\s\n]+$/, '')
+        .replace(/(<[\w-]+)\s+observe-id="[\d.]+"/g, '$1')
+        .replace(/(<p)/g, '\n$1'),
       meta: this.meta,
     };
   }
 
   setData(data: TextarenaData): void {
     if (typeof data.content === 'string') {
-      this.parser.insert(data.content, true);
+      this.parser.insertHtmlToRoot(data.content);
+      // this.parser.insertHtmlToModel(
+      // '<h2>titl<i>e</i></h2><p>blah <em>it <b>bold</b> </em></p><p>blah <b>bold</b></p>',
+      // this.parser.model, 0);
+      this.view.render();
+      // this.parser.insert(data.content, true);
     }
     if (data.meta) {
       this.meta = data.meta;
@@ -164,9 +211,12 @@ class Textarena {
     this.options.onReady = onReady;
   }
 
-  setPlugins(plugins: ArenaPlugin[]): void {
-    plugins.forEach((plugin) => {
-      plugin.register(this);
+  setPlugins(
+    plugins: {[key: string]: ArenaPlugin},
+    options?: {[key: string]: any},
+  ): void {
+    Object.entries(plugins).forEach(([name, plugin]) => {
+      plugin.register(this, options && options[name] ? options[name] : undefined);
     });
   }
 

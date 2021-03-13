@@ -65,18 +65,9 @@
     }
   }
 
-  &__control-key,
-  &__alt-key { @include key; }
+  &__hint { @include key; }
 
-  &_show-control-key {
-    .textarena-toolbar__control-key {
-      display: block;
-    }
-  }
-
-  &_show-alt-key {
-    .textarena-toolbar__alt-key {
-      display: block;
-    }
+  &__item_show-hint &__hint {
+    display: block;
   }
 }
