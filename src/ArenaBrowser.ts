@@ -331,6 +331,7 @@ export default class ArenaBrowser {
     }
     if (event instanceof ModifiersEvent) {
       this.ta.eventManager.fire({ name: 'keyDown', data: event.sum });
+      return;
     }
     const selection = this.ta.view.getArenaSelection();
     if (!selection) {

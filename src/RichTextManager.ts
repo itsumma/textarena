@@ -35,22 +35,20 @@ export default class RichTextManager {
       return '<br/>';
     }
     const frms = model.getFormatings();
-    // TODO escape text
-    // text = text
-    //   .replace(/&/g, '&amp;')
-    //   .replace(/</g, '&lt;')
-    //   .replace(/>/g, '&gt;')
-    //   .replace(/"/g, '&quot;')
-    //   .replace(/'/g, '&#039;')
-    //   .replace(/^\s/, '&nbsp;')
-    //   .replace(/\s$/, '&nbsp;')
-    //   .replace(/\s\s/g, ' &nbsp;');
-    // return text;
     // FIXME nesting formatings
+    let index = 0;
+    let result = '';
     this.getInsertions(frms).forEach((insertion) => {
-      text = text.slice(0, insertion.offset) + insertion.tag + text.slice(insertion.offset);
+      result += this.prepareText(
+        text.slice(index, insertion.offset),
+        index === 0,
+        insertion.offset === text.length,
+      )
+        + insertion.tag;
+      index = insertion.offset;
     });
-    return text;
+    result += this.prepareText(text.slice(index), index === 0, true);
+    return result;
   }
 
   public insertText(
@@ -92,7 +90,6 @@ export default class RichTextManager {
   }
 
   public toggleFormating(name: string, start: number, end: number): void {
-    console.log('toggleFormating', start, end, this.formatings[name]);
     if (!this.formatings[name]) {
       this.formatings[name] = new Intervaler();
       this.formatings[name].addInterval(start, end);
@@ -141,12 +138,26 @@ export default class RichTextManager {
   protected cutFormatings(start: number, end?: number): Formatings {
     const formatings: Formatings = {};
     Object.entries(this.formatings).forEach(([name, intervaler]) => {
-      console.log('cut intrvls', name, start, end);
       formatings[name] = intervaler.cut(start, end);
-      console.log('\tcut', formatings[name].getIntervals());
-      console.log('\trest', this.formatings[name].getIntervals());
     });
     return formatings;
+  }
+
+  protected prepareText(text: string, first: boolean, last: boolean): string {
+    let result = text
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;')
+      .replace(/\s\s/g, ' &nbsp;');
+    // if (first) {
+      result = result.replace(/^\s/, '&nbsp;');
+    // }
+    // if (last) {
+      result = result.replace(/\s$/, '&nbsp;');
+    // }
+    return result;
   }
 
   protected getInsertions(frms: ArenaFormatings): Insertion[] {
@@ -166,7 +177,7 @@ export default class RichTextManager {
         });
       }
     });
-    return insertions.sort((a, b) => b.offset - a.offset);
+    return insertions.sort((a, b) => a.offset - b.offset);
   }
 
   protected shiftFormatings(offset: number, step: number, keepFormatings = false): void {

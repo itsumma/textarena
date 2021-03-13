@@ -27,7 +27,7 @@ export default class ArenaView implements ArenaServiceInterface {
         endOffset,
       } = selection;
       const startResult = this.getElementAndOffset(startNode, startOffset);
-      const endResult = selection.isSameNode()
+      const endResult = selection.isCollapsed()
         ? startResult : this.getElementAndOffset(endNode, endOffset);
       if (startResult && endResult) {
         const [anchorNode, anchorOffset] = startResult;
@@ -96,7 +96,7 @@ export default class ArenaView implements ArenaServiceInterface {
   private isEmptyNode(node: Node): boolean {
     if (node.nodeType === Node.TEXT_NODE) {
       const text = node.textContent || '';
-      return /^[\s\n]*$/.test(text);
+      return !/\u00A0/.test(text) && /^[\s\n]*$/.test(text);
     }
     if (node.nodeType === Node.ELEMENT_NODE) {
       if ((node as HTMLElement).tagName === 'BR') {
