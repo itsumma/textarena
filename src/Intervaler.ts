@@ -16,7 +16,8 @@ export default class Intervaler {
         return interval;
       }
       return {
-        start: interval.start < offset ? interval.start : interval.start + step,
+        start: (keep ? interval.start <= offset : interval.start < offset)
+          ? interval.start : interval.start + step,
         end: interval.end + step,
       };
     });

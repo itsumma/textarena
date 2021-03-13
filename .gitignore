@@ -2,6 +2,7 @@
 /.idea
 /.cache
 /cypress/videos
+/cypress/screenshots
 /dist
 /.idea
 /lib

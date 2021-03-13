@@ -333,19 +333,21 @@ export default class ArenaModel {
       this.textarena.eventManager.fire('modelChanged');
       return newSelection;
     }
+    const toRemove: ArenaNodeScion[] = [];
     this.runNodesOfSelection(
       newSelection,
       (node: ArenaNode, start?: number, end?: number) => {
         console.log('remove', node, start, end);
         if (start === undefined && end === undefined) {
           if ('hasParent' in node) {
-            node.remove();
+            toRemove.push(node);
           }
         } else if ('hasText' in node) {
           node.removeText(start || 0, end);
         }
       },
     );
+    toRemove.forEach((node) => node.remove());
     if (startNode !== endNode) {
       startNode.insertText(
         endNode.getText(),
