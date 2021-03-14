@@ -31,8 +31,8 @@ export default class RootNode implements ArenaNodeAncestor {
     return { node: this, offset: 0 };
   }
 
-  public getUnprotectedParent(): ArenaCursorAncestor {
-    return { node: this, offset: 0 };
+  public getUnprotectedParent(): ArenaCursorAncestor | undefined {
+    return undefined;
   }
 
   getHtml(model: ArenaModel): TemplateResult | string {
@@ -61,7 +61,7 @@ export default class RootNode implements ArenaNodeAncestor {
     }
     const start = index === -1 ? this.children.length - 1 : 0;
     const end = index === -1 ? 0 : this.children.length - 1;
-    for (let i = start; i <= end; i += 1) {
+    for (let i = start; i <= end; i += index === -1 ? -1 : 1) {
       const { arena } = this.children[i];
       if ('allowText' in arena || ('arenaForText' in arena && arena.arenaForText)) {
         return this.children[i].getTextCursor(index === -1 ? -1 : 0);
@@ -88,13 +88,20 @@ export default class RootNode implements ArenaNodeAncestor {
 
   public removeChild(index: number): void {
     this.children.splice(index, 1);
+    this.checkChildren();
   }
 
-  cutChildren(start: number, length?: number): (ArenaNodeScion | ArenaNodeText)[] {
-    if (length === undefined) {
-      return this.children.splice(start);
+  public cutChildren(start: number, length?: number): (ArenaNodeScion | ArenaNodeText)[] {
+    let result: (ArenaNodeScion | ArenaNodeText)[] = [];
+    if (!this.arena.protected) {
+      if (length === undefined) {
+        result = this.children.splice(start);
+      } else {
+        result = this.children.splice(start, length);
+      }
+      this.checkChildren();
     }
-    return this.children.splice(start, length);
+    return result;
   }
 
   insertChildren(nodes: (ArenaNodeScion | ArenaNodeText)[]): void {
@@ -111,5 +118,17 @@ export default class RootNode implements ArenaNodeAncestor {
 
   public getChild(index: number): ArenaNodeScion | undefined {
     return this.children[index] || undefined;
+  }
+
+  protected checkChildren(): void {
+    for (let i = 1; i < this.children.length; i += 1) {
+      const child = this.children[i];
+      const prev = this.children[i - 1];
+      if (child.arena.automerge && child.arena === prev.arena) {
+        (prev as ArenaNodeAncestor).insertChildren((child as ArenaNodeAncestor).children);
+        this.children.splice(i, 1);
+        i -= 1;
+      }
+    }
   }
 }

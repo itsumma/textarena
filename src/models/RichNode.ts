@@ -43,7 +43,7 @@ export default class RichNode implements ArenaNodeText {
     this.parent = parent;
   }
 
-  public getUnprotectedParent(): ArenaCursorAncestor {
+  public getUnprotectedParent(): ArenaCursorAncestor | undefined {
     if (this.parent.arena.protected) {
       return this.parent.getUnprotectedParent();
     }

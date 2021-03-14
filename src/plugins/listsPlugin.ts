@@ -42,7 +42,7 @@ const defaultOptions: ListsOptions = {
       shortcut: 'Alt + KeyL',
       command: 'convert-to-unordered-list',
       hint: 'l',
-      pattern: /^- /,
+      pattern: /^-\s+(.*)$/,
     },
     {
       name: 'ordered-list',
@@ -53,7 +53,7 @@ const defaultOptions: ListsOptions = {
       shortcut: 'Alt + KeyO',
       command: 'convert-to-ordered-list',
       hint: 'o',
-      pattern: /^\d+\. /,
+      pattern: /^\d+\.\s+(.*)$/,
     },
   ],
 };
@@ -101,6 +101,7 @@ const listsPlugin: ArenaPlugin = {
           allowedArenas: [li],
           arenaForText: li as ArenaWithText,
           hasChildren: true,
+          automerge: true,
         },
         [
           {
@@ -136,10 +137,11 @@ const listsPlugin: ArenaPlugin = {
       });
       (paragraph as ArenaWithText).registerMiddleware((cursor: ArenaCursor) => {
         const text = cursor.node.getRawText();
-        if (pattern.test(text)) {
+        const match = text.match(pattern);
+        if (match) {
           const newNode = cursor.node.createAndInsertNode(listArena, 0);
           if (newNode) {
-            const newCursor = newNode.insertText('', 0);
+            const newCursor = newNode.insertText(match[1], 0);
             cursor.node.remove();
             return newCursor;
           }

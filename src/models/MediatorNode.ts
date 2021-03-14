@@ -54,7 +54,7 @@ export default class MediatorNode implements ArenaNodeScion, ArenaNodeAncestor {
     this.parent = parent;
   }
 
-  public getUnprotectedParent(): ArenaCursorAncestor {
+  public getUnprotectedParent(): ArenaCursorAncestor | undefined {
     if (this.parent.arena.protected) {
       return this.parent.getUnprotectedParent();
     }
@@ -84,12 +84,19 @@ export default class MediatorNode implements ArenaNodeScion, ArenaNodeAncestor {
     if (!this.arena.arenaForText) {
       return this.parent.getTextCursor(this.getIndex());
     }
-    const start = index === -1 ? this.children.length - 1 : 0;
-    const end = index === -1 ? 0 : this.children.length - 1;
-    for (let i = start; i <= end; i += 1) {
-      const { arena } = this.children[i];
-      if ('allowText' in arena || ('arenaForText' in arena && arena.arenaForText)) {
-        return this.children[i].getTextCursor(index === -1 ? -1 : 0);
+    if (index === -1) {
+      for (let i = this.children.length - 1; i >= 0; i -= 1) {
+        const { arena } = this.children[i];
+        if ('allowText' in arena || ('arenaForText' in arena && arena.arenaForText)) {
+          return this.children[i].getTextCursor(index === -1 ? -1 : 0);
+        }
+      }
+    } else {
+      for (let i = 0; i < this.children.length; i += 1) {
+        const { arena } = this.children[i];
+        if ('allowText' in arena || ('arenaForText' in arena && arena.arenaForText)) {
+          return this.children[i].getTextCursor(index === -1 ? -1 : 0);
+        }
       }
     }
     const newNode = this.createAndInsertNode(
@@ -121,12 +128,6 @@ export default class MediatorNode implements ArenaNodeScion, ArenaNodeAncestor {
     return this.parent.createAndInsertNode(arena, this.getIndex() + 1);
   }
 
-  public removeChild(index: number): void {
-    if (!this.arena.protected) {
-      this.children.splice(index, 1);
-    }
-  }
-
   insertChildren(nodes: (ArenaNodeScion | ArenaNodeText)[]): void {
     nodes.forEach((node) => {
       if (this.arena.allowedArenas.includes(node.arena)) {
@@ -136,11 +137,24 @@ export default class MediatorNode implements ArenaNodeScion, ArenaNodeAncestor {
     });
   }
 
-  cutChildren(start: number, length?: number): (ArenaNodeScion | ArenaNodeText)[] {
-    if (length === undefined) {
-      return this.children.splice(start);
+  public removeChild(index: number): void {
+    if (!this.arena.protected) {
+      this.children.splice(index, 1);
+      this.checkChildren();
     }
-    return this.children.splice(start, length);
+  }
+
+  public cutChildren(start: number, length?: number): (ArenaNodeScion | ArenaNodeText)[] {
+    let result: (ArenaNodeScion | ArenaNodeText)[] = [];
+    if (!this.arena.protected) {
+      if (length === undefined) {
+        result = this.children.splice(start);
+      } else {
+        result = this.children.splice(start, length);
+      }
+      this.checkChildren();
+    }
+    return result;
   }
 
   public removeChildren(start: number, length?: number): void {
@@ -153,5 +167,20 @@ export default class MediatorNode implements ArenaNodeScion, ArenaNodeAncestor {
 
   public remove(): void {
     this.parent.removeChild(this.getIndex());
+  }
+
+  protected checkChildren(): void {
+    if (this.children.length === 0) {
+      this.remove();
+    }
+    for (let i = 1; i < this.children.length; i += 1) {
+      const child = this.children[i];
+      const prev = this.children[i - 1];
+      if (child.arena.automerge && child.arena === prev.arena) {
+        (prev as ArenaNodeAncestor).insertChildren((child as ArenaNodeAncestor).children);
+        this.children.splice(i, 1);
+        i -= 1;
+      }
+    }
   }
 }

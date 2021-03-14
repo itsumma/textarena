@@ -219,55 +219,48 @@ export default class ArenaModel {
 
   public removeSelection(selection: ArenaSelection, direction: Direction): ArenaSelection {
     const newSelection = selection;
-    const {
-      startNode,
-      startOffset,
-      endNode,
-    } = newSelection;
     if (selection.isCollapsed()) {
+      const { node, offset } = newSelection.getCursor();
       if (direction === 'forward') {
-        if (startNode.getTextLength() === startOffset) {
-          const nextSibling = startNode.parent.getChild(startNode.getIndex() + 1);
+        if (node.getTextLength() === offset) {
+          const nextSibling = this.getNextSibling(node);
           if (!nextSibling) {
             return newSelection;
           }
           const cursor = nextSibling.getTextCursor(0);
-          if (startNode.getTextLength() === 0) {
-            startNode.remove();
+          if (node.getTextLength() === 0) {
+            node.remove();
             newSelection.setCursor(cursor);
           } else {
-            startNode.insertText(cursor.node.cutText(0), startOffset);
+            node.insertText(cursor.node.cutText(0), offset);
             cursor.node.remove();
           }
         } else {
-          startNode.removeText(startOffset, startOffset + 1);
+          node.removeText(offset, offset + 1);
         }
       }
       if (direction === 'backward') {
-        if (startOffset === 0) {
-          if (startNode.getIndex() === 0) {
-            return newSelection;
-          }
-          const grandpaCursor = startNode.parent.getUnprotectedParent();
-          if (grandpaCursor.node !== startNode.parent && startNode.isLastChild()) {
-            startNode.remove();
-            const cursor = grandpaCursor.node.insertText('', grandpaCursor.offset + 1);
-            newSelection.setCursor(cursor);
+        if (offset === 0) {
+          // At the begining of the text node
+          const newNode = this.getOutFromMediator(node);
+          if (newNode) {
+            newSelection.setBoth(newNode, 0);
           } else {
-            const prevSibling = startNode.parent.getChild(startNode.getIndex() - 1);
+            // nowhere to get out
+            const prevSibling = node.parent.getChild(node.getIndex() - 1);
             if (!prevSibling) {
               return newSelection;
             }
             const cursor = prevSibling.getTextCursor(-1);
-            if (startNode.getTextLength() !== 0) {
-              cursor.node.insertText(startNode.getText(), cursor.offset);
+            if (node.getTextLength() !== 0) {
+              cursor.node.insertText(node.getText(), cursor.offset);
             }
-            startNode.remove();
+            node.remove();
             newSelection.setCursor(cursor);
           }
         } else {
-          startNode.removeText(startOffset - 1, startOffset);
-          newSelection.setBoth(startNode, startOffset - 1);
+          node.removeText(offset - 1, offset);
+          newSelection.setBoth(node, offset - 1);
         }
       }
       this.textarena.eventManager.fire('modelChanged');
@@ -287,6 +280,11 @@ export default class ArenaModel {
       },
     );
     toRemove.forEach((node) => node.remove());
+    const {
+      startNode,
+      startOffset,
+      endNode,
+    } = newSelection;
     if (startNode !== endNode) {
       startNode.insertText(
         endNode.getText(),
@@ -308,28 +306,17 @@ export default class ArenaModel {
     const { parent, arena } = node;
     if (offset === 0) {
       // At the begining of the text node
-      const textLength = node.getTextLength();
-      const grandpaCursor = parent.getUnprotectedParent();
-      if (textLength === 0) {
+      if (node.getTextLength() === 0) {
         // Text is empty. Try to get out from this node (ex. in a list)
-        if (grandpaCursor.node !== parent && node.isLastChild()) {
-          // go out
-          node.remove();
-          const cursor = grandpaCursor.node.insertText('', grandpaCursor.offset + 1);
-          newSelection.setCursor(cursor);
-        } else if ('parent' in parent
-          && parent.parent === grandpaCursor.node) {
-          // try to separate
-          this.separateNode(parent, node.getIndex());
-          node.remove();
-          const cursor = grandpaCursor.node.insertText('', grandpaCursor.offset + 1);
-          newSelection.setCursor(cursor);
+        const newNode = this.getOutFromMediator(node);
+        if (newNode) {
+          newSelection.setBoth(newNode, 0);
         } else {
           // nowhere to get out
           const nextArena = arena.nextArena || arena;
-          const newNode = parent.createAndInsertNode(nextArena, node.getIndex() + 1);
-          if (newNode) {
-            const cursor = newNode.getTextCursor(0);
+          const nextNode = parent.createAndInsertNode(nextArena, node.getIndex() + 1);
+          if (nextNode) {
+            const cursor = nextNode.getTextCursor(0);
             newSelection.setCursor(cursor);
           }
         }
@@ -399,9 +386,12 @@ export default class ArenaModel {
   protected rootModel: RootNode;
 
   protected separateNode(
-    node: ArenaNodeAncestor & ArenaNodeScion,
+    node: ArenaNodeScion & ArenaNodeAncestor,
     offset: number,
   ): undefined | ArenaNodeAncestor {
+    if (offset === 0 || offset >= node.children.length) {
+      return undefined;
+    }
     if (node.arena.protected) {
       return undefined;
     }
@@ -464,5 +454,37 @@ export default class ArenaModel {
 
     callback(startNode, startOffset);
     callback(endNode, 0, endOffset);
+  }
+
+  protected getOutFromMediator(node: ArenaNodeText): ArenaNodeText | undefined {
+    const { parent } = node;
+    const grandpaCursor = parent.getUnprotectedParent();
+    if (grandpaCursor && grandpaCursor.node.arena.arenaForText) {
+      // Try to get out from this node (ex. in a list)
+      const index = node.getIndex();
+      if ('parent' in parent && parent.parent === grandpaCursor.node) {
+        // try to separate
+        this.separateNode(parent, index);
+      } else if (index > 0 && !node.isLastChild()) {
+        return undefined;
+      }
+      const text = node.getText();
+      const offset = grandpaCursor.offset + (index === 0 ? 0 : 1);
+      const cursor = grandpaCursor.node.insertText(text, offset);
+      node.remove();
+      return cursor.node;
+    }
+    return undefined;
+  }
+
+  protected getNextSibling(node: ArenaNode): ArenaNodeText | undefined {
+    if (!('parent' in node)) {
+      return undefined;
+    }
+    const next = node.parent.getChild(node.getIndex() + 1);
+    if (next) {
+      return next.getTextCursor(0).node;
+    }
+    return this.getNextSibling(node.parent);
   }
 }

@@ -29,5 +29,5 @@ export default interface ArenaNodeCore {
 
   getParent(): ArenaCursorAncestor;
 
-  getUnprotectedParent(): ArenaCursorAncestor;
+  getUnprotectedParent(): ArenaCursorAncestor | undefined;
 }
