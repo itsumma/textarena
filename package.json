@@ -44,7 +44,7 @@
     "lint:eslint": "eslint ./src",
     "lint:types": "tsc --noEmit",
     "lint:css": "stylelint \"scss/**/*.{css,scss}\" --cache --cache-location .cache/.stylelintcache",
-    "build": "rimraf lib && yarn build:types && yarn build:js && yarn build:bundle",
+    "build": "rimraf lib && yarn build:js && yarn build:bundle",
     "build:types": "tsc --emitDeclarationOnly",
     "build:js": "babel src --out-dir lib --extensions \".ts,.tsx\" --source-maps inline",
     "build:bundle": "yarn webpack",
