@@ -166,7 +166,6 @@ export default class ArenaModel {
     if (result) {
       newSelection.setBoth(result[0] as ArenaNodeText, result[1]);
     }
-    this.textarena.eventManager.fire('modelChanged');
     return newSelection;
   }
 
@@ -195,7 +194,6 @@ export default class ArenaModel {
       cursor = this.applyMiddlewares(cursor);
     }
     newSelection.setCursor(cursor);
-    this.textarena.eventManager.fire('modelChanged');
     return newSelection;
   }
 
@@ -245,7 +243,6 @@ export default class ArenaModel {
           newSelection.setBoth(node, offset - 1);
         }
       }
-      this.textarena.eventManager.fire('modelChanged');
       return newSelection;
     }
     const toRemove: ArenaNodeScion[] = [];
@@ -282,7 +279,6 @@ export default class ArenaModel {
     } else {
       newSelection.setBoth(startNode, startOffset);
     }
-    this.textarena.eventManager.fire('modelChanged');
     return newSelection;
   }
 
@@ -356,7 +352,6 @@ export default class ArenaModel {
         }
       });
       toRemove.forEach((n) => n.remove());
-      this.textarena.eventManager.fire('modelChanged');
     }
     return newSelection;
   }
@@ -377,7 +372,6 @@ export default class ArenaModel {
         }
       },
     );
-    this.textarena.eventManager.fire('modelChanged');
     return selection;
   }
 

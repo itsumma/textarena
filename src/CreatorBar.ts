@@ -143,7 +143,7 @@ export default class CreatorBar {
     if (!this.enabled) {
       return;
     }
-    const selection = this.ta.view.getArenaSelection();
+    const selection = this.ta.view.getCurrentSelection();
     if (selection
       && selection.isCollapsed()
       && selection.startNode.getTextLength() === 0) {
@@ -167,8 +167,8 @@ export default class CreatorBar {
   }
 
   private executeTool(options: CreatorOptions): void {
-    const newSelection = this.ta.commandManager.execCommand(options.command);
-    this.ta.view.render(newSelection);
+    const selection = this.ta.view.getCurrentSelection();
+    this.ta.commandManager.execCommand(options.command, selection);
     this.hide();
   }
 

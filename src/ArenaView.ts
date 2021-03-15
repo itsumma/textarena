@@ -5,7 +5,7 @@ import ArenaSelection from 'ArenaSelection';
 import ArenaNodeText from 'interfaces/ArenaNodeText';
 
 export default class ArenaView implements ArenaServiceInterface {
-  constructor(private textarena: Textarena) {
+  constructor(protected textarena: Textarena) {
   }
 
   public render(selection?: ArenaSelection): void {
@@ -13,11 +13,27 @@ export default class ArenaView implements ArenaServiceInterface {
     const container = this.textarena.editor.getElem();
     render(result, container);
     if (selection) {
-      this.setArenaSelection(selection);
+      this.currentSelection = selection;
+    }
+    if (this.currentSelection) {
+      this.applyArenaSelection(this.currentSelection);
     }
   }
 
-  public setArenaSelection(selection: ArenaSelection): ArenaView {
+  public getCurrentSelection(): ArenaSelection | undefined {
+    if (!this.currentSelection) {
+      this.currentSelection = this.detectArenaSelection();
+    }
+    return this.currentSelection;
+  }
+
+  public resetCurrentSelection(): void {
+    this.currentSelection = undefined;
+  }
+
+  protected currentSelection: ArenaSelection | undefined;
+
+  protected applyArenaSelection(selection: ArenaSelection): ArenaView {
     const s = window.getSelection();
     if (s) {
       const {
@@ -38,7 +54,7 @@ export default class ArenaView implements ArenaServiceInterface {
     return this;
   }
 
-  public getArenaSelection(): ArenaSelection | undefined {
+  protected detectArenaSelection(): ArenaSelection | undefined {
     const s = window.getSelection();
     const range = s ? s.getRangeAt(0) : undefined;
     if (s && range) {
@@ -56,7 +72,7 @@ export default class ArenaView implements ArenaServiceInterface {
     return undefined;
   }
 
-  private getNodeIdAndOffset(
+  protected getNodeIdAndOffset(
     node: Node | HTMLElement,
     offset: number,
   ): [string, number] | undefined {
@@ -98,12 +114,12 @@ export default class ArenaView implements ArenaServiceInterface {
     return undefined;
   }
 
-  private getChildNodes(node: HTMLElement): ChildNode[] {
+  protected getChildNodes(node: HTMLElement): ChildNode[] {
     return Array.from(node.childNodes)
       .filter((child) => [Node.TEXT_NODE, Node.ELEMENT_NODE].includes(child.nodeType));
   }
 
-  private isEmptyNode(node: Node): boolean {
+  protected isEmptyNode(node: Node): boolean {
     if (node.nodeType === Node.TEXT_NODE) {
       const text = node.textContent || '';
       return !/\u00A0/.test(text) && /^[\s\n]*$/.test(text);
@@ -117,7 +133,7 @@ export default class ArenaView implements ArenaServiceInterface {
     return true;
   }
 
-  private getTextLength(
+  protected getTextLength(
     node: ChildNode,
   ): number {
     if (node.nodeType === Node.TEXT_NODE) {
@@ -134,7 +150,7 @@ export default class ArenaView implements ArenaServiceInterface {
     return 0;
   }
 
-  private getElementAndOffset(
+  protected getElementAndOffset(
     node: ArenaNodeText,
     offset: number,
   ): [ChildNode, number] | undefined {
@@ -156,7 +172,7 @@ export default class ArenaView implements ArenaServiceInterface {
     return document.querySelector(`[observe-id="${id}"]`);
   }
 
-  public reachOffset(element: Element, offset: number): [ChildNode, number] | number {
+  protected reachOffset(element: Element, offset: number): [ChildNode, number] | number {
     let reachedOffset = 0;
     let stillEmpty = true;
     for (let i = 0; i < element.childNodes.length; i += 1) {

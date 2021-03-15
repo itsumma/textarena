@@ -117,14 +117,14 @@ export default class Toolbar {
   }
 
   private executeTool(tool: Tool): void {
-    const { options, elem } = tool;
-    const newSelection = this.ta.commandManager.execCommand(options.command);
-    this.ta.view.render(newSelection);
+    const { options } = tool;
+    const selection = this.ta.view.getCurrentSelection();
+    this.ta.commandManager.execCommand(options.command, selection);
     this.hide();
   }
 
   private updateState() {
-    const sel = this.ta.view.getArenaSelection();
+    const sel = this.ta.view.getCurrentSelection();
     const status: { [key: string]: boolean } = {};
     this.tools.forEach(({ options: { name, checkStatus } }: Tool) => {
       status[name] = !!checkStatus;

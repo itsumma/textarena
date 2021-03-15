@@ -131,7 +131,10 @@ class Textarena {
   }
 
   start(): void {
-    this.eventManager.subscribe('modelChanged', () => {
+    this.eventManager.subscribe('modelChanged', (e) => {
+      if (typeof e === 'object') {
+        this.view.render(e.data);
+      }
       if (this.options.onChange) {
         this.options.onChange(this.getData());
       }
