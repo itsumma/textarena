@@ -26,6 +26,9 @@ export const keyboardKeys = [
   'Numpad4', 'Numpad5', 'Numpad6',
   'Numpad1', 'Numpad2', 'Numpad3',
   'Numpad0', 'NumpadDecimal', 'NumpadEnter',
+
+  'ArrowUp',
+  'ArrowLeft', 'ArrowDown', 'ArrowRight',
 ];
 
 export type KeyboardKey = typeof keyboardKeys[number];

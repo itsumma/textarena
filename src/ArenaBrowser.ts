@@ -12,7 +12,6 @@ import CutEvent from 'events/CutEvent';
 import BrowserCommandEvent from 'events/BrowserCommandEvent';
 import { keyboardKeys, Modifiers } from 'ArenaCommandManager';
 import ModifiersEvent from 'events/ModifiersEvent';
-import ArenaSelection from 'ArenaSelection';
 
 const modifiersKeys = {
   Shift: 16,
@@ -248,7 +247,7 @@ export default class ArenaBrowser {
       return new BrowserCommandEvent(e);
     }
 
-    if (selectionCodes[keyCode]) {
+    if (selectionCodes[keyCode] && !(modifiersSum & Modifiers.Alt)) {
       return new SelectionEvent(e);
     }
     if (code === 'KeyA' && modifiersSum === Modifiers.Ctrl) {

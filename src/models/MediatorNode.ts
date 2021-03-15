@@ -128,11 +128,13 @@ export default class MediatorNode implements ArenaNodeScion, ArenaNodeAncestor {
     return this.parent.createAndInsertNode(arena, this.getIndex() + 1);
   }
 
-  insertChildren(nodes: (ArenaNodeScion | ArenaNodeText)[]): void {
+  insertChildren(nodes: (ArenaNodeScion | ArenaNodeText)[], offset?: number): void {
+    let index = offset || 0;
     nodes.forEach((node) => {
       if (this.arena.allowedArenas.includes(node.arena)) {
         node.setParent(this);
-        this.children.push(node);
+        this.children.splice(index, 0, node);
+        index += 1;
       }
     });
   }

@@ -329,6 +329,26 @@ export default class ArenaModel {
     return newSelection;
   }
 
+  public moveChild(selection: ArenaSelection, direction: 'up' | 'down'): ArenaSelection {
+    if (selection.isSameNode()) {
+      const node = selection.startNode;
+      const index = node.getIndex();
+      if (direction === 'up' && index === 0) {
+        return selection;
+      }
+      if (direction === 'down' && node.isLastChild()) {
+        return selection;
+      }
+      const children = node.parent.cutChildren(index, 1);
+      if (direction === 'up') {
+        node.parent.insertChildren(children, index - 1);
+      } else {
+        node.parent.insertChildren(children, index + 1);
+      }
+    }
+    return selection;
+  }
+
   public transformModel(selection: ArenaSelection, arena: Arena): ArenaSelection {
     const newSelection = selection;
     const toCreate: ArenaNodeText[] = [];

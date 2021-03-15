@@ -14,7 +14,7 @@ export default interface ArenaNodeAncestor extends ArenaNodeCore {
 
   removeChild(index: number): ArenaCursorAncestor;
 
-  insertChildren(nodes: (ArenaNodeScion | ArenaNodeText)[]): void;
+  insertChildren(nodes: (ArenaNodeScion | ArenaNodeText)[], offset?: number): void;
 
   cutChildren(start: number, length?: number): (ArenaNodeScion | ArenaNodeText)[];
 
