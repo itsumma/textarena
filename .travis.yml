@@ -15,7 +15,7 @@ jobs:
       env: TEST_COMMAND=test:cypress
       before_script:
         - yarn build
-        - npm run start # start a Web server
+        - npm run start & # start a Web server
         - sleep 3 # give Web server some time to bind to sockets, etc
 
 script:
