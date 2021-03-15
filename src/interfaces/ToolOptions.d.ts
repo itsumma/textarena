@@ -1,4 +1,4 @@
-import { ArenaFormating } from 'ArenaModel';
+import ArenaNode from './ArenaNode';
 
 export default interface ToolOptions {
   name: string;
@@ -7,5 +7,5 @@ export default interface ToolOptions {
   command: string;
   hint: string;
   shortcut: string;
-  formating?: ArenaFormating;
+  checkStatus: (node: ArenaNode, start?: number, end?: number) => boolean;
 }

@@ -22,6 +22,7 @@ import commonPlugin from 'plugins/commonPlugin';
 import hrPlugin from 'plugins/hrPlugin';
 import listsPlugin from 'plugins/listsPlugin';
 import calloutPlugin from 'plugins/calloutPlugin';
+import imagePlugin from 'plugins/imagePlugin';
 
 const defaultOptions: TextarenaOptions = {
   editable: true,
@@ -52,7 +53,7 @@ const defaultOptions: TextarenaOptions = {
       'header3',
       'header4',
       'callout',
-      // 'img',
+      'image',
       // 'blockquote',
     ],
   },
@@ -64,6 +65,7 @@ const defaultOptions: TextarenaOptions = {
     hr: hrPlugin,
     lists: listsPlugin,
     callout: calloutPlugin,
+    image: imagePlugin,
   },
   pluginOptions: {
     headers: {

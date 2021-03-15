@@ -3,6 +3,7 @@ import ArenaPlugin from 'interfaces/ArenaPlugin';
 import ArenaModel from 'ArenaModel';
 import ArenaSelection from 'ArenaSelection';
 import ArenaWithText from 'interfaces/ArenaWithText';
+import ArenaNode from 'interfaces/ArenaNode';
 
 const posibleTags = ['h1', 'h2', 'h3', 'h4'];
 
@@ -52,6 +53,8 @@ const headersPlugin: ArenaPlugin = {
           shortcut: `Alt + Digit${number}`,
           hint: number.toString(),
           command: `convert-to-header${number}`,
+          checkStatus: (node: ArenaNode):
+            boolean => node.arena === arena,
         });
         textarena.creatorBar.registerCreator({
           name: `header${number}`,

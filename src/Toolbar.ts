@@ -5,6 +5,7 @@ import ElementHelper from './ElementHelper';
 import ToolbarOptions from './interfaces/ToolbarOptions';
 import ToolOptions from './interfaces/ToolOptions';
 import * as utils from './utils';
+import ArenaNode from 'interfaces/ArenaNode';
 
 type Tool = {
   elem: ElementHelper;
@@ -123,17 +124,27 @@ export default class Toolbar {
   }
 
   private updateState() {
-    // this.tools.forEach((tool: Tool) => {
-    //   const { options, elem } = tool;
-    //   if (!options.state) {
-    //     return;
-    //   }
-    //   if (options.state({}, options.config || {})) {
-    //     elem.addClass('textarena-toolbar__item_active');
-    //   } else {
-    //     elem.removeClass('textarena-toolbar__item_active');
-    //   }
-    // });
+    const sel = this.ta.view.getArenaSelection();
+    const status: { [key: string]: boolean } = {};
+    this.tools.forEach(({ options: { name, checkStatus } }: Tool) => {
+      status[name] = !!checkStatus;
+    });
+    if (sel) {
+      this.ta.model.runNodesOfSelection(sel, (node: ArenaNode, start?: number, end?: number) => {
+        this.tools.forEach(({ options: { name, checkStatus } }: Tool) => {
+          if (status[name]) {
+            status[name] = checkStatus(node, start, end);
+          }
+        });
+      });
+    }
+    this.tools.forEach(({ elem, options: { name } }: Tool) => {
+      if (status[name]) {
+        elem.addClass('textarena-toolbar__item_active');
+      } else {
+        elem.removeClass('textarena-toolbar__item_active');
+      }
+    });
   }
 
   getElem(): HTMLElement {

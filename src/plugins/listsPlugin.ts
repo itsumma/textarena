@@ -4,6 +4,7 @@ import ArenaModel from 'ArenaModel';
 import ArenaSelection from 'ArenaSelection';
 import ArenaCursor from 'interfaces/ArenaCursor';
 import ArenaWithText from 'interfaces/ArenaWithText';
+import ArenaNode from 'interfaces/ArenaNode';
 
 type ListOptions = {
   name: string,
@@ -126,6 +127,8 @@ const listsPlugin: ArenaPlugin = {
         shortcut,
         command,
         hint,
+        checkStatus: (node: ArenaNode):
+          boolean => 'parent' in node && node.parent.arena === listArena,
       });
       textarena.creatorBar.registerCreator({
         name,

@@ -112,6 +112,13 @@ export default class RichTextManager {
     }
   }
 
+  public hasFormating(name: string, start?: number, end?: number): boolean {
+    if (!this.formatings[name]) {
+      return false;
+    }
+    return this.formatings[name].hasInterval(start || 0, end || this.text.length);
+  }
+
   public ltrim(): void {
     const match = this.text.match(/^( +)/g);
     if (!match) {

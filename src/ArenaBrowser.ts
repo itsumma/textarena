@@ -315,6 +315,7 @@ export default class ArenaBrowser {
       return;
     }
     if (event instanceof CutEvent) {
+      document.execCommand('copy');
       const selection = this.ta.view.getArenaSelection();
       if (selection) {
         const newSelection = this.ta.model.removeSelection(selection, selection.direction);

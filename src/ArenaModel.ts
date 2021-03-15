@@ -143,32 +143,14 @@ export default class ArenaModel {
     return undefined;
   }
 
-  public getAncestors(node: ArenaNode): ArenaNodeAncestor[] {
+  public getAncestors(node: ArenaNode): ArenaCursorAncestor[] {
     if ('hasParent' in node) {
-      return [...this.getAncestors(node.parent), node.parent];
+      return [
+        ...this.getAncestors(node.parent),
+        { node: node.parent, offset: node.getIndex() },
+      ];
     }
     return [];
-  }
-
-  public getCommonAncestor(nodeA: ArenaNode, nodeB: ArenaNode): ArenaNodeAncestor | undefined {
-    if (nodeA === nodeB) {
-      return undefined;
-    }
-    const ancestorsForA = this.getAncestors(nodeA);
-    const ancestorsForB = this.getAncestors(nodeB);
-    const commonMaxDeep = Math.min(ancestorsForA.length, ancestorsForB.length);
-    if (commonMaxDeep === 0) {
-      return undefined;
-    }
-    let result;
-    for (let i = 0; i < commonMaxDeep; i += 1) {
-      if (ancestorsForA[i] === ancestorsForB[i]) {
-        result = ancestorsForA[i];
-      } else {
-        break;
-      }
-    }
-    return result;
   }
 
   public insertHtml(selection: ArenaSelection, html: string): ArenaSelection {
@@ -286,13 +268,20 @@ export default class ArenaModel {
       endNode,
     } = newSelection;
     if (startNode !== endNode) {
-      startNode.insertText(
-        endNode.getText(),
-        startOffset,
-      );
-      endNode.remove();
+      if (startNode.getTextLength() === 0) {
+        startNode.remove();
+        newSelection.setBoth(endNode, 0);
+      } else {
+        startNode.insertText(
+          endNode.getText(),
+          startOffset,
+        );
+        endNode.remove();
+        newSelection.setBoth(startNode, startOffset);
+      }
+    } else {
+      newSelection.setBoth(startNode, startOffset);
     }
-    newSelection.setBoth(startNode, startOffset);
     this.textarena.eventManager.fire('modelChanged');
     return newSelection;
   }
@@ -339,34 +328,116 @@ export default class ArenaModel {
   }
 
   public transformModel(selection: ArenaSelection, arena: Arena): ArenaSelection {
-    const {
-      startNode,
-    } = selection;
     const newSelection = selection;
-    if (selection.isCollapsed() || selection.isSameNode()) {
-      const newNode = startNode.parent.createAndInsertNode(arena, startNode.getIndex());
-      if (newNode) {
-        const cursor = newNode.insertText(startNode.getText(), 0, false);
-        startNode.remove();
-        newSelection.setCursor(cursor);
-        return newSelection;
-      }
+    const toCreate: ArenaNodeText[] = [];
+    const commonAncestor = this.runNodesOfSelection(
+      selection,
+      (node: ArenaNode) => {
+        this.runOfChildren(node, (n: ArenaNode) => {
+          if ('hasText' in n) {
+            toCreate.push(n);
+          }
+        });
+      },
+    );
+    if (commonAncestor) {
+      let c: ArenaCursorAncestor = {
+        node: commonAncestor[0],
+        offset: commonAncestor[1],
+      };
+      const toRemove: ArenaNodeText[] = [];
+      toCreate.forEach((n) => {
+        const newNode = c.node.createAndInsertNode(arena, c.offset + 1);
+        if (newNode) {
+          c = newNode.getParent();
+          const cursor = newNode.insertText(n.getText(), 0, false);
+          toRemove.push(n);
+          newSelection.setCursor(cursor);
+        }
+      });
+      toRemove.forEach((n) => n.remove());
+      this.textarena.eventManager.fire('modelChanged');
     }
+    return newSelection;
+  }
+
+  public formatingModel(selection: ArenaSelection, formating: ArenaFormating): ArenaSelection {
+    this.runNodesOfSelection(
+      selection,
+      (node: ArenaNode, start?: number, end?: number) => {
+        if ('hasText' in node) {
+          node.toggleFormating(formating.name, start || 0, end || node.getTextLength());
+        }
+        if ('hasChildren' in node) {
+          this.runOfChildren(node, (n: ArenaNode) => {
+            if ('hasText' in n) {
+              n.toggleFormating(formating.name, 0, n.getTextLength());
+            }
+          });
+        }
+      },
+    );
     this.textarena.eventManager.fire('modelChanged');
     return selection;
   }
 
-  public formatingModel(selection: ArenaSelection, formating: ArenaFormating): ArenaSelection {
+  public runNodesOfSelection(
+    selection: ArenaSelection,
+    callback: (node: ArenaNode, start?: number, end?: number) => void,
+  ): [ ArenaNodeAncestor, number, number ] | undefined {
     const {
       startNode,
       startOffset,
+      endNode,
       endOffset,
     } = selection;
-    if (selection.isCollapsed() || selection.isSameNode()) {
-      startNode.toggleFormating(formating.name, startOffset, endOffset);
+    if (selection.isSameNode()) {
+      callback(startNode, startOffset, endOffset);
+      const index = startNode.getIndex();
+      return [startNode.parent, index, index];
     }
-    this.textarena.eventManager.fire('modelChanged');
-    return selection;
+    const commonAncestorCursor = this.getCommonAncestor(startNode, endNode);
+    if (!commonAncestorCursor) {
+      return undefined;
+    }
+    const [commonAncestor] = commonAncestorCursor;
+
+    let startCursor: ArenaCursorAncestor = startNode.getParent();
+    const startNodes: ArenaNode[] = [];
+    while (startCursor.node !== commonAncestor) {
+      const len = startCursor.node.children.length;
+      for (let i = startCursor.offset + 1; i < len; i += 1) {
+        const child = startCursor.node.getChild(i);
+        if (child) {
+          startNodes.push(child);
+        }
+      }
+      startCursor = startCursor.node.getParent();
+    }
+
+    let endCursor: ArenaCursorAncestor = endNode.getParent();
+    const endNodes: ArenaNode[] = [];
+    while (endCursor.node !== commonAncestor) {
+      for (let i = 0; i < endCursor.offset; i += 1) {
+        const child = endCursor.node.getChild(i);
+        if (child) {
+          endNodes.push(child);
+        }
+      }
+      endCursor = endCursor.node.getParent();
+    }
+
+    callback(startNode, startOffset);
+    startNodes.forEach((n) => callback(n));
+    for (let i = startCursor.offset + 1; i < endCursor.offset; i += 1) {
+      const child = commonAncestor.getChild(i);
+      if (child) {
+        callback(child);
+      }
+    }
+    endNodes.reverse().forEach((n) => callback(n));
+    callback(endNode, 0, endOffset);
+    return commonAncestorCursor;
   }
 
   protected arenas: Arena[] = [];
@@ -403,59 +474,6 @@ export default class ArenaModel {
     return newNode;
   }
 
-  protected runNodesOfSelection(
-    selection: ArenaSelection,
-    callback: (node: ArenaNode, start?: number, end?: number) => void,
-  ): void {
-    const {
-      startNode,
-      startOffset,
-      endNode,
-      endOffset,
-    } = selection;
-    if (selection.isSameNode()) {
-      callback(startNode, startOffset, endOffset);
-      return;
-    }
-    const commonAncestor = this.getCommonAncestor(startNode, endNode);
-    if (!commonAncestor) {
-      return;
-    }
-
-    let startCursor: ArenaCursorAncestor = startNode.getParent();
-    while (startCursor.node !== commonAncestor) {
-      const len = startCursor.node.children.length;
-      for (let i = startCursor.offset + 1; i < len; i += 1) {
-        const child = startCursor.node.getChild(i);
-        if (child) {
-          callback(child);
-        }
-      }
-      startCursor = startCursor.node.getParent();
-    }
-
-    let endCursor: ArenaCursorAncestor = endNode.getParent();
-    while (endCursor.node !== commonAncestor) {
-      for (let i = 0; i < endCursor.offset; i += 1) {
-        const child = endCursor.node.getChild(i);
-        if (child) {
-          callback(child);
-        }
-      }
-      endCursor = endCursor.node.getParent();
-    }
-
-    for (let i = startCursor.offset + 1; i < endCursor.offset; i += 1) {
-      const child = commonAncestor.getChild(i);
-      if (child) {
-        callback(child);
-      }
-    }
-
-    callback(startNode, startOffset);
-    callback(endNode, 0, endOffset);
-  }
-
   protected getOutFromMediator(node: ArenaNodeText): ArenaNodeText | undefined {
     const { parent } = node;
     const grandpaCursor = parent.getUnprotectedParent();
@@ -486,5 +504,37 @@ export default class ArenaModel {
       return next.getTextCursor(0).node;
     }
     return this.getNextSibling(node.parent);
+  }
+
+  protected runOfChildren(node: ArenaNode, callback: (n: ArenaNode) => void): void {
+    if ('hasChildren' in node) {
+      node.children.forEach((child) => {
+        this.runOfChildren(child, callback);
+      });
+    } else {
+      callback(node);
+    }
+  }
+
+  protected getCommonAncestor(nodeA: ArenaNode, nodeB: ArenaNode):
+    [ ArenaNodeAncestor, number, number ] | undefined {
+    if (nodeA === nodeB) {
+      return undefined;
+    }
+    const ancestorsForA = this.getAncestors(nodeA);
+    const ancestorsForB = this.getAncestors(nodeB);
+    const commonMaxDeep = Math.min(ancestorsForA.length, ancestorsForB.length);
+    if (commonMaxDeep === 0) {
+      return undefined;
+    }
+    let result: [ ArenaNodeAncestor, number, number ] | undefined;
+    for (let i = 0; i < commonMaxDeep; i += 1) {
+      if (ancestorsForA[i].node === ancestorsForB[i].node) {
+        result = [ancestorsForA[i].node, ancestorsForA[i].offset, ancestorsForB[i].offset];
+      } else {
+        break;
+      }
+    }
+    return result;
   }
 }
