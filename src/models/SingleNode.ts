@@ -21,11 +21,19 @@ export default class SingleNode implements ArenaNodeScion {
     return this.parent.children.indexOf(this);
   }
 
+  public isLastChild(): boolean {
+    return this.parent.children.indexOf(this) === this.parent.children.length - 1;
+  }
+
   public getParent(): ArenaCursorAncestor {
     return { node: this.parent, offset: this.getIndex() };
   }
 
-  public getUnprotectedParent(): ArenaCursorAncestor {
+  public setParent(parent: ArenaNodeAncestor | (ArenaNodeAncestor & ArenaNodeScion)): void {
+    this.parent = parent;
+  }
+
+  public getUnprotectedParent(): ArenaCursorAncestor | undefined {
     if (this.parent.arena.protected) {
       return this.parent.getUnprotectedParent();
     }
@@ -52,8 +60,8 @@ export default class SingleNode implements ArenaNodeScion {
     return this.parent.createAndInsertNode(arena, this.getIndex() + 1);
   }
 
-  public remove(): void {
-    this.parent.removeChild(this.getIndex());
+  public remove(): ArenaCursorAncestor {
+    return this.parent.removeChild(this.getIndex());
   }
 
   public getHtml(): TemplateResult | string {

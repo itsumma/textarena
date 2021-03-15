@@ -27,7 +27,24 @@
     if (!initData) {
       initData = {
         content: `<h2>Простой текстовый редактор</h2>
+        <p id>
+          normal <b>bold<i>-i-</i>not_i-<i>again_i </i></b>
+        </p>
         <p>Textarena адаптирована для быстрой работы. Все функции доступны с помощью горячих клавиш.</p>
+        <arena-callout>
+          <p slot="title">
+            Внимание!
+          </p>
+          <arena-callout-body slot="body">
+            <ul>
+            <li>
+            Это удобно
+            </li><li>
+            Это быстро
+            </li>
+            </ul>
+          </arena-callout-body>
+        </arena-callout>
         <ul>
         <li>Быстро.</li>
         <li>Удобно.</li>

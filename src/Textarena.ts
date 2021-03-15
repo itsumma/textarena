@@ -22,6 +22,7 @@ import commonPlugin from 'plugins/commonPlugin';
 import hrPlugin from 'plugins/hrPlugin';
 import listsPlugin from 'plugins/listsPlugin';
 import calloutPlugin from 'plugins/calloutPlugin';
+import imagePlugin from 'plugins/imagePlugin';
 
 const defaultOptions: TextarenaOptions = {
   editable: true,
@@ -34,8 +35,8 @@ const defaultOptions: TextarenaOptions = {
       'underline',
       'strikethrough',
       'paragraph',
-      'list',
-      // 'orderedlist',
+      'unordered-list',
+      'ordered-list',
       'header2',
       'header3',
       'header4',
@@ -46,8 +47,13 @@ const defaultOptions: TextarenaOptions = {
     enabled: true,
     creators: [
       'hr',
+      'unordered-list',
+      'ordered-list',
+      'header2',
+      'header3',
+      'header4',
       'callout',
-      // 'img',
+      'image',
       // 'blockquote',
     ],
   },
@@ -59,6 +65,7 @@ const defaultOptions: TextarenaOptions = {
     hr: hrPlugin,
     lists: listsPlugin,
     callout: calloutPlugin,
+    image: imagePlugin,
   },
   pluginOptions: {
     headers: {
@@ -124,7 +131,10 @@ class Textarena {
   }
 
   start(): void {
-    this.eventManager.subscribe('modelChanged', () => {
+    this.eventManager.subscribe('modelChanged', (e) => {
+      if (typeof e === 'object') {
+        this.view.render(e.data);
+      }
       if (this.options.onChange) {
         this.options.onChange(this.getData());
       }

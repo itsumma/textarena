@@ -31,8 +31,8 @@ export default class RootNode implements ArenaNodeAncestor {
     return { node: this, offset: 0 };
   }
 
-  public getUnprotectedParent(): ArenaCursorAncestor {
-    return { node: this, offset: 0 };
+  public getUnprotectedParent(): ArenaCursorAncestor | undefined {
+    return undefined;
   }
 
   getHtml(model: ArenaModel): TemplateResult | string {
@@ -61,7 +61,7 @@ export default class RootNode implements ArenaNodeAncestor {
     }
     const start = index === -1 ? this.children.length - 1 : 0;
     const end = index === -1 ? 0 : this.children.length - 1;
-    for (let i = start; i <= end; i += 1) {
+    for (let i = start; i <= end; i += index === -1 ? -1 : 1) {
       const { arena } = this.children[i];
       if ('allowText' in arena || ('arenaForText' in arena && arena.arenaForText)) {
         return this.children[i].getTextCursor(index === -1 ? -1 : 0);
@@ -86,15 +86,59 @@ export default class RootNode implements ArenaNodeAncestor {
     return undefined;
   }
 
-  public removeChild(index: number): void {
+  public removeChild(index: number): ArenaCursorAncestor {
     this.children.splice(index, 1);
+    return this.checkChildren(index);
+  }
+
+  public cutChildren(start: number, length?: number): (ArenaNodeScion | ArenaNodeText)[] {
+    let result: (ArenaNodeScion | ArenaNodeText)[] = [];
+    if (!this.arena.protected) {
+      if (length === undefined) {
+        result = this.children.splice(start);
+      } else {
+        result = this.children.splice(start, length);
+      }
+      this.checkChildren(start);
+    }
+    return result;
+  }
+
+  insertChildren(nodes: (ArenaNodeScion | ArenaNodeText)[], offset?: number): void {
+    let index = offset || 0;
+    nodes.forEach((node) => {
+      if (this.arena.allowedArenas.includes(node.arena)) {
+        node.setParent(this);
+        this.children.splice(index, 0, node);
+        index += 1;
+      }
+    });
   }
 
   public removeChildren(start: number, length?: number): void {
-    this.children.splice(start, length);
+    this.cutChildren(start, length);
   }
 
   public getChild(index: number): ArenaNodeScion | undefined {
     return this.children[index] || undefined;
+  }
+
+  protected checkChildren(index: number): ArenaCursorAncestor {
+    let newIndex = index;
+    for (let i = 1; i < this.children.length; i += 1) {
+      const child = this.children[i];
+      const prev = this.children[i - 1];
+      if (child.arena.automerge && child.arena === prev.arena) {
+        (prev as unknown as ArenaNodeAncestor).insertChildren(
+          (child as unknown as ArenaNodeAncestor).children,
+        );
+        this.children.splice(i, 1);
+        if (i >= newIndex) {
+          newIndex -= 1;
+        }
+        i -= 1;
+      }
+    }
+    return { node: this, offset: newIndex };
   }
 }

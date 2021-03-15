@@ -8,6 +8,8 @@ interface ArenaCore {
 
   readonly attributes: string[];
 
+  automerge: boolean;
+
   getTemplate(children: TemplateResult | string | undefined, id: string): TemplateResult | string;
 
   init(node: ArenaNode): ArenaNode;

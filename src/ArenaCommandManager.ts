@@ -26,6 +26,9 @@ export const keyboardKeys = [
   'Numpad4', 'Numpad5', 'Numpad6',
   'Numpad1', 'Numpad2', 'Numpad3',
   'Numpad0', 'NumpadDecimal', 'NumpadEnter',
+
+  'ArrowUp',
+  'ArrowLeft', 'ArrowDown', 'ArrowRight',
 ];
 
 export type KeyboardKey = typeof keyboardKeys[number];
@@ -53,7 +56,7 @@ export default class ArenaCommandManager {
     [key: string]: string,
   } = {};
 
-  constructor(private textarena: Textarena) {
+  constructor(private ta: Textarena) {
   }
 
   registerCommand(
@@ -74,27 +77,25 @@ export default class ArenaCommandManager {
     return this;
   }
 
-  execCommand(command: string, selection?: ArenaSelection): ArenaSelection | undefined {
-    this.textarena.logger.log('exec command', command, selection);
+  execCommand(command: string, selection?: ArenaSelection): void {
+    this.ta.logger.log('exec command', command, selection);
     if (this.commands[command]) {
-      const sel = selection || this.textarena.view.getArenaSelection();
-      if (sel) {
-        return this.commands[command](this.textarena, sel);
+      if (selection) {
+        const newSelection = this.commands[command](this.ta, selection);
+        this.ta.eventManager.fire({ name: 'modelChanged', data: newSelection });
       }
     }
-    return selection;
   }
 
   execShortcut(
     selection: ArenaSelection,
     modifiersSum: number,
     key: KeyboardKey,
-  ): ArenaSelection | undefined {
+  ): void {
     const shortcut = `${modifiersSum}+${key}`;
     if (this.shortcuts[shortcut]) {
-      return this.execCommand(this.shortcuts[shortcut], selection);
+      this.execCommand(this.shortcuts[shortcut], selection);
     }
-    return selection;
   }
 
   getModifiersSum(modifiers: Modifiers): number {

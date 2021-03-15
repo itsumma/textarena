@@ -30,7 +30,7 @@ export default class RichTextManager {
   }
 
   public getHtml(model: ArenaModel): string {
-    let { text } = this;
+    const { text } = this;
     if (text === '') {
       return '<br/>';
     }
@@ -38,16 +38,26 @@ export default class RichTextManager {
     // FIXME nesting formatings
     let index = 0;
     let result = '';
+    let lastSpace = false;
     this.getInsertions(frms).forEach((insertion) => {
-      result += this.prepareText(
+      let prepared = this.prepareText(
         text.slice(index, insertion.offset),
         index === 0,
         insertion.offset === text.length,
-      )
+      );
+      if (lastSpace) {
+        prepared = prepared.replace(/^\s/, '&nbsp;');
+      }
+      lastSpace = prepared.slice(-1) === ' ';
+      result += prepared
         + insertion.tag;
       index = insertion.offset;
     });
-    result += this.prepareText(text.slice(index), index === 0, true);
+    let prepared = this.prepareText(text.slice(index), index === 0, true);
+    if (lastSpace) {
+      prepared = prepared.replace(/^\s/, '&nbsp;');
+    }
+    result += prepared;
     return result;
   }
 
@@ -102,6 +112,13 @@ export default class RichTextManager {
     }
   }
 
+  public hasFormating(name: string, start?: number, end?: number): boolean {
+    if (!this.formatings[name]) {
+      return false;
+    }
+    return this.formatings[name].hasInterval(start || 0, end || this.text.length);
+  }
+
   public ltrim(): void {
     const match = this.text.match(/^( +)/g);
     if (!match) {
@@ -151,12 +168,12 @@ export default class RichTextManager {
       .replace(/"/g, '&quot;')
       .replace(/'/g, '&#039;')
       .replace(/\s\s/g, ' &nbsp;');
-    // if (first) {
+    if (first) {
       result = result.replace(/^\s/, '&nbsp;');
-    // }
-    // if (last) {
+    }
+    if (last) {
       result = result.replace(/\s$/, '&nbsp;');
-    // }
+    }
     return result;
   }
 

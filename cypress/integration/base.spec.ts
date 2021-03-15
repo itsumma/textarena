@@ -3,7 +3,7 @@
 context('Actions', () => {
   beforeEach(() => {
     cy.visit('http://0.0.0.0:8080/');
-    cy.get('.textarena-editor').focus().clear().clear();
+    cy.get('.textarena-editor').focus();
     cy.get('.textarena-editor').as('root');
 
     cy.fixture('example.json').as('example');
@@ -12,6 +12,7 @@ context('Actions', () => {
   it('.type() - type into a DOM element', () => {
     cy.get('@example').then((example:any) => {
       cy.get('@root').focus().clear()
+        .type('{alt+2}')
         .type(example.title);
 
       cy.get('@root').click().focused().type('{selectall}');

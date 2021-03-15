@@ -16,6 +16,22 @@ const commonPlugin: ArenaPlugin = {
       'Ctrl + Enter',
       'breakSelection',
     );
+    textarena.commandManager.registerCommand(
+      'moveChildUp',
+      (ta: Textarena, selection: ArenaSelection) => ta.model.moveChild(selection, 'up'),
+    );
+    textarena.commandManager.registerShortcut(
+      'Alt + ArrowUp',
+      'moveChildUp',
+    );
+    textarena.commandManager.registerCommand(
+      'moveChildDown',
+      (ta: Textarena, selection: ArenaSelection) => ta.model.moveChild(selection, 'down'),
+    );
+    textarena.commandManager.registerShortcut(
+      'Alt + ArrowDown',
+      'moveChildDown',
+    );
   },
 };
 

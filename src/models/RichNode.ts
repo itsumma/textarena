@@ -27,6 +27,10 @@ export default class RichNode implements ArenaNodeText {
     return this.parent.children.indexOf(this);
   }
 
+  public isLastChild(): boolean {
+    return this.parent.children.indexOf(this) === this.parent.children.length - 1;
+  }
+
   public getGlobalIndex(): string {
     return `${this.parent.getGlobalIndex()}.${this.getIndex().toString()}`;
   }
@@ -35,15 +39,19 @@ export default class RichNode implements ArenaNodeText {
     return { node: this.parent, offset: this.getIndex() };
   }
 
-  public getUnprotectedParent(): ArenaCursorAncestor {
+  public setParent(parent: ArenaNodeAncestor | (ArenaNodeAncestor & ArenaNodeScion)): void {
+    this.parent = parent;
+  }
+
+  public getUnprotectedParent(): ArenaCursorAncestor | undefined {
     if (this.parent.arena.protected) {
       return this.parent.getUnprotectedParent();
     }
     return { node: this.parent, offset: this.getIndex() };
   }
 
-  public remove(): void {
-    this.parent.removeChild(this.getIndex());
+  public remove(): ArenaCursorAncestor {
+    return this.parent.removeChild(this.getIndex());
   }
 
   getTextCursor(index: number): ArenaCursor {

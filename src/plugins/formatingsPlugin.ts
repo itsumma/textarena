@@ -1,6 +1,7 @@
 import Textarena from 'Textarena';
 import ArenaPlugin from 'interfaces/ArenaPlugin';
 import ArenaSelection from 'ArenaSelection';
+import ArenaNode from 'interfaces/ArenaNode';
 
 type MarkOptions = {
   tag: string,
@@ -172,7 +173,12 @@ const formatingsPlugin: ArenaPlugin = {
           command,
           hint,
           shortcut,
-          formating,
+          checkStatus: (node: ArenaNode, start?: number, end?: number): boolean => {
+            if ('hasText' in node) {
+              return node.getText().hasFormating(name, start, end);
+            }
+            return true;
+          },
         });
       }
     });

@@ -4,118 +4,153 @@ import ArenaModel from 'ArenaModel';
 import ArenaSelection from 'ArenaSelection';
 import ArenaCursor from 'interfaces/ArenaCursor';
 import ArenaWithText from 'interfaces/ArenaWithText';
+import ArenaNode from 'interfaces/ArenaNode';
 
-const defaultOptions = {
+type ListOptions = {
+  name: string,
+  tag: string,
+  attributes: string[],
+  title: string,
+  icon: string;
+  shortcut: string,
+  command: string,
+  hint: string,
+  pattern: RegExp,
+};
+
+type ListsOptions = {
+  item: {
+    name: string,
+    tag: string,
+    attributes: string[],
+  },
+  lists: ListOptions[],
+};
+
+const defaultOptions: ListsOptions = {
+  item: {
+    name: 'li',
+    tag: 'LI',
+    attributes: [],
+  },
+  lists: [
+    {
+      name: 'unordered-list',
+      tag: 'UL',
+      attributes: [],
+      title: 'List',
+      icon: '≣',
+      shortcut: 'Alt + KeyL',
+      command: 'convert-to-unordered-list',
+      hint: 'l',
+      pattern: /^-\s+(.*)$/,
+    },
+    {
+      name: 'ordered-list',
+      tag: 'OL',
+      attributes: [],
+      title: 'Ordered list',
+      icon: '<b>1.</b>',
+      shortcut: 'Alt + KeyO',
+      command: 'convert-to-ordered-list',
+      hint: 'o',
+      pattern: /^\d+\.\s+(.*)$/,
+    },
+  ],
 };
 
 const listsPlugin: ArenaPlugin = {
-  register(textarena: Textarena, opts: any): void {
-    const options = { ...defaultOptions, ...(opts || {}) };
+  register(textarena: Textarena, opts: ListsOptions): void {
+    const paragraph = textarena.model.getArena('paragraph');
+    if (!paragraph) {
+      throw new Error('Arena "paragraph" not found');
+    }
+    const {
+      item,
+      lists,
+    } = { ...defaultOptions, ...(opts || {}) };
     const li = textarena.model.registerArena(
       {
-        name: 'li',
-        tag: 'LI',
-        attributes: [],
+        ...item,
         allowText: true,
         allowFormating: true,
         nextArena: undefined,
       },
       [
         {
-          tag: 'LI',
-          attributes: [],
+          tag: item.tag,
+          attributes: item.attributes,
         },
       ],
     );
-    const ul = textarena.model.registerArena(
-      {
-        name: 'ul',
-        tag: 'UL',
-        attributes: [],
-        allowedArenas: [li],
-        arenaForText: li as ArenaWithText,
-        hasChildren: true,
-      },
-      [
+    lists.forEach(({
+      name,
+      tag,
+      attributes,
+      title,
+      icon,
+      shortcut,
+      command,
+      hint,
+      pattern,
+    }) => {
+      const listArena = textarena.model.registerArena(
         {
-          tag: 'UL',
-          attributes: [],
+          name,
+          tag,
+          attributes,
+          allowedArenas: [li],
+          arenaForText: li as ArenaWithText,
+          hasChildren: true,
+          automerge: true,
         },
-      ],
-      [ArenaModel.rootArenaName],
-    );
-    textarena.commandManager.registerCommand(
-      'convert-to-list',
-      (ta: Textarena, selection: ArenaSelection) => ta.model.transformModel(selection, ul),
-    );
-    textarena.commandManager.registerShortcut(
-      'Alt + KeyL',
-      'convert-to-list',
-    );
-    textarena.toolbar.registerTool({
-      name: 'list',
-      title: 'List',
-      icon: '≣',
-      shortcut: 'Alt + KeyL',
-      command: 'convert-to-list',
-      hint: 'l',
-    });
-    const ol = textarena.model.registerArena(
-      {
-        name: 'ol',
-        tag: 'OL',
-        attributes: [],
-        allowedArenas: [li],
-        arenaForText: li as ArenaWithText,
-        hasChildren: true,
-      },
-      [
-        {
-          tag: 'OL',
-          attributes: [],
-        },
-      ],
-      [ArenaModel.rootArenaName],
-    );
-    textarena.commandManager.registerCommand(
-      'convert-to-ordered-list',
-      (ta: Textarena, selection: ArenaSelection) => ta.model.transformModel(selection, ol),
-    );
-    textarena.commandManager.registerShortcut(
-      'Alt + KeyO',
-      'convert-to-ordered-list',
-    );
-    textarena.toolbar.registerTool({
-      name: 'ordered-list',
-      title: 'Ordered list',
-      icon: '<b>1.</b>',
-      shortcut: 'Alt + KeyO',
-      command: 'convert-to-ordered-list',
-      hint: 'o',
-    });
-    const paragraph = textarena.model.getArena('paragraph');
-    if (!paragraph) {
-      throw new Error('Arena "paragraph" not found');
-    }
-    (paragraph as ArenaWithText).registerMiddleware((cursor: ArenaCursor) => {
-      const text = cursor.node.getRawText();
-      if (/^\d+\. $/.test(text)) {
-        const newNode = cursor.node.createAndInsertNode(ol, 0);
-        if (newNode) {
-          const newCursor = newNode.insertText('', 0);
-          cursor.node.remove();
-          return newCursor;
+        [
+          {
+            tag,
+            attributes,
+          },
+        ],
+        [ArenaModel.rootArenaName],
+      );
+      textarena.commandManager.registerCommand(
+        command,
+        (ta: Textarena, selection: ArenaSelection) => ta.model.transformModel(selection, listArena),
+      );
+      textarena.commandManager.registerShortcut(
+        shortcut,
+        command,
+      );
+      textarena.toolbar.registerTool({
+        name,
+        title,
+        icon,
+        shortcut,
+        command,
+        hint,
+        checkStatus: (node: ArenaNode):
+          boolean => 'parent' in node && node.parent.arena === listArena,
+      });
+      textarena.creatorBar.registerCreator({
+        name,
+        title,
+        icon,
+        shortcut,
+        command,
+        hint,
+      });
+      (paragraph as ArenaWithText).registerMiddleware((cursor: ArenaCursor) => {
+        const text = cursor.node.getRawText();
+        const match = text.match(pattern);
+        if (match) {
+          const newNode = cursor.node.createAndInsertNode(listArena, 0);
+          if (newNode) {
+            const newCursor = newNode.insertText(match[1], 0);
+            cursor.node.remove();
+            return newCursor;
+          }
         }
-      }
-      if (/^- /.test(text)) {
-        const newNode = cursor.node.createAndInsertNode(ul, 0);
-        if (newNode) {
-          const newCursor = newNode.insertText(text.slice(2), 0);
-          cursor.node.remove();
-          return newCursor;
-        }
-      }
-      return cursor;
+        return cursor;
+      });
     });
   },
 };
