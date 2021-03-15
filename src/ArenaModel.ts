@@ -267,7 +267,13 @@ export default class ArenaModel {
     if (startNode !== endNode) {
       if (startNode.getTextLength() === 0) {
         startNode.remove();
-        newSelection.setBoth(endNode, 0);
+        if (endNode.getTextLength() === 0) {
+          const aCursor = endNode.remove();
+          const cursor = aCursor.node.insertText('', aCursor.offset);
+          newSelection.setCursor(cursor);
+        } else {
+          newSelection.setBoth(endNode, 0);
+        }
       } else {
         startNode.insertText(
           endNode.getText(),

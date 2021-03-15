@@ -1,3 +1,4 @@
+import ArenaCursorAncestor from './ArenaCursorAncestor';
 import ArenaNodeAncestor from './ArenaNodeAncestor';
 import ArenaNodeCore from './ArenaNodeCore';
 
@@ -6,7 +7,7 @@ export default interface ArenaNodeScion extends ArenaNodeCore {
 
   readonly parent: ArenaNodeAncestor | (ArenaNodeAncestor & ArenaNodeScion);
 
-  remove(): void
+  remove(): ArenaCursorAncestor
 
   getIndex(): number;
 

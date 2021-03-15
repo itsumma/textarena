@@ -50,8 +50,8 @@ export default class RichNode implements ArenaNodeText {
     return { node: this.parent, offset: this.getIndex() };
   }
 
-  public remove(): void {
-    this.parent.removeChild(this.getIndex());
+  public remove(): ArenaCursorAncestor {
+    return this.parent.removeChild(this.getIndex());
   }
 
   getTextCursor(index: number): ArenaCursor {

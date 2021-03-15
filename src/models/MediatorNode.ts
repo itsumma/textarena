@@ -137,11 +137,12 @@ export default class MediatorNode implements ArenaNodeScion, ArenaNodeAncestor {
     });
   }
 
-  public removeChild(index: number): void {
+  public removeChild(index: number): ArenaCursorAncestor {
     if (!this.arena.protected) {
       this.children.splice(index, 1);
-      this.checkChildren();
+      return this.checkChildren(index);
     }
+    return { node: this, offset: index };
   }
 
   public cutChildren(start: number, length?: number): (ArenaNodeScion | ArenaNodeText)[] {
@@ -152,7 +153,7 @@ export default class MediatorNode implements ArenaNodeScion, ArenaNodeAncestor {
       } else {
         result = this.children.splice(start, length);
       }
-      this.checkChildren();
+      this.checkChildren(start);
     }
     return result;
   }
@@ -165,22 +166,29 @@ export default class MediatorNode implements ArenaNodeScion, ArenaNodeAncestor {
     return this.children[index] || undefined;
   }
 
-  public remove(): void {
-    this.parent.removeChild(this.getIndex());
+  public remove(): ArenaCursorAncestor {
+    return this.parent.removeChild(this.getIndex());
   }
 
-  protected checkChildren(): void {
+  protected checkChildren(index: number): ArenaCursorAncestor {
     if (this.children.length === 0) {
-      this.remove();
+      return this.remove();
     }
+    let newIndex = index;
     for (let i = 1; i < this.children.length; i += 1) {
       const child = this.children[i];
       const prev = this.children[i - 1];
       if (child.arena.automerge && child.arena === prev.arena) {
-        (prev as ArenaNodeAncestor).insertChildren((child as ArenaNodeAncestor).children);
+        (prev as unknown as ArenaNodeAncestor).insertChildren(
+          (child as unknown as ArenaNodeAncestor).children,
+        );
         this.children.splice(i, 1);
+        if (i >= newIndex) {
+          newIndex -= 1;
+        }
         i -= 1;
       }
     }
+    return { node: this, offset: newIndex };
   }
 }
