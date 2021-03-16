@@ -1,33 +1,25 @@
-import ArenaOptions from 'interfaces/ArenaOptions';
-import RootNode from 'models/RootNode';
-import Textarena from 'Textarena';
-import ArenaNodeText from 'interfaces/ArenaNodeText';
-import ArenaNode from 'interfaces/ArenaNode';
-import ArenaSelection from 'ArenaSelection';
+import { TemplateResult } from 'lit-html';
+
+import ArenaFactory from 'arenas/ArenaFactory';
+
 import { Direction } from 'events/RemoveEvent';
+
+import Arena from 'interfaces/Arena';
+import ArenaCursor from 'interfaces/ArenaCursor';
+import ArenaCursorAncestor from 'interfaces/ArenaCursorAncestor';
+import ArenaFormating, { ArenaFormatings, TagAndAttributes } from 'interfaces/ArenaFormating';
+import ArenaNode from 'interfaces/ArenaNode';
 import ArenaNodeAncestor from 'interfaces/ArenaNodeAncestor';
 import ArenaNodeScion from 'interfaces/ArenaNodeScion';
-import Arena from 'interfaces/Arena';
-import ArenaFactory from 'arenas/ArenaFactory';
-import ArenaCursor from 'interfaces/ArenaCursor';
+import ArenaNodeText from 'interfaces/ArenaNodeText';
+import ArenaOptions from 'interfaces/ArenaOptions';
 import ArenaRoot from 'interfaces/ArenaRoot';
-import ArenaCursorAncestor from 'interfaces/ArenaCursorAncestor';
-import AncestorArena from 'arenas/AncestorArena';
 
-type TagAndAttributes = {
-  tag: string,
-  attributes: string[],
-};
+import ArenaSelection from 'helpers/ArenaSelection';
 
-export type ArenaFormating = {
-  name: string,
-  tag: string,
-  attributes: string[],
-};
+import RootNode from 'models/RootNode';
 
-export type ArenaFormatings = {
-  [key: string]: ArenaFormating,
-};
+import ArenaServiceManager from './ArenaServiceManager';
 
 type ArenaMark = {
   attributes: string[],
@@ -40,16 +32,24 @@ type FormatingMark = {
 };
 
 export default class ArenaModel {
-  public static rootArenaName = '__ROOT__';
+  public readonly rootArenaName = '__ROOT__';
 
-  constructor(private textarena: Textarena) {
+  constructor(protected asm: ArenaServiceManager) {
     this.rootArena = this.registerArena({
-      name: ArenaModel.rootArenaName,
+      name: this.rootArenaName,
       tag: '',
       attributes: [],
       hasChildren: true,
     }) as ArenaRoot;
     this.rootModel = new RootNode(this.rootArena);
+  }
+
+  getOutputHtml(): string {
+    return this.rootModel.getOutputHtml(this.getFormatings());
+  }
+
+  getHtml(): TemplateResult | string {
+    return this.rootModel.getHtml(this.getFormatings());
   }
 
   get model(): ArenaNodeAncestor {
@@ -158,7 +158,7 @@ export default class ArenaModel {
     if (!selection.isCollapsed()) {
       newSelection = this.removeSelection(selection, 'backward');
     }
-    const result = this.textarena.parser.insertHtmlToModel(
+    const result = this.asm.parser.insertHtmlToModel(
       html,
       newSelection.startNode,
       newSelection.startOffset,

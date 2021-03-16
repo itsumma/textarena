@@ -34,4 +34,8 @@ export default class AncestorArena
   setArenaForText(arena: ArenaAncestor | ArenaWithText): void {
     this.arenaForText = arena;
   }
+
+  getArenaForText(): ArenaAncestor | ArenaWithText | undefined {
+    return this.arenaForText;
+  }
 }

@@ -1,14 +1,14 @@
 import { TemplateResult, html } from 'lit-html';
 import { repeat } from 'lit-html/directives/repeat';
-import ArenaModel from 'ArenaModel';
 import Arena from 'interfaces/Arena';
-import ArenaCursor from 'interfaces/ArenaCursor';
-import ArenaNodeScion from 'interfaces/ArenaNodeScion';
-import ArenaNodeAncestor from 'interfaces/ArenaNodeAncestor';
-import ArenaNodeText from 'interfaces/ArenaNodeText';
-import ArenaCursorAncestor from 'interfaces/ArenaCursorAncestor';
 import ArenaAncestor from 'interfaces/ArenaAncestor';
-import RichTextManager from 'RichTextManager';
+import ArenaCursor from 'interfaces/ArenaCursor';
+import ArenaCursorAncestor from 'interfaces/ArenaCursorAncestor';
+import { ArenaFormatings } from 'interfaces/ArenaFormating';
+import ArenaNodeAncestor from 'interfaces/ArenaNodeAncestor';
+import ArenaNodeScion from 'interfaces/ArenaNodeScion';
+import ArenaNodeText from 'interfaces/ArenaNodeText';
+import RichTextManager from 'helpers/RichTextManager';
 import NodeFactory from './NodeFactory';
 
 // У корневого может быть разрешены либо параграфы (заголовки), либо секции (и большие картинки)
@@ -35,10 +35,14 @@ export default class RootNode implements ArenaNodeAncestor {
     return undefined;
   }
 
-  getHtml(model: ArenaModel): TemplateResult | string {
+  getHtml(frms: ArenaFormatings): TemplateResult | string {
     return this.arena.getTemplate(html`
-      ${repeat(this.children, (c, index) => index, (child) => child.getHtml(model))}
+      ${repeat(this.children, (c, index) => index, (child) => child.getHtml(frms))}
     `, this.getGlobalIndex());
+  }
+
+  public getOutputHtml(frms: ArenaFormatings): string {
+    return this.children.map((child) => child.getOutputHtml(frms, 0)).join('\n\n');
   }
 
   insertText(

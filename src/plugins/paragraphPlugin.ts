@@ -1,46 +1,63 @@
 import Textarena from 'Textarena';
 import ArenaPlugin from 'interfaces/ArenaPlugin';
-import ArenaModel from 'ArenaModel';
-import ArenaSelection from 'ArenaSelection';
+import ArenaSelection from 'helpers/ArenaSelection';
 import ArenaWithText from 'interfaces/ArenaWithText';
 import ArenaNode from 'interfaces/ArenaNode';
 
-const defaultOptions = {
+type MarkOptions = {
+  tag: string,
+  attributes: string[];
 };
 
-const paragraphPlugin: ArenaPlugin = {
-  register(textarena: Textarena, opts: any): void {
-    const options = { ...defaultOptions, ...(opts || {}) };
-    const arena = textarena.model.registerArena(
+type ParagraphOptions = {
+  name: string,
+  tag: string,
+  attributes: string[],
+  marks: MarkOptions[],
+};
+
+const defaultOptions: ParagraphOptions = {
+  name: 'paragraph',
+  tag: 'P',
+  attributes: [],
+  marks: [
+    {
+      tag: 'P',
+      attributes: [],
+    },
+    {
+      tag: 'DIV',
+      attributes: [],
+    },
+  ],
+};
+
+const paragraphPlugin = (opts?: ParagraphOptions): ArenaPlugin => ({
+  register(textarena: Textarena): void {
+    const {
+      name, tag, attributes, marks,
+    } = { ...defaultOptions, ...(opts || {}) };
+    const arena = textarena.registerArena(
       {
-        name: 'paragraph',
-        tag: 'P',
-        attributes: [],
+        name,
+        tag,
+        attributes,
         allowText: true,
         allowFormating: true,
       },
-      [
-        {
-          tag: 'P',
-          attributes: [],
-        },
-        {
-          tag: 'DIV',
-          attributes: [],
-        },
-      ],
-      [ArenaModel.rootArenaName],
+      marks,
+      [textarena.getRootArenaName()],
     );
-    textarena.model.model.arena.setArenaForText(arena as ArenaWithText);
-    textarena.commandManager.registerCommand(
+    textarena.setDefaultTextArena(arena as ArenaWithText);
+    textarena.registerCommand(
       'convert-to-paragraph',
-      (ta: Textarena, selection: ArenaSelection) => ta.model.transformModel(selection, arena),
+      (ta: Textarena, selection: ArenaSelection) => ta.transformModel(selection, arena),
     );
-    textarena.commandManager.registerShortcut(
+    textarena.registerShortcut(
       'Alt + Digit0',
       'convert-to-paragraph',
     );
-    textarena.toolbar.registerTool({
+    textarena.registerTool({
       name: 'paragraph',
       title: 'Paragraph',
       icon: '<b>¶</b>',
@@ -51,6 +68,6 @@ const paragraphPlugin: ArenaPlugin = {
         boolean => node.arena === arena,
     });
   },
-};
+});
 
 export default paragraphPlugin;

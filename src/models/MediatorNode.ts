@@ -3,13 +3,13 @@ import { repeat } from 'lit-html/directives/repeat';
 
 import Arena from 'interfaces/Arena';
 import ArenaAncestor from 'interfaces/ArenaAncestor';
-import ArenaNodeAncestor from 'interfaces/ArenaNodeAncestor';
 import ArenaCursor from 'interfaces/ArenaCursor';
 import ArenaCursorAncestor from 'interfaces/ArenaCursorAncestor';
+import { ArenaFormatings } from 'interfaces/ArenaFormating';
+import ArenaNodeAncestor from 'interfaces/ArenaNodeAncestor';
 import ArenaNodeScion from 'interfaces/ArenaNodeScion';
 import ArenaNodeText from 'interfaces/ArenaNodeText';
-import ArenaModel from 'ArenaModel';
-import RichTextManager from 'RichTextManager';
+import RichTextManager from 'helpers/RichTextManager';
 import NodeFactory from './NodeFactory';
 
 // TODO сделать вариант когда у нас фиксированное количество дочерних нод,
@@ -61,10 +61,17 @@ export default class MediatorNode implements ArenaNodeScion, ArenaNodeAncestor {
     return { node: this.parent, offset: this.getIndex() };
   }
 
-  public getHtml(model: ArenaModel): TemplateResult | string {
+  public getHtml(frms: ArenaFormatings): TemplateResult | string {
     return this.arena.getTemplate(html`
-      ${repeat(this.children, (c, index) => index, (child) => child.getHtml(model))}
+      ${repeat(this.children, (c, index) => index, (child) => child.getHtml(frms))}
     `, this.getGlobalIndex());
+  }
+
+  public getOutputHtml(frms: ArenaFormatings, deep = 0): string {
+    return this.arena.getOutputTemplate(
+      this.children.map((child) => child.getOutputHtml(frms, deep + 1)).join('\n'),
+      deep,
+    );
   }
 
   public insertText(

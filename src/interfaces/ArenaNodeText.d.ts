@@ -1,4 +1,4 @@
-import RichTextManager from 'RichTextManager';
+import RichTextManager from 'helpers/RichTextManager';
 import ArenaNodeScion from './ArenaNodeScion';
 import ArenaWithText from './ArenaWithText';
 

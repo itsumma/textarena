@@ -1,7 +1,6 @@
 import Textarena from 'Textarena';
+import ArenaSelection from 'helpers/ArenaSelection';
 import ArenaPlugin from 'interfaces/ArenaPlugin';
-import ArenaModel from 'ArenaModel';
-import ArenaSelection from 'ArenaSelection';
 import ArenaCursor from 'interfaces/ArenaCursor';
 import ArenaWithText from 'interfaces/ArenaWithText';
 import ArenaNode from 'interfaces/ArenaNode';
@@ -59,17 +58,17 @@ const defaultOptions: ListsOptions = {
   ],
 };
 
-const listsPlugin: ArenaPlugin = {
-  register(textarena: Textarena, opts: ListsOptions): void {
-    const paragraph = textarena.model.getArena('paragraph');
+const listsPlugin = (opts?: ListsOptions): ArenaPlugin => ({
+  register(textarena: Textarena): void {
+    const paragraph = textarena.getDefaultTextArena();
     if (!paragraph) {
-      throw new Error('Arena "paragraph" not found');
+      throw new Error('Default Arena for text not found');
     }
     const {
       item,
       lists,
     } = { ...defaultOptions, ...(opts || {}) };
-    const li = textarena.model.registerArena(
+    const li = textarena.registerArena(
       {
         ...item,
         allowText: true,
@@ -94,7 +93,7 @@ const listsPlugin: ArenaPlugin = {
       hint,
       pattern,
     }) => {
-      const listArena = textarena.model.registerArena(
+      const listArena = textarena.registerArena(
         {
           name,
           tag,
@@ -110,17 +109,17 @@ const listsPlugin: ArenaPlugin = {
             attributes,
           },
         ],
-        [ArenaModel.rootArenaName],
+        [textarena.getRootArenaName()],
       );
-      textarena.commandManager.registerCommand(
+      textarena.registerCommand(
         command,
-        (ta: Textarena, selection: ArenaSelection) => ta.model.transformModel(selection, listArena),
+        (ta: Textarena, selection: ArenaSelection) => ta.transformModel(selection, listArena),
       );
-      textarena.commandManager.registerShortcut(
+      textarena.registerShortcut(
         shortcut,
         command,
       );
-      textarena.toolbar.registerTool({
+      textarena.registerTool({
         name,
         title,
         icon,
@@ -130,7 +129,7 @@ const listsPlugin: ArenaPlugin = {
         checkStatus: (node: ArenaNode):
           boolean => 'parent' in node && node.parent.arena === listArena,
       });
-      textarena.creatorBar.registerCreator({
+      textarena.registerCreator({
         name,
         title,
         icon,
@@ -151,8 +150,9 @@ const listsPlugin: ArenaPlugin = {
         }
         return cursor;
       });
+      textarena.addSimpleArenas(listArena);
     });
   },
-};
+});
 
 export default listsPlugin;

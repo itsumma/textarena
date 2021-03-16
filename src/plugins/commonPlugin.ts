@@ -1,38 +1,38 @@
 import Textarena from 'Textarena';
 import ArenaPlugin from 'interfaces/ArenaPlugin';
-import ArenaSelection from 'ArenaSelection';
+import ArenaSelection from 'helpers/ArenaSelection';
 
-const commonPlugin: ArenaPlugin = {
+const commonPlugin: () => ArenaPlugin = () => ({
   register(textarena: Textarena): void {
-    textarena.commandManager.registerCommand(
+    textarena.registerCommand(
       'breakSelection',
-      (ta: Textarena, selection: ArenaSelection) => ta.model.breakSelection(selection),
+      (ta: Textarena, selection: ArenaSelection) => ta.breakSelection(selection),
     );
-    textarena.commandManager.registerShortcut(
+    textarena.registerShortcut(
       'Enter',
       'breakSelection',
     );
-    textarena.commandManager.registerShortcut(
+    textarena.registerShortcut(
       'Ctrl + Enter',
       'breakSelection',
     );
-    textarena.commandManager.registerCommand(
+    textarena.registerCommand(
       'moveChildUp',
-      (ta: Textarena, selection: ArenaSelection) => ta.model.moveChild(selection, 'up'),
+      (ta: Textarena, selection: ArenaSelection) => ta.moveChild(selection, 'up'),
     );
-    textarena.commandManager.registerShortcut(
+    textarena.registerShortcut(
       'Alt + ArrowUp',
       'moveChildUp',
     );
-    textarena.commandManager.registerCommand(
+    textarena.registerCommand(
       'moveChildDown',
-      (ta: Textarena, selection: ArenaSelection) => ta.model.moveChild(selection, 'down'),
+      (ta: Textarena, selection: ArenaSelection) => ta.moveChild(selection, 'down'),
     );
-    textarena.commandManager.registerShortcut(
+    textarena.registerShortcut(
       'Alt + ArrowDown',
       'moveChildDown',
     );
   },
-};
+});
 
 export default commonPlugin;

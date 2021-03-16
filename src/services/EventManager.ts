@@ -1,9 +1,9 @@
-import Textarena from 'Textarena';
+import ArenaServiceManager from './ArenaServiceManager';
 
 export type MediaEvent = {
   name: string,
   target?: HTMLElement,
-  data?: any,
+  data?: unknown,
 };
 
 type Handler = (event?: string | MediaEvent) => void;
@@ -15,11 +15,11 @@ type Handlers = {
 export default class EventManager {
   handlers: Handlers = {};
 
-  constructor(private textarena: Textarena) {
+  constructor(private asm: ArenaServiceManager) {
   }
 
   fire(event: string | MediaEvent): void {
-    this.textarena.logger.log(`fire:  ${event}`);
+    this.asm.logger.log(`fire:  ${event}`);
     const eventName = typeof event === 'string' ? event : event.name;
     if (this.handlers[eventName]) {
       this.handlers[eventName].map((handler) => handler(event));

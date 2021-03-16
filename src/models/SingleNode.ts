@@ -4,9 +4,10 @@ import ArenaNodeScion from 'interfaces/ArenaNodeScion';
 import Arena from 'interfaces/Arena';
 import ArenaNodeText from 'interfaces/ArenaNodeText';
 import ArenaCursor from 'interfaces/ArenaCursor';
-import RichTextManager from 'RichTextManager';
+import RichTextManager from 'helpers/RichTextManager';
 import ArenaCursorAncestor from 'interfaces/ArenaCursorAncestor';
 import ArenaSingle from 'interfaces/ArenaSingle';
+import ArenaFormating, { ArenaFormatings } from 'interfaces/ArenaFormating';
 
 export default class SingleNode implements ArenaNodeScion {
   readonly hasParent: true = true;
@@ -50,7 +51,7 @@ export default class SingleNode implements ArenaNodeScion {
     return this.parent.insertText(text, this.getIndex() + 1);
   }
 
-  public getTextCursor(index: number): ArenaCursor {
+  public getTextCursor(): ArenaCursor {
     return this.parent.getTextCursor(this.getIndex());
   }
 
@@ -66,5 +67,9 @@ export default class SingleNode implements ArenaNodeScion {
 
   public getHtml(): TemplateResult | string {
     return this.arena.getTemplate(undefined, this.getGlobalIndex());
+  }
+
+  public getOutputHtml(_frms: ArenaFormatings, deep = 0): string {
+    return this.arena.getOutputTemplate('', deep);
   }
 }

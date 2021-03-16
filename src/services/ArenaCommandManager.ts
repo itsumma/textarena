@@ -1,8 +1,7 @@
 /* eslint-disable no-bitwise */
-import Textarena from 'Textarena';
-import ArenaSelection from 'ArenaSelection';
-
-type CommandAction = (textarena: Textarena, selection: ArenaSelection) => ArenaSelection;
+import ArenaSelection from 'helpers/ArenaSelection';
+import CommandAction from 'interfaces/CommandAction';
+import ArenaServiceManager from './ArenaServiceManager';
 
 export const keyboardKeys = [
   'Escape', 'F1', 'F2', 'F3', 'F4', 'F5', 'F6', 'F7', 'F8', 'F9', 'F10', 'F11', 'F12', 'Insert', 'Delete',
@@ -56,7 +55,7 @@ export default class ArenaCommandManager {
     [key: string]: string,
   } = {};
 
-  constructor(private ta: Textarena) {
+  constructor(protected asm: ArenaServiceManager) {
   }
 
   registerCommand(
@@ -78,11 +77,11 @@ export default class ArenaCommandManager {
   }
 
   execCommand(command: string, selection?: ArenaSelection): void {
-    this.ta.logger.log('exec command', command, selection);
+    this.asm.logger.log('exec command', command, selection);
     if (this.commands[command]) {
       if (selection) {
-        const newSelection = this.commands[command](this.ta, selection);
-        this.ta.eventManager.fire({ name: 'modelChanged', data: newSelection });
+        const newSelection = this.commands[command](this.asm.textarena, selection);
+        this.asm.eventManager.fire({ name: 'modelChanged', data: newSelection });
       }
     }
   }

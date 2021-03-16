@@ -1,12 +1,12 @@
-import ArenaModel from 'ArenaModel';
 import { TemplateResult } from 'lit-html';
-import RichTextManager from 'RichTextManager';
+import RichTextManager from 'helpers/RichTextManager';
 import Arena from './Arena';
 import ArenaNodeText from './ArenaNodeText';
 import ArenaNodeScion from './ArenaNodeScion';
 import ArenaCursor from './ArenaCursor';
 import ArenaCursorAncestor from './ArenaCursorAncestor';
 import ArenaNode from './ArenaNode';
+import { ArenaFormatings } from './ArenaFormating';
 
 export default interface ArenaNodeCore {
   readonly arena: Arena;
@@ -21,7 +21,9 @@ export default interface ArenaNodeCore {
   createAndInsertNode(arena: Arena, offset: number):
     ArenaNode & (ArenaNodeScion | ArenaNodeText) | undefined;
 
-  getHtml(model: ArenaModel): TemplateResult | string;
+  getHtml(model: ArenaFormatings): TemplateResult | string;
+
+  getOutputHtml(model: ArenaFormatings, deep?: number): string;
 
   getGlobalIndex(): string;
 

@@ -1,11 +1,21 @@
-import Textarena from 'Textarena';
-import { MediaEvent } from 'EventManager';
-import { IMAGE_WRAPPER } from 'common/constants';
-import ElementHelper from './ElementHelper';
-import ToolbarOptions from './interfaces/ToolbarOptions';
-import ToolOptions from './interfaces/ToolOptions';
-import * as utils from './utils';
+import ToolbarOptions from 'interfaces/ToolbarOptions';
+import ToolOptions from 'interfaces/ToolOptions';
 import ArenaNode from 'interfaces/ArenaNode';
+import ElementHelper from 'helpers/ElementHelper';
+import { MediaEvent } from './EventManager';
+import ArenaServiceManager from './ArenaServiceManager';
+
+function getFocusElement(): HTMLElement | undefined {
+  const s = window.getSelection();
+  if (!s) {
+    return undefined;
+  }
+  const { focusNode } = s;
+  if (focusNode) {
+    return (focusNode.nodeType === 1 ? focusNode : focusNode.parentElement) as HTMLElement;
+  }
+  return undefined;
+}
 
 type Tool = {
   elem: ElementHelper;
@@ -38,8 +48,10 @@ export default class Toolbar {
 
   rightPadding = 30;
 
+  container: ElementHelper;
+
   constructor(
-    private ta: Textarena,
+    protected asm: ArenaServiceManager,
   ) {
     this.elem = new ElementHelper('DIV', 'textarena-toolbar');
     this.pointer = new ElementHelper('DIV', 'textarena-toolbar__pointer');
@@ -47,18 +59,19 @@ export default class Toolbar {
     this.elem.appendChild(this.list);
     this.elem.appendChild(this.pointer);
     this.hide();
-    this.ta.eventManager.subscribe('textSelected', () => {
+    this.asm.eventManager.subscribe('textSelected', () => {
       this.show();
     });
-    this.ta.eventManager.subscribe('textUnselected', () => {
+    this.asm.eventManager.subscribe('textUnselected', () => {
       this.hide();
     });
-    this.ta.eventManager.subscribe('selectionChanged', () => {
+    this.asm.eventManager.subscribe('selectionChanged', () => {
       this.show();
     });
-    this.ta.eventManager.subscribe('keyDown', this.keyListener.bind(this));
-    this.ta.eventManager.subscribe('keyUp', this.keyListener.bind(this));
-    this.ta.container.appendChild(this.getElem());
+    this.asm.eventManager.subscribe('keyDown', this.keyListener.bind(this));
+    this.asm.eventManager.subscribe('keyUp', this.keyListener.bind(this));
+    this.container = this.asm.textarena.getContainerElement();
+    this.container.appendChild(this.getElem());
   }
 
   public setOptions(toolbarOptions: ToolbarOptions): void {
@@ -70,13 +83,13 @@ export default class Toolbar {
         }
         const options = this.availableTools[toolOptions];
         const elem = new ElementHelper('DIV', 'textarena-toolbar__item');
-        const [modifiers] = this.ta.commandManager.parseShortcut(options.shortcut);
+        const [modifiers] = this.asm.commandManager.parseShortcut(options.shortcut);
         const tool = {
           elem,
           options,
           modifiers,
         };
-        elem.onClick((e) => {
+        elem.onClick((e: Event) => {
           e.preventDefault();
           this.executeTool(tool);
         });
@@ -118,19 +131,19 @@ export default class Toolbar {
 
   private executeTool(tool: Tool): void {
     const { options } = tool;
-    const selection = this.ta.view.getCurrentSelection();
-    this.ta.commandManager.execCommand(options.command, selection);
+    const selection = this.asm.view.getCurrentSelection();
+    this.asm.commandManager.execCommand(options.command, selection);
     this.hide();
   }
 
   private updateState() {
-    const sel = this.ta.view.getCurrentSelection();
+    const sel = this.asm.view.getCurrentSelection();
     const status: { [key: string]: boolean } = {};
     this.tools.forEach(({ options: { name, checkStatus } }: Tool) => {
       status[name] = !!checkStatus;
     });
     if (sel) {
-      this.ta.model.runNodesOfSelection(sel, (node: ArenaNode, start?: number, end?: number) => {
+      this.asm.model.runNodesOfSelection(sel, (node: ArenaNode, start?: number, end?: number) => {
         this.tools.forEach(({ options: { name, checkStatus } }: Tool) => {
           if (status[name]) {
             status[name] = checkStatus(node, start, end);
@@ -159,8 +172,8 @@ export default class Toolbar {
     if (!s || s.isCollapsed || s.rangeCount === 0) {
       return;
     }
-    const focusElement = utils.getFocusElement();
-    if (!focusElement || focusElement.tagName === IMAGE_WRAPPER) {
+    const focusElement = getFocusElement();
+    if (!focusElement) {
       return;
     }
     const rootElement = focusElement.closest('.textarena-editor');
@@ -169,7 +182,7 @@ export default class Toolbar {
     }
     const range = s.getRangeAt(0);
     const rect = range.getBoundingClientRect();
-    const containerRect = this.ta.container.getBoundingClientRect();
+    const containerRect = this.container.getBoundingClientRect();
     let positionTop = true;
     if (rect.y < window.innerHeight / 2) {
       positionTop = rect.top >= window.innerHeight - rect.bottom;

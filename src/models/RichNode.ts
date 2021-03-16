@@ -2,13 +2,13 @@ import { TemplateResult, html } from 'lit-html';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html';
 import Arena from 'interfaces/Arena';
 import ArenaNodeText from 'interfaces/ArenaNodeText';
-import ArenaModel from 'ArenaModel';
-import RichTextManager from 'RichTextManager';
+import RichTextManager from 'helpers/RichTextManager';
 import ArenaNodeAncestor from 'interfaces/ArenaNodeAncestor';
 import ArenaNodeScion from 'interfaces/ArenaNodeScion';
 import ArenaCursor from 'interfaces/ArenaCursor';
 import ArenaCursorAncestor from 'interfaces/ArenaCursorAncestor';
 import ArenaWithText from 'interfaces/ArenaWithText';
+import { ArenaFormatings } from 'interfaces/ArenaFormating';
 
 export default class RichNode implements ArenaNodeText {
   readonly hasParent: true = true;
@@ -96,16 +96,17 @@ export default class RichNode implements ArenaNodeText {
     this.richTextManager.toggleFormating(name, start, end);
   }
 
-  protected getTemplate(model: ArenaModel): TemplateResult | string {
-    const content = this.richTextManager.getHtml(model);
-    console.log('RTM Content', content);
-    return html`
-      ${unsafeHTML(content)}
-    `;
+  public getHtml(frms: ArenaFormatings): TemplateResult | string {
+    const content = this.richTextManager.getHtml(frms);
+    return this.arena.getTemplate(
+      html`${unsafeHTML(content)}`,
+      this.getGlobalIndex(),
+    );
   }
 
-  public getHtml(model: ArenaModel): TemplateResult | string {
-    return this.arena.getTemplate(this.getTemplate(model), this.getGlobalIndex());
+  public getOutputHtml(frms: ArenaFormatings, deep: number): string {
+    const text = this.richTextManager.getHtml(frms);
+    return this.arena.getOutputTemplate(text, deep);
   }
 
   public getText(): RichTextManager {

@@ -1,17 +1,20 @@
 /* eslint-disable no-bitwise */
-import InputEvent from 'events/InputEvent';
-import RemoveEvent from 'events/RemoveEvent';
-import SelectionEvent from 'events/SelectionEvent';
-import CommandEvent from 'events/CommandEvent';
 import ArenaKeyboardEvent from 'interfaces/ArenaKeyboardEvent';
-import Textarena from 'Textarena';
-import { isDescendant } from 'utils';
-import PasteEvent from 'events/PasteEvent';
+
+import BrowserCommandEvent from 'events/BrowserCommandEvent';
+import CommandEvent from 'events/CommandEvent';
 import CopyEvent from 'events/CopyEvent';
 import CutEvent from 'events/CutEvent';
-import BrowserCommandEvent from 'events/BrowserCommandEvent';
-import { keyboardKeys, Modifiers } from 'ArenaCommandManager';
+import InputEvent from 'events/InputEvent';
 import ModifiersEvent from 'events/ModifiersEvent';
+import PasteEvent from 'events/PasteEvent';
+import RemoveEvent from 'events/RemoveEvent';
+import SelectionEvent from 'events/SelectionEvent';
+
+import ElementHelper from 'helpers/ElementHelper';
+
+import { keyboardKeys, Modifiers } from './ArenaCommandManager';
+import ArenaServiceManager from './ArenaServiceManager';
 
 const modifiersKeys = {
   Shift: 16,
@@ -85,6 +88,21 @@ const specialCodes = invertObject(specialKeys);
 
 const reservedCodes = invertObject(reservedKeys);
 
+function isDescendant(
+  parent: HTMLElement | Node | ElementHelper,
+  child: HTMLElement | Node,
+): boolean {
+  const parentNode = parent instanceof ElementHelper ? parent.getElem() : parent;
+  let node = child.parentNode;
+  while (node !== null) {
+    if (node === parentNode) {
+      return true;
+    }
+    node = node.parentNode;
+  }
+  return false;
+}
+
 export default class ArenaBrowser {
   protected inputListenerInstance: ((e: Event) => void);
 
@@ -106,38 +124,36 @@ export default class ArenaBrowser {
 
   protected lastSelectionRange: Range | undefined;
 
+  protected editor: ElementHelper;
+
   constructor(
-    protected ta: Textarena,
+    protected asm: ArenaServiceManager,
   ) {
+    this.editor = this.asm.textarena.getEditorElement();
     this.inputListenerInstance = this.inputListener.bind(this);
-    // this.beforeinputListenerInstance = this.beforeinputListener.bind(this);
     this.mouseUpListenerInstance = this.mouseUpListener.bind(this);
     this.keyUpListenerInstance = this.keyUpListener.bind(this);
     this.keyPressListenerInstance = this.keyPressListener.bind(this);
     this.keyDownListenerInstance = this.keyDownListener.bind(this);
     this.selectListenerInstance = this.selectListener.bind(this);
     this.pasteListenerInstance = this.pasteListener.bind(this);
-    this.ta.eventManager.subscribe('turnOn', () => {
-      this.ta.editor.addEventListener('input', this.inputListenerInstance, false);
-      // this.textarena.editor.addEventListener('beforeinput',
-      // this.beforeinputListenerInstance, false);
-      this.ta.editor.addEventListener('mouseup', this.mouseUpListenerInstance, false);
-      this.ta.editor.addEventListener('keyup', this.keyUpListenerInstance, false);
-      this.ta.editor.addEventListener('keypress', this.keyPressListenerInstance, false);
-      this.ta.editor.addEventListener('keydown', this.keyDownListenerInstance, false);
-      this.ta.editor.addEventListener('paste', this.pasteListenerInstance, false);
+    this.asm.eventManager.subscribe('turnOn', () => {
+      this.editor.addEventListener('input', this.inputListenerInstance, false);
+      this.editor.addEventListener('mouseup', this.mouseUpListenerInstance, false);
+      this.editor.addEventListener('keyup', this.keyUpListenerInstance, false);
+      this.editor.addEventListener('keypress', this.keyPressListenerInstance, false);
+      this.editor.addEventListener('keydown', this.keyDownListenerInstance, false);
+      this.editor.addEventListener('paste', this.pasteListenerInstance, false);
       document.addEventListener('selectionchange', this.selectListenerInstance, false);
     });
-    this.ta.eventManager.subscribe('turnOff', () => {
-      this.ta.editor.removeEventListener('input', this.inputListenerInstance);
-      // this.textarena.editor.removeEventListener('beforeinput', this.beforeinputListenerInstance);
-      this.ta.editor.removeEventListener('mouseup', this.mouseUpListenerInstance);
-      this.ta.editor.removeEventListener('keyup', this.keyUpListenerInstance);
-      this.ta.editor.removeEventListener('keypress', this.keyPressListenerInstance);
-      this.ta.editor.removeEventListener('keydown', this.keyDownListenerInstance);
-      this.ta.editor.removeEventListener('paste', this.pasteListenerInstance);
+    this.asm.eventManager.subscribe('turnOff', () => {
+      this.editor.removeEventListener('input', this.inputListenerInstance);
+      this.editor.removeEventListener('mouseup', this.mouseUpListenerInstance);
+      this.editor.removeEventListener('keyup', this.keyUpListenerInstance);
+      this.editor.removeEventListener('keypress', this.keyPressListenerInstance);
+      this.editor.removeEventListener('keydown', this.keyDownListenerInstance);
+      this.editor.removeEventListener('paste', this.pasteListenerInstance);
       document.removeEventListener('selectionchange', this.selectListenerInstance);
-      // this.textarena.editor.stopObserve();
     });
   }
 
@@ -154,31 +170,31 @@ export default class ArenaBrowser {
       Alt: altKey,
       Meta: metaKey,
     };
-    return this.ta.commandManager.getModifiersSum(modifiers);
+    return this.asm.commandManager.getModifiersSum(modifiers);
   }
 
   protected checkSelection(): void {
-    this.ta.view.resetCurrentSelection();
+    this.asm.view.resetCurrentSelection();
     const s = window.getSelection();
     if (!s) {
       return;
     }
-    if (!s.anchorNode || !isDescendant(this.ta.editor, s.anchorNode)) {
+    if (!s.anchorNode || !isDescendant(this.editor, s.anchorNode)) {
       return;
     }
 
-    this.ta.eventManager.fire('moveCursor');
+    this.asm.eventManager.fire('moveCursor');
 
     if (this.lastSelectionStatus && s.isCollapsed) {
       this.lastSelectionStatus = false;
-      this.ta.eventManager.fire('textUnselected');
+      this.asm.eventManager.fire('textUnselected');
       this.lastSelectionRange = undefined;
       return;
     }
     if (!s.isCollapsed) {
       if (!this.lastSelectionStatus) {
         this.lastSelectionStatus = true;
-        this.ta.eventManager.fire('textSelected');
+        this.asm.eventManager.fire('textSelected');
         this.lastSelectionRange = s.getRangeAt(0);
       } else if (this.lastSelectionRange) {
         const newRange = s.getRangeAt(0);
@@ -186,7 +202,7 @@ export default class ArenaBrowser {
           || newRange.startOffset !== this.lastSelectionRange.startOffset
           || newRange.endContainer !== this.lastSelectionRange.endContainer
           || newRange.endOffset !== this.lastSelectionRange.endOffset) {
-          this.ta.eventManager.fire('selectionChanged');
+          this.asm.eventManager.fire('selectionChanged');
           this.lastSelectionRange = newRange;
         }
       }
@@ -269,7 +285,7 @@ export default class ArenaBrowser {
       );
     }
     if (specialCodes[keyCode] || modifiersSum > Modifiers.Shift) {
-      this.ta.logger.info(`${prefix} command ${modifiersSum} + ${code}`, e);
+      this.asm.logger.info(`${prefix} command ${modifiersSum} + ${code}`, e);
       if (code && keyboardKeys.includes(code)) {
         return new CommandEvent(e, code, modifiersSum);
       }
@@ -282,28 +298,28 @@ export default class ArenaBrowser {
   }
 
   protected inputListener(e: Event): void {
-    this.ta.logger.log('Input event', e);
+    this.asm.logger.log('Input event', e);
   }
 
   protected mouseUpListener(e: MouseEvent): void {
-    this.ta.logger.log('MouseUp event', e);
+    this.asm.logger.log('MouseUp event', e);
     // this.checkSelection();
   }
 
   protected keyUpListener(e: KeyboardEvent): void {
-    this.ta.logger.log('KeyUp event', e);
+    this.asm.logger.log('KeyUp event', e);
     const modifiersSum = this.getModifiersSum(e);
-    this.ta.eventManager.fire('moveCursor');
-    this.ta.eventManager.fire({ name: 'keyUp', data: modifiersSum });
+    this.asm.eventManager.fire('moveCursor');
+    this.asm.eventManager.fire({ name: 'keyUp', data: modifiersSum });
   }
 
   protected keyPressListener(e: KeyboardEvent): void {
-    this.ta.logger.log('KeyPress event', e);
+    this.asm.logger.log('KeyPress event', e);
   }
 
   protected keyDownListener(e: KeyboardEvent): void {
     const event = this.checkKeyboardEvent('keyDown', e);
-    this.ta.logger.log('KeyDown event', event, e);
+    this.asm.logger.log('KeyDown event', event, e);
     if (event instanceof BrowserCommandEvent
       || event instanceof CopyEvent
       || event instanceof PasteEvent) {
@@ -311,7 +327,7 @@ export default class ArenaBrowser {
       return;
     }
     if (event instanceof SelectionEvent) {
-      this.ta.view.resetCurrentSelection();
+      this.asm.view.resetCurrentSelection();
       return;
     }
     e.cancelBubble = true;
@@ -322,41 +338,41 @@ export default class ArenaBrowser {
       return;
     }
     if (event instanceof ModifiersEvent) {
-      this.ta.eventManager.fire({ name: 'keyDown', data: event.sum });
+      this.asm.eventManager.fire({ name: 'keyDown', data: event.sum });
     }
     if (event instanceof CutEvent) {
       document.execCommand('copy');
-      const selection = this.ta.view.getCurrentSelection();
+      const selection = this.asm.view.getCurrentSelection();
       if (selection) {
-        const newSelection = this.ta.model.removeSelection(selection, selection.direction);
-        this.ta.eventManager.fire({ name: 'modelChanged', data: newSelection });
+        const newSelection = this.asm.model.removeSelection(selection, selection.direction);
+        this.asm.eventManager.fire({ name: 'modelChanged', data: newSelection });
       }
     }
     if (event instanceof CommandEvent) {
       const { command, modifiersSum } = event;
-      const selection = this.ta.view.getCurrentSelection();
+      const selection = this.asm.view.getCurrentSelection();
       if (selection) {
-        this.ta.commandManager.execShortcut(selection, modifiersSum, command);
+        this.asm.commandManager.execShortcut(selection, modifiersSum, command);
       }
     }
     if (event instanceof InputEvent) {
-      const selection = this.ta.view.getCurrentSelection();
+      const selection = this.asm.view.getCurrentSelection();
       if (selection) {
-        this.ta.model.insertTextToModel(selection, event.character, true);
-        this.ta.eventManager.fire({ name: 'modelChanged' });
+        this.asm.model.insertTextToModel(selection, event.character, true);
+        this.asm.eventManager.fire({ name: 'modelChanged' });
       }
     }
     if (event instanceof RemoveEvent) {
-      const selection = this.ta.view.getCurrentSelection();
+      const selection = this.asm.view.getCurrentSelection();
       if (selection) {
-        const newSelection = this.ta.model.removeSelection(selection, event.direction);
-        this.ta.eventManager.fire({ name: 'modelChanged', data: newSelection });
+        const newSelection = this.asm.model.removeSelection(selection, event.direction);
+        this.asm.eventManager.fire({ name: 'modelChanged', data: newSelection });
       }
     }
   }
 
   protected pasteListener(e: ClipboardEvent): void {
-    this.ta.logger.log('Paste event', e);
+    this.asm.logger.log('Paste event', e);
     e.preventDefault();
     const { clipboardData } = e;
     if (!clipboardData) {
@@ -368,7 +384,7 @@ export default class ArenaBrowser {
       if (!html) {
         return;
       }
-      const selection = this.ta.view.getCurrentSelection();
+      const selection = this.asm.view.getCurrentSelection();
       if (!selection) {
         return;
       }
@@ -380,26 +396,26 @@ export default class ArenaBrowser {
       if (matchEnd) {
         html = html.slice(0, matchEnd.index);
       }
-      this.ta.logger.log(`Insert html: «${html}»`);
-      const newSelection = this.ta.model.insertHtml(selection, html);
-      this.ta.eventManager.fire({ name: 'modelChanged', data: newSelection });
+      this.asm.logger.log(`Insert html: «${html}»`);
+      const newSelection = this.asm.model.insertHtml(selection, html);
+      this.asm.eventManager.fire({ name: 'modelChanged', data: newSelection });
     } else if (types.includes('text/plain')) {
       const text = clipboardData.getData('text/plain');
       if (!text) {
         return;
       }
-      const selection = this.ta.view.getCurrentSelection();
+      const selection = this.asm.view.getCurrentSelection();
       if (!selection) {
         return;
       }
-      this.ta.logger.log(`Insert text: «${text}»`);
-      const newSelection = this.ta.model.insertTextToModel(selection, text);
-      this.ta.eventManager.fire({ name: 'modelChanged', data: newSelection });
+      this.asm.logger.log(`Insert text: «${text}»`);
+      const newSelection = this.asm.model.insertTextToModel(selection, text);
+      this.asm.eventManager.fire({ name: 'modelChanged', data: newSelection });
     }
   }
 
   protected selectListener(e: Event): void {
-    this.ta.logger.log('Select event', e);
+    this.asm.logger.log('Select event', e);
     this.checkSelection();
   }
 }

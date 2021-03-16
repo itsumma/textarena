@@ -1,6 +1,6 @@
 /* eslint-disable no-lonely-if */
-import ArenaModel, { ArenaFormatings } from 'ArenaModel';
-import Intervaler from 'Intervaler';
+import Intervaler from 'helpers/Intervaler';
+import { ArenaFormatings } from 'interfaces/ArenaFormating';
 
 export type Formatings = {
   [name: string]: Intervaler
@@ -29,12 +29,11 @@ export default class RichTextManager {
     return this.formatings;
   }
 
-  public getHtml(model: ArenaModel): string {
+  public getHtml(frms: ArenaFormatings): string {
     const { text } = this;
     if (text === '') {
       return '<br/>';
     }
-    const frms = model.getFormatings();
     // FIXME nesting formatings
     let index = 0;
     let result = '';
@@ -182,14 +181,18 @@ export default class RichTextManager {
     Object.entries(this.formatings).forEach(([name, intervaler]) => {
       if (frms[name]) {
         const { tag, attributes } = frms[name];
+        let attributesStr = '';
+        attributes.forEach((attr) => {
+          attributesStr += ` ${attr}`;
+        });
         intervaler.getIntervals().forEach((interval) => {
           insertions.push({
             offset: interval.start,
-            tag: `<${tag}>`,
+            tag: `<${tag.toLowerCase()}${attributesStr}>`,
           });
           insertions.push({
             offset: interval.end,
-            tag: `</${tag}>`,
+            tag: `</${tag.toLowerCase()}>`,
           });
         });
       }

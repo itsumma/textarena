@@ -1,8 +1,6 @@
-import { TemplateResult, html } from 'lit-html';
 import Textarena from 'Textarena';
 import ArenaPlugin from 'interfaces/ArenaPlugin';
-import ArenaModel from 'ArenaModel';
-import ArenaSelection from 'ArenaSelection';
+import ArenaSelection from 'helpers/ArenaSelection';
 
 const defaultOptions = {
   name: 'hr',
@@ -15,12 +13,12 @@ const defaultOptions = {
   command: 'add-hr',
 };
 
-const hrPlugin: ArenaPlugin = {
-  register(textarena: Textarena, opts: typeof defaultOptions): void {
+const hrPlugin = (opts?: typeof defaultOptions): ArenaPlugin => ({
+  register(textarena: Textarena): void {
     const {
       name, icon, title, tag, attributes, shortcut, hint, command,
     } = { ...defaultOptions, ...(opts || {}) };
-    const arena = textarena.model.registerArena(
+    const arena = textarena.registerArena(
       {
         name,
         tag,
@@ -33,18 +31,18 @@ const hrPlugin: ArenaPlugin = {
           attributes: [],
         },
       ],
-      [ArenaModel.rootArenaName],
+      [textarena.getRootArenaName()],
     );
-    textarena.commandManager.registerCommand(
+    textarena.registerCommand(
       command,
-      (ta: Textarena, selection: ArenaSelection) => ta.model.transformModel(selection, arena),
+      (ta: Textarena, selection: ArenaSelection) => ta.transformModel(selection, arena),
     );
 
-    textarena.commandManager.registerShortcut(
+    textarena.registerShortcut(
       shortcut,
       command,
     );
-    textarena.creatorBar.registerCreator({
+    textarena.registerCreator({
       name,
       icon,
       title,
@@ -52,7 +50,8 @@ const hrPlugin: ArenaPlugin = {
       hint,
       command,
     });
+    textarena.addSimpleArenas(arena);
   },
-};
+});
 
 export default hrPlugin;

@@ -1,27 +1,32 @@
 import Textarena from 'Textarena';
+import ArenaSelection from 'helpers/ArenaSelection';
 import ArenaPlugin from 'interfaces/ArenaPlugin';
-import ArenaModel from 'ArenaModel';
-import ArenaSelection from 'ArenaSelection';
 import ArenaWithText from 'interfaces/ArenaWithText';
 import ArenaNode from 'interfaces/ArenaNode';
 
 const posibleTags = ['h1', 'h2', 'h3', 'h4'];
 
-const defaultOptions = {
+type ListTag = typeof posibleTags[number];
+
+type ListsOptions = {
+  tags: ListTag[],
+};
+
+const defaultOptions: ListsOptions = {
   tags: ['h2', 'h3', 'h4'],
 };
 
-const headersPlugin: ArenaPlugin = {
-  register(textarena: Textarena, opts: any): void {
+const headersPlugin = (opts?: ListsOptions): ArenaPlugin => ({
+  register(textarena: Textarena): void {
     const options = { ...defaultOptions, ...(opts || {}) };
     options.tags.forEach((type: string) => {
       if (posibleTags.includes(type)) {
         const number = parseInt(type[1], 10);
-        const paragraph = textarena.model.getArena('paragraph');
+        const paragraph = textarena.getDefaultTextArena();
         if (!paragraph) {
-          throw new Error('Arena "paragraph" not found');
+          throw new Error('Default Arena for text not found');
         }
-        const arena = textarena.model.registerArena(
+        const arena = textarena.registerArena(
           {
             name: `header${number}`,
             tag: `H${number}`,
@@ -36,17 +41,17 @@ const headersPlugin: ArenaPlugin = {
               attributes: [],
             },
           ],
-          [ArenaModel.rootArenaName],
+          [textarena.getRootArenaName()],
         );
-        textarena.commandManager.registerCommand(
+        textarena.registerCommand(
           `convert-to-header${number}`,
-          (ta: Textarena, selection: ArenaSelection) => ta.model.transformModel(selection, arena),
+          (ta: Textarena, selection: ArenaSelection) => ta.transformModel(selection, arena),
         );
-        textarena.commandManager.registerShortcut(
+        textarena.registerShortcut(
           `Alt + Digit${number}`,
           `convert-to-header${number}`,
         );
-        textarena.toolbar.registerTool({
+        textarena.registerTool({
           name: `header${number}`,
           title: `Header ${number}`,
           icon: `<b>H${number}</b>`,
@@ -56,7 +61,7 @@ const headersPlugin: ArenaPlugin = {
           checkStatus: (node: ArenaNode):
             boolean => node.arena === arena,
         });
-        textarena.creatorBar.registerCreator({
+        textarena.registerCreator({
           name: `header${number}`,
           title: `Header ${number}`,
           icon: `<b>H${number}</b>`,
@@ -67,6 +72,6 @@ const headersPlugin: ArenaPlugin = {
       }
     });
   },
-};
+});
 
 export default headersPlugin;

@@ -1,16 +1,15 @@
 import { render } from 'lit-html';
-import ArenaServiceInterface from 'interfaces/ArenaServiceInterface';
-import Textarena from 'Textarena';
-import ArenaSelection from 'ArenaSelection';
+import ArenaSelection from 'helpers/ArenaSelection';
 import ArenaNodeText from 'interfaces/ArenaNodeText';
+import ArenaServiceManager from './ArenaServiceManager';
 
-export default class ArenaView implements ArenaServiceInterface {
-  constructor(protected textarena: Textarena) {
+export default class ArenaView {
+  constructor(protected asm: ArenaServiceManager) {
   }
 
   public render(selection?: ArenaSelection): void {
-    const result = this.textarena.model.model.getHtml(this.textarena.model);
-    const container = this.textarena.editor.getElem();
+    const result = this.asm.model.getHtml();
+    const container = this.asm.textarena.getEditorElement().getElem();
     render(result, container);
     if (selection) {
       this.currentSelection = selection;
@@ -61,8 +60,8 @@ export default class ArenaView implements ArenaServiceInterface {
       const startId = this.getNodeIdAndOffset(range.startContainer, range.startOffset);
       const endId = this.getNodeIdAndOffset(range.endContainer, range.endOffset);
       if (startId && endId) {
-        const startNode = this.textarena.model.getTextNodeById(startId[0]);
-        const endNode = this.textarena.model.getTextNodeById(endId[0]);
+        const startNode = this.asm.model.getTextNodeById(startId[0]);
+        const endNode = this.asm.model.getTextNodeById(endId[0]);
         if (startNode && endNode) {
           const direction = s.focusNode === range.endContainer ? 'forward' : 'backward';
           return new ArenaSelection(startNode, startId[1], endNode, endId[1], direction);

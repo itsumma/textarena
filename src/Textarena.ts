@@ -1,28 +1,34 @@
-import ArenaParser from 'ArenaParser';
-import CreatorBar from 'CreatorBar';
-import ElementHelper from 'ElementHelper';
-import EventManager from 'EventManager';
-import Toolbar from 'Toolbar';
+import ElementHelper from 'helpers/ElementHelper';
+
+import Arena from 'interfaces/Arena';
+import ArenaFormating, { TagAndAttributes } from 'interfaces/ArenaFormating';
+import ArenaOptions from 'interfaces/ArenaOptions';
+import ArenaPlugin from 'interfaces/ArenaPlugin';
+import ArenaWithText from 'interfaces/ArenaWithText';
 import ChangeDataListener from 'interfaces/ChangeHandler';
+import CommandAction from 'interfaces/CommandAction';
 import CreatorBarOptions from 'interfaces/CreatorBarOptions';
+import CreatorOptions from 'interfaces/CreatorOptions';
 import MetaData from 'interfaces/MetaData';
 import TextarenaData from 'interfaces/TextarenaData';
 import TextarenaOptions from 'interfaces/TextarenaOptions';
 import ToolbarOptions from 'interfaces/ToolbarOptions';
-import ArenaLogger from 'ArenaLogger';
-import ArenaPlugin from 'interfaces/ArenaPlugin';
-import ArenaBrowser from 'ArenaBrowser';
-import ArenaModel from 'ArenaModel';
-import ArenaView from 'ArenaView';
-import ArenaCommandManager from 'ArenaCommandManager';
-import headersPlugin from 'plugins/headersPlugin';
-import paragraphPlugin from 'plugins/paragraphPlugin';
-import formatingsPlugin from 'plugins/formatingsPlugin';
-import commonPlugin from 'plugins/commonPlugin';
-import hrPlugin from 'plugins/hrPlugin';
-import listsPlugin from 'plugins/listsPlugin';
+import ToolOptions from 'interfaces/ToolOptions';
+
 import calloutPlugin from 'plugins/calloutPlugin';
+import commonPlugin from 'plugins/commonPlugin';
+import formatingsPlugin from 'plugins/formatingsPlugin';
+import headersPlugin from 'plugins/headersPlugin';
+import hrPlugin from 'plugins/hrPlugin';
 import imagePlugin from 'plugins/imagePlugin';
+import listsPlugin from 'plugins/listsPlugin';
+import paragraphPlugin from 'plugins/paragraphPlugin';
+
+import ArenaCommandManager from 'services/ArenaCommandManager';
+
+import ArenaSelection from 'helpers/ArenaSelection';
+import ArenaServiceManager from 'services/ArenaServiceManager';
+import ArenaAncestor from 'interfaces/ArenaAncestor';
 
 const defaultOptions: TextarenaOptions = {
   editable: true,
@@ -57,98 +63,57 @@ const defaultOptions: TextarenaOptions = {
       // 'blockquote',
     ],
   },
-  plugins: {
-    common: commonPlugin,
-    paragraph: paragraphPlugin,
-    formatings: formatingsPlugin,
-    headers: headersPlugin,
-    hr: hrPlugin,
-    lists: listsPlugin,
-    callout: calloutPlugin,
-    image: imagePlugin,
-  },
-  pluginOptions: {
-    headers: {
-      tags: ['h2', 'h3', 'h4'],
-    },
-    formatings: {
-      tags: ['b', 'i'],
-    },
-  },
+  plugins: [
+    commonPlugin(),
+    paragraphPlugin(),
+    formatingsPlugin(),
+    headersPlugin(),
+    hrPlugin(),
+    listsPlugin(),
+    calloutPlugin(),
+    imagePlugin(),
+  ],
 };
 
 class Textarena {
-  container: ElementHelper;
+  protected debug = false;
 
-  editor: ElementHelper;
+  protected container: ElementHelper;
 
-  logger: ArenaLogger;
+  protected editor: ElementHelper;
 
-  eventManager: EventManager;
+  protected options: TextarenaOptions = {};
 
-  browser: ArenaBrowser;
+  protected meta: MetaData = {};
 
-  view: ArenaView;
-
-  commandManager: ArenaCommandManager;
-
-  parser: ArenaParser;
-
-  model: ArenaModel;
-
-  // manipulator: Manipulator;
-
-  toolbar: Toolbar;
-
-  creatorBar: CreatorBar;
-
-  options: TextarenaOptions = {};
-
-  meta: MetaData = {};
+  protected asm: ArenaServiceManager;
 
   constructor(container: HTMLElement, options?: TextarenaOptions) {
     // DOM Elements
     this.container = new ElementHelper(container, 'textarena-container', '');
     this.editor = new ElementHelper('DIV', 'textarena-editor');
+    this.container.appendChild(this.editor.getElem());
 
     // Services
-    this.eventManager = new EventManager(this);
-    this.logger = new ArenaLogger();
-    this.parser = new ArenaParser(this);
-    this.model = new ArenaModel(this);
-    this.browser = new ArenaBrowser(this);
-    this.view = new ArenaView(this);
-    this.commandManager = new ArenaCommandManager(this);
-    this.container.appendChild(this.editor.getElem());
-    this.toolbar = new Toolbar(this);
-    this.creatorBar = new CreatorBar(this);
-    // this.manipulator = new Manipulator(this.editor, this.eventManager, this.parser);
+    this.asm = new ArenaServiceManager(this);
 
-    // this.setPlugins([new Hr(), new Image(), new Quote()]);
     this.setOptions(options ? { ...defaultOptions, ...options } : defaultOptions);
     this.start();
-    window.ta = this;
   }
 
-  start(): void {
-    this.eventManager.subscribe('modelChanged', (e) => {
-      if (typeof e === 'object') {
-        this.view.render(e.data);
-      }
-      if (this.options.onChange) {
-        this.options.onChange(this.getData());
-      }
-    });
-    if (this.options.onReady) {
-      this.options.onReady(this.getData());
-    }
+  public getContainerElement(): ElementHelper {
+    return this.container;
   }
 
-  destructor(): void {
-    this.eventManager.fire('turnOff');
+  public getEditorElement(): ElementHelper {
+    return this.editor;
   }
 
-  setOptions(options: TextarenaOptions): void {
+  public destructor(): void {
+    this.asm.eventManager.fire('turnOff');
+  }
+
+  public setOptions(options: TextarenaOptions): void {
     if (options.onChange !== undefined) {
       this.setOnChange(options.onChange);
     }
@@ -156,7 +121,7 @@ class Textarena {
       this.setOnReady(options.onReady);
     }
     if (options.plugins) {
-      this.setPlugins(options.plugins, options.pluginOptions);
+      this.setPlugins(options.plugins);
     }
     if (options.toolbar !== undefined) {
       this.setToolbarOptions(options.toolbar);
@@ -171,81 +136,172 @@ class Textarena {
       this.setEditable(options.editable);
     }
     if (options.debug !== undefined) {
-      this.logger.setDebug(options.debug);
+      this.debug = options.debug;
+      this.asm.logger.setDebug(options.debug);
     }
   }
 
-  getData(): TextarenaData {
+  public getData(): TextarenaData {
     return {
-      content: this.editor.getInnerHTML()
-        .replace(/<!--(?!-->)*-->/g, '')
-        .replace(/^[\s\n]+/, '')
-        .replace(/[\s\n]+$/, '')
-        .replace(/(<[\w-]+)\s+observe-id="[\d.]+"/g, '$1')
-        .replace(/(<p)/g, '\n$1'),
+      content: this.getHtml(),
+      // .replace(/<!--(?!-->)*-->/g, '')
+      // .replace(/^[\s\n]+/, '')
+      // .replace(/[\s\n]+$/, '')
+      // .replace(/(<[\w-]+)\s+observe-id="[\d.]+"/g, '$1')
+      // .replace(/(<p)/g, '\n$1'),
       meta: this.meta,
     };
   }
 
-  setData(data: TextarenaData): void {
+  public getHtml(): string {
+    return this.asm.model.getOutputHtml();
+  }
+
+  public setData(data: TextarenaData): void {
     if (typeof data.content === 'string') {
-      this.parser.insertHtmlToRoot(data.content);
-      // this.parser.insertHtmlToModel(
-      // '<h2>titl<i>e</i></h2><p>blah <em>it <b>bold</b> </em></p><p>blah <b>bold</b></p>',
-      // this.parser.model, 0);
-      this.view.render();
-      // this.parser.insert(data.content, true);
+      this.asm.parser.insertHtmlToRoot(data.content);
+      this.asm.view.render();
     }
     if (data.meta) {
       this.meta = data.meta;
     }
   }
 
-  setEditable(editable: boolean): void {
+  public setEditable(editable: boolean): void {
     if (this.options.editable !== editable) {
       if (editable) {
-        this.eventManager.fire('turnOn');
+        this.asm.eventManager.fire('turnOn');
       } else {
-        this.eventManager.fire('turnOff');
+        this.asm.eventManager.fire('turnOff');
       }
       this.options.editable = editable;
       this.editor.setContentEditable(editable);
     }
   }
 
-  setOnChange(onChange: ChangeDataListener): void {
+  public setOnChange(onChange: ChangeDataListener): void {
     this.options.onChange = onChange;
   }
 
-  setOnReady(onReady: ChangeDataListener): void {
+  public setOnReady(onReady: ChangeDataListener): void {
     this.options.onReady = onReady;
   }
 
-  setPlugins(
-    plugins: {[key: string]: ArenaPlugin},
-    options?: {[key: string]: any},
+  public setPlugins(
+    plugins: ArenaPlugin[],
   ): void {
-    Object.entries(plugins).forEach(([name, plugin]) => {
-      plugin.register(this, options && options[name] ? options[name] : undefined);
+    plugins.forEach((plugin) => {
+      plugin.register(this);
     });
   }
 
-  setToolbarOptions(toolbarOptions: ToolbarOptions): void {
-    this.toolbar.setOptions(toolbarOptions);
+  public setToolbarOptions(toolbarOptions: ToolbarOptions): void {
+    this.asm.toolbar.setOptions(toolbarOptions);
   }
 
-  setCreatorBarOptions(creatorBarOptions: CreatorBarOptions): void {
-    this.creatorBar.setOptions(creatorBarOptions);
+  public setCreatorBarOptions(creatorBarOptions: CreatorBarOptions): void {
+    this.asm.creatorBar.setOptions(creatorBarOptions);
   }
 
-  // TODO вынести это в плагин для картинок
-  // processElements(): void {
-  //   const figures = document.querySelectorAll('figure');
-  //   for (let i = 0; i < figures.length; i += 1) {
-  //     const figure = figures[i];
-  //     observeHTMLElement(figure, this.eventManager);
-  //   }
-  // }
+  public getRootArenaName(): string {
+    return this.asm.model.rootArenaName;
+  }
+
+  protected simpleArenas: Arena[] = [];
+
+  public getSimpleArenas(): Arena[] {
+    return this.simpleArenas;
+  }
+
+  public addSimpleArenas(arena: Arena): void {
+    this.simpleArenas.push(arena);
+  }
+
+  public setDefaultTextArena(arena: ArenaAncestor | ArenaWithText): void {
+    this.asm.model.model.arena.setArenaForText(arena as ArenaWithText);
+  }
+
+  public getDefaultTextArena(): ArenaAncestor | ArenaWithText | undefined {
+    return this.asm.model.model.arena.getArenaForText();
+  }
+
+  public registerArena(
+    arenaOptions: ArenaOptions,
+    markers?: TagAndAttributes[],
+    parentArenas?: string[],
+  ): Arena {
+    return this.asm.model.registerArena(
+      arenaOptions,
+      markers,
+      parentArenas,
+    );
+  }
+
+  public registerFormating(
+    formating: ArenaFormating,
+    markers: TagAndAttributes[],
+  ): ArenaFormating {
+    return this.asm.model.registerFormating(formating, markers);
+  }
+
+  public registerCommand(
+    command: string,
+    action: CommandAction,
+  ): ArenaCommandManager {
+    return this.asm.commandManager.registerCommand(command, action);
+  }
+
+  public registerShortcut(
+    shortcut: string,
+    command: string,
+  ): ArenaCommandManager {
+    return this.asm.commandManager.registerShortcut(shortcut, command);
+  }
+
+  public registerTool(opts: ToolOptions): void {
+    this.asm.toolbar.registerTool(opts);
+  }
+
+  public registerCreator(opts: CreatorOptions): void {
+    this.asm.creatorBar.registerCreator(opts);
+  }
+
+  public transformModel(selection: ArenaSelection, arena: Arena): ArenaSelection {
+    return this.asm.model.transformModel(selection, arena);
+  }
+
+  public breakSelection(selection: ArenaSelection): ArenaSelection {
+    return this.asm.model.breakSelection(selection);
+  }
+
+  public moveChild(selection: ArenaSelection, direction: 'up' | 'down'): ArenaSelection {
+    return this.asm.model.moveChild(selection, direction);
+  }
+
+  public formatingModel(selection: ArenaSelection, formating: ArenaFormating): ArenaSelection {
+    return this.asm.model.formatingModel(selection, formating);
+  }
+
+  protected start(): void {
+    this.asm.eventManager.subscribe('modelChanged', (e) => {
+      if (typeof e === 'object') {
+        this.asm.view.render(e.data instanceof ArenaSelection ? e.data : undefined);
+      }
+      if (this.options.onChange) {
+        this.options.onChange(this.getData());
+      }
+    });
+    if (this.options.onReady) {
+      this.options.onReady(this.getData());
+    }
+    if (this.debug) {
+      window.asm = this.asm;
+    }
+  }
+}
+
+declare global {
+  interface Window { asm: undefined | ArenaServiceManager; }
 }
 
 export default Textarena;
