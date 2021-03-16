@@ -5,8 +5,21 @@ node_js:
 install:
   - npm i -g yarn && yarn
 
-before_script:
-  - yarn build
+jobs:
+  include:
+    - name: "Unit tests"
+      env: TEST_COMMAND=test:jest
+      before_script:
+        - yarn build
+    - name: "E2E tests"
+      env: TEST_COMMAND=test:cypress
+      before_script:
+        - yarn build
+        - npm run start & # start a Web server
+        - sleep 3 # give Web server some time to bind to sockets, etc
+
+script:
+  - npm run $TEST_COMMAND
 
 deploy:
   provider: pages
