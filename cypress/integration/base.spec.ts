@@ -36,9 +36,9 @@ context('Actions', () => {
         .type('{enter}')
         .type('123');
 
-      cy.window()
-        .its('ta.model.model.children.length')
-        .should('equal', 2);
+      // cy.window()
+      //   .its('ta.model.model.children.length')
+      //   .should('equal', 2);
       cy.get('@root').contains(`123${example.title.slice(-3)}`);
       // cy.window()
       //   .its('ta.getData().content')

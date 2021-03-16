@@ -12,7 +12,7 @@ jobs:
       before_script:
         - yarn build
     - name: "E2E tests"
-      env: TEST_COMMAND=test:cypress
+      env: TEST_COMMAND=test
       before_script:
         - yarn build
         - npm run start & # start a Web server

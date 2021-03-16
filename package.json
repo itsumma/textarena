@@ -48,7 +48,7 @@
     "build:types": "tsc --emitDeclarationOnly",
     "build:js": "babel src --out-dir lib --extensions \".ts,.tsx\" --source-maps inline",
     "build:bundle": "yarn webpack",
-    "test": "yarn test:jest",
+    "test": "yarn lint && yarn test:jest && yarn test:cypress",
     "test:jest": "jest ./test",
     "test:cypress": "cypress run",
     "cypress:open": "cypress open"
