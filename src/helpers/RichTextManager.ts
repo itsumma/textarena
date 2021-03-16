@@ -1,14 +1,92 @@
 /* eslint-disable no-lonely-if */
 import Intervaler from 'helpers/Intervaler';
 import { ArenaFormatings } from 'interfaces/ArenaFormating';
+import ArenaInline from 'interfaces/ArenaInline';
+import ArenaNodeInline from 'interfaces/ArenaNodeInline';
+import InlineNode from 'models/InlineNode';
 
 export type Formatings = {
   [name: string]: Intervaler
 };
 
+type InlineNodeInterval = {
+  node: ArenaNodeInline,
+  start: number,
+  end: number,
+};
+
 type Insertion = {
   tag: string,
   offset: number,
+};
+
+type Interval = {
+  start: number,
+  end: number,
+};
+
+type FNodeTags = {
+  name: string,
+  openTag: string,
+  closeTag: string,
+};
+
+type FNode = {
+  name: string,
+  openTag?: string,
+  closeTag?: string,
+  start: number,
+  end: number,
+  children: FNode[],
+};
+
+const insertInNodes = (
+  nodes: FNode[],
+  tags: FNodeTags,
+  interval: Interval,
+) => {
+  for (let i = 0; i < nodes.length; i += 1) {
+    const node = nodes[i];
+    if (node.start >= interval.end) {
+      break;
+    }
+    if (interval.start < node.end && interval.end > node.start) {
+      if (node.name === '') {
+        const newNodes = [];
+        if (node.start < interval.start) {
+          newNodes.push({
+            name: '',
+            start: node.start,
+            end: interval.start,
+            children: [],
+          });
+        }
+        newNodes.push({
+          ...tags,
+          start: Math.max(node.start, interval.start),
+          end: Math.min(node.end, interval.end),
+          children: [{
+            name: '',
+            start: Math.max(node.start, interval.start),
+            end: Math.min(node.end, interval.end),
+            children: [],
+          }],
+        });
+        if (node.end > interval.end) {
+          newNodes.push({
+            name: '',
+            start: interval.end,
+            end: node.end,
+            children: [],
+          });
+        }
+        nodes.splice(i, 1, ...newNodes);
+        i += newNodes.length - 1;
+      } else {
+        insertInNodes(node.children, tags, interval);
+      }
+    }
+  }
 };
 
 export default class RichTextManager {
@@ -34,6 +112,9 @@ export default class RichTextManager {
     if (text === '') {
       return '<br/>';
     }
+    const tree = this.getHtmlTree(frms);
+    const html = this.getHtmlFromTree(tree);
+    return html;
     // FIXME nesting formatings
     let index = 0;
     let result = '';
@@ -147,6 +228,34 @@ export default class RichTextManager {
     }
   }
 
+  public addInlineNode(
+    arena: ArenaInline,
+    start: number,
+    end: number,
+  ): ArenaNodeInline | undefined {
+    const node = new InlineNode(arena);
+    if (node instanceof InlineNode) {
+      this.inlineNodes.push({
+        node,
+        start,
+        end,
+      });
+      return node;
+    }
+    return undefined;
+  }
+
+  public removeInlineNode(node: ArenaNodeInline): void {
+    for (let i = 0; i < this.inlineNodes.length; i += 1) {
+      if (this.inlineNodes[i].node === node) {
+        this.inlineNodes.splice(i, 1);
+        return;
+      }
+    }
+  }
+
+  protected inlineNodes: InlineNodeInterval[] = [];
+
   protected formatings: Formatings;
 
   protected text: string;
@@ -212,5 +321,68 @@ export default class RichTextManager {
       }
       this.formatings[name].merge(intervaler, offset);
     });
+  }
+
+  protected getHtmlTree(frms: ArenaFormatings): FNode[] {
+    const rootNodes: FNode[] = [{
+      name: '',
+      start: 0,
+      end: this.text.length,
+      children: [],
+    }];
+
+    this.inlineNodes.forEach((obj) => {
+      const { node, start, end } = obj;
+      const [openTag, closeTag] = node.getTags();
+      insertInNodes(
+        rootNodes,
+        {
+          name: node.arena.name,
+          openTag,
+          closeTag,
+        },
+        { start, end },
+      );
+    });
+
+    Object.entries(this.formatings).forEach(([name, intervaler]) => {
+      if (frms[name]) {
+        const { tag, attributes } = frms[name];
+        let attributesStr = '';
+        attributes.forEach((attr) => {
+          attributesStr += ` ${attr}`;
+        });
+
+        intervaler.getIntervals().forEach((interval) => {
+          insertInNodes(
+            rootNodes,
+            {
+              name,
+              openTag: `<${tag.toLowerCase()}${attributesStr}>`,
+              closeTag: `</${tag.toLowerCase()}>`,
+            },
+            interval,
+          );
+        });
+      }
+    });
+    return rootNodes;
+  }
+
+  protected getHtmlFromTree(nodes: FNode[]): string {
+    let text = '';
+    for (let i = 0; i < nodes.length; i += 1) {
+      const node = nodes[i];
+      if (node.name === '') {
+        text += this.prepareText(
+          this.text.slice(node.start, node.end),
+          node.start === 0,
+          node.end === text.length,
+        );
+      } else {
+        text += node.openTag + this.getHtmlFromTree(node.children) + node.closeTag;
+      }
+    }
+    return text;
   }
 }

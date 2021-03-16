@@ -62,6 +62,9 @@ export default class MediatorNode implements ArenaNodeScion, ArenaNodeAncestor {
   }
 
   public getHtml(frms: ArenaFormatings): TemplateResult | string {
+    if (this.children.length === 0) {
+      return '';
+    }
     return this.arena.getTemplate(html`
       ${repeat(this.children, (c, index) => index, (child) => child.getHtml(frms))}
     `, this.getGlobalIndex());

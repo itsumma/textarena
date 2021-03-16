@@ -27,12 +27,14 @@ export default class ArenaView {
   }
 
   public resetCurrentSelection(): void {
+    console.error('reset selection');
     this.currentSelection = undefined;
   }
 
   protected currentSelection: ArenaSelection | undefined;
 
   protected applyArenaSelection(selection: ArenaSelection): ArenaView {
+    console.error(`apply selection ${selection.startNode.getGlobalIndex()}-${selection.startOffset}`);
     const s = window.getSelection();
     if (s) {
       const {
@@ -54,6 +56,7 @@ export default class ArenaView {
   }
 
   protected detectArenaSelection(): ArenaSelection | undefined {
+    console.error('detect selection');
     const s = window.getSelection();
     const range = s ? s.getRangeAt(0) : undefined;
     if (s && range) {

@@ -17,16 +17,15 @@
   const elem = document.getElementById('textarena-container');
 
   if (elem && (typeof Textarena !== 'undefined')) {
-    let initData;
-    // const storedData = localStorage.getItem('data');
-    // try {
-    //   if (storedData) {
-    //     initData = JSON.parse(storedData);
-    //   }
-    // } catch {}
-    if (!initData) {
-      initData = {
-        content: `<h2>Простой текстовый редактор</h2>
+    let dataHtml;
+    const storedData = localStorage.getItem('dataHtml');
+    try {
+      if (storedData) {
+        dataHtml = JSON.parse(storedData);
+      }
+    } catch {}
+    if (!dataHtml) {
+      dataHtml = `<h2>Простой текстовый редактор</h2>
         <p id>
           normal <b>bold<i>-i-</i>not_i-<i>again_i </i></b>
         </p>
@@ -64,7 +63,7 @@
         <li>H3 — третий по величине.</li>
         <li>H4 — четвёртый.</li>
         </ol>
-        <p>Почему нет первого? Во-первых, какие заголовки доступны в редакторе, настраивается. Во-вторых, не рекомендуется на странице использовать более одного заголовка первого уровня. На этой странице уже есть — «TEXTARENA» — в верху страницы.</p>`,
+        <p>Почему нет первого? Во-первых, какие заголовки доступны в редакторе, настраивается. Во-вторых, не рекомендуется на странице использовать более одного заголовка первого уровня. На этой странице уже есть — «TEXTARENA» — в верху страницы.</p>`;
         // content: `<h2>Простой визуальный редактор</h2>
         // <p>Textarena адаптирована для быстрой работы. Все функции доступны с помощью горячих клавиш.</p>
         // <arena-callout>
@@ -111,13 +110,15 @@
 // content: `
 // <p>1<b>234</b>56789123</p>
 //     `,
-      };
+    }
+    const initData = {
+      dataHtml,
     }
     const htmlElem = document.getElementById('html');
     const onChange = debounce((data) => {
-      localStorage.setItem('data', JSON.stringify(data));
+      localStorage.setItem('dataHtml', JSON.stringify(data.dataHtml));
       if (htmlElem) {
-        htmlElem.innerText = data.content;
+        htmlElem.innerText = data.html;
       }
     }, 500);
     const calloutPlugin = function () {

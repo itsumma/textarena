@@ -12,6 +12,10 @@ export type AbstractArena = {
   init?: (node: ArenaNode) => ArenaNode;
 };
 
+export type ArenaOptionsInline = AbstractArena & {
+  inline: true,
+};
+
 export type ArenaOptionsSingle = AbstractArena & {
   single: true,
 };
@@ -33,7 +37,8 @@ export type ArenaOptionsRoot = ArenaOptionsAncestor & {
   root: true,
 };
 
-type ArenaOptions = ArenaOptionsSingle |
+type ArenaOptions = ArenaOptionsInline |
+                    ArenaOptionsSingle |
                     ArenaOptionsWithText |
                     ArenaOptionsAncestor;
 
