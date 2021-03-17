@@ -1,13 +1,14 @@
 import Textarena from 'Textarena';
 import ArenaPlugin from 'interfaces/ArenaPlugin';
-import ArenaSelection from 'ArenaSelection';
+import ArenaSelection from 'helpers/ArenaSelection';
+import ArenaNode from 'interfaces/ArenaNode';
 
 type MarkOptions = {
   tag: string,
   attributes: string[];
 };
 
-type FormatingsOptions = {
+type FormatingOptions = {
   name: string,
   tag: string,
   attributes: string[];
@@ -21,9 +22,11 @@ type FormatingsOptions = {
   },
 };
 
-const defaultOptions: {
-  formatings: FormatingsOptions[],
-} = {
+type FormatingsOptions = {
+  formatings: FormatingOptions[],
+};
+
+const defaultOptions: FormatingsOptions = {
   formatings: [
     {
       name: 'strong',
@@ -136,8 +139,8 @@ const defaultOptions: {
   ],
 };
 
-const formatingsPlugin: ArenaPlugin = {
-  register(textarena: Textarena, opts: any): void {
+const formatingsPlugin = (opts?: FormatingsOptions): ArenaPlugin => ({
+  register(textarena: Textarena): void {
     const options = { ...defaultOptions, ...(opts || {}) };
     options.formatings.forEach(({
       name,
@@ -148,8 +151,8 @@ const formatingsPlugin: ArenaPlugin = {
       command,
       marks,
       tool,
-    }: FormatingsOptions) => {
-      const formating = textarena.model.registerFormating(
+    }: FormatingOptions) => {
+      const formating = textarena.registerFormating(
         {
           name,
           tag,
@@ -157,26 +160,31 @@ const formatingsPlugin: ArenaPlugin = {
         },
         marks,
       );
-      textarena.commandManager.registerCommand(
+      textarena.registerCommand(
         command,
-        (ta: Textarena, selection: ArenaSelection) => ta.model.formatingModel(selection, formating),
+        (ta: Textarena, selection: ArenaSelection) => ta.formatingModel(selection, formating),
       );
-      textarena.commandManager.registerShortcut(
+      textarena.registerShortcut(
         shortcut,
         command,
       );
       if (tool) {
-        textarena.toolbar.registerTool({
+        textarena.registerTool({
           ...tool,
           name,
           command,
           hint,
           shortcut,
-          formating,
+          checkStatus: (node: ArenaNode, start?: number, end?: number): boolean => {
+            if ('hasText' in node) {
+              return node.getText().hasFormating(name, start, end);
+            }
+            return true;
+          },
         });
       }
     });
   },
-};
+});
 
 export default formatingsPlugin;

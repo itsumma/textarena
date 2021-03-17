@@ -1,8 +1,7 @@
 /* eslint-disable no-bitwise */
-import Textarena from 'Textarena';
-import ArenaSelection from 'ArenaSelection';
-
-type CommandAction = (textarena: Textarena, selection: ArenaSelection) => ArenaSelection;
+import ArenaSelection from 'helpers/ArenaSelection';
+import CommandAction from 'interfaces/CommandAction';
+import ArenaServiceManager from './ArenaServiceManager';
 
 export const keyboardKeys = [
   'Escape', 'F1', 'F2', 'F3', 'F4', 'F5', 'F6', 'F7', 'F8', 'F9', 'F10', 'F11', 'F12', 'Insert', 'Delete',
@@ -26,6 +25,9 @@ export const keyboardKeys = [
   'Numpad4', 'Numpad5', 'Numpad6',
   'Numpad1', 'Numpad2', 'Numpad3',
   'Numpad0', 'NumpadDecimal', 'NumpadEnter',
+
+  'ArrowUp',
+  'ArrowLeft', 'ArrowDown', 'ArrowRight',
 ];
 
 export type KeyboardKey = typeof keyboardKeys[number];
@@ -53,7 +55,7 @@ export default class ArenaCommandManager {
     [key: string]: string,
   } = {};
 
-  constructor(private textarena: Textarena) {
+  constructor(protected asm: ArenaServiceManager) {
   }
 
   registerCommand(
@@ -74,27 +76,25 @@ export default class ArenaCommandManager {
     return this;
   }
 
-  execCommand(command: string, selection?: ArenaSelection): ArenaSelection | undefined {
-    this.textarena.logger.log('exec command', command, selection);
+  execCommand(command: string, selection?: ArenaSelection): void {
+    this.asm.logger.log('exec command', command, selection);
     if (this.commands[command]) {
-      const sel = selection || this.textarena.view.getArenaSelection();
-      if (sel) {
-        return this.commands[command](this.textarena, sel);
+      if (selection) {
+        const newSelection = this.commands[command](this.asm.textarena, selection);
+        this.asm.eventManager.fire({ name: 'modelChanged', data: newSelection });
       }
     }
-    return selection;
   }
 
   execShortcut(
     selection: ArenaSelection,
     modifiersSum: number,
     key: KeyboardKey,
-  ): ArenaSelection | undefined {
+  ): void {
     const shortcut = `${modifiersSum}+${key}`;
     if (this.shortcuts[shortcut]) {
-      return this.execCommand(this.shortcuts[shortcut], selection);
+      this.execCommand(this.shortcuts[shortcut], selection);
     }
-    return selection;
   }
 
   getModifiersSum(modifiers: Modifiers): number {

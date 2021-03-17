@@ -1,6 +1,6 @@
 /* eslint-disable no-lonely-if */
-import ArenaModel, { ArenaFormatings } from 'ArenaModel';
-import Intervaler from 'Intervaler';
+import Intervaler from 'helpers/Intervaler';
+import { ArenaFormatings } from 'interfaces/ArenaFormating';
 
 export type Formatings = {
   [name: string]: Intervaler
@@ -29,25 +29,34 @@ export default class RichTextManager {
     return this.formatings;
   }
 
-  public getHtml(model: ArenaModel): string {
-    let { text } = this;
+  public getHtml(frms: ArenaFormatings): string {
+    const { text } = this;
     if (text === '') {
       return '<br/>';
     }
-    const frms = model.getFormatings();
     // FIXME nesting formatings
     let index = 0;
     let result = '';
+    let lastSpace = false;
     this.getInsertions(frms).forEach((insertion) => {
-      result += this.prepareText(
+      let prepared = this.prepareText(
         text.slice(index, insertion.offset),
         index === 0,
         insertion.offset === text.length,
-      )
+      );
+      if (lastSpace) {
+        prepared = prepared.replace(/^\s/, '&nbsp;');
+      }
+      lastSpace = prepared.slice(-1) === ' ';
+      result += prepared
         + insertion.tag;
       index = insertion.offset;
     });
-    result += this.prepareText(text.slice(index), index === 0, true);
+    let prepared = this.prepareText(text.slice(index), index === 0, true);
+    if (lastSpace) {
+      prepared = prepared.replace(/^\s/, '&nbsp;');
+    }
+    result += prepared;
     return result;
   }
 
@@ -102,6 +111,13 @@ export default class RichTextManager {
     }
   }
 
+  public hasFormating(name: string, start?: number, end?: number): boolean {
+    if (!this.formatings[name]) {
+      return false;
+    }
+    return this.formatings[name].hasInterval(start || 0, end || this.text.length);
+  }
+
   public ltrim(): void {
     const match = this.text.match(/^( +)/g);
     if (!match) {
@@ -151,12 +167,12 @@ export default class RichTextManager {
       .replace(/"/g, '&quot;')
       .replace(/'/g, '&#039;')
       .replace(/\s\s/g, ' &nbsp;');
-    // if (first) {
+    if (first) {
       result = result.replace(/^\s/, '&nbsp;');
-    // }
-    // if (last) {
+    }
+    if (last) {
       result = result.replace(/\s$/, '&nbsp;');
-    // }
+    }
     return result;
   }
 
@@ -165,14 +181,18 @@ export default class RichTextManager {
     Object.entries(this.formatings).forEach(([name, intervaler]) => {
       if (frms[name]) {
         const { tag, attributes } = frms[name];
+        let attributesStr = '';
+        attributes.forEach((attr) => {
+          attributesStr += ` ${attr}`;
+        });
         intervaler.getIntervals().forEach((interval) => {
           insertions.push({
             offset: interval.start,
-            tag: `<${tag}>`,
+            tag: `<${tag.toLowerCase()}${attributesStr}>`,
           });
           insertions.push({
             offset: interval.end,
-            tag: `</${tag}>`,
+            tag: `</${tag.toLowerCase()}>`,
           });
         });
       }

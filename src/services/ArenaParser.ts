@@ -1,25 +1,27 @@
-/* eslint-disable consistent-return */
 import { FilterXSS } from 'xss';
-import ArenaNode from 'interfaces/ArenaNode';
-import RichTextManager from 'RichTextManager';
-import Textarena from 'Textarena';
-import { ArenaFormating } from 'ArenaModel';
+
 import Arena from 'interfaces/Arena';
+import ArenaFormating from 'interfaces/ArenaFormating';
+import ArenaNode from 'interfaces/ArenaNode';
 import ArenaNodeText from 'interfaces/ArenaNodeText';
+
+import RichTextManager from 'helpers/RichTextManager';
+
+import ArenaServiceManager from './ArenaServiceManager';
 
 export default class ArenaParser {
   private filterXSS: FilterXSS | undefined;
 
-  constructor(private textarena: Textarena) {
+  constructor(protected asm: ArenaServiceManager) {
   }
 
   public insertHtmlToRoot(
     htmlString: string,
   ): void {
-    this.textarena.logger.log(htmlString);
+    this.asm.logger.log(htmlString);
     this.insertHtmlToModel(
       htmlString,
-      this.textarena.model.model,
+      this.asm.model.model,
       0,
     );
   }
@@ -42,14 +44,14 @@ export default class ArenaParser {
     let currentNode = arenaNode;
     let currentOffset = offset;
     let firstTextNode = true;
-    node.childNodes.forEach((childNode, i) => {
+    node.childNodes.forEach((childNode) => {
       const result = this.insertChild(
         childNode,
         currentNode,
         currentOffset,
         firstTextNode,
-        i === 0,
-        i === node.childNodes.length - 1,
+        // i === 0,
+        // i === node.childNodes.length - 1,
       );
 
       if (result) {
@@ -57,8 +59,6 @@ export default class ArenaParser {
         if (result[2] && firstTextNode) {
           firstTextNode = false;
         }
-      } else {
-        return undefined;
       }
     });
     return [currentNode, currentOffset];
@@ -69,15 +69,15 @@ export default class ArenaParser {
     arenaNode: ArenaNode,
     offset: number,
     firstTextNode: boolean,
-    first: boolean,
-    last: boolean,
+    // first: boolean,
+    // last: boolean,
   ): [ArenaNode, number, boolean] {
     // console.log('isert', node, arenaNode);
     if (node.nodeType === Node.TEXT_NODE) {
       const text = this.clearText(
         node.textContent,
-        first,
-        last,
+        // first,
+        // last,
         !('hasText' in arenaNode),
       );
       if (text.length === 0) {
@@ -103,7 +103,7 @@ export default class ArenaParser {
           }
           return [newArenaNode.parent, newArenaNode.getIndex() + 1, true];
         }
-        this.textarena.logger.log('this is arena');
+        this.asm.logger.log('this is arena');
         const res = this.insertChildren(elementNode, arenaNode, offset);
         return [...res, true];
       }
@@ -111,7 +111,7 @@ export default class ArenaParser {
       if (formating) {
         const formatings = this.getText(elementNode);
         formatings.insertFormating(formating.name, 0, formatings.getTextLength());
-        this.textarena.logger.log('this is formating', formatings);
+        this.asm.logger.log('this is formating', formatings);
         const res = arenaNode.insertText(formatings, offset);
         return [res.node, res.offset, true];
       }
@@ -122,7 +122,7 @@ export default class ArenaParser {
   }
 
   private checkArenaMark(node: HTMLElement): Arena | undefined {
-    const marks = this.textarena.model.getArenaMarks(node.tagName);
+    const marks = this.asm.model.getArenaMarks(node.tagName);
     if (marks) {
       for (let i = 0; i < marks.length; i += 1) {
         const mark = marks[i];
@@ -135,7 +135,7 @@ export default class ArenaParser {
   }
 
   private checkFormatingMark(node: HTMLElement): ArenaFormating | undefined {
-    const marks = this.textarena.model.getFormatingMarks(node.tagName);
+    const marks = this.asm.model.getFormatingMarks(node.tagName);
     if (marks) {
       for (let i = 0; i < marks.length; i += 1) {
         const mark = marks[i];
@@ -157,6 +157,7 @@ export default class ArenaParser {
       if (name === 'style') {
         const [styleName, styleValue] = value.split(':');
         if (!(styleName in node.style)
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           || node.style[styleName as any] !== styleValue.trim().toLowerCase()) {
           return false;
         }
@@ -183,7 +184,7 @@ export default class ArenaParser {
         }
         offset = formatings.insertText(newFormatings, offset);
       } else {
-        this.textarena.logger.error('unaccepted node type, remove', childNode);
+        this.asm.logger.error('unaccepted node type, remove', childNode);
       }
       // [currentNode, currentOffset] = this.parseNode(childNode, currentNode, currentOffset);
     });
@@ -192,8 +193,8 @@ export default class ArenaParser {
 
   clearText(
     text: string | null,
-    first = false,
-    last = false,
+    // first = false,
+    // last = false,
     ignoreEmpty = false,
   ): string {
     let result = text || '';
@@ -215,12 +216,10 @@ export default class ArenaParser {
     // if (last) {
     //   result = result.replace(/[\s\n]+$/, '');
     // }
-    console.log(`\tResult «${result}»`);
     return result;
   }
 
   clearTextNode(newArenaNode: ArenaNodeText): void {
-    console.log('clear node', newArenaNode.getText(), newArenaNode);
     newArenaNode.ltrim();
     newArenaNode.rtrim();
     newArenaNode.clearSpaces();

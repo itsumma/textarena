@@ -1,23 +1,38 @@
 import { render } from 'lit-html';
-import ArenaServiceInterface from 'interfaces/ArenaServiceInterface';
-import Textarena from 'Textarena';
-import ArenaSelection from 'ArenaSelection';
+import ArenaSelection from 'helpers/ArenaSelection';
 import ArenaNodeText from 'interfaces/ArenaNodeText';
+import ArenaServiceManager from './ArenaServiceManager';
 
-export default class ArenaView implements ArenaServiceInterface {
-  constructor(private textarena: Textarena) {
+export default class ArenaView {
+  constructor(protected asm: ArenaServiceManager) {
   }
 
   public render(selection?: ArenaSelection): void {
-    const result = this.textarena.model.model.getHtml(this.textarena.model);
-    const container = this.textarena.editor.getElem();
+    const result = this.asm.model.getHtml();
+    const container = this.asm.textarena.getEditorElement().getElem();
     render(result, container);
     if (selection) {
-      this.setArenaSelection(selection);
+      this.currentSelection = selection;
+    }
+    if (this.currentSelection) {
+      this.applyArenaSelection(this.currentSelection);
     }
   }
 
-  public setArenaSelection(selection: ArenaSelection): ArenaView {
+  public getCurrentSelection(): ArenaSelection | undefined {
+    if (!this.currentSelection) {
+      this.currentSelection = this.detectArenaSelection();
+    }
+    return this.currentSelection;
+  }
+
+  public resetCurrentSelection(): void {
+    this.currentSelection = undefined;
+  }
+
+  protected currentSelection: ArenaSelection | undefined;
+
+  protected applyArenaSelection(selection: ArenaSelection): ArenaView {
     const s = window.getSelection();
     if (s) {
       const {
@@ -38,15 +53,15 @@ export default class ArenaView implements ArenaServiceInterface {
     return this;
   }
 
-  public getArenaSelection(): ArenaSelection | undefined {
+  protected detectArenaSelection(): ArenaSelection | undefined {
     const s = window.getSelection();
     const range = s ? s.getRangeAt(0) : undefined;
     if (s && range) {
       const startId = this.getNodeIdAndOffset(range.startContainer, range.startOffset);
       const endId = this.getNodeIdAndOffset(range.endContainer, range.endOffset);
       if (startId && endId) {
-        const startNode = this.textarena.model.getTextNodeById(startId[0]);
-        const endNode = this.textarena.model.getTextNodeById(endId[0]);
+        const startNode = this.asm.model.getTextNodeById(startId[0]);
+        const endNode = this.asm.model.getTextNodeById(endId[0]);
         if (startNode && endNode) {
           const direction = s.focusNode === range.endContainer ? 'forward' : 'backward';
           return new ArenaSelection(startNode, startId[1], endNode, endId[1], direction);
@@ -56,7 +71,7 @@ export default class ArenaView implements ArenaServiceInterface {
     return undefined;
   }
 
-  private getNodeIdAndOffset(
+  protected getNodeIdAndOffset(
     node: Node | HTMLElement,
     offset: number,
   ): [string, number] | undefined {
@@ -74,8 +89,13 @@ export default class ArenaView implements ArenaServiceInterface {
     }
     if (node.parentElement) {
       let newOffset = offset;
-      const siblings = node.parentElement.childNodes;
-      const myIndex = Array.from(siblings).indexOf(node as ChildNode);
+      const siblings = this.getChildNodes(node.parentElement);
+      const myIndex = siblings.indexOf(node as ChildNode);
+      if (node.nodeType === Node.TEXT_NODE
+        && myIndex === siblings.length - 1
+        && this.isEmptyNode(node)) {
+        newOffset = 0;
+      }
       let stillEmpty = true;
       for (let i = 0; i < myIndex; i += 1) {
         const sibling = siblings[i];
@@ -93,7 +113,12 @@ export default class ArenaView implements ArenaServiceInterface {
     return undefined;
   }
 
-  private isEmptyNode(node: Node): boolean {
+  protected getChildNodes(node: HTMLElement): ChildNode[] {
+    return Array.from(node.childNodes)
+      .filter((child) => [Node.TEXT_NODE, Node.ELEMENT_NODE].includes(child.nodeType));
+  }
+
+  protected isEmptyNode(node: Node): boolean {
     if (node.nodeType === Node.TEXT_NODE) {
       const text = node.textContent || '';
       return !/\u00A0/.test(text) && /^[\s\n]*$/.test(text);
@@ -107,7 +132,7 @@ export default class ArenaView implements ArenaServiceInterface {
     return true;
   }
 
-  private getTextLength(
+  protected getTextLength(
     node: ChildNode,
   ): number {
     if (node.nodeType === Node.TEXT_NODE) {
@@ -124,7 +149,7 @@ export default class ArenaView implements ArenaServiceInterface {
     return 0;
   }
 
-  private getElementAndOffset(
+  protected getElementAndOffset(
     node: ArenaNodeText,
     offset: number,
   ): [ChildNode, number] | undefined {
@@ -146,7 +171,7 @@ export default class ArenaView implements ArenaServiceInterface {
     return document.querySelector(`[observe-id="${id}"]`);
   }
 
-  public reachOffset(element: Element, offset: number): [ChildNode, number] | number {
+  protected reachOffset(element: Element, offset: number): [ChildNode, number] | number {
     let reachedOffset = 0;
     let stillEmpty = true;
     for (let i = 0; i < element.childNodes.length; i += 1) {

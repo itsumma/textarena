@@ -9,17 +9,25 @@ export default abstract class AbstractArena {
 
   readonly attributes: string[];
 
+  readonly automerge: boolean = false;
+
   readonly initCallback: ((node: ArenaNode) => ArenaNode) | undefined;
 
   constructor(options: ArenaOptions) {
     this.name = options.name;
     this.tag = options.tag;
     this.attributes = options.attributes;
+    if (options.automerge) {
+      this.automerge = true;
+    }
     this.initCallback = options.init;
   }
 
-  protected getAttributesString(id: string): string {
-    let str = `observe-id="${id}"`;
+  protected getAttributesString(id?: string): string {
+    let str = '';
+    if (id) {
+      str += ` observe-id="${id}"`;
+    }
     this.attributes.forEach((attr) => {
       str += ` ${attr}`;
     });
@@ -46,6 +54,14 @@ export default abstract class AbstractArena {
     // return html`
     //   ${unsafeHTML(`<${this.tag} observe-id="${id}">${html`children`}</${this.tag}>`)}
     // `;
+  }
+
+  public getOutputTemplate(children: string | undefined, deep: number): string {
+    const attrs = this.getAttributesString();
+    const tab = '  '.repeat(deep);
+    const tag = this.tag.toLowerCase();
+    const content = children ? `\n${children}\n` : '';
+    return `${tab}<${tag.toLowerCase()}${attrs}>${content}${tab}</${tag.toLowerCase()}>`;
   }
 
   public init(node: ArenaNode): ArenaNode {

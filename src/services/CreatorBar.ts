@@ -1,8 +1,9 @@
 import Textarena from 'Textarena';
-import ArenaSelection from 'ArenaSelection';
-import ElementHelper from 'ElementHelper';
-import CreatorBarOptions from './interfaces/CreatorBarOptions';
-import CreatorOptions from './interfaces/CreatorOptions';
+import ArenaSelection from 'helpers/ArenaSelection';
+import ElementHelper from 'helpers/ElementHelper';
+import CreatorBarOptions from 'interfaces/CreatorBarOptions';
+import CreatorOptions from 'interfaces/CreatorOptions';
+import ArenaServiceManager from './ArenaServiceManager';
 
 type Creator = {
   elem: ElementHelper;
@@ -34,7 +35,7 @@ export default class CreatorBar {
   keyUpListenerInstance: ((e: KeyboardEvent) => void);
 
   constructor(
-    private ta: Textarena,
+    private asm: ArenaServiceManager,
   ) {
     this.elem = new ElementHelper('DIV', 'textarena-creator');
     this.elem.onClick(() => {
@@ -64,26 +65,26 @@ export default class CreatorBar {
     this.elem.appendChild(createButton);
     this.elem.appendChild(this.list);
     this.elem.appendChild(placeholder);
-    this.ta.container.appendChild(this.getElem());
-    this.ta.eventManager.subscribe('moveCursor', () => {
+    this.asm.textarena.getContainerElement().appendChild(this.getElem());
+    this.asm.eventManager.subscribe('moveCursor', () => {
       this.handleChangeSelection();
     });
-    this.ta.commandManager.registerCommand(
+    this.asm.commandManager.registerCommand(
       'open-creator-list',
-      (t, selection: ArenaSelection) => {
+      (_t: Textarena, selection: ArenaSelection) => {
         this.openList();
         return selection;
       },
     );
-    this.ta.commandManager.registerShortcut('Alt + KeyQ', 'open-creator-list');
+    this.asm.commandManager.registerShortcut('Alt + KeyQ', 'open-creator-list');
     this.keyDownListenerInstance = this.keyDownListener.bind(this);
     this.keyUpListenerInstance = this.keyDownListener.bind(this);
-    this.ta.eventManager.subscribe('turnOn', () => {
+    this.asm.eventManager.subscribe('turnOn', () => {
       this.elem.addEventListener('keydown', this.keyDownListenerInstance, false);
       this.elem.addEventListener('keyup', this.keyUpListenerInstance, false);
     });
     this.keyUpListenerInstance = this.keyUpListener.bind(this);
-    this.ta.eventManager.subscribe('turnOff', () => {
+    this.asm.eventManager.subscribe('turnOff', () => {
       this.elem.removeEventListener('keydown', this.keyDownListenerInstance);
       this.elem.removeEventListener('keyup', this.keyUpListenerInstance);
     });
@@ -95,11 +96,11 @@ export default class CreatorBar {
       this.creators = [];
       creatorBarOptions.creators.forEach((name: string) => {
         if (!this.availableCreators[name]) {
-          throw Error(`Tool "${name}" not found`);
+          throw Error(`Creator "${name}" not found`);
         }
         const options = this.availableCreators[name];
         const elem = new ElementHelper('BUTTON', 'textarena-creator__item');
-        const [modifiers] = this.ta.commandManager.parseShortcut(options.shortcut);
+        const [modifiers] = this.asm.commandManager.parseShortcut(options.shortcut);
         elem.onClick((e) => {
           e.preventDefault();
           this.executeTool(options);
@@ -143,11 +144,11 @@ export default class CreatorBar {
     if (!this.enabled) {
       return;
     }
-    const selection = this.ta.view.getArenaSelection();
+    const selection = this.asm.view.getCurrentSelection();
     if (selection
       && selection.isCollapsed()
       && selection.startNode.getTextLength() === 0) {
-      const target = this.ta.view.findElementById(selection.startNode.getGlobalIndex());
+      const target = this.asm.view.findElementById(selection.startNode.getGlobalIndex());
       if (target) {
         this.show(target as HTMLElement);
         return;
@@ -157,18 +158,18 @@ export default class CreatorBar {
   }
 
   private keyUpListener(e: KeyboardEvent): void {
-    const modifiersSum = this.ta.browser.getModifiersSum(e);
+    const modifiersSum = this.asm.browser.getModifiersSum(e);
     this.showHints(modifiersSum);
   }
 
   private keyDownListener(e: KeyboardEvent): void {
-    const modifiersSum = this.ta.browser.getModifiersSum(e);
+    const modifiersSum = this.asm.browser.getModifiersSum(e);
     this.showHints(modifiersSum);
   }
 
   private executeTool(options: CreatorOptions): void {
-    const newSelection = this.ta.commandManager.execCommand(options.command);
-    this.ta.view.render(newSelection);
+    const selection = this.asm.view.getCurrentSelection();
+    this.asm.commandManager.execCommand(options.command, selection);
     this.hide();
   }
 
@@ -206,6 +207,6 @@ export default class CreatorBar {
   closeList(): void {
     this.active = false;
     this.elem.removeClass('textarena-creator_active');
-    this.ta.editor.focus();
+    this.asm.textarena.getEditorElement().focus();
   }
 }

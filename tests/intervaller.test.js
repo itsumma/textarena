@@ -1,4 +1,4 @@
-import Intervaler from '../src/Intervaler';
+import Intervaler from '../src/helpers/Intervaler';
 
 test('simple add', () => {
   const i = new Intervaler();

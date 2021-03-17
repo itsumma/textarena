@@ -4,9 +4,10 @@ import ArenaNodeScion from 'interfaces/ArenaNodeScion';
 import Arena from 'interfaces/Arena';
 import ArenaNodeText from 'interfaces/ArenaNodeText';
 import ArenaCursor from 'interfaces/ArenaCursor';
-import RichTextManager from 'RichTextManager';
+import RichTextManager from 'helpers/RichTextManager';
 import ArenaCursorAncestor from 'interfaces/ArenaCursorAncestor';
 import ArenaSingle from 'interfaces/ArenaSingle';
+import { ArenaFormatings } from 'interfaces/ArenaFormating';
 
 export default class SingleNode implements ArenaNodeScion {
   readonly hasParent: true = true;
@@ -21,11 +22,19 @@ export default class SingleNode implements ArenaNodeScion {
     return this.parent.children.indexOf(this);
   }
 
+  public isLastChild(): boolean {
+    return this.parent.children.indexOf(this) === this.parent.children.length - 1;
+  }
+
   public getParent(): ArenaCursorAncestor {
     return { node: this.parent, offset: this.getIndex() };
   }
 
-  public getUnprotectedParent(): ArenaCursorAncestor {
+  public setParent(parent: ArenaNodeAncestor | (ArenaNodeAncestor & ArenaNodeScion)): void {
+    this.parent = parent;
+  }
+
+  public getUnprotectedParent(): ArenaCursorAncestor | undefined {
     if (this.parent.arena.protected) {
       return this.parent.getUnprotectedParent();
     }
@@ -42,7 +51,7 @@ export default class SingleNode implements ArenaNodeScion {
     return this.parent.insertText(text, this.getIndex() + 1);
   }
 
-  public getTextCursor(index: number): ArenaCursor {
+  public getTextCursor(): ArenaCursor {
     return this.parent.getTextCursor(this.getIndex());
   }
 
@@ -52,11 +61,15 @@ export default class SingleNode implements ArenaNodeScion {
     return this.parent.createAndInsertNode(arena, this.getIndex() + 1);
   }
 
-  public remove(): void {
-    this.parent.removeChild(this.getIndex());
+  public remove(): ArenaCursorAncestor {
+    return this.parent.removeChild(this.getIndex());
   }
 
   public getHtml(): TemplateResult | string {
     return this.arena.getTemplate(undefined, this.getGlobalIndex());
+  }
+
+  public getOutputHtml(_frms: ArenaFormatings, deep = 0): string {
+    return this.arena.getOutputTemplate('', deep);
   }
 }

@@ -2,9 +2,8 @@ import {
   LitElement, html, css, customElement, property, TemplateResult,
 } from 'lit-element';
 import Textarena from 'Textarena';
+import ArenaSelection from 'helpers/ArenaSelection';
 import ArenaPlugin from 'interfaces/ArenaPlugin';
-import ArenaModel from 'ArenaModel';
-import ArenaSelection from 'ArenaSelection';
 import ArenaAncestor from 'interfaces/ArenaAncestor';
 import ArenaWithText from 'interfaces/ArenaWithText';
 
@@ -66,27 +65,17 @@ const defaultOptions = {
   command: 'add-callout',
 };
 
-const calloutPlugin: ArenaPlugin = {
-  register(textarena: Textarena, opts: typeof defaultOptions): void {
+const calloutPlugin = (opts?: typeof defaultOptions): ArenaPlugin => ({
+  register(textarena: Textarena): void {
     const {
       name, icon, title, tag, attributes, shortcut, hint, command,
     } = { ...defaultOptions, ...(opts || {}) };
-    const paragraph = textarena.model.getArena('paragraph');
+    const paragraph = textarena.getDefaultTextArena();
     if (!paragraph) {
-      throw new Error('Paragraph not found');
+      throw new Error('Default Arena for text not found');
     }
-    const ol = textarena.model.getArena('ol');
-    const ul = textarena.model.getArena('ul');
-    const allowedArenas = [
-      paragraph,
-    ];
-    if (ol) {
-      allowedArenas.push(ol);
-    }
-    if (ul) {
-      allowedArenas.push(ul);
-    }
-    const calloutBodyContainer = textarena.model.registerArena(
+    const allowedArenas = textarena.getSimpleArenas();
+    const calloutBodyContainer = textarena.registerArena(
       {
         name: 'callout-body-container',
         tag: 'ARENA-CALLOUT-BODY',
@@ -105,9 +94,9 @@ const calloutPlugin: ArenaPlugin = {
           ],
         },
       ],
-      [ArenaModel.rootArenaName],
+      [],
     );
-    const calloutTitleParagraph = textarena.model.registerArena(
+    const calloutTitleParagraph = textarena.registerArena(
       {
         name: 'callout-title-paragraph',
         tag: 'P',
@@ -126,9 +115,9 @@ const calloutPlugin: ArenaPlugin = {
           ],
         },
       ],
-      [ArenaModel.rootArenaName],
+      [],
     );
-    const arena = textarena.model.registerArena(
+    const arena = textarena.registerArena(
       {
         name,
         tag,
@@ -150,21 +139,21 @@ const calloutPlugin: ArenaPlugin = {
           attributes: [],
         },
       ],
-      [ArenaModel.rootArenaName],
+      [textarena.getRootArenaName()],
     );
-    textarena.commandManager.registerCommand(
+    textarena.registerCommand(
       command,
       (ta: Textarena, selection: ArenaSelection) => {
-        const sel = ta.model.transformModel(selection, arena);
+        const sel = ta.transformModel(selection, arena);
         return sel;
       },
     );
 
-    textarena.commandManager.registerShortcut(
+    textarena.registerShortcut(
       shortcut,
       command,
     );
-    textarena.creatorBar.registerCreator({
+    textarena.registerCreator({
       name,
       icon,
       title,
@@ -173,6 +162,6 @@ const calloutPlugin: ArenaPlugin = {
       command,
     });
   },
-};
+});
 
 export default calloutPlugin;

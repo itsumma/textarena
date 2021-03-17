@@ -10,6 +10,7 @@ interface ArenaAncestor extends ArenaCore {
   readonly allowedArenas: Arena[];
   addAllowedChild(arena: Arena): void;
   setArenaForText(arena: ArenaAncestor | ArenaWithText): void;
+  getArenaForText(): ArenaAncestor | ArenaWithText | undefined;
 }
 
 export default ArenaAncestor;

@@ -8,7 +8,11 @@ interface ArenaCore {
 
   readonly attributes: string[];
 
+  automerge: boolean;
+
   getTemplate(children: TemplateResult | string | undefined, id: string): TemplateResult | string;
+
+  getOutputTemplate(children: string | undefined, deep: number): string;
 
   init(node: ArenaNode): ArenaNode;
 }
