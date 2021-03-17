@@ -8,8 +8,10 @@ import Arena from 'interfaces/Arena';
 import ArenaCursor from 'interfaces/ArenaCursor';
 import ArenaCursorAncestor from 'interfaces/ArenaCursorAncestor';
 import ArenaFormating, { ArenaFormatings, TagAndAttributes } from 'interfaces/ArenaFormating';
+import ArenaInline from 'interfaces/ArenaInline';
 import ArenaNode from 'interfaces/ArenaNode';
 import ArenaNodeAncestor from 'interfaces/ArenaNodeAncestor';
+import ArenaNodeInline from 'interfaces/ArenaNodeInline';
 import ArenaNodeScion from 'interfaces/ArenaNodeScion';
 import ArenaNodeText from 'interfaces/ArenaNodeText';
 import ArenaOptions from 'interfaces/ArenaOptions';
@@ -399,6 +401,37 @@ export default class ArenaModel {
       },
     );
     return selection;
+  }
+
+  public addInlineNode(selection: ArenaSelection, arena: ArenaInline): ArenaNodeInline | undefined {
+    if (selection.isSameNode() && !selection.isCollapsed()) {
+      const { startNode, startOffset, endOffset } = selection;
+      return startNode.addInlineNode(arena, startOffset, endOffset);
+    }
+    return undefined;
+  }
+
+  public getInlineNode(selection: ArenaSelection, arena: ArenaInline): ArenaNodeInline | undefined {
+    if (selection.isSameNode()) {
+      const { startNode, startOffset, endOffset } = selection;
+      return startNode.getInlineNode(arena, startOffset, endOffset);
+    }
+    return undefined;
+  }
+
+  public removeInlineNode(selection: ArenaSelection, node: ArenaNodeInline): void {
+    if (selection.isSameNode()) {
+      const { startNode } = selection;
+      return startNode.removeInlineNode(node);
+    }
+    return undefined;
+  }
+
+  public updateInlineNode(selection: ArenaSelection, node: ArenaNodeInline): void {
+    if (selection.isSameNode() && !selection.isCollapsed()) {
+      const { startNode, startOffset, endOffset } = selection;
+      startNode.updateInlineNode(node, startOffset, endOffset);
+    }
   }
 
   public runNodesOfSelection(

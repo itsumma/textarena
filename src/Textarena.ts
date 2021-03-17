@@ -1,7 +1,11 @@
+import ArenaSelection from 'helpers/ArenaSelection';
 import ElementHelper from 'helpers/ElementHelper';
 
 import Arena from 'interfaces/Arena';
+import ArenaAncestor from 'interfaces/ArenaAncestor';
 import ArenaFormating, { TagAndAttributes } from 'interfaces/ArenaFormating';
+import ArenaInline from 'interfaces/ArenaInline';
+import ArenaNodeInline from 'interfaces/ArenaNodeInline';
 import ArenaOptions from 'interfaces/ArenaOptions';
 import ArenaPlugin from 'interfaces/ArenaPlugin';
 import ArenaWithText from 'interfaces/ArenaWithText';
@@ -21,14 +25,12 @@ import formatingsPlugin from 'plugins/formatingsPlugin';
 import headersPlugin from 'plugins/headersPlugin';
 import hrPlugin from 'plugins/hrPlugin';
 import imagePlugin from 'plugins/imagePlugin';
+import linkPlugin from 'plugins/linkPlugin';
 import listsPlugin from 'plugins/listsPlugin';
 import paragraphPlugin from 'plugins/paragraphPlugin';
 
 import ArenaCommandManager from 'services/ArenaCommandManager';
-
-import ArenaSelection from 'helpers/ArenaSelection';
 import ArenaServiceManager from 'services/ArenaServiceManager';
-import ArenaAncestor from 'interfaces/ArenaAncestor';
 
 const defaultOptions: TextarenaOptions = {
   editable: true,
@@ -46,7 +48,7 @@ const defaultOptions: TextarenaOptions = {
       'header2',
       'header3',
       'header4',
-      // 'link',
+      'link',
     ],
   },
   creatorBar: {
@@ -72,6 +74,7 @@ const defaultOptions: TextarenaOptions = {
     listsPlugin(),
     calloutPlugin(),
     imagePlugin(),
+    linkPlugin(),
   ],
 };
 
@@ -143,13 +146,13 @@ class Textarena {
 
   public getData(): TextarenaData {
     return {
-      content: this.getHtml(),
-      // .replace(/<!--(?!-->)*-->/g, '')
-      // .replace(/^[\s\n]+/, '')
-      // .replace(/[\s\n]+$/, '')
-      // .replace(/(<[\w-]+)\s+observe-id="[\d.]+"/g, '$1')
-      // .replace(/(<p)/g, '\n$1'),
-      meta: this.meta,
+      html: this.getHtml(),
+      dataHtml: this.editor.getInnerHTML()
+        .replace(/<!--(?!-->)*-->/g, '')
+        .replace(/^[\s\n]+/, '')
+        .replace(/[\s\n]+$/, '')
+        .replace(/(<[\w-]+)\s+observe-id="[\d.]+"/g, '$1')
+        .replace(/(<p)/g, '\n$1'),
     };
   }
 
@@ -158,12 +161,9 @@ class Textarena {
   }
 
   public setData(data: TextarenaData): void {
-    if (typeof data.content === 'string') {
-      this.asm.parser.insertHtmlToRoot(data.content);
+    if (typeof data.dataHtml === 'string') {
+      this.asm.parser.insertHtmlToRoot(data.dataHtml);
       this.asm.view.render();
-    }
-    if (data.meta) {
-      this.meta = data.meta;
     }
   }
 
@@ -280,6 +280,22 @@ class Textarena {
 
   public formatingModel(selection: ArenaSelection, formating: ArenaFormating): ArenaSelection {
     return this.asm.model.formatingModel(selection, formating);
+  }
+
+  public addInlineNode(selection: ArenaSelection, arena: ArenaInline): ArenaNodeInline | undefined {
+    return this.asm.model.addInlineNode(selection, arena);
+  }
+
+  public getInlineNode(selection: ArenaSelection, arena: ArenaInline): ArenaNodeInline | undefined {
+    return this.asm.model.getInlineNode(selection, arena);
+  }
+
+  public removeInlineNode(selection: ArenaSelection, node: ArenaNodeInline): void {
+    return this.asm.model.removeInlineNode(selection, node);
+  }
+
+  public updateInlineNode(selection: ArenaSelection, node: ArenaNodeInline): void {
+    return this.asm.model.updateInlineNode(selection, node);
   }
 
   protected start(): void {

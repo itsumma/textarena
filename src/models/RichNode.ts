@@ -9,6 +9,8 @@ import ArenaCursor from 'interfaces/ArenaCursor';
 import ArenaCursorAncestor from 'interfaces/ArenaCursorAncestor';
 import ArenaWithText from 'interfaces/ArenaWithText';
 import { ArenaFormatings } from 'interfaces/ArenaFormating';
+import ArenaNodeInline from 'interfaces/ArenaNodeInline';
+import ArenaInline from 'interfaces/ArenaInline';
 
 export default class RichNode implements ArenaNodeText {
   readonly hasParent: true = true;
@@ -127,5 +129,29 @@ export default class RichNode implements ArenaNodeText {
 
   public getTextLength(): number {
     return this.richTextManager.getTextLength();
+  }
+
+  public addInlineNode(
+    arena: ArenaInline,
+    start: number,
+    end: number,
+  ): ArenaNodeInline | undefined {
+    return this.richTextManager.addInlineNode(arena, start, end);
+  }
+
+  public getInlineNode(
+    arena: ArenaInline,
+    start: number,
+    end: number,
+  ): ArenaNodeInline | undefined {
+    return this.richTextManager.getInlineNode(arena, start, end);
+  }
+
+  public removeInlineNode(node: ArenaNodeInline): void {
+    this.richTextManager.removeInlineNode(node);
+  }
+
+  updateInlineNode(node: ArenaNodeInline, start: number, end: number): void {
+    this.richTextManager.updateInlineNode(node, start, end);
   }
 }

@@ -7,5 +7,5 @@ export default interface ToolOptions {
   command: string;
   hint: string;
   shortcut: string;
-  checkStatus: (node: ArenaNode, start?: number, end?: number) => boolean;
+  checkStatus?: (node: ArenaNode, start?: number, end?: number) => boolean;
 }
