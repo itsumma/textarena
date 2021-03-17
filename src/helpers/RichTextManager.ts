@@ -4,6 +4,7 @@ import { ArenaFormatings } from 'interfaces/ArenaFormating';
 import ArenaInline from 'interfaces/ArenaInline';
 import ArenaNodeInline from 'interfaces/ArenaNodeInline';
 import InlineNode from 'models/InlineNode';
+import InlineIntervaler from './InlineIntervaler';
 
 export type Formatings = {
   [name: string]: Intervaler
@@ -90,9 +91,14 @@ const insertInNodes = (
 };
 
 export default class RichTextManager {
-  constructor(text?: string, formatings?: Formatings) {
+  constructor(
+    text?: string,
+    formatings?: Formatings,
+    inlines?: InlineIntervaler,
+  ) {
     this.text = text || '';
     this.formatings = formatings || {};
+    this.inlines = inlines || new InlineIntervaler();
   }
 
   public getText(): string {
@@ -113,32 +119,8 @@ export default class RichTextManager {
       return '<br/>';
     }
     const tree = this.getHtmlTree(frms);
-    const html = this.getHtmlFromTree(tree);
+    const [html] = this.getHtmlFromTree(tree);
     return html;
-    // FIXME nesting formatings
-    let index = 0;
-    let result = '';
-    let lastSpace = false;
-    this.getInsertions(frms).forEach((insertion) => {
-      let prepared = this.prepareText(
-        text.slice(index, insertion.offset),
-        index === 0,
-        insertion.offset === text.length,
-      );
-      if (lastSpace) {
-        prepared = prepared.replace(/^\s/, '&nbsp;');
-      }
-      lastSpace = prepared.slice(-1) === ' ';
-      result += prepared
-        + insertion.tag;
-      index = insertion.offset;
-    });
-    let prepared = this.prepareText(text.slice(index), index === 0, true);
-    if (lastSpace) {
-      prepared = prepared.replace(/^\s/, '&nbsp;');
-    }
-    result += prepared;
-    return result;
   }
 
   public insertText(
@@ -235,26 +217,17 @@ export default class RichTextManager {
   ): ArenaNodeInline | undefined {
     const node = new InlineNode(arena);
     if (node instanceof InlineNode) {
-      this.inlineNodes.push({
-        node,
-        start,
-        end,
-      });
+      this.inlines.addInterval(start, end, node);
       return node;
     }
     return undefined;
   }
 
   public removeInlineNode(node: ArenaNodeInline): void {
-    for (let i = 0; i < this.inlineNodes.length; i += 1) {
-      if (this.inlineNodes[i].node === node) {
-        this.inlineNodes.splice(i, 1);
-        return;
-      }
-    }
+    this.inlines.removeNode(node);
   }
 
-  protected inlineNodes: InlineNodeInterval[] = [];
+  protected inlines: InlineIntervaler;
 
   protected formatings: Formatings;
 
@@ -331,7 +304,7 @@ export default class RichTextManager {
       children: [],
     }];
 
-    this.inlineNodes.forEach((obj) => {
+    this.inlines.getIntervals().forEach((obj) => {
       const { node, start, end } = obj;
       const [openTag, closeTag] = node.getTags();
       insertInNodes(
@@ -369,20 +342,29 @@ export default class RichTextManager {
     return rootNodes;
   }
 
-  protected getHtmlFromTree(nodes: FNode[]): string {
+  protected getHtmlFromTree(nodes: FNode[], prepareSpace = false): [string, boolean] {
     let text = '';
+    let lastSpace = prepareSpace;
+
     for (let i = 0; i < nodes.length; i += 1) {
       const node = nodes[i];
       if (node.name === '') {
-        text += this.prepareText(
+        let prepared = this.prepareText(
           this.text.slice(node.start, node.end),
           node.start === 0,
-          node.end === text.length,
+          node.end === this.text.length,
         );
+        if (lastSpace) {
+          prepared = prepared.replace(/^\s/, '&nbsp;');
+        }
+        lastSpace = prepared.slice(-1) === ' ';
+        text += prepared;
       } else {
-        text += node.openTag + this.getHtmlFromTree(node.children) + node.closeTag;
+        const [childText, childPrepareSpace] = this.getHtmlFromTree(node.children, lastSpace);
+        lastSpace = childPrepareSpace;
+        text += node.openTag + childText + node.closeTag;
       }
     }
-    return text;
+    return [text, lastSpace];
   }
 }
