@@ -11,6 +11,7 @@ import ArenaFormating, { ArenaFormatings, TagAndAttributes } from 'interfaces/Ar
 import ArenaInline from 'interfaces/ArenaInline';
 import ArenaNode from 'interfaces/ArenaNode';
 import ArenaNodeAncestor from 'interfaces/ArenaNodeAncestor';
+import ArenaNodeInline from 'interfaces/ArenaNodeInline';
 import ArenaNodeScion from 'interfaces/ArenaNodeScion';
 import ArenaNodeText from 'interfaces/ArenaNodeText';
 import ArenaOptions from 'interfaces/ArenaOptions';
@@ -21,7 +22,6 @@ import ArenaSelection from 'helpers/ArenaSelection';
 import RootNode from 'models/RootNode';
 
 import ArenaServiceManager from './ArenaServiceManager';
-import ArenaNodeInline from 'interfaces/ArenaNodeInline';
 
 type ArenaMark = {
   attributes: string[],
@@ -409,6 +409,29 @@ export default class ArenaModel {
       return startNode.addInlineNode(arena, startOffset, endOffset);
     }
     return undefined;
+  }
+
+  public getInlineNode(selection: ArenaSelection, arena: ArenaInline): ArenaNodeInline | undefined {
+    if (selection.isSameNode()) {
+      const { startNode, startOffset, endOffset } = selection;
+      return startNode.getInlineNode(arena, startOffset, endOffset);
+    }
+    return undefined;
+  }
+
+  public removeInlineNode(selection: ArenaSelection, node: ArenaNodeInline): void {
+    if (selection.isSameNode()) {
+      const { startNode } = selection;
+      return startNode.removeInlineNode(node);
+    }
+    return undefined;
+  }
+
+  public updateInlineNode(selection: ArenaSelection, node: ArenaNodeInline): void {
+    if (selection.isSameNode() && !selection.isCollapsed()) {
+      const { startNode, startOffset, endOffset } = selection;
+      startNode.updateInlineNode(node, startOffset, endOffset);
+    }
   }
 
   public runNodesOfSelection(

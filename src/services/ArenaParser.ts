@@ -97,9 +97,13 @@ export default class ArenaParser {
         }
         const newArenaNode = arenaNode.createAndInsertNode(arena, offset);
         if (newArenaNode) {
-          this.insertChildren(elementNode, newArenaNode, 0);
           if ('hasText' in newArenaNode) {
+            const formatings = this.getText(elementNode);
+            this.asm.logger.log('this is arena for text', formatings);
+            newArenaNode.insertText(formatings, 0);
             this.clearTextNode(newArenaNode);
+          } else {
+            this.insertChildren(elementNode, newArenaNode, 0);
           }
           return [newArenaNode.parent, newArenaNode.getIndex() + 1, true];
         }
@@ -178,6 +182,15 @@ export default class ArenaParser {
       } else if (childNode.nodeType === Node.ELEMENT_NODE) {
         const elementNode = childNode as HTMLElement;
         const newFormatings = this.getText(elementNode);
+        const arena = this.checkArenaMark(elementNode);
+        if (arena && 'inline' in arena) {
+          const inlineNode = newFormatings.addInlineNode(arena, 0, newFormatings.getTextLength());
+          if (inlineNode) {
+            elementNode.getAttributeNames().forEach((attr) => {
+              inlineNode.setAttribute(attr, elementNode.getAttribute(attr) || '');
+            });
+          }
+        }
         const formating = this.checkFormatingMark(elementNode);
         if (formating) {
           newFormatings.insertFormating(formating.name, 0, newFormatings.getTextLength());
