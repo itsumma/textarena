@@ -1,6 +1,6 @@
 import { TemplateResult, defaultTemplateProcessor } from 'lit-html';
-import ArenaOptions from 'interfaces/ArenaOptions';
-import ArenaNode from 'interfaces/ArenaNode';
+import ArenaOptions from '../interfaces/ArenaOptions';
+import ArenaNode from '../interfaces/ArenaNode';
 
 export default abstract class AbstractArena {
   readonly name: string;

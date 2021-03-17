@@ -1,5 +1,5 @@
-import ArenaOptions, { ArenaOptionsRoot } from 'interfaces/ArenaOptions';
-import Arena from 'interfaces/Arena';
+import ArenaOptions, { ArenaOptionsRoot } from '../interfaces/ArenaOptions';
+import Arena from '../interfaces/Arena';
 import AncestorArena from './AncestorArena';
 import RootArena from './RootArena';
 import SingleArena from './SingleArena';

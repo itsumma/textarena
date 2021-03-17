@@ -1,16 +1,16 @@
 import { TemplateResult, html } from 'lit-html';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html';
-import Arena from 'interfaces/Arena';
-import ArenaNodeText from 'interfaces/ArenaNodeText';
-import RichTextManager from 'helpers/RichTextManager';
-import ArenaNodeAncestor from 'interfaces/ArenaNodeAncestor';
-import ArenaNodeScion from 'interfaces/ArenaNodeScion';
-import ArenaCursor from 'interfaces/ArenaCursor';
-import ArenaCursorAncestor from 'interfaces/ArenaCursorAncestor';
-import ArenaWithText from 'interfaces/ArenaWithText';
-import { ArenaFormatings } from 'interfaces/ArenaFormating';
-import ArenaNodeInline from 'interfaces/ArenaNodeInline';
-import ArenaInline from 'interfaces/ArenaInline';
+import Arena from '../interfaces/Arena';
+import ArenaNodeText from '../interfaces/ArenaNodeText';
+import RichTextManager from '../helpers/RichTextManager';
+import ArenaNodeAncestor from '../interfaces/ArenaNodeAncestor';
+import ArenaNodeScion from '../interfaces/ArenaNodeScion';
+import ArenaCursor from '../interfaces/ArenaCursor';
+import ArenaCursorAncestor from '../interfaces/ArenaCursorAncestor';
+import ArenaWithText from '../interfaces/ArenaWithText';
+import { ArenaFormatings } from '../interfaces/ArenaFormating';
+import ArenaNodeInline from '../interfaces/ArenaNodeInline';
+import ArenaInline from '../interfaces/ArenaInline';
 
 export default class RichNode implements ArenaNodeText {
   readonly hasParent: true = true;

@@ -1,5 +1,5 @@
-import ArenaNodeText from 'interfaces/ArenaNodeText';
-import ArenaCursor from 'interfaces/ArenaCursor';
+import ArenaNodeText from '../interfaces/ArenaNodeText';
+import ArenaCursor from '../interfaces/ArenaCursor';
 
 export type ArenaSelectionDiection = 'forward' | 'backward';
 

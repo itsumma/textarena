@@ -1,17 +1,13 @@
-import { FilterXSS } from 'xss';
+import Arena from '../interfaces/Arena';
+import ArenaFormating from '../interfaces/ArenaFormating';
+import ArenaNode from '../interfaces/ArenaNode';
+import ArenaNodeText from '../interfaces/ArenaNodeText';
 
-import Arena from 'interfaces/Arena';
-import ArenaFormating from 'interfaces/ArenaFormating';
-import ArenaNode from 'interfaces/ArenaNode';
-import ArenaNodeText from 'interfaces/ArenaNodeText';
-
-import RichTextManager from 'helpers/RichTextManager';
+import RichTextManager from '../helpers/RichTextManager';
 
 import ArenaServiceManager from './ArenaServiceManager';
 
 export default class ArenaParser {
-  private filterXSS: FilterXSS | undefined;
-
   constructor(protected asm: ArenaServiceManager) {
   }
 
@@ -24,6 +20,7 @@ export default class ArenaParser {
       this.asm.model.model,
       0,
     );
+    this.asm.model.model.getTextCursor(0);
   }
 
   public insertHtmlToModel(
@@ -236,43 +233,5 @@ export default class ArenaParser {
     newArenaNode.ltrim();
     newArenaNode.rtrim();
     newArenaNode.clearSpaces();
-  }
-
-  getFilterXSS(): FilterXSS {
-    if (!this.filterXSS) {
-      this.filterXSS = new FilterXSS({
-        escapeHtml: (htmlString) => htmlString,
-        stripIgnoreTag: false,
-        stripIgnoreTagBody: ['script'],
-        allowCommentTag: false,
-        stripBlankChar: true,
-        css: true,
-        whiteList: {
-          h1: [],
-          h2: [],
-          h3: [],
-          h4: [],
-          h5: [],
-          h6: [],
-          b: [],
-          strong: [],
-          i: [],
-          u: [],
-          p: ['class', 'slot'],
-          br: [],
-          hr: [],
-          div: ['contenteditable', 'class'],
-          a: ['href', 'target'],
-          ol: [],
-          ul: [],
-          li: [],
-        },
-      });
-    }
-    return this.filterXSS;
-  }
-
-  xss(htmlString: string): string {
-    return this.getFilterXSS().process(htmlString);
   }
 }

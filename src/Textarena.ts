@@ -1,36 +1,36 @@
-import ArenaSelection from 'helpers/ArenaSelection';
-import ElementHelper from 'helpers/ElementHelper';
+import ArenaSelection from './helpers/ArenaSelection';
+import ElementHelper from './helpers/ElementHelper';
 
-import Arena from 'interfaces/Arena';
-import ArenaAncestor from 'interfaces/ArenaAncestor';
-import ArenaFormating, { TagAndAttributes } from 'interfaces/ArenaFormating';
-import ArenaInline from 'interfaces/ArenaInline';
-import ArenaNodeInline from 'interfaces/ArenaNodeInline';
-import ArenaOptions from 'interfaces/ArenaOptions';
-import ArenaPlugin from 'interfaces/ArenaPlugin';
-import ArenaWithText from 'interfaces/ArenaWithText';
-import ChangeDataListener from 'interfaces/ChangeHandler';
-import CommandAction from 'interfaces/CommandAction';
-import CreatorBarOptions from 'interfaces/CreatorBarOptions';
-import CreatorOptions from 'interfaces/CreatorOptions';
-import MetaData from 'interfaces/MetaData';
-import TextarenaData from 'interfaces/TextarenaData';
-import TextarenaOptions from 'interfaces/TextarenaOptions';
-import ToolbarOptions from 'interfaces/ToolbarOptions';
-import ToolOptions from 'interfaces/ToolOptions';
+import Arena from './interfaces/Arena';
+import ArenaAncestor from './interfaces/ArenaAncestor';
+import ArenaFormating, { TagAndAttributes } from './interfaces/ArenaFormating';
+import ArenaInline from './interfaces/ArenaInline';
+import ArenaNodeInline from './interfaces/ArenaNodeInline';
+import ArenaOptions from './interfaces/ArenaOptions';
+import ArenaPlugin from './interfaces/ArenaPlugin';
+import ArenaWithText from './interfaces/ArenaWithText';
+import ChangeDataListener from './interfaces/ChangeHandler';
+import CommandAction from './interfaces/CommandAction';
+import CreatorBarOptions from './interfaces/CreatorBarOptions';
+import CreatorOptions from './interfaces/CreatorOptions';
+import MetaData from './interfaces/MetaData';
+import TextarenaData from './interfaces/TextarenaData';
+import TextarenaOptions from './interfaces/TextarenaOptions';
+import ToolbarOptions from './interfaces/ToolbarOptions';
+import ToolOptions from './interfaces/ToolOptions';
 
-import calloutPlugin from 'plugins/calloutPlugin';
-import commonPlugin from 'plugins/commonPlugin';
-import formatingsPlugin from 'plugins/formatingsPlugin';
-import headersPlugin from 'plugins/headersPlugin';
-import hrPlugin from 'plugins/hrPlugin';
-import imagePlugin from 'plugins/imagePlugin';
-import linkPlugin from 'plugins/linkPlugin';
-import listsPlugin from 'plugins/listsPlugin';
-import paragraphPlugin from 'plugins/paragraphPlugin';
+import calloutPlugin from './plugins/calloutPlugin';
+import commonPlugin from './plugins/commonPlugin';
+import formatingsPlugin from './plugins/formatingsPlugin';
+import headersPlugin from './plugins/headersPlugin';
+import hrPlugin from './plugins/hrPlugin';
+import imagePlugin from './plugins/imagePlugin';
+import linkPlugin from './plugins/linkPlugin';
+import listsPlugin from './plugins/listsPlugin';
+import paragraphPlugin from './plugins/paragraphPlugin';
 
-import ArenaCommandManager from 'services/ArenaCommandManager';
-import ArenaServiceManager from 'services/ArenaServiceManager';
+import ArenaCommandManager from './services/ArenaCommandManager';
+import ArenaServiceManager from './services/ArenaServiceManager';
 
 const defaultOptions: TextarenaOptions = {
   editable: true,
@@ -132,9 +132,9 @@ class Textarena {
     if (options.creatorBar !== undefined) {
       this.setCreatorBarOptions(options.creatorBar);
     }
-    if (options.initData !== undefined) {
-      this.setData(options.initData);
-    }
+    // if (options.initData !== undefined) {
+    this.setData(options.initData);
+    // }
     if (options.editable !== undefined) {
       this.setEditable(options.editable);
     }
@@ -160,11 +160,10 @@ class Textarena {
     return this.asm.model.getOutputHtml();
   }
 
-  public setData(data: TextarenaData): void {
-    if (typeof data.dataHtml === 'string') {
-      this.asm.parser.insertHtmlToRoot(data.dataHtml);
-      this.asm.view.render();
-    }
+  public setData(data: TextarenaData | undefined): void {
+    const html = data && typeof data.dataHtml === 'string' ? data.dataHtml : '';
+    this.asm.parser.insertHtmlToRoot(html);
+    this.asm.view.render();
   }
 
   public setEditable(editable: boolean): void {

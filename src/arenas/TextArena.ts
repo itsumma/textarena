@@ -1,7 +1,7 @@
-import { Middleware } from 'interfaces/Arena';
-import ArenaAncestor from 'interfaces/ArenaAncestor';
-import { ArenaOptionsWithText } from 'interfaces/ArenaOptions';
-import ArenaWithText from 'interfaces/ArenaWithText';
+import { Middleware } from '../interfaces/Arena';
+import ArenaAncestor from '../interfaces/ArenaAncestor';
+import { ArenaOptionsWithText } from '../interfaces/ArenaOptions';
+import ArenaWithText from '../interfaces/ArenaWithText';
 import AbstractArena from './AbstractArena';
 
 export default class TextArena

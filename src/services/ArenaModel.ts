@@ -1,25 +1,25 @@
 import { TemplateResult } from 'lit-html';
 
-import ArenaFactory from 'arenas/ArenaFactory';
+import ArenaFactory from '../arenas/ArenaFactory';
 
-import { Direction } from 'events/RemoveEvent';
+import { Direction } from '../events/RemoveEvent';
 
-import Arena from 'interfaces/Arena';
-import ArenaCursor from 'interfaces/ArenaCursor';
-import ArenaCursorAncestor from 'interfaces/ArenaCursorAncestor';
-import ArenaFormating, { ArenaFormatings, TagAndAttributes } from 'interfaces/ArenaFormating';
-import ArenaInline from 'interfaces/ArenaInline';
-import ArenaNode from 'interfaces/ArenaNode';
-import ArenaNodeAncestor from 'interfaces/ArenaNodeAncestor';
-import ArenaNodeInline from 'interfaces/ArenaNodeInline';
-import ArenaNodeScion from 'interfaces/ArenaNodeScion';
-import ArenaNodeText from 'interfaces/ArenaNodeText';
-import ArenaOptions from 'interfaces/ArenaOptions';
-import ArenaRoot from 'interfaces/ArenaRoot';
+import Arena from '../interfaces/Arena';
+import ArenaCursor from '../interfaces/ArenaCursor';
+import ArenaCursorAncestor from '../interfaces/ArenaCursorAncestor';
+import ArenaFormating, { ArenaFormatings, TagAndAttributes } from '../interfaces/ArenaFormating';
+import ArenaInline from '../interfaces/ArenaInline';
+import ArenaNode from '../interfaces/ArenaNode';
+import ArenaNodeAncestor from '../interfaces/ArenaNodeAncestor';
+import ArenaNodeInline from '../interfaces/ArenaNodeInline';
+import ArenaNodeScion from '../interfaces/ArenaNodeScion';
+import ArenaNodeText from '../interfaces/ArenaNodeText';
+import ArenaOptions from '../interfaces/ArenaOptions';
+import ArenaRoot from '../interfaces/ArenaRoot';
 
-import ArenaSelection from 'helpers/ArenaSelection';
+import ArenaSelection from '../helpers/ArenaSelection';
 
-import RootNode from 'models/RootNode';
+import RootNode from '../models/RootNode';
 
 import ArenaServiceManager from './ArenaServiceManager';
 

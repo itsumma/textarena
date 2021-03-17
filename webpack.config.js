@@ -2,7 +2,6 @@ const path = require('path');
 const webpack = require('webpack');
 const pkg = require('./package.json');
 
-
 const bannerPack = new webpack.BannerPlugin({
   banner: [
     `Some v${pkg.version}`,
@@ -17,8 +16,8 @@ module.exports = {
   mode: 'development',
   context: path.resolve(__dirname, './src'),
   entry: {
-    'textarena': ['./Textarena.ts'],
-    'style': ['../scss/style.scss'],
+    textarena: ['./Textarena.ts'],
+    style: ['../scss/style.scss'],
   },
   output: {
     filename: '[name].js',
@@ -43,16 +42,16 @@ module.exports = {
         test: /\.s[ac]ss$/i,
         use: [
           {
-            loader: "file-loader",
+            loader: 'file-loader',
             options: {
-              name: "textarena.css",
+              name: 'textarena.css',
             },
           },
           'extract-loader',
           'css-loader',
           'sass-loader',
         ],
-      }
+      },
     ],
   },
   plugins: [

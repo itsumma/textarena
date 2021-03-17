@@ -1,4 +1,4 @@
-import ArenaInline from 'interfaces/ArenaInline';
+import ArenaInline from '../interfaces/ArenaInline';
 import AbstractArena from './AbstractArena';
 
 export default class InlineArena

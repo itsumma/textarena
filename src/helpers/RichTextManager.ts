@@ -1,9 +1,9 @@
 /* eslint-disable no-lonely-if */
-import Intervaler from 'helpers/Intervaler';
-import { ArenaFormatings } from 'interfaces/ArenaFormating';
-import ArenaInline from 'interfaces/ArenaInline';
-import ArenaNodeInline from 'interfaces/ArenaNodeInline';
-import InlineNode from 'models/InlineNode';
+import { ArenaFormatings } from '../interfaces/ArenaFormating';
+import ArenaInline from '../interfaces/ArenaInline';
+import ArenaNodeInline from '../interfaces/ArenaNodeInline';
+import InlineNode from '../models/InlineNode';
+import Intervaler from './Intervaler';
 import InlineIntervaler from './InlineIntervaler';
 
 export type Formatings = {

@@ -1,13 +1,13 @@
 import { TemplateResult } from 'lit-html';
-import ArenaNodeAncestor from 'interfaces/ArenaNodeAncestor';
-import ArenaNodeScion from 'interfaces/ArenaNodeScion';
-import Arena from 'interfaces/Arena';
-import ArenaNodeText from 'interfaces/ArenaNodeText';
-import ArenaCursor from 'interfaces/ArenaCursor';
-import RichTextManager from 'helpers/RichTextManager';
-import ArenaCursorAncestor from 'interfaces/ArenaCursorAncestor';
-import ArenaSingle from 'interfaces/ArenaSingle';
-import { ArenaFormatings } from 'interfaces/ArenaFormating';
+import ArenaNodeAncestor from '../interfaces/ArenaNodeAncestor';
+import ArenaNodeScion from '../interfaces/ArenaNodeScion';
+import Arena from '../interfaces/Arena';
+import ArenaNodeText from '../interfaces/ArenaNodeText';
+import ArenaCursor from '../interfaces/ArenaCursor';
+import RichTextManager from '../helpers/RichTextManager';
+import ArenaCursorAncestor from '../interfaces/ArenaCursorAncestor';
+import ArenaSingle from '../interfaces/ArenaSingle';
+import { ArenaFormatings } from '../interfaces/ArenaFormating';
 
 export default class SingleNode implements ArenaNodeScion {
   readonly hasParent: true = true;

@@ -1,10 +1,10 @@
 import {
   LitElement, html, css, customElement, property, TemplateResult,
 } from 'lit-element';
-import Textarena from 'Textarena';
-import ArenaPlugin from 'interfaces/ArenaPlugin';
-import ArenaSelection from 'helpers/ArenaSelection';
-import ArenaInline from 'interfaces/ArenaInline';
+import Textarena from '../Textarena';
+import ArenaPlugin from '../interfaces/ArenaPlugin';
+import ArenaSelection from '../helpers/ArenaSelection';
+import ArenaInline from '../interfaces/ArenaInline';
 
 @customElement('arena-link')
 export class Link extends LitElement {

@@ -85,35 +85,7 @@
         htmlElem.innerText = data.html;
       }
     }, 500);
-    const calloutPlugin = function () {
-      const self = {
-        register: (textarena) => {
-          console.log(self, textarena);
-          textarena.parser.registerTag('DIV', {
-            level: 'ROOT_LEVEL',
-            insideLevel: 'ROOT_LEVEL',
-          })
-          textarena.parser.registerTag('ARENA-CALLOUT', {
-            level: 'ROOT_LEVEL',
-            insideLevel: 'ROOT_LEVEL',
-          })
-          textarena.creatorBar.registerCreator('callout', {
-            name: 'callout',
-            icon: '!',
-            title: 'Callout',
-            processor: (context) => {
-              context.parser.prepareAndPasteHtml(
-                `<arena-callout>
-                  <p slot="title">Пиши заголовок сюды</p>
-                  <p slot="body">А текст сюды</p>
-                </arena-callout>`
-              );
-            }
-          })
-        }
-      }
-      return self;
-    }
+
     const textarena = new Textarena(
       elem,
       {
@@ -121,36 +93,7 @@
         debug: true,
         onChange,
         onReady: onChange,
-        initData,
-        // plugins: [
-        //   calloutPlugin(),
-        // ],
-        // creatorBar: {
-        //   creators: [
-        //     'hr',
-        //     'image',
-        //     'blockquote',
-        //     'callout',
-        //   ],
-        // },
-        // toolbar: {
-        //   enabled: true,
-        //   tools: [
-        //     'strong',
-        //     'italic',
-        //     'underline',
-        //     'strikethrough',
-        //     {
-        //       name: 'foreColor',
-        //       icon: 'f',
-        //       title: 'ForeColor',
-        //       config: {
-        //         color: '#545454',
-        //       },
-        //       processor: foreColor,
-        //     },
-          // ],
-        // }
+        // initData,
       },
     );
   }

@@ -1,8 +1,8 @@
-import Textarena from 'Textarena';
-import ArenaSelection from 'helpers/ArenaSelection';
-import ArenaPlugin from 'interfaces/ArenaPlugin';
-import ArenaWithText from 'interfaces/ArenaWithText';
-import ArenaNode from 'interfaces/ArenaNode';
+import Textarena from '../Textarena';
+import ArenaSelection from '../helpers/ArenaSelection';
+import ArenaPlugin from '../interfaces/ArenaPlugin';
+import ArenaWithText from '../interfaces/ArenaWithText';
+import ArenaNode from '../interfaces/ArenaNode';
 
 const posibleTags = ['h1', 'h2', 'h3', 'h4'];
 

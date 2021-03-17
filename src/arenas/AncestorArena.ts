@@ -1,7 +1,7 @@
-import Arena from 'interfaces/Arena';
-import ArenaAncestor from 'interfaces/ArenaAncestor';
-import { ArenaOptionsAncestor } from 'interfaces/ArenaOptions';
-import ArenaWithText from 'interfaces/ArenaWithText';
+import Arena from '../interfaces/Arena';
+import ArenaAncestor from '../interfaces/ArenaAncestor';
+import { ArenaOptionsAncestor } from '../interfaces/ArenaOptions';
+import ArenaWithText from '../interfaces/ArenaWithText';
 import AbstractArena from './AbstractArena';
 
 export default class AncestorArena

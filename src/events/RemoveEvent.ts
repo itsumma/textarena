@@ -1,4 +1,4 @@
-import ArenaKeyboardEvent from 'interfaces/ArenaKeyboardEvent';
+import ArenaKeyboardEvent from '../interfaces/ArenaKeyboardEvent';
 
 export type Direction = 'backward' | 'forward';
 

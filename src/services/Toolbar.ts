@@ -1,7 +1,7 @@
-import ToolbarOptions from 'interfaces/ToolbarOptions';
-import ToolOptions from 'interfaces/ToolOptions';
-import ArenaNode from 'interfaces/ArenaNode';
-import ElementHelper from 'helpers/ElementHelper';
+import ToolbarOptions from '../interfaces/ToolbarOptions';
+import ToolOptions from '../interfaces/ToolOptions';
+import ArenaNode from '../interfaces/ArenaNode';
+import ElementHelper from '../helpers/ElementHelper';
 import { MediaEvent } from './EventManager';
 import ArenaServiceManager from './ArenaServiceManager';
 

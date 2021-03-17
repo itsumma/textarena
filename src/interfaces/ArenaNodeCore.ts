@@ -1,5 +1,5 @@
 import { TemplateResult } from 'lit-html';
-import RichTextManager from 'helpers/RichTextManager';
+import RichTextManager from '../helpers/RichTextManager';
 import Arena from './Arena';
 import ArenaNodeText from './ArenaNodeText';
 import ArenaNodeScion from './ArenaNodeScion';

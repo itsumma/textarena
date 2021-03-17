@@ -1,17 +1,17 @@
 /* eslint-disable no-bitwise */
-import ArenaKeyboardEvent from 'interfaces/ArenaKeyboardEvent';
+import ArenaKeyboardEvent from '../interfaces/ArenaKeyboardEvent';
 
-import BrowserCommandEvent from 'events/BrowserCommandEvent';
-import CommandEvent from 'events/CommandEvent';
-import CopyEvent from 'events/CopyEvent';
-import CutEvent from 'events/CutEvent';
-import InputEvent from 'events/InputEvent';
-import ModifiersEvent from 'events/ModifiersEvent';
-import PasteEvent from 'events/PasteEvent';
-import RemoveEvent from 'events/RemoveEvent';
-import SelectionEvent from 'events/SelectionEvent';
+import BrowserCommandEvent from '../events/BrowserCommandEvent';
+import CommandEvent from '../events/CommandEvent';
+import CopyEvent from '../events/CopyEvent';
+import CutEvent from '../events/CutEvent';
+import InputEvent from '../events/InputEvent';
+import ModifiersEvent from '../events/ModifiersEvent';
+import PasteEvent from '../events/PasteEvent';
+import RemoveEvent from '../events/RemoveEvent';
+import SelectionEvent from '../events/SelectionEvent';
 
-import ElementHelper from 'helpers/ElementHelper';
+import ElementHelper from '../helpers/ElementHelper';
 
 import { keyboardKeys, Modifiers } from './ArenaCommandManager';
 import ArenaServiceManager from './ArenaServiceManager';
