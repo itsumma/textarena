@@ -25,7 +25,12 @@ export default class InlineNode implements ArenaNodeInline {
       str += ` ${attr}`;
     });
     Object.entries(this.attributes).forEach(([name, value]) => {
-      str += ` ${name}=${value}`;
+      const escapedValue = value.replace(/&/g, '&amp;')
+        .replace(/'/g, '&apos;')
+        .replace(/"/g, '&quot;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+      str += ` ${name}="${escapedValue}"`;
     });
     return str;
   }
@@ -42,5 +47,17 @@ export default class InlineNode implements ArenaNodeInline {
 
   public setAttribute(name: string, value: string): void {
     this.attributes[name] = value;
+  }
+
+  public getAttribute(name: string): string {
+    return this.attributes[name] || '';
+  }
+
+  public clone(): ArenaNodeInline {
+    const newNode = new InlineNode(this.arena);
+    Object.entries(this.attributes).forEach(([name, value]) => {
+      newNode.setAttribute(name, value);
+    });
+    return newNode;
   }
 }

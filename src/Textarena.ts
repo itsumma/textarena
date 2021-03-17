@@ -286,6 +286,18 @@ class Textarena {
     return this.asm.model.addInlineNode(selection, arena);
   }
 
+  public getInlineNode(selection: ArenaSelection, arena: ArenaInline): ArenaNodeInline | undefined {
+    return this.asm.model.getInlineNode(selection, arena);
+  }
+
+  public removeInlineNode(selection: ArenaSelection, node: ArenaNodeInline): void {
+    return this.asm.model.removeInlineNode(selection, node);
+  }
+
+  public updateInlineNode(selection: ArenaSelection, node: ArenaNodeInline): void {
+    return this.asm.model.updateInlineNode(selection, node);
+  }
+
   protected start(): void {
     this.asm.eventManager.subscribe('modelChanged', (e) => {
       if (typeof e === 'object') {

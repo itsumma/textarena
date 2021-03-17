@@ -10,12 +10,6 @@ export type Formatings = {
   [name: string]: Intervaler
 };
 
-type InlineNodeInterval = {
-  node: ArenaNodeInline,
-  start: number,
-  end: number,
-};
-
 type Insertion = {
   tag: string,
   offset: number,
@@ -223,8 +217,24 @@ export default class RichTextManager {
     return undefined;
   }
 
+  public getInlineNode(
+    arena: ArenaInline,
+    start: number,
+    end: number,
+  ): ArenaNodeInline | undefined {
+    const node = this.inlines.getNode(start, end);
+    if (node instanceof InlineNode && node.arena === arena) {
+      return node;
+    }
+    return undefined;
+  }
+
   public removeInlineNode(node: ArenaNodeInline): void {
     this.inlines.removeNode(node);
+  }
+
+  public updateInlineNode(node: ArenaNodeInline, start: number, end: number): void {
+    this.inlines.updateNode(node, start, end);
   }
 
   protected inlines: InlineIntervaler;
@@ -235,6 +245,7 @@ export default class RichTextManager {
 
   protected cutFormatings(start: number, end?: number): Formatings {
     const formatings: Formatings = {};
+    this.inlines.cut(start, end);
     Object.entries(this.formatings).forEach(([name, intervaler]) => {
       formatings[name] = intervaler.cut(start, end);
     });
@@ -283,11 +294,13 @@ export default class RichTextManager {
   }
 
   protected shiftFormatings(offset: number, step: number, keepFormatings = false): void {
+    this.inlines.shift(offset, step, keepFormatings);
     Object.values(this.formatings)
       .forEach((intervaler) => intervaler.shift(offset, step, keepFormatings));
   }
 
   protected merge(formatings: RichTextManager, offset: number): void {
+    this.inlines.merge(formatings.inlines, offset);
     Object.entries(formatings.formatings).forEach(([name, intervaler]) => {
       if (!this.formatings[name]) {
         this.formatings[name] = new Intervaler();

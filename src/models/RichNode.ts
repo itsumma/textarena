@@ -139,7 +139,19 @@ export default class RichNode implements ArenaNodeText {
     return this.richTextManager.addInlineNode(arena, start, end);
   }
 
+  public getInlineNode(
+    arena: ArenaInline,
+    start: number,
+    end: number,
+  ): ArenaNodeInline | undefined {
+    return this.richTextManager.getInlineNode(arena, start, end);
+  }
+
   public removeInlineNode(node: ArenaNodeInline): void {
     this.richTextManager.removeInlineNode(node);
+  }
+
+  updateInlineNode(node: ArenaNodeInline, start: number, end: number): void {
+    this.richTextManager.updateInlineNode(node, start, end);
   }
 }

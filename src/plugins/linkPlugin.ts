@@ -14,14 +14,11 @@ export class Link extends LitElement {
   static styles = css`
     :host {
       text-decoration: underline;
-    }
-    span {
       position: relative;
     }
     .preview {
       display: none;
       bottom: 1rem;
-      right: 0;
       position: absolute;
       color: #ccc;
       box-shadow: 0 8px 23px -6px rgba(21, 40, 54, 0.31), 22px -14px 34px -18px rgba(33, 48, 73, 0.26);
@@ -30,7 +27,7 @@ export class Link extends LitElement {
       padding: 0 .5rem;
       border-radius: .3rem;
     }
-    span:hover .preview {
+    :host(:hover) .preview {
       display: block;
     }
   `;
@@ -52,10 +49,8 @@ export class Link extends LitElement {
   // Render element DOM by returning a `lit-html` template.
   render(): TemplateResult {
     return html`
-    <span>
-      <div class="preview">${this.href}</div>
-      <slot></slot>
-    </span>`;
+    <div class="preview">${this.href}</div>
+    <span><slot></slot></span>`;
   }
 }
 
@@ -80,7 +75,8 @@ const defaultOptions: LinkOptions = {
   name: 'link',
   icon: '🔗',
   title: 'Link',
-  tag: 'ARENA-LINK',
+  // tag: 'ARENA-LINK',
+  tag: 'A',
   attributes: [],
   shortcut: 'Alt + KeyK',
   hint: 'k',
@@ -90,6 +86,10 @@ const defaultOptions: LinkOptions = {
       tag: 'A',
       attributes: [],
     },
+    // {
+    //   tag: 'ARENA-LINK',
+    //   attributes: [],
+    // },
   ],
 };
 
@@ -111,12 +111,29 @@ const linkPlugin = (opts?: typeof defaultOptions): ArenaPlugin => ({
       command,
       (ta: Textarena, selection: ArenaSelection) => {
         // eslint-disable-next-line no-alert
-        const link = prompt('You link');
+        const oldNode = ta.getInlineNode(selection, arena as ArenaInline);
+        let link = '';
+        if (oldNode) {
+          link = oldNode.getAttribute('href');
+        }
+        // eslint-disable-next-line no-alert
+        const input = prompt('You link', link);
+        if (input === null) {
+          return selection;
+        }
+        link = input;
         if (link) {
-          const node = ta.addInlineNode(selection, arena as ArenaInline);
-          if (node) {
-            node.setAttribute('href', link);
+          if (oldNode) {
+            ta.updateInlineNode(selection, oldNode);
+            oldNode.setAttribute('href', link);
+          } else {
+            const node = ta.addInlineNode(selection, arena as ArenaInline);
+            if (node) {
+              node.setAttribute('href', link);
+            }
           }
+        } else if (oldNode) {
+          ta.removeInlineNode(selection, oldNode);
         }
         return selection;
       },

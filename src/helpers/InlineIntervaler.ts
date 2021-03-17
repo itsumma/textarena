@@ -1,4 +1,4 @@
-import ArenaNodeInline from "interfaces/ArenaNodeInline";
+import ArenaNodeInline from 'interfaces/ArenaNodeInline';
 
 type Interval = {
   node: ArenaNodeInline,
@@ -19,6 +19,7 @@ export default class InlineIntervaler {
         return interval;
       }
       return {
+        node: interval.node,
         start: (keep ? interval.start <= offset : interval.start < offset)
           ? interval.start : interval.start + step,
         end: interval.end + step,
@@ -58,6 +59,7 @@ export default class InlineIntervaler {
        */
       if (interval.start < start) {
         intervals.push({
+          node: interval.node,
           start: interval.start,
           end: end ? start + Math.max(0, interval.end - end) : start,
         });
@@ -65,6 +67,7 @@ export default class InlineIntervaler {
           intervaler.addInterval(
             0,
             end ? Math.min(end - start, interval.end - start) : interval.end - start,
+            interval.node.clone(),
           );
         }
         return;
@@ -84,6 +87,7 @@ export default class InlineIntervaler {
       if (end
         && interval.end > end) {
         intervals.push({
+          node: interval.node,
           start: Math.max(start, interval.start - (end - start)),
           end: interval.end - (end - start),
         });
@@ -92,11 +96,13 @@ export default class InlineIntervaler {
         intervaler.addInterval(
           interval.start - start,
           interval.end - start,
+          interval.node.clone(),
         );
       } else if (interval.start < end && interval.end > start) {
         intervaler.addInterval(
           interval.start - start,
           Math.min(end - start, interval.end - start),
+          interval.node.clone(),
         );
       }
     });
@@ -111,6 +117,7 @@ export default class InlineIntervaler {
       lastInterval = result.length ? result[result.length - 1] : undefined;
       if (lastInterval && lastInterval.end >= interval.start) {
         result[result.length - 1] = {
+          node: lastInterval.node,
           start: lastInterval.start,
           end: interval.end,
         };
@@ -123,7 +130,7 @@ export default class InlineIntervaler {
 
   merge(intervaler: InlineIntervaler, offset: number): void {
     intervaler.intervals.forEach((interval) => {
-      this.addInterval(interval.start + offset, interval.end + offset);
+      this.addInterval(interval.start + offset, interval.end + offset, interval.node);
     });
   }
 
@@ -167,6 +174,19 @@ export default class InlineIntervaler {
     this.intervals = newIntervals;
   }
 
+  public getNode(start: number, end: number): ArenaNodeInline | undefined {
+    for (let i = 0; i < this.intervals.length; i += 1) {
+      const interval = this.intervals[i];
+      if (interval.end >= start && interval.start <= end) {
+        return interval.node;
+      }
+      if (interval.start > start) {
+        return undefined;
+      }
+    }
+    return undefined;
+  }
+
   public removeNode(node: ArenaNodeInline): void {
     for (let i = 0; i < this.intervals.length; i += 1) {
       if (this.intervals[i].node === node) {
@@ -176,46 +196,48 @@ export default class InlineIntervaler {
     }
   }
 
-  removeInterval(start: number, end: number): void {
-    const intervals: Interval[] = [];
+  public updateNode(node: ArenaNodeInline, start: number, end: number): void {
+    const newIntervals: Interval[] = [];
+    let skipOther = false;
     this.intervals.forEach((interval) => {
-      // I - current interval
-      // C - current cut
-      // C includes I && C > I
-      if (interval.start > start && interval.end < end) {
+      if (skipOther) {
+        newIntervals.push(interval);
         return;
       }
-      // I doesn't includes C
-      if (interval.start > end) {
-        intervals.push({ start: interval.start, end: interval.end });
+      if (interval.node === node) {
+        newIntervals.push({
+          node: interval.node,
+          start,
+          end,
+        });
         return;
       }
-      // I doesn't includes C
-      if (interval.end < start) {
-        intervals.push({ start: interval.start, end: interval.end });
+      if (interval.end <= start) {
+        newIntervals.push(interval);
         return;
       }
-      // I includes C && I === C
-      if (interval.start === start && interval.end === end) {
+      if (interval.start >= end) {
+        skipOther = true;
+        newIntervals.push(interval);
         return;
       }
-      // I includes C
-      if (interval.start < start && interval.end > end) {
-        intervals.push({ start: interval.start, end: start });
-        intervals.push({ start: end, end: interval.end });
+      if (interval.start < start) {
+        newIntervals.push({
+          node: interval.node,
+          start: interval.start,
+          end: Math.min(interval.end, start),
+        });
         return;
       }
-      // I includes C (left)
-      if (interval.start >= start && interval.start <= end) {
-        intervals.push({ start: end, end: interval.end });
-        return;
-      }
-      // I includes C (right)
-      if (interval.end >= start && interval.end <= end) {
-        intervals.push({ start: interval.start, end: start });
+      if (interval.end > end) {
+        newIntervals.push({
+          node: interval.node,
+          start: Math.max(interval.start, end),
+          end: interval.end,
+        });
       }
     });
-    this.intervals = intervals;
+    this.intervals = newIntervals;
   }
 
   hasInterval(start: number, end: number): boolean {

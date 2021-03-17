@@ -14,4 +14,8 @@ export default interface ArenaNodeInline {
   getTags(): [string, string];
 
   setAttribute(name: string, value: string): void;
+
+  getAttribute(name: string): string;
+
+  clone(): ArenaNodeInline;
 }

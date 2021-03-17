@@ -31,5 +31,9 @@ export default interface ArenaNodeText extends ArenaNodeScion {
 
   addInlineNode(arena: ArenaInline, start: number, end: number): ArenaNodeInline | undefined;
 
+  getInlineNode(arena: ArenaInline, start: number, end: number): ArenaNodeInline | undefined;
+
   removeInlineNode(node: ArenaNodeInline): void;
+
+  updateInlineNode(node: ArenaNodeInline, start: number, end: number): void;
 }
