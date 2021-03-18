@@ -1,6 +1,9 @@
 {
   "extends": "stylelint-config-standard",
-  "ignoreFiles": ["**/*.ts"],
+  "ignoreFiles": [
+    "public/**",
+    "**/*.ts"
+  ],
   "rules": {
     "at-rule-no-unknown": [true, {
       "ignoreAtRules": ["function", "if", "each", "include", "mixin"]

@@ -2,9 +2,6 @@ language: node_js
 node_js:
   - "14.15.3"
 
-install:
-  - npm i -g yarn && yarn
-
 jobs:
   include:
     - name: "Lint"
@@ -14,7 +11,7 @@ jobs:
     - name: "E2E tests"
       env: TEST_COMMAND=test:cypress
       before_script:
-        - yarn build
+        - npm run build
         - npm run start & # start a Web server
         - sleep 3 # give Web server some time to bind to sockets, etc
 
