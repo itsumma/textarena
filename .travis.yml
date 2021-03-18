@@ -7,12 +7,12 @@ install:
 
 jobs:
   include:
+    - name: "Lint"
+      env: TEST_COMMAND=lint
     - name: "Unit tests"
       env: TEST_COMMAND=test:jest
-      before_script:
-        - yarn build
     - name: "E2E tests"
-      env: TEST_COMMAND=test
+      env: TEST_COMMAND=test:cypress
       before_script:
         - yarn build
         - npm run start & # start a Web server

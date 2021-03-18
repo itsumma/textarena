@@ -1,6 +1,6 @@
 {
   "name": "textarena",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "license": "AGPL-3.0-only",
   "author": {
     "name": "Evgenii Finkelstein",
@@ -19,7 +19,7 @@
   "main": "lib/Textarena.js",
   "module": "lib/Textarena.js",
   "typings": "lib/Textarena.d.ts",
-  "style": "textarena.css",
+  "style": "public/textarena.css",
   "sass": "scss/style.scss",
   "devDependencies": {
     "@babel/cli": "^7.11.6",
@@ -59,7 +59,6 @@
     "lint:css": "stylelint \"scss/**/*.{css,scss}\" --cache --cache-location .cache/.stylelintcache",
     "build": "rimraf lib && yarn build:types && yarn build:bundle",
     "build:types": "tsc",
-    "build:js": "babel src --out-dir lib --extensions \".ts,.tsx\" --source-maps inline",
     "build:bundle": "yarn webpack",
     "test": "yarn lint && yarn test:jest && yarn test:cypress",
     "test:jest": "jest ./test",
