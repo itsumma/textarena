@@ -22,7 +22,7 @@
     try {
       if (storedData) {
         data = JSON.parse(storedData);
-        if (data && data.dataHtml && data.time && data.time > (+ new Date() - 60*60*24)) {
+        if (data && data.dataHtml && data.time && data.time > (+ new Date() - 1000*60*60*24)) {
           dataHtml = data.dataHtml;
         }
       }
@@ -50,7 +50,13 @@
         <li>H3 — третий по величине.</li>
         <li>H4 — четвёртый.</li>
         </ol>
-        <p>Почему нет первого? Во-первых, какие заголовки доступны в редакторе, настраивается. Во-вторых, не рекомендуется на странице использовать более одного заголовка первого уровня. На этой странице уже есть — «TEXTARENA» — в верху страницы.</p>`;
+        <p>Почему нет первого? Во-первых, какие заголовки доступны в редакторе, настраивается. Во-вторых, не рекомендуется на странице использовать более одного заголовка первого уровня. На этой странице уже есть — «TEXTARENA» — в верху страницы.</p>
+        <arena-image src="https://storage.yandexcloud.net/itsizo.app/7b128593-5c11-4850-8560-6047d71e79b5.jpg">
+          <p slot=image-caption>
+        Мозьно мине карсиньки грюсить
+          </p>
+        </arena-image>`;
+
     }
     const initData = {
       dataHtml,

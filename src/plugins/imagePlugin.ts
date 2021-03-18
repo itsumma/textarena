@@ -16,15 +16,31 @@ export class Callout extends LitElement {
   })
   type = 'great';
 
+  protected currentSrc = '';
+
   @property({
-    reflect: true,
+    type: String,
   })
-  src: string | undefined;
+  set src(value: string) {
+    this.currentSrc = value;
+  }
+
+  get src(): string {
+    return this.currentSrc;
+  }
+
+  loading = false;
+
+  get input(): HTMLInputElement | undefined {
+    const input = this.renderRoot.querySelector('#input');
+    return input ? input as HTMLInputElement : undefined;
+  }
 
   static styles = css`
     :host {
       display: block;
       margin: 1rem 0;
+      user-select: none;
     }
     .preview-btn {
       display: block;
@@ -34,44 +50,100 @@ export class Callout extends LitElement {
     }
     .caption {
       display: flex;
+      position: relative;
+      color: #7c7c7c;
+      font-size: 0.8em;
     }
     .caption slot {
-      display: block;
-      flex: 1;
       margin-left: 1em;
-      border-bottom: 1px solid gray;
+      /* color: #2c2c2c; */
+      flex: 1;
+      min-height: 100%;
+      display: block;
+    }
+    .caption-placeholder {
+      pointer-events: none;
+      font-style: italic;
     }
     input {
       display: none;
     }
+    img {
+      display: block;
+      width: 100%;
+    }
     `;
-
-  @query('#input')
-  input: undefined | HTMLInputElement;
-
-  // upload() {
-  //   if (this.input) {
-  //     this.input.click();
-  //   }
-  // }
 
   // Render element DOM by returning a `lit-html` template.
   render(): TemplateResult {
     let preview;
-    if (this.src) {
-      preview = html`<img src="${this.src}"></img>`;
+    console.log('!!!!!!!!!!!!!!!', this.src);
+    if (this.loading) {
+      preview = html`<div class="preview-btn">Грузится…</div>`;
+    } else if (this.src) {
+      preview = html`<img src="${this.src}" />`;
     } else {
       preview = html`<label for="input" class="preview-btn"></label>`;
     }
-
     return html`<div>
       ${preview}
-      <input id=input type="file" />
-      <div>
-        <label>Подпись: </label>
+      <input id=input type="file" @change=${this.onChange}/>
+      <div class="caption">
+        <div class="caption-placeholder">Подпись:</div>
         <slot name="image-caption"></slot>
       </div>
     </div>`;
+  }
+
+  private onChange() {
+    if (this.input?.files && this.input?.files?.length > 0) {
+      this.upload(this.input.files[0]);
+    }
+  }
+
+  private upload(file: File) {
+    this.loading = true;
+    this.requestUpdate();
+    const data = new FormData();
+    data.append('file', file);
+    data.append('user', 'hubot');
+    fetch('https://izo.itsumma.ru', {
+      method: 'POST',
+      body: data,
+      headers: {
+        Authorization: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiY2xpZW50IiwidG9rZW5JZCI6ImQyNzRhOTAzLTAyYWMtNGE2MS1hNmNiLTdiOTlkZGQ0YmIyNiIsInVzZXJuYW1lIjoidGVzdCIsImlhdCI6MTYxNDIzMzY4NywiZXhwIjoxNjQ1NzY5Njg3fQ.fEzuI8L9P7z9tcZ7PiocLQrf_gW9CF_JxrpQLxYHDRk',
+      },
+    }).then((response) => {
+      if (response.ok) {
+        response.json().then((url) => {
+          console.log('URL', url);
+          if (url) {
+            this.fireChangeAttribute('src', url);
+          }
+          this.requestUpdate();
+        }).catch(() => {
+          this.loading = false;
+          this.requestUpdate();
+        });
+      }
+      this.loading = false;
+      this.requestUpdate();
+    }).catch(() => {
+      this.loading = false;
+      this.requestUpdate();
+    });
+  }
+
+  private fireChangeAttribute(name: string, value: string): void {
+    const event = new CustomEvent('arena-change-attribute', {
+      bubbles: true,
+      detail: {
+        name,
+        value,
+        target: this,
+      },
+    });
+    this.dispatchEvent(event);
   }
 }
 
@@ -81,15 +153,26 @@ const defaultOptions = {
   title: 'Image',
   tag: 'ARENA-IMAGE',
   attributes: [],
+  allowedAttributes: ['src'],
   shortcut: 'Alt + KeyI',
   hint: 'i',
   command: 'add-image',
+  marks: [
+    {
+      tag: 'ARENA-IMAGE',
+      attributes: [],
+    },
+    {
+      tag: 'IMG',
+      attributes: [],
+    },
+  ],
 };
 
 const imagePlugin = (opts?: typeof defaultOptions): ArenaPlugin => ({
   register(textarena: Textarena): void {
     const {
-      name, icon, title, tag, attributes, shortcut, hint, command,
+      name, icon, title, tag, attributes, allowedAttributes, shortcut, hint, command, marks,
     } = { ...defaultOptions, ...(opts || {}) };
     const paragraph = textarena.getDefaultTextArena();
     if (!paragraph) {
@@ -120,6 +203,7 @@ const imagePlugin = (opts?: typeof defaultOptions): ArenaPlugin => ({
         name,
         tag,
         attributes,
+        allowedAttributes,
         hasChildren: true,
         protectedChildren: [
           imageCaptionParagraph,
@@ -129,12 +213,7 @@ const imagePlugin = (opts?: typeof defaultOptions): ArenaPlugin => ({
           imageCaptionParagraph,
         ],
       },
-      [
-        {
-          tag,
-          attributes: [],
-        },
-      ],
+      marks,
       [textarena.getRootArenaName()],
     );
     textarena.registerCommand(
