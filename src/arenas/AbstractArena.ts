@@ -9,6 +9,8 @@ export default abstract class AbstractArena {
 
   readonly attributes: string[];
 
+  readonly allowedAttributes: string[] = [];
+
   readonly automerge: boolean = false;
 
   readonly initCallback: ((node: ArenaNode) => ArenaNode) | undefined;
@@ -17,6 +19,9 @@ export default abstract class AbstractArena {
     this.name = options.name;
     this.tag = options.tag;
     this.attributes = options.attributes;
+    if (options.allowedAttributes) {
+      this.allowedAttributes = options.allowedAttributes;
+    }
     if (options.automerge) {
       this.automerge = true;
     }

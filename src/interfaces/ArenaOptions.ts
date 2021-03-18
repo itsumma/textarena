@@ -8,6 +8,7 @@ export type AbstractArena = {
   tag: string,
   // template: (child: TemplateResult | string, id: string) => TemplateResult | string,
   attributes: string[],
+  allowedAttributes?: string[],
   automerge?: boolean,
   init?: (node: ArenaNode) => ArenaNode;
 };

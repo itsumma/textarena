@@ -53,7 +53,7 @@ const defaultOptions: ListsOptions = {
       shortcut: 'Alt + KeyO',
       command: 'convert-to-ordered-list',
       hint: 'o',
-      pattern: /^\d+\.\s+(.*)$/,
+      pattern: /^\d+\.|\)\s+(.*)$/,
     },
   ],
 };

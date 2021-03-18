@@ -408,11 +408,14 @@ export default class ArenaBrowser {
       const matchStart = /<!--StartFragment-->/.exec(html);
       if (matchStart) {
         html = html.slice(matchStart.index + matchStart[0].length);
+        html = html.trimLeft();
       }
       const matchEnd = /<!--EndFragment-->/.exec(html);
       if (matchEnd) {
         html = html.slice(0, matchEnd.index);
+        html = html.trimRight();
       }
+      // html = html.replace(/\u00A0/, ' ');
       this.asm.logger.log(`Insert html: «${html}»`);
       const newSelection = this.asm.model.insertHtml(selection, html);
       this.asm.eventManager.fire({ name: 'modelChanged', data: newSelection });

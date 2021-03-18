@@ -2,6 +2,7 @@ import Arena from '../interfaces/Arena';
 import ArenaFormating from '../interfaces/ArenaFormating';
 import ArenaNode from '../interfaces/ArenaNode';
 import ArenaNodeText from '../interfaces/ArenaNodeText';
+import ArenaNodeScion from '../interfaces/ArenaNodeScion';
 
 import RichTextManager from '../helpers/RichTextManager';
 
@@ -87,16 +88,20 @@ export default class ArenaParser {
       const elementNode = node as HTMLElement;
       const arena = this.checkArenaMark(elementNode);
       if (arena) {
-        // TODO check if arena for text
-        if ('hasText' in arenaNode && firstTextNode) {
-          const result = this.insertChildren(elementNode, arenaNode, offset);
-          return [...result, true];
+        // if ('hasText' in arenaNode && firstTextNode) {
+        //   const result = this.insertChildren(elementNode, arenaNode, offset);
+        //   return [...result, true];
+        // }
+        // const newArenaNode = arenaNode.createAndInsertNode(arena, offset);
+        let newArenaNode: ArenaNode & (ArenaNodeScion | ArenaNodeText) | undefined;
+        if ('hasText' in arenaNode && firstTextNode && arenaNode.getTextLength() === 0) {
+          const cursor = arenaNode.remove();
+          newArenaNode = cursor.node.createAndInsertNode(arena, cursor.offset);
+        } else {
+          newArenaNode = arenaNode.createAndInsertNode(arena, offset);
         }
-        const newArenaNode = arenaNode.createAndInsertNode(arena, offset);
         if (newArenaNode) {
-          elementNode.getAttributeNames().forEach((attr) => {
-            newArenaNode.setAttribute(attr, elementNode.getAttribute(attr) || '');
-          });
+          this.setAttributes(newArenaNode, elementNode);
           if ('hasText' in newArenaNode) {
             const formatings = this.getText(elementNode);
             this.asm.logger.log('this is arena for text', formatings);
@@ -221,8 +226,9 @@ export default class ArenaParser {
       // console.log('\tDont insert');
       return '';
     }
-    result = result.replace(/\n/g, ' ');
-    result = result.replace(/\s{2,}/g, ' ');
+    result = result.replace(/\n/g, ' ')
+      .replace(/ {2,}/g, ' ')
+      .replace(/\u00A0/, ' ');
     // if (first) {
     //   result = result.replace(/^[\s\n]+/, '');
     // }
@@ -232,9 +238,17 @@ export default class ArenaParser {
     return result;
   }
 
-  clearTextNode(newArenaNode: ArenaNodeText): void {
+  protected clearTextNode(newArenaNode: ArenaNodeText): void {
     newArenaNode.ltrim();
     newArenaNode.rtrim();
     newArenaNode.clearSpaces();
+  }
+
+  protected setAttributes(node: ArenaNode, element: HTMLElement): void {
+    element.getAttributeNames().forEach((attr) => {
+      if (node.arena.allowedAttributes.includes(attr)) {
+        node.setAttribute(attr, element.getAttribute(attr) || '');
+      }
+    });
   }
 }

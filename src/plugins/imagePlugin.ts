@@ -32,6 +32,15 @@ export class Callout extends LitElement {
       padding-top: 56.25%;
       border: 3px solid #d0d0d0;
     }
+    .caption {
+      display: flex;
+    }
+    .caption slot {
+      display: block;
+      flex: 1;
+      margin-left: 1em;
+      border-bottom: 1px solid gray;
+    }
     input {
       display: none;
     }
@@ -58,8 +67,10 @@ export class Callout extends LitElement {
     return html`<div>
       ${preview}
       <input id=input type="file" />
-      <slot name="image-title"></slot>
-      <slot name="alt"></slot>
+      <div>
+        <label>Подпись: </label>
+        <slot name="image-caption"></slot>
+      </div>
     </div>`;
   }
 }
@@ -84,12 +95,12 @@ const imagePlugin = (opts?: typeof defaultOptions): ArenaPlugin => ({
     if (!paragraph) {
       throw new Error('Default Arena for text not found');
     }
-    const calloutTitleParagraph = textarena.registerArena(
+    const imageCaptionParagraph = textarena.registerArena(
       {
-        name: 'image-title-paragraph',
+        name: 'image-caption-paragraph',
         tag: 'P',
         attributes: [
-          'slot=image-title',
+          'slot=image-caption',
         ],
         allowText: true,
         allowFormating: true,
@@ -98,7 +109,7 @@ const imagePlugin = (opts?: typeof defaultOptions): ArenaPlugin => ({
         {
           tag: 'P',
           attributes: [
-            'slot=image-title',
+            'slot=image-caption',
           ],
         },
       ],
@@ -111,11 +122,11 @@ const imagePlugin = (opts?: typeof defaultOptions): ArenaPlugin => ({
         attributes,
         hasChildren: true,
         protectedChildren: [
-          calloutTitleParagraph,
+          imageCaptionParagraph,
         ],
-        arenaForText: calloutTitleParagraph as ArenaWithText,
+        arenaForText: imageCaptionParagraph as ArenaWithText,
         allowedArenas: [
-          calloutTitleParagraph,
+          imageCaptionParagraph,
         ],
       },
       [

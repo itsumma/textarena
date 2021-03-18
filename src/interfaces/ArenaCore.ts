@@ -8,6 +8,8 @@ interface ArenaCore {
 
   readonly attributes: string[];
 
+  readonly allowedAttributes: string[];
+
   automerge: boolean;
 
   getTemplate(

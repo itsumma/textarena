@@ -159,6 +159,7 @@ const examplePlugin = (options?: any): ArenaPlugin => ({
         tag: 'ARENA-RECOMENDATION',
         attributes: [
         ],
+        allowedAttributes: ['postid'],
         single: true,
       },
       [

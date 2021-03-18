@@ -65,6 +65,7 @@ type LinkOptions = {
   title: string,
   tag: string,
   attributes: string[];
+  allowedAttributes: string[];
   shortcut: string,
   hint: string,
   command: string,
@@ -78,6 +79,7 @@ const defaultOptions: LinkOptions = {
   // tag: 'ARENA-LINK',
   tag: 'A',
   attributes: [],
+  allowedAttributes: ['href'],
   shortcut: 'Alt + KeyK',
   hint: 'k',
   command: 'add-link',
@@ -96,13 +98,14 @@ const defaultOptions: LinkOptions = {
 const linkPlugin = (opts?: typeof defaultOptions): ArenaPlugin => ({
   register(textarena: Textarena): void {
     const {
-      name, icon, title, tag, attributes, shortcut, hint, command, marks,
+      name, icon, title, tag, attributes, allowedAttributes, shortcut, hint, command, marks,
     } = { ...defaultOptions, ...(opts || {}) };
     const arena = textarena.registerArena(
       {
         name,
         tag,
         attributes,
+        allowedAttributes,
         inline: true,
       },
       marks,
