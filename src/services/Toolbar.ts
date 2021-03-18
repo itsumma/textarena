@@ -1,7 +1,7 @@
-import ToolbarOptions from 'interfaces/ToolbarOptions';
-import ToolOptions from 'interfaces/ToolOptions';
-import ArenaNode from 'interfaces/ArenaNode';
-import ElementHelper from 'helpers/ElementHelper';
+import ToolbarOptions from '../interfaces/ToolbarOptions';
+import ToolOptions from '../interfaces/ToolOptions';
+import ArenaNode from '../interfaces/ArenaNode';
+import ElementHelper from '../helpers/ElementHelper';
 import { MediaEvent } from './EventManager';
 import ArenaServiceManager from './ArenaServiceManager';
 
@@ -146,7 +146,11 @@ export default class Toolbar {
       this.asm.model.runNodesOfSelection(sel, (node: ArenaNode, start?: number, end?: number) => {
         this.tools.forEach(({ options: { name, checkStatus } }: Tool) => {
           if (status[name]) {
-            status[name] = checkStatus(node, start, end);
+            if (!checkStatus) {
+              status[name] = false;
+            } else {
+              status[name] = checkStatus(node, start, end);
+            }
           }
         });
       });

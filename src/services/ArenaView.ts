@@ -1,6 +1,6 @@
 import { render } from 'lit-html';
-import ArenaSelection from 'helpers/ArenaSelection';
-import ArenaNodeText from 'interfaces/ArenaNodeText';
+import ArenaSelection from '../helpers/ArenaSelection';
+import ArenaNodeText from '../interfaces/ArenaNodeText';
 import ArenaServiceManager from './ArenaServiceManager';
 
 export default class ArenaView {

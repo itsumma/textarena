@@ -1,14 +1,14 @@
 import { TemplateResult, html } from 'lit-html';
 import { repeat } from 'lit-html/directives/repeat';
-import Arena from 'interfaces/Arena';
-import ArenaAncestor from 'interfaces/ArenaAncestor';
-import ArenaCursor from 'interfaces/ArenaCursor';
-import ArenaCursorAncestor from 'interfaces/ArenaCursorAncestor';
-import { ArenaFormatings } from 'interfaces/ArenaFormating';
-import ArenaNodeAncestor from 'interfaces/ArenaNodeAncestor';
-import ArenaNodeScion from 'interfaces/ArenaNodeScion';
-import ArenaNodeText from 'interfaces/ArenaNodeText';
-import RichTextManager from 'helpers/RichTextManager';
+import Arena from '../interfaces/Arena';
+import ArenaAncestor from '../interfaces/ArenaAncestor';
+import ArenaCursor from '../interfaces/ArenaCursor';
+import ArenaCursorAncestor from '../interfaces/ArenaCursorAncestor';
+import { ArenaFormatings } from '../interfaces/ArenaFormating';
+import ArenaNodeAncestor from '../interfaces/ArenaNodeAncestor';
+import ArenaNodeScion from '../interfaces/ArenaNodeScion';
+import ArenaNodeText from '../interfaces/ArenaNodeText';
+import RichTextManager from '../helpers/RichTextManager';
 import NodeFactory from './NodeFactory';
 
 // У корневого может быть разрешены либо параграфы (заголовки), либо секции (и большие картинки)

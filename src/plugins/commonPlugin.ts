@@ -1,6 +1,6 @@
-import Textarena from 'Textarena';
-import ArenaPlugin from 'interfaces/ArenaPlugin';
-import ArenaSelection from 'helpers/ArenaSelection';
+import Textarena from '../Textarena';
+import ArenaPlugin from '../interfaces/ArenaPlugin';
+import ArenaSelection from '../helpers/ArenaSelection';
 
 const commonPlugin: () => ArenaPlugin = () => ({
   register(textarena: Textarena): void {

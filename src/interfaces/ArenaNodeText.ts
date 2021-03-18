@@ -1,6 +1,8 @@
-import RichTextManager from 'helpers/RichTextManager';
+import RichTextManager from '../helpers/RichTextManager';
 import ArenaNodeScion from './ArenaNodeScion';
 import ArenaWithText from './ArenaWithText';
+import ArenaInline from './ArenaInline';
+import ArenaNodeInline from './ArenaNodeInline';
 
 export default interface ArenaNodeText extends ArenaNodeScion {
   hasText: true;
@@ -26,4 +28,12 @@ export default interface ArenaNodeText extends ArenaNodeScion {
   rtrim(): void;
 
   clearSpaces(): void;
+
+  addInlineNode(arena: ArenaInline, start: number, end: number): ArenaNodeInline | undefined;
+
+  getInlineNode(arena: ArenaInline, start: number, end: number): ArenaNodeInline | undefined;
+
+  removeInlineNode(node: ArenaNodeInline): void;
+
+  updateInlineNode(node: ArenaNodeInline, start: number, end: number): void;
 }

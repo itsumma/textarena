@@ -1,8 +1,8 @@
-import Textarena from 'Textarena';
-import ArenaSelection from 'helpers/ArenaSelection';
-import ElementHelper from 'helpers/ElementHelper';
-import CreatorBarOptions from 'interfaces/CreatorBarOptions';
-import CreatorOptions from 'interfaces/CreatorOptions';
+import Textarena from '../Textarena';
+import ArenaSelection from '../helpers/ArenaSelection';
+import ElementHelper from '../helpers/ElementHelper';
+import CreatorBarOptions from '../interfaces/CreatorBarOptions';
+import CreatorOptions from '../interfaces/CreatorOptions';
 import ArenaServiceManager from './ArenaServiceManager';
 
 type Creator = {

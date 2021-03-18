@@ -1,0 +1,14 @@
+/cypress
+/node_modules
+/resources
+/test
+/.babelrc
+/.eslintrc
+/.eslintrc.json
+/.gitignore
+/.stylelintrc.json
+/.travis.yml
+/cypress.json
+/yarn.lock
+/tsconfig.json
+/webpack.config.js

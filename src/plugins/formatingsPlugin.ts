@@ -1,7 +1,7 @@
-import Textarena from 'Textarena';
-import ArenaPlugin from 'interfaces/ArenaPlugin';
-import ArenaSelection from 'helpers/ArenaSelection';
-import ArenaNode from 'interfaces/ArenaNode';
+import Textarena from '../Textarena';
+import ArenaPlugin from '../interfaces/ArenaPlugin';
+import ArenaSelection from '../helpers/ArenaSelection';
+import ArenaNode from '../interfaces/ArenaNode';
 
 type MarkOptions = {
   tag: string,

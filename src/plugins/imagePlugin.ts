@@ -1,10 +1,10 @@
 import {
   LitElement, html, css, customElement, property, TemplateResult, query,
 } from 'lit-element';
-import Textarena from 'Textarena';
-import ArenaSelection from 'helpers/ArenaSelection';
-import ArenaPlugin from 'interfaces/ArenaPlugin';
-import ArenaWithText from 'interfaces/ArenaWithText';
+import Textarena from '../Textarena';
+import ArenaSelection from '../helpers/ArenaSelection';
+import ArenaPlugin from '../interfaces/ArenaPlugin';
+import ArenaWithText from '../interfaces/ArenaWithText';
 
 // This decorator defines the element.
 @customElement('arena-image')

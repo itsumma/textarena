@@ -1,6 +1,6 @@
 /* eslint-disable no-bitwise */
-import ArenaSelection from 'helpers/ArenaSelection';
-import CommandAction from 'interfaces/CommandAction';
+import ArenaSelection from '../helpers/ArenaSelection';
+import CommandAction from '../interfaces/CommandAction';
 import ArenaServiceManager from './ArenaServiceManager';
 
 export const keyboardKeys = [

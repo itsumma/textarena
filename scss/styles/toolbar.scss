@@ -1,5 +1,6 @@
 .textarena-toolbar {
   position: absolute;
+  z-index: 1;
 
   &__pointer {
     position: absolute;

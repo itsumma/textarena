@@ -1,13 +1,13 @@
-import Textarena from 'Textarena';
-import ArenaBrowser from 'services/ArenaBrowser';
-import ArenaCommandManager from 'services/ArenaCommandManager';
-import ArenaLogger from 'services/ArenaLogger';
-import ArenaModel from 'services/ArenaModel';
-import ArenaParser from 'services/ArenaParser';
-import ArenaView from 'services/ArenaView';
-import CreatorBar from 'services/CreatorBar';
-import EventManager from 'services/EventManager';
-import Toolbar from 'services/Toolbar';
+import Textarena from '../Textarena';
+import ArenaBrowser from './ArenaBrowser';
+import ArenaCommandManager from './ArenaCommandManager';
+import ArenaLogger from './ArenaLogger';
+import ArenaModel from './ArenaModel';
+import ArenaParser from './ArenaParser';
+import ArenaView from './ArenaView';
+import CreatorBar from './CreatorBar';
+import EventManager from './EventManager';
+import Toolbar from './Toolbar';
 
 export default class ArenaServiceManager {
   public logger: ArenaLogger;

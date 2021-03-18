@@ -1,17 +1,13 @@
-import { FilterXSS } from 'xss';
+import Arena from '../interfaces/Arena';
+import ArenaFormating from '../interfaces/ArenaFormating';
+import ArenaNode from '../interfaces/ArenaNode';
+import ArenaNodeText from '../interfaces/ArenaNodeText';
 
-import Arena from 'interfaces/Arena';
-import ArenaFormating from 'interfaces/ArenaFormating';
-import ArenaNode from 'interfaces/ArenaNode';
-import ArenaNodeText from 'interfaces/ArenaNodeText';
-
-import RichTextManager from 'helpers/RichTextManager';
+import RichTextManager from '../helpers/RichTextManager';
 
 import ArenaServiceManager from './ArenaServiceManager';
 
 export default class ArenaParser {
-  private filterXSS: FilterXSS | undefined;
-
   constructor(protected asm: ArenaServiceManager) {
   }
 
@@ -24,6 +20,7 @@ export default class ArenaParser {
       this.asm.model.model,
       0,
     );
+    this.asm.model.model.getTextCursor(0);
   }
 
   public insertHtmlToModel(
@@ -97,9 +94,13 @@ export default class ArenaParser {
         }
         const newArenaNode = arenaNode.createAndInsertNode(arena, offset);
         if (newArenaNode) {
-          this.insertChildren(elementNode, newArenaNode, 0);
           if ('hasText' in newArenaNode) {
+            const formatings = this.getText(elementNode);
+            this.asm.logger.log('this is arena for text', formatings);
+            newArenaNode.insertText(formatings, 0);
             this.clearTextNode(newArenaNode);
+          } else {
+            this.insertChildren(elementNode, newArenaNode, 0);
           }
           return [newArenaNode.parent, newArenaNode.getIndex() + 1, true];
         }
@@ -178,6 +179,15 @@ export default class ArenaParser {
       } else if (childNode.nodeType === Node.ELEMENT_NODE) {
         const elementNode = childNode as HTMLElement;
         const newFormatings = this.getText(elementNode);
+        const arena = this.checkArenaMark(elementNode);
+        if (arena && 'inline' in arena) {
+          const inlineNode = newFormatings.addInlineNode(arena, 0, newFormatings.getTextLength());
+          if (inlineNode) {
+            elementNode.getAttributeNames().forEach((attr) => {
+              inlineNode.setAttribute(attr, elementNode.getAttribute(attr) || '');
+            });
+          }
+        }
         const formating = this.checkFormatingMark(elementNode);
         if (formating) {
           newFormatings.insertFormating(formating.name, 0, newFormatings.getTextLength());
@@ -223,43 +233,5 @@ export default class ArenaParser {
     newArenaNode.ltrim();
     newArenaNode.rtrim();
     newArenaNode.clearSpaces();
-  }
-
-  getFilterXSS(): FilterXSS {
-    if (!this.filterXSS) {
-      this.filterXSS = new FilterXSS({
-        escapeHtml: (htmlString) => htmlString,
-        stripIgnoreTag: false,
-        stripIgnoreTagBody: ['script'],
-        allowCommentTag: false,
-        stripBlankChar: true,
-        css: true,
-        whiteList: {
-          h1: [],
-          h2: [],
-          h3: [],
-          h4: [],
-          h5: [],
-          h6: [],
-          b: [],
-          strong: [],
-          i: [],
-          u: [],
-          p: ['class', 'slot'],
-          br: [],
-          hr: [],
-          div: ['contenteditable', 'class'],
-          a: ['href', 'target'],
-          ol: [],
-          ul: [],
-          li: [],
-        },
-      });
-    }
-    return this.filterXSS;
-  }
-
-  xss(htmlString: string): string {
-    return this.getFilterXSS().process(htmlString);
   }
 }

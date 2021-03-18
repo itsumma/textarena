@@ -1,9 +1,9 @@
-import Textarena from 'Textarena';
-import ArenaSelection from 'helpers/ArenaSelection';
-import ArenaPlugin from 'interfaces/ArenaPlugin';
-import ArenaCursor from 'interfaces/ArenaCursor';
-import ArenaWithText from 'interfaces/ArenaWithText';
-import ArenaNode from 'interfaces/ArenaNode';
+import Textarena from '../Textarena';
+import ArenaSelection from '../helpers/ArenaSelection';
+import ArenaPlugin from '../interfaces/ArenaPlugin';
+import ArenaCursor from '../interfaces/ArenaCursor';
+import ArenaWithText from '../interfaces/ArenaWithText';
+import ArenaNode from '../interfaces/ArenaNode';
 
 type ListOptions = {
   name: string,
