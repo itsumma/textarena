@@ -11,12 +11,12 @@ jobs:
     - name: "E2E tests"
       env: TEST_COMMAND=test:cypress
       before_script:
-        - npm run build
-        - npm run start & # start a Web server
+        - yarn build
+        - yarn start & # start a Web server
         - sleep 3 # give Web server some time to bind to sockets, etc
 
 script:
-  - npm run $TEST_COMMAND
+  - yarn $TEST_COMMAND
 
 deploy:
   provider: pages
