@@ -10,9 +10,17 @@ interface ArenaCore {
 
   automerge: boolean;
 
-  getTemplate(children: TemplateResult | string | undefined, id: string): TemplateResult | string;
+  getTemplate(
+    children: TemplateResult | string | undefined,
+    id: string,
+    attributes: { [key: string] :string },
+  ): TemplateResult | string;
 
-  getOutputTemplate(children: string | undefined, deep: number): string;
+  getOutputTemplate(
+    children: string | undefined,
+    deep: number,
+    attributes: { [key: string] :string },
+  ): string;
 
   init(node: ArenaNode): ArenaNode;
 }

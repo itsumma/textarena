@@ -31,6 +31,7 @@ import paragraphPlugin from './plugins/paragraphPlugin';
 
 import ArenaCommandManager from './services/ArenaCommandManager';
 import ArenaServiceManager from './services/ArenaServiceManager';
+import examplePlugin from './plugins/examplePlugin';
 
 const defaultOptions: TextarenaOptions = {
   editable: true,
@@ -62,7 +63,7 @@ const defaultOptions: TextarenaOptions = {
       'header4',
       'callout',
       'image',
-      // 'blockquote',
+      'exampleRecomendation',
     ],
   },
   plugins: [
@@ -75,6 +76,7 @@ const defaultOptions: TextarenaOptions = {
     calloutPlugin(),
     imagePlugin(),
     linkPlugin(),
+    examplePlugin(),
   ],
 };
 

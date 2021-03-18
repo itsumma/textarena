@@ -145,6 +145,21 @@ export default class ArenaModel {
     return undefined;
   }
 
+  public getNodeById(id: string): ArenaNode | undefined {
+    const path = id.split('.').map((i) => parseInt(i, 10));
+    let cursor: ArenaNode | RootNode | undefined = this.rootModel;
+    if (path.shift() === 0) {
+      path.forEach((i) => {
+        if (cursor && 'hasChildren' in cursor) {
+          cursor = cursor.children[i];
+        } else {
+          cursor = undefined;
+        }
+      });
+    }
+    return cursor;
+  }
+
   public getAncestors(node: ArenaNode): ArenaCursorAncestor[] {
     if ('hasParent' in node) {
       return [

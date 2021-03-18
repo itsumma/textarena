@@ -23,7 +23,7 @@ export default abstract class AbstractArena {
     this.initCallback = options.init;
   }
 
-  protected getAttributesString(id?: string): string {
+  protected getAttributesString(id: string, attributes: { [key: string] :string }): string {
     let str = '';
     if (id) {
       str += ` observe-id="${id}"`;
@@ -31,14 +31,26 @@ export default abstract class AbstractArena {
     this.attributes.forEach((attr) => {
       str += ` ${attr}`;
     });
+    Object.entries(attributes).forEach(([name, value]) => {
+      const escapedValue = value.replace(/&/g, '&amp;')
+        .replace(/'/g, '&apos;')
+        .replace(/"/g, '&quot;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+      str += ` ${name}="${escapedValue}"`;
+    });
     return str;
   }
 
-  public getTemplate(children: TemplateResult | string, id: string): TemplateResult | string {
+  public getTemplate(
+    children: TemplateResult | string,
+    id: string,
+    attributes: { [key: string] :string },
+  ): TemplateResult | string {
     if (!this.tag) {
       return children;
     }
-    const attrs = this.getAttributesString(id);
+    const attrs = this.getAttributesString(id, attributes);
     const stringArray = [
       `<${this.tag} ${attrs}>`,
       `</${this.tag}>`,
@@ -56,8 +68,12 @@ export default abstract class AbstractArena {
     // `;
   }
 
-  public getOutputTemplate(children: string | undefined, deep: number): string {
-    const attrs = this.getAttributesString();
+  public getOutputTemplate(
+    children: string | undefined,
+    deep: number,
+    attributes: { [key: string] :string },
+  ): string {
+    const attrs = this.getAttributesString('', attributes);
     const tab = '  '.repeat(deep);
     const tag = this.tag.toLowerCase();
     const content = children ? `\n${children}\n` : '';

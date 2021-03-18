@@ -94,6 +94,9 @@ export default class ArenaParser {
         }
         const newArenaNode = arenaNode.createAndInsertNode(arena, offset);
         if (newArenaNode) {
+          elementNode.getAttributeNames().forEach((attr) => {
+            newArenaNode.setAttribute(attr, elementNode.getAttribute(attr) || '');
+          });
           if ('hasText' in newArenaNode) {
             const formatings = this.getText(elementNode);
             this.asm.logger.log('this is arena for text', formatings);

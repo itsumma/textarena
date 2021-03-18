@@ -16,7 +16,7 @@ export default class InlineNode implements ArenaNodeInline {
   }
 
   public getHtml(): TemplateResult | string {
-    return this.arena.getTemplate(undefined, '');
+    return this.arena.getTemplate(undefined, '', this.attributes);
   }
 
   protected getAttributesString(): string {
@@ -42,7 +42,7 @@ export default class InlineNode implements ArenaNodeInline {
   }
 
   public getOutputHtml(_frms: ArenaFormatings, deep = 0): string {
-    return this.arena.getOutputTemplate('', deep);
+    return this.arena.getOutputTemplate('', deep, this.attributes);
   }
 
   public setAttribute(name: string, value: string): void {

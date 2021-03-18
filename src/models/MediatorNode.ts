@@ -65,15 +65,20 @@ export default class MediatorNode implements ArenaNodeScion, ArenaNodeAncestor {
     if (this.children.length === 0) {
       return '';
     }
-    return this.arena.getTemplate(html`
-      ${repeat(this.children, (c, index) => index, (child) => child.getHtml(frms))}
-    `, this.getGlobalIndex());
+    return this.arena.getTemplate(
+      html`
+        ${repeat(this.children, (c, index) => index, (child) => child.getHtml(frms))}
+      `,
+      this.getGlobalIndex(),
+      this.attributes,
+    );
   }
 
   public getOutputHtml(frms: ArenaFormatings, deep = 0): string {
     return this.arena.getOutputTemplate(
       this.children.map((child) => child.getOutputHtml(frms, deep + 1)).join('\n'),
       deep,
+      this.attributes,
     );
   }
 
@@ -203,4 +208,14 @@ export default class MediatorNode implements ArenaNodeScion, ArenaNodeAncestor {
     }
     return { node: this, offset: newIndex };
   }
+
+  public setAttribute(name: string, value: string): void {
+    this.attributes[name] = value;
+  }
+
+  public getAttribute(name: string): string {
+    return this.attributes[name] || '';
+  }
+
+  protected attributes: { [key: string] :string } = {};
 }

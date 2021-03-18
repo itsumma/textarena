@@ -32,4 +32,8 @@ export default interface ArenaNodeCore {
   getParent(): ArenaCursorAncestor;
 
   getUnprotectedParent(): ArenaCursorAncestor | undefined;
+
+  setAttribute(name: string, value: string): void;
+
+  getAttribute(name: string): string;
 }

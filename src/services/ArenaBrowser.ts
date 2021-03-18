@@ -16,6 +16,18 @@ import ElementHelper from '../helpers/ElementHelper';
 import { keyboardKeys, Modifiers } from './ArenaCommandManager';
 import ArenaServiceManager from './ArenaServiceManager';
 
+type ArenaChangeAttribute = CustomEvent<{
+  name: string,
+  value: string,
+  target: HTMLElement,
+}>;
+
+declare global {
+  interface GlobalEventHandlersEventMap {
+    'arena-change-attribute': ArenaChangeAttribute
+  }
+}
+
 const modifiersKeys = {
   Shift: 16,
   Ctrl: 17,
@@ -120,6 +132,8 @@ export default class ArenaBrowser {
 
   protected pasteListenerInstance: ((event: ClipboardEvent) => void);
 
+  protected changeAttributeListenerInstance: ((event: ArenaChangeAttribute) => void);
+
   protected lastSelectionStatus = false;
 
   protected lastSelectionRange: Range | undefined;
@@ -137,6 +151,7 @@ export default class ArenaBrowser {
     this.keyDownListenerInstance = this.keyDownListener.bind(this);
     this.selectListenerInstance = this.selectListener.bind(this);
     this.pasteListenerInstance = this.pasteListener.bind(this);
+    this.changeAttributeListenerInstance = this.changeAttributeListener.bind(this);
     this.asm.eventManager.subscribe('turnOn', () => {
       this.editor.addEventListener('input', this.inputListenerInstance, false);
       this.editor.addEventListener('mouseup', this.mouseUpListenerInstance, false);
@@ -144,6 +159,7 @@ export default class ArenaBrowser {
       this.editor.addEventListener('keypress', this.keyPressListenerInstance, false);
       this.editor.addEventListener('keydown', this.keyDownListenerInstance, false);
       this.editor.addEventListener('paste', this.pasteListenerInstance, false);
+      this.editor.addEventListener('arena-change-attribute', this.changeAttributeListenerInstance, false);
       document.addEventListener('selectionchange', this.selectListenerInstance, false);
     });
     this.asm.eventManager.subscribe('turnOff', () => {
@@ -153,6 +169,7 @@ export default class ArenaBrowser {
       this.editor.removeEventListener('keypress', this.keyPressListenerInstance);
       this.editor.removeEventListener('keydown', this.keyDownListenerInstance);
       this.editor.removeEventListener('paste', this.pasteListenerInstance);
+      this.editor.removeEventListener('arena-change-attribute', this.changeAttributeListenerInstance);
       document.removeEventListener('selectionchange', this.selectListenerInstance);
     });
   }
@@ -417,5 +434,18 @@ export default class ArenaBrowser {
   protected selectListener(e: Event): void {
     this.asm.logger.log('Select event', e);
     this.checkSelection();
+  }
+
+  protected changeAttributeListener(e: ArenaChangeAttribute): void {
+    const { name, value, target } = e.detail;
+    const id = target.getAttribute('observe-id');
+    if (id) {
+      const node = this.asm.model.getNodeById(id);
+      if (node) {
+        node.setAttribute(name, value);
+        this.asm.eventManager.fire({ name: 'modelChanged' });
+      }
+    }
+    console.log('changeAttributeListener', e);
   }
 }

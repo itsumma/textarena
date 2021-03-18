@@ -66,10 +66,20 @@ export default class SingleNode implements ArenaNodeScion {
   }
 
   public getHtml(): TemplateResult | string {
-    return this.arena.getTemplate(undefined, this.getGlobalIndex());
+    return this.arena.getTemplate(undefined, this.getGlobalIndex(), this.attributes);
   }
 
   public getOutputHtml(_frms: ArenaFormatings, deep = 0): string {
-    return this.arena.getOutputTemplate('', deep);
+    return this.arena.getOutputTemplate('', deep, this.attributes);
   }
+
+  public setAttribute(name: string, value: string): void {
+    this.attributes[name] = value;
+  }
+
+  public getAttribute(name: string): string {
+    return this.attributes[name] || '';
+  }
+
+  protected attributes: { [key: string] :string } = {};
 }

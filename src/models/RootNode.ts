@@ -36,9 +36,13 @@ export default class RootNode implements ArenaNodeAncestor {
   }
 
   getHtml(frms: ArenaFormatings): TemplateResult | string {
-    return this.arena.getTemplate(html`
-      ${repeat(this.children, (c, index) => index, (child) => child.getHtml(frms))}
-    `, this.getGlobalIndex());
+    return this.arena.getTemplate(
+      html`
+        ${repeat(this.children, (c, index) => index, (child) => child.getHtml(frms))}
+      `,
+      this.getGlobalIndex(),
+      {},
+    );
   }
 
   public getOutputHtml(frms: ArenaFormatings): string {
@@ -125,6 +129,14 @@ export default class RootNode implements ArenaNodeAncestor {
 
   public getChild(index: number): ArenaNodeScion | undefined {
     return this.children[index] || undefined;
+  }
+
+  public setAttribute(name: string, value: string): void {
+    //
+  }
+
+  public getAttribute(name: string): string {
+    return '';
   }
 
   protected checkChildren(index: number): ArenaCursorAncestor {

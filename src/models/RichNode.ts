@@ -103,12 +103,13 @@ export default class RichNode implements ArenaNodeText {
     return this.arena.getTemplate(
       html`${unsafeHTML(content)}`,
       this.getGlobalIndex(),
+      this.attributes,
     );
   }
 
   public getOutputHtml(frms: ArenaFormatings, deep: number): string {
     const text = this.richTextManager.getHtml(frms);
-    return this.arena.getOutputTemplate(text, deep);
+    return this.arena.getOutputTemplate(text, deep, this.attributes);
   }
 
   public getText(): RichTextManager {
@@ -154,4 +155,14 @@ export default class RichNode implements ArenaNodeText {
   updateInlineNode(node: ArenaNodeInline, start: number, end: number): void {
     this.richTextManager.updateInlineNode(node, start, end);
   }
+
+  public setAttribute(name: string, value: string): void {
+    this.attributes[name] = value;
+  }
+
+  public getAttribute(name: string): string {
+    return this.attributes[name] || '';
+  }
+
+  protected attributes: { [key: string] :string } = {};
 }

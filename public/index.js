@@ -29,6 +29,7 @@
     } catch {}
     if (!dataHtml) {
       dataHtml = `<h2>Простой визуальный редактор</h2>
+      <arena-recomendation postid="Статья про здоровье"></arena-recomendation>
         <p><a href="https://github.com/devopsprodigy/textarena/">Textarena</a> адаптирована для быстрой работы. Все функции доступны с помощью горячих клавиш.</p>
         <ul>
         <li>Быстро.</li>
