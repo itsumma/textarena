@@ -123,6 +123,7 @@ const linkPlugin = (opts?: typeof defaultOptions): ArenaPlugin => ({
         }
         link = input;
         if (link) {
+          selection.trim();
           if (oldNode) {
             ta.updateInlineNode(selection, oldNode);
             oldNode.setAttribute('href', link);

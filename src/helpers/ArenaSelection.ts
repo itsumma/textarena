@@ -86,4 +86,24 @@ export default class ArenaSelection {
     this.endOffset = this.startOffset;
     return this;
   }
+
+  trim(): ArenaSelection {
+    const textA = this.startNode.getRawText().slice(this.startOffset);
+    const matchA = textA.match(/^( +)/g);
+    if (matchA) {
+      const len = matchA[0].length;
+      this.startOffset += len;
+    }
+    const textB = this.startNode.getRawText().slice(0, this.startOffset);
+    const matchB = textB.match(/( +)$/g);
+    if (matchB) {
+      const len = matchB[0].length;
+      if (this.startNode !== this.endNode) {
+        this.endOffset -= len;
+      } else {
+        this.endOffset = Math.max(this.endOffset - len, this.startOffset);
+      }
+    }
+    return this;
+  }
 }
