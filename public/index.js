@@ -55,7 +55,8 @@
           <p slot=image-caption>
         Мозьно мине карсиньки грюсить
           </p>
-        </arena-image>`;
+        </arena-image>
+        <p></p>`;
 
     }
     const initData = {
