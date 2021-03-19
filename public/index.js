@@ -57,7 +57,6 @@
           </p>
         </arena-image>
         <p></p>`;
-
     }
     const initData = {
       dataHtml,

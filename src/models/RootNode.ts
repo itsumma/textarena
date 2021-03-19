@@ -131,11 +131,11 @@ export default class RootNode implements ArenaNodeAncestor {
     return this.children[index] || undefined;
   }
 
-  public setAttribute(name: string, value: string): void {
+  public setAttribute(): void {
     //
   }
 
-  public getAttribute(name: string): string {
+  public getAttribute(): string {
     return '';
   }
 

@@ -1,5 +1,5 @@
 import {
-  LitElement, html, css, customElement, property, TemplateResult, query,
+  LitElement, html, css, customElement, property, TemplateResult,
 } from 'lit-element';
 import Textarena from '../Textarena';
 import ArenaSelection from '../helpers/ArenaSelection';
@@ -77,7 +77,6 @@ export class Callout extends LitElement {
   // Render element DOM by returning a `lit-html` template.
   render(): TemplateResult {
     let preview;
-    console.log('!!!!!!!!!!!!!!!', this.src);
     if (this.loading) {
       preview = html`<div class="preview-btn">Грузится…</div>`;
     } else if (this.src) {
@@ -116,7 +115,6 @@ export class Callout extends LitElement {
     }).then((response) => {
       if (response.ok) {
         response.json().then((url) => {
-          console.log('URL', url);
           if (url) {
             this.fireChangeAttribute('src', url);
           }

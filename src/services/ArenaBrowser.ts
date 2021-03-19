@@ -449,6 +449,5 @@ export default class ArenaBrowser {
         this.asm.eventManager.fire({ name: 'modelChanged' });
       }
     }
-    console.log('changeAttributeListener', e);
   }
 }

@@ -151,7 +151,7 @@ export class Callout extends LitElement {
   }
 }
 
-const examplePlugin = (options?: any): ArenaPlugin => ({
+const examplePlugin = (): ArenaPlugin => ({
   register: (ta: Textarena) => {
     const arena = ta.registerArena(
       {
