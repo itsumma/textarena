@@ -1,10 +1,11 @@
 /* eslint-disable no-lonely-if */
-import { ArenaFormatings } from '../interfaces/ArenaFormating';
+import ArenaFormating, { ArenaFormatings } from '../interfaces/ArenaFormating';
 import ArenaInline from '../interfaces/ArenaInline';
 import ArenaNodeInline from '../interfaces/ArenaNodeInline';
 import InlineNode from '../models/InlineNode';
 import Intervaler from './Intervaler';
 import InlineIntervaler from './InlineIntervaler';
+import examplePlugin from '../plugins/examplePlugin';
 
 export type Formatings = {
   [name: string]: Intervaler
@@ -123,12 +124,16 @@ export default class RichTextManager {
     keepFormatings = false,
   ): number {
     const text = typeof rtm === 'string' ? rtm : rtm.getText();
+    const endOffset = offset + text.length;
     this.text = this.text.slice(0, offset) + text + this.text.slice(offset);
-    this.shiftFormatings(offset, text.length, keepFormatings);
+    const formationsForApply = keepFormatings ? this.getFormationgsForApply(offset) : [];
+    this.shiftFormatings(offset, text.length);
     if (rtm instanceof RichTextManager) {
       this.merge(rtm, offset);
+    } else {
+      formationsForApply.forEach((name) => this.insertFormating(name, offset, endOffset));
     }
-    return offset + text.length;
+    return endOffset;
   }
 
   public removeText(start: number, end?: number): void {
@@ -153,6 +158,26 @@ export default class RichTextManager {
       this.formatings[name] = new Intervaler();
     }
     this.formatings[name].addInterval(start, end);
+  }
+
+  public togglePromiseFormating(formating: ArenaFormating, offset: number): void {
+    const { name } = formating;
+    let type: 'add' | 'remove' = 'add';
+    if (this.promises[name] && this.promises[name].offset === offset) {
+      if (this.promises[name].type === 'add') {
+        type = 'remove';
+      }
+    } else if (this.hasFormating(name, offset, offset)) {
+      type = 'remove';
+    }
+    this.promises[name] = {
+      offset,
+      type,
+    };
+  }
+
+  public clearPromises(): void {
+    this.promises = {};
   }
 
   public toggleFormating(name: string, start: number, end: number): void {
@@ -243,6 +268,13 @@ export default class RichTextManager {
 
   protected text: string;
 
+  protected promises: {
+    [name: string]: {
+      offset: number,
+      type: 'add' | 'remove',
+    }
+  } = {};
+
   protected cutFormatings(start: number, end?: number): Formatings {
     const formatings: Formatings = {};
     this.inlines.cut(start, end);
@@ -293,10 +325,10 @@ export default class RichTextManager {
     return insertions.sort((a, b) => a.offset - b.offset);
   }
 
-  protected shiftFormatings(offset: number, step: number, keepFormatings = false): void {
-    this.inlines.shift(offset, step, keepFormatings);
+  protected shiftFormatings(offset: number, step: number): void {
+    this.inlines.shift(offset, step, false);
     Object.values(this.formatings)
-      .forEach((intervaler) => intervaler.shift(offset, step, keepFormatings));
+      .forEach((intervaler) => intervaler.shift(offset, step));
   }
 
   protected merge(formatings: RichTextManager, offset: number): void {
@@ -379,5 +411,29 @@ export default class RichTextManager {
       }
     }
     return [text, lastSpace];
+  }
+
+  protected getFormationgsForApply(offset: number): string[] {
+    const result: string[] = [];
+    Object.entries(this.formatings).forEach(([name, intervaler]) => {
+      if (intervaler.hasInterval(offset, offset)) {
+        result.push(name);
+      }
+    });
+    Object.entries(this.promises).forEach(([name, promise]) => {
+      if (promise.offset === offset) {
+        if (promise.type === 'add') {
+          if (!result.includes(name)) {
+            result.push(name);
+          }
+        } else {
+          const index = result.indexOf(name);
+          if (index > -1) {
+            result.splice(index, 1);
+          }
+        }
+      }
+    });
+    return result;
   }
 }

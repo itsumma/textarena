@@ -400,21 +400,26 @@ export default class ArenaModel {
   }
 
   public formatingModel(selection: ArenaSelection, formating: ArenaFormating): ArenaSelection {
-    this.runNodesOfSelection(
-      selection,
-      (node: ArenaNode, start?: number, end?: number) => {
-        if ('hasText' in node) {
-          node.toggleFormating(formating.name, start || 0, end || node.getTextLength());
-        }
-        if ('hasChildren' in node) {
-          this.runOfChildren(node, (n: ArenaNode) => {
-            if ('hasText' in n) {
-              n.toggleFormating(formating.name, 0, n.getTextLength());
-            }
-          });
-        }
-      },
-    );
+    if (selection.isCollapsed()) {
+      const { node, offset } = selection.getCursor();
+      node.togglePromiseFormating(formating, offset);
+    } else {
+      this.runNodesOfSelection(
+        selection,
+        (node: ArenaNode, start?: number, end?: number) => {
+          if ('hasText' in node) {
+            node.toggleFormating(formating.name, start || 0, end || node.getTextLength());
+          }
+          if ('hasChildren' in node) {
+            this.runOfChildren(node, (n: ArenaNode) => {
+              if ('hasText' in n) {
+                n.toggleFormating(formating.name, 0, n.getTextLength());
+              }
+            });
+          }
+        },
+      );
+    }
     return selection;
   }
 

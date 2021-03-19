@@ -3,6 +3,7 @@ import ArenaNodeScion from './ArenaNodeScion';
 import ArenaWithText from './ArenaWithText';
 import ArenaInline from './ArenaInline';
 import ArenaNodeInline from './ArenaNodeInline';
+import ArenaFormating from './ArenaFormating';
 
 export default interface ArenaNodeText extends ArenaNodeScion {
   hasText: true;
@@ -22,6 +23,8 @@ export default interface ArenaNodeText extends ArenaNodeScion {
   insertFormating(name: string, start: number, end: number): void;
 
   toggleFormating(name: string, start: number, end: number): void;
+
+  togglePromiseFormating(formating: ArenaFormating, offset: number): void;
 
   ltrim(): void;
 

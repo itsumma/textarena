@@ -10,7 +10,7 @@ export default class Intervaler {
     return this.intervals;
   }
 
-  shift(offset: number, step: number, keep = false): void {
+  shiftOld(offset: number, step: number, keep = false): void {
     this.intervals = this.intervals.map((interval) => {
       if (keep ? interval.end < offset : interval.end <= offset) {
         return interval;
@@ -21,6 +21,32 @@ export default class Intervaler {
         end: interval.end + step,
       };
     });
+  }
+
+  shift(offset: number, step: number): void {
+    const intervals: Interval[] = [];
+    this.intervals.forEach((interval) => {
+      if (interval.end <= offset) {
+        intervals.push(interval);
+        return;
+      }
+      if (interval.start >= offset) {
+        intervals.push({
+          start: interval.start + step,
+          end: interval.end + step,
+        });
+        return;
+      }
+      intervals.push({
+        start: interval.start,
+        end: offset,
+      });
+      intervals.push({
+        start: offset + step,
+        end: interval.end + step,
+      });
+    });
+    this.intervals = this.checkIntersection(intervals);
   }
 
   cut(start: number, end?: number): Intervaler {

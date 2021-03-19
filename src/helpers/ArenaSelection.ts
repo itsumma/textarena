@@ -88,11 +88,18 @@ export default class ArenaSelection {
   }
 
   trim(): ArenaSelection {
+    if (this.isCollapsed()) {
+      return this;
+    }
     const textA = this.startNode.getRawText().slice(this.startOffset);
     const matchA = textA.match(/^( +)/g);
     if (matchA) {
       const len = matchA[0].length;
-      this.startOffset += len;
+      if (this.startNode !== this.endNode) {
+        this.startOffset += len;
+      } else {
+        this.startOffset = Math.min(this.startOffset + len, this.endOffset);
+      }
     }
     const textB = this.endNode.getRawText().slice(0, this.endOffset);
     const matchB = textB.match(/( +)$/g);

@@ -8,7 +8,7 @@ import ArenaNodeScion from '../interfaces/ArenaNodeScion';
 import ArenaCursor from '../interfaces/ArenaCursor';
 import ArenaCursorAncestor from '../interfaces/ArenaCursorAncestor';
 import ArenaWithText from '../interfaces/ArenaWithText';
-import { ArenaFormatings } from '../interfaces/ArenaFormating';
+import ArenaFormating, { ArenaFormatings } from '../interfaces/ArenaFormating';
 import ArenaNodeInline from '../interfaces/ArenaNodeInline';
 import ArenaInline from '../interfaces/ArenaInline';
 
@@ -80,6 +80,10 @@ export default class RichNode implements ArenaNodeText {
 
   public insertFormating(name: string, start: number, end: number): void {
     this.richTextManager.insertFormating(name, start, end);
+  }
+
+  public togglePromiseFormating(formating: ArenaFormating, offset: number): void {
+    this.richTextManager.togglePromiseFormating(formating, offset);
   }
 
   public ltrim(): void {
