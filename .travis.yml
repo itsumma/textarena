@@ -4,7 +4,7 @@ node_js:
 
 cache:
   paths:
-    - /home/travis/.cache/Cypress
+    - ~/cache/
 
 jobs:
   include:
@@ -20,6 +20,7 @@ jobs:
         - sleep 3 # give Web server some time to bind to sockets, etc
 
 script:
+  - export CYPRESS_CACHE_FOLDER=~/cache/Cypress
   - yarn $TEST_COMMAND
 
 deploy:
