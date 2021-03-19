@@ -40,7 +40,7 @@
     //     "avoidEscape": true
     //   }
     // ],
-    // "implicit-arrow-linebreak": [0]
+    "implicit-arrow-linebreak": [0],
     "semi": "off",
     "@typescript-eslint/semi": ["error"]
   },

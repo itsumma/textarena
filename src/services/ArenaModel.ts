@@ -16,6 +16,7 @@ import ArenaNodeScion from '../interfaces/ArenaNodeScion';
 import ArenaNodeText from '../interfaces/ArenaNodeText';
 import ArenaOptions from '../interfaces/ArenaOptions';
 import ArenaRoot from '../interfaces/ArenaRoot';
+import ArenaWithText from '../interfaces/ArenaWithText';
 
 import ArenaSelection from '../helpers/ArenaSelection';
 
@@ -366,36 +367,170 @@ export default class ArenaModel {
     return selection;
   }
 
-  public transformModel(selection: ArenaSelection, arena: Arena): ArenaSelection {
-    const newSelection = selection;
-    const toCreate: ArenaNodeText[] = [];
+  protected getParentWhoCanCreateNode(
+    node: ArenaNode,
+    arena: ArenaWithText,
+  ): ArenaCursorAncestor | undefined {
+    if (!('hasParent' in node)) {
+      return undefined;
+    }
+    if (node.parent.arena.protected) {
+      return undefined;
+    }
+    const { parent } = node;
+    const offset = node.getIndex();
+    if (parent.canCreateNode(arena)) {
+      return {
+        node: parent,
+        offset,
+      };
+    }
+    if ('hasParent' in parent) {
+      const grandpa = parent.parent;
+      if (offset === 0) {
+        // try to create before parent
+        return this.getParentWhoCanCreateNode(parent, arena);
+      }
+      // separate parent in two
+      const secondParent = grandpa.createAndInsertNode(
+        parent.arena,
+        parent.getIndex() + 1,
+      );
+      if (secondParent && 'hasChildren' in secondParent) {
+        secondParent.insertChildren(parent.cutChildren(offset));
+        // try to create between parents
+        return this.getParentWhoCanCreateNode(secondParent, arena);
+      }
+    }
+    return undefined;
+  }
+
+  protected tryToCreateNode(
+    parent: ArenaNodeAncestor & ArenaNode,
+    offset: number,
+    arena: ArenaWithText,
+  ): ArenaNodeText | undefined {
+    if (parent.arena.protected) {
+      return undefined;
+    }
+    if (parent.canCreateNode(arena)) {
+      const newNode = parent.createAndInsertNode(
+        arena,
+        offset,
+      ) as ArenaNodeText;
+      return newNode;
+    }
+    if ('hasParent' in parent) {
+      if (offset === 0) {
+        // try to create before parent
+        return this.tryToCreateNode(parent.parent, parent.getIndex(), arena);
+      }
+      if (offset >= parent.children.length) {
+        // try to create after parent
+        return this.tryToCreateNode(parent.parent, parent.getIndex() + 1, arena);
+      }
+      // separate parent in two
+      const secondParent = parent.parent.createAndInsertNode(parent.arena, parent.getIndex() + 1);
+      if (secondParent && 'hasChildren' in secondParent) {
+        secondParent.insertChildren(parent.cutChildren(offset));
+        // try to create between parents
+        return this.tryToCreateNode(parent.parent, parent.getIndex() + 1, arena);
+      }
+    }
+    return undefined;
+  }
+
+  protected transformNode(node: ArenaNode, arena: ArenaWithText): ArenaNodeText | undefined {
+    if ('hasText' in node) {
+      const cursor = this.getParentWhoCanCreateNode(node, arena);
+      if (cursor) {
+        const newNode = cursor.node.createAndInsertNode(
+          arena,
+          cursor.offset,
+        ) as ArenaNodeText;
+        // const newNode = this.tryToCreateNode(node.parent, node.getIndex() + 1, arena);
+        if (newNode) {
+          newNode.insertText(node.getText(), 0);
+          node.remove();
+          return newNode;
+        }
+      }
+    } else if ('hasChildren' in node) {
+      if (node.arena.protected || node.canCreateNode(arena)) {
+        [...node.children].forEach((child) => this.transformNode(child, arena));
+      } else if ('hasParent' in node) {
+        [...node.children].forEach((child) => this.transformNode(child, arena));
+        // const cursor = this.getParentWhoCanCreateNode(node, arena);
+        // if (cursor) {
+        //   (node as ArenaNodeAncestor).children.forEach((child) => {
+        //     if ('hasText' in child) {
+        //       const newNode = cursor.node.createAndInsertNode(
+        //         arena,
+        //         cursor.offset,
+        //       ) as ArenaNodeText;
+        //       if (newNode) {
+        //         cursor.offset += 1;
+        //         newNode.insertText(child.getText(), 0);
+        //         child.remove();
+        //         return newNode;
+        //       }
+        //     } else if ('hasChildren' in child) {
+        //       this.transformNode(child, arena);
+        //     }
+        //   });
+        // }
+      }
+    }
+    return undefined;
+  }
+
+  public transformModel(selection: ArenaSelection, arena: ArenaWithText): ArenaSelection {
+    const {
+      startNode, startOffset, endNode, endOffset,
+    } = selection;
+    const newSelection = selection.clone();
+    const toTransform: ArenaNode[] = [];
     const commonAncestor = this.runNodesOfSelection(
       selection,
       (node: ArenaNode) => {
-        this.runOfChildren(node, (n: ArenaNode) => {
-          if ('hasText' in n) {
-            toCreate.push(n);
-          }
-        });
+        toTransform.push(node);
+        // this.runOfChildren(node, (n: ArenaNode) => {
+        //   if ('hasText' in n) {
+        //   }
+        // });
       },
     );
-    if (commonAncestor) {
-      let c: ArenaCursorAncestor = {
-        node: commonAncestor[0],
-        offset: commonAncestor[1],
-      };
-      const toRemove: ArenaNodeText[] = [];
-      toCreate.forEach((n) => {
-        const newNode = c.node.createAndInsertNode(arena, c.offset + 1);
-        if (newNode) {
-          c = newNode.getParent();
-          const cursor = newNode.insertText(n.getText(), 0, false);
-          toRemove.push(n);
-          newSelection.setCursor(cursor);
+    toTransform.forEach((n) => {
+      const newNode = this.transformNode(n, arena);
+      if (newNode) {
+        if (n === startNode) {
+          newSelection.setStartNode(newNode, startOffset);
         }
-      });
-      toRemove.forEach((n) => n.remove());
-    }
+        if (n === endNode) {
+          newSelection.setEndNode(newNode, endOffset);
+        }
+      }
+      // if ('hasChildren' in n) {
+
+      // }
+    });
+    // if (commonAncestor) {
+    //   let c: ArenaCursorAncestor = {
+    //     node: commonAncestor[0],
+    //     offset: commonAncestor[1],
+    //   };
+    //   const toRemove: ArenaNodeText[] = [];
+    //   toCreate.forEach((n) => {
+    //     const newNode = c.node.createAndInsertNode(arena, c.offset + 1);
+    //     if (newNode) {
+    //       c = newNode.getParent();
+    //       const cursor = newNode.insertText(n.getText(), 0, false);
+    //       toRemove.push(n);
+    //       newSelection.setCursor(cursor);
+    //     }
+    //   });
+    //   toRemove.forEach((n) => n.remove());
+    // }
     return newSelection;
   }
 

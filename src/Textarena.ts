@@ -267,8 +267,28 @@ class Textarena {
     this.asm.creatorBar.registerCreator(opts);
   }
 
-  public transformModel(selection: ArenaSelection, arena: Arena): ArenaSelection {
+  public transformModel(selection: ArenaSelection, arena: ArenaWithText): ArenaSelection {
     return this.asm.model.transformModel(selection, arena);
+  }
+
+  public wrapSelected(selection: ArenaSelection, arena: ArenaAncestor): ArenaSelection {
+    return selection;
+  }
+
+  public unwrapSelected(selection: ArenaSelection, arena: ArenaAncestor): ArenaSelection {
+    return selection;
+  }
+
+  public toggleWrapSelected(selection: ArenaSelection, arena: ArenaAncestor): ArenaSelection {
+    return selection;
+  }
+
+  public insertInsteadOfSelected(selection: ArenaSelection, arena: Arena): ArenaSelection {
+    return selection;
+  }
+
+  public insertBeforeSelected(selection: ArenaSelection, arena: Arena): ArenaSelection {
+    return selection;
   }
 
   public breakSelection(selection: ArenaSelection): ArenaSelection {

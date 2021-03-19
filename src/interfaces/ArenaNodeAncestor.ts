@@ -4,6 +4,7 @@ import ArenaNode from './ArenaNode';
 import ArenaNodeText from './ArenaNodeText';
 import ArenaAncestor from './ArenaAncestor';
 import ArenaCursorAncestor from './ArenaCursorAncestor';
+import Arena from './Arena';
 
 export default interface ArenaNodeAncestor extends ArenaNodeCore {
   readonly arena: ArenaAncestor;
@@ -15,6 +16,8 @@ export default interface ArenaNodeAncestor extends ArenaNodeCore {
   removeChild(index: number): ArenaCursorAncestor;
 
   insertChildren(nodes: (ArenaNodeScion | ArenaNodeText)[], offset?: number): void;
+
+  canCreateNode(arena: Arena): boolean;
 
   cutChildren(start: number, length?: number): (ArenaNodeScion | ArenaNodeText)[];
 

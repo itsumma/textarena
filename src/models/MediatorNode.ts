@@ -124,6 +124,10 @@ export default class MediatorNode implements ArenaNodeScion, ArenaNodeAncestor {
     throw new Error('Arena for text was not created');
   }
 
+  canCreateNode(arena: Arena): boolean {
+    return !this.arena.protected && this.arena.allowedArenas.includes(arena);
+  }
+
   public createAndInsertNode(
     arena: Arena,
     offset: number,

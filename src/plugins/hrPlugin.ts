@@ -36,7 +36,7 @@ const hrPlugin = (opts?: typeof defaultOptions): ArenaPlugin => ({
     );
     textarena.registerCommand(
       command,
-      (ta: Textarena, selection: ArenaSelection) => ta.transformModel(selection, arena),
+      (ta: Textarena, selection: ArenaSelection) => ta.insertBeforeSelected(selection, arena),
     );
 
     textarena.registerShortcut(

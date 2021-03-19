@@ -18,7 +18,7 @@
 
   if (elem && (typeof Textarena !== 'undefined')) {
     let dataHtml;
-    const storedData = localStorage.getItem('dataHtml');
+    // const storedData = localStorage.getItem('dataHtml');
     try {
       if (storedData) {
         data = JSON.parse(storedData);
@@ -29,16 +29,15 @@
     } catch {}
     if (!dataHtml) {
       dataHtml = `<h2>Простой визуальный редактор</h2>
-      <arena-recomendation postid="Статья про здоровье"></arena-recomendation>
         <p><a href="https://github.com/devopsprodigy/textarena/">Textarena</a> адаптирована для быстрой работы. Все функции доступны с помощью горячих клавиш.</p>
         <ul>
         <li>Быстро.</li>
         <li>Удобно.</li>
         <li>Настраиваемо.</li>
         </ul>
-        <figure><img src="https://www.itsumma.ru/img/services/musthave.png"></figure>
         <p>Выделите текст, появится панель для форматирования.</p>
         <hr />
+        <figure><img src="https://www.itsumma.ru/img/services/musthave.png"></figure>
         <p>Зажмите Ctrl (⌘ для Mac) или Alt (⌥ для Mac) и вы увидите подсказки.</p>
         <p>Ctrl (⌘) + B — изменит <b>жирность</b> выделенного текста.</p>
         <p>Ctrl (⌘) + I — выделенный текст станет <i>италиком</i>. Повторное нажатие уберёт италик.</p>
@@ -56,6 +55,8 @@
         Мозьно мине карсиньки грюсить
           </p>
         </arena-image>
+        <p></p>
+        <arena-recomendation postid="Статья про здоровье"></arena-recomendation>
         <p></p>`;
     }
     const initData = {

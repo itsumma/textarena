@@ -141,11 +141,11 @@ const calloutPlugin = (opts?: typeof defaultOptions): ArenaPlugin => ({
         },
       ],
       [textarena.getRootArenaName()],
-    );
+    ) as ArenaAncestor;
     textarena.registerCommand(
       command,
       (ta: Textarena, selection: ArenaSelection) => {
-        const sel = ta.transformModel(selection, arena);
+        const sel = ta.wrapSelected(selection, arena);
         return sel;
       },
     );

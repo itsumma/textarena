@@ -174,7 +174,7 @@ const examplePlugin = (): ArenaPlugin => ({
     ta.registerCommand(
       'add-recomendation',
       (someTa: Textarena, selection: ArenaSelection) => {
-        const sel = someTa.transformModel(selection, arena);
+        const sel = someTa.insertBeforeSelected(selection, arena);
         return sel;
       },
     );

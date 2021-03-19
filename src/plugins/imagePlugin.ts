@@ -219,7 +219,7 @@ const imagePlugin = (opts?: typeof defaultOptions): ArenaPlugin => ({
     textarena.registerCommand(
       command,
       (ta: Textarena, selection: ArenaSelection) => {
-        const sel = ta.transformModel(selection, arena);
+        const sel = ta.insertInsteadOfSelected(selection, arena);
         return sel;
       },
     );

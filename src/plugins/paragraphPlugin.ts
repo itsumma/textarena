@@ -47,7 +47,7 @@ const paragraphPlugin = (opts?: ParagraphOptions): ArenaPlugin => ({
       },
       marks,
       [textarena.getRootArenaName()],
-    );
+    ) as ArenaWithText;
     textarena.setDefaultTextArena(arena as ArenaWithText);
     textarena.registerCommand(
       'convert-to-paragraph',

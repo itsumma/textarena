@@ -13,6 +13,16 @@ export default class ArenaSelection {
   ) {
   }
 
+  clone(): ArenaSelection {
+    return new ArenaSelection(
+      this.startNode,
+      this.startOffset,
+      this.endNode,
+      this.endOffset,
+      this.direction,
+    );
+  }
+
   setStartNode(
     startNode: ArenaNodeText,
     startOffset: number,

@@ -46,7 +46,8 @@ const headersPlugin = (opts?: ListsOptions): ArenaPlugin => ({
         );
         textarena.registerCommand(
           `convert-to-header${number}`,
-          (ta: Textarena, selection: ArenaSelection) => ta.transformModel(selection, arena),
+          (ta: Textarena, selection: ArenaSelection) =>
+            ta.transformModel(selection, arena as ArenaWithText),
         );
         textarena.registerShortcut(
           `Alt + Digit${number}`,

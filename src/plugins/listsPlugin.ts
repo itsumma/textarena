@@ -5,6 +5,7 @@ import ArenaCursor from '../interfaces/ArenaCursor';
 import ArenaWithText from '../interfaces/ArenaWithText';
 import ArenaNode from '../interfaces/ArenaNode';
 import ArenaNodeText from '../interfaces/ArenaNodeText';
+import ArenaAncestor from '../interfaces/ArenaAncestor';
 
 type ListOptions = {
   name: string,
@@ -111,10 +112,10 @@ const listsPlugin = (opts?: ListsOptions): ArenaPlugin => ({
           },
         ],
         [textarena.getRootArenaName()],
-      );
+      ) as ArenaAncestor;
       textarena.registerCommand(
         command,
-        (ta: Textarena, selection: ArenaSelection) => ta.transformModel(selection, listArena),
+        (ta: Textarena, selection: ArenaSelection) => ta.wrapSelected(selection, listArena),
       );
       textarena.registerShortcut(
         shortcut,

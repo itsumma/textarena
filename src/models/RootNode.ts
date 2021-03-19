@@ -85,6 +85,10 @@ export default class RootNode implements ArenaNodeAncestor {
     throw new Error('Arena for text was not created');
   }
 
+  canCreateNode(arena: Arena): boolean {
+    return !this.arena.protected && this.arena.allowedArenas.includes(arena);
+  }
+
   createAndInsertNode(arena: Arena, offset: number): ArenaNodeScion | ArenaNodeText | undefined {
     if (this.arena.allowedArenas.includes(arena)) {
       const node = NodeFactory.createNode(arena, this);
