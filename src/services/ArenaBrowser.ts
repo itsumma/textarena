@@ -245,8 +245,8 @@ export default class ArenaBrowser {
     if (code === 'KeyF' && modifiersSum === Modifiers.Ctrl) {
       return new BrowserCommandEvent(e);
     }
-    if (code === 'KeyG'
-      && (modifiersSum ^ (Modifiers.Ctrl | Modifiers.Shift) & modifiersSum) === 0) {
+    if (code === 'KeyG' && (modifiersSum === Modifiers.Ctrl
+      || modifiersSum === (Modifiers.Ctrl | Modifiers.Shift))) {
       return new BrowserCommandEvent(e);
     }
     if (code === 'KeyH' && modifiersSum === Modifiers.Ctrl) {

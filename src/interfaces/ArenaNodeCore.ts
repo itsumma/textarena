@@ -17,7 +17,6 @@ export default interface ArenaNodeCore {
     keepFormatings?: boolean,
   ): ArenaCursor;
 
-  // tot merge neighbors
   createAndInsertNode(arena: Arena, offset: number):
     ArenaNode & (ArenaNodeScion | ArenaNodeText) | undefined;
 

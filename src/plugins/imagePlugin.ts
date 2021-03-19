@@ -187,6 +187,7 @@ const imagePlugin = (opts?: typeof defaultOptions): ArenaPlugin => ({
         ],
         allowText: true,
         allowFormating: true,
+        nextArena: paragraph,
       },
       [
         {

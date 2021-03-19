@@ -162,7 +162,10 @@ const formatingsPlugin = (opts?: FormatingsOptions): ArenaPlugin => ({
       );
       textarena.registerCommand(
         command,
-        (ta: Textarena, selection: ArenaSelection) => ta.formatingModel(selection, formating),
+        (ta: Textarena, selection: ArenaSelection) => {
+          selection.trim();
+          return ta.formatingModel(selection, formating);
+        },
       );
       textarena.registerShortcut(
         shortcut,

@@ -130,9 +130,11 @@ export default class MediatorNode implements ArenaNodeScion, ArenaNodeAncestor {
   ): ArenaNodeScion | ArenaNodeText | undefined {
     if (this.arena.protected) {
       const { protectedChildren } = this.arena;
-      for (let i = 0; i < protectedChildren.length; i += 1) {
-        if (protectedChildren[i] === arena) {
-          return this.children[i];
+      if (offset < protectedChildren.length) {
+        for (let i = 0; i < protectedChildren.length; i += 1) {
+          if (protectedChildren[i] === arena) {
+            return this.children[i];
+          }
         }
       }
     } else if (this.arena.allowedArenas.includes(arena)) {
