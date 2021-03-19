@@ -94,7 +94,7 @@ export default class ArenaSelection {
       const len = matchA[0].length;
       this.startOffset += len;
     }
-    const textB = this.startNode.getRawText().slice(0, this.startOffset);
+    const textB = this.endNode.getRawText().slice(0, this.endOffset);
     const matchB = textB.match(/( +)$/g);
     if (matchB) {
       const len = matchB[0].length;
