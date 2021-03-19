@@ -4,6 +4,7 @@ import ArenaPlugin from '../interfaces/ArenaPlugin';
 import ArenaCursor from '../interfaces/ArenaCursor';
 import ArenaWithText from '../interfaces/ArenaWithText';
 import ArenaNode from '../interfaces/ArenaNode';
+import ArenaNodeText from '../interfaces/ArenaNodeText';
 
 type ListOptions = {
   name: string,
@@ -136,6 +137,7 @@ const listsPlugin = (opts?: ListsOptions): ArenaPlugin => ({
         shortcut,
         command,
         hint,
+        canShow: (node: ArenaNodeText) => node.parent.arena.allowedArenas.includes(listArena),
       });
       (paragraph as ArenaWithText).registerMiddleware((cursor: ArenaCursor) => {
         const text = cursor.node.getRawText();

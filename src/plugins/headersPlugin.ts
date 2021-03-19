@@ -3,6 +3,7 @@ import ArenaSelection from '../helpers/ArenaSelection';
 import ArenaPlugin from '../interfaces/ArenaPlugin';
 import ArenaWithText from '../interfaces/ArenaWithText';
 import ArenaNode from '../interfaces/ArenaNode';
+import ArenaNodeText from '../interfaces/ArenaNodeText';
 
 const posibleTags = ['h1', 'h2', 'h3', 'h4'];
 
@@ -68,6 +69,7 @@ const headersPlugin = (opts?: ListsOptions): ArenaPlugin => ({
           shortcut: `Alt + Digit${number}`,
           hint: number.toString(),
           command: `convert-to-header${number}`,
+          canShow: (node: ArenaNodeText) => node.parent.arena.allowedArenas.includes(arena),
         });
       }
     });

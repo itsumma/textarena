@@ -1,3 +1,5 @@
+import ArenaNodeText from './ArenaNodeText';
+
 export default interface CreatorOptions {
   name: string;
   icon: string;
@@ -5,4 +7,5 @@ export default interface CreatorOptions {
   command: string;
   hint: string;
   shortcut: string;
+  canShow?: (node: ArenaNodeText) => boolean;
 }

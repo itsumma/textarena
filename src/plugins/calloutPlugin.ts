@@ -6,6 +6,7 @@ import ArenaSelection from '../helpers/ArenaSelection';
 import ArenaPlugin from '../interfaces/ArenaPlugin';
 import ArenaAncestor from '../interfaces/ArenaAncestor';
 import ArenaWithText from '../interfaces/ArenaWithText';
+import ArenaNodeText from '../interfaces/ArenaNodeText';
 
 // This decorator defines the element.
 @customElement('arena-callout')
@@ -160,6 +161,7 @@ const calloutPlugin = (opts?: typeof defaultOptions): ArenaPlugin => ({
       shortcut,
       hint,
       command,
+      canShow: (node: ArenaNodeText) => node.parent.arena.allowedArenas.includes(arena),
     });
   },
 });

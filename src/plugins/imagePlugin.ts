@@ -5,6 +5,8 @@ import Textarena from '../Textarena';
 import ArenaSelection from '../helpers/ArenaSelection';
 import ArenaPlugin from '../interfaces/ArenaPlugin';
 import ArenaWithText from '../interfaces/ArenaWithText';
+import ArenaNode from '../interfaces/ArenaNode';
+import ArenaNodeText from '../interfaces/ArenaNodeText';
 
 // This decorator defines the element.
 @customElement('arena-image')
@@ -234,6 +236,7 @@ const imagePlugin = (opts?: typeof defaultOptions): ArenaPlugin => ({
       shortcut,
       hint,
       command,
+      canShow: (node: ArenaNodeText) => node.parent.arena.allowedArenas.includes(arena),
     });
   },
 });
