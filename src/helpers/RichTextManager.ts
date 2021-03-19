@@ -5,7 +5,6 @@ import ArenaNodeInline from '../interfaces/ArenaNodeInline';
 import InlineNode from '../models/InlineNode';
 import Intervaler from './Intervaler';
 import InlineIntervaler from './InlineIntervaler';
-import examplePlugin from '../plugins/examplePlugin';
 
 export type Formatings = {
   [name: string]: Intervaler
