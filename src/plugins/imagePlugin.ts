@@ -1,5 +1,5 @@
 import {
-  LitElement, html, css, customElement, property, TemplateResult,
+  LitElement, html, css, property, TemplateResult,
 } from 'lit-element';
 import Textarena from '../Textarena';
 import ArenaSelection from '../helpers/ArenaSelection';
@@ -7,8 +7,9 @@ import ArenaPlugin from '../interfaces/ArenaPlugin';
 import { ArenaMediatorInterface, ArenaTextInterface } from '../interfaces/Arena';
 import { ArenaNodeText } from '../interfaces/ArenaNode';
 
-@customElement('arena-image')
-export class Callout extends LitElement {
+// This decorator defines the element.
+
+export class Image extends LitElement {
   // This decorator creates a property accessor that triggers rendering and
   // an observed attribute.
   @property({
@@ -169,6 +170,7 @@ const defaultOptions = {
 
 const imagePlugin = (opts?: typeof defaultOptions): ArenaPlugin => ({
   register(textarena: Textarena): void {
+    customElements.define('arena-image', Image);
     const {
       name, icon, title, tag, attributes, allowedAttributes, shortcut, hint, command, marks,
     } = { ...defaultOptions, ...(opts || {}) };
