@@ -1,5 +1,5 @@
 import {
-  LitElement, html, css,  property, TemplateResult,
+  LitElement, html, css, property, TemplateResult,
 } from 'lit-element';
 import Textarena from '../Textarena';
 import ArenaSelection from '../helpers/ArenaSelection';

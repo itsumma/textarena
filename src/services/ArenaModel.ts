@@ -1174,6 +1174,8 @@ export default class ArenaModel {
       if (rest.length) {
         commonAncestor.insertChildren(rest, newNode.getIndex() + 1);
       }
+      const cursor = newNode.getTextCursor(0);
+      selection.setCursor(cursor);
     }
     return selection;
   }
