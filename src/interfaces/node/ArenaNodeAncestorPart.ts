@@ -33,4 +33,6 @@ export default interface ArenaNodeAncestorPart {
   cutChildren(start: number, length?: number): ChildArenaNode[];
 
   removeChildren(start: number, length?: number): void;
+
+  mergeChildren(): void;
 }

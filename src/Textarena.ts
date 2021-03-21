@@ -145,11 +145,16 @@ class Textarena {
         .replace(/[\s\n]+$/, '')
         .replace(/(<[\w-]+)\s+observe-id="[\d.]+"/g, '$1')
         .replace(/(<p)/g, '\n$1'),
+      json: this.getJson(),
     };
   }
 
   public getHtml(): string {
     return this.asm.model.getOutputHtml();
+  }
+
+  public getJson(): string {
+    return this.asm.model.getJson();
   }
 
   public setData(data: TextarenaData | undefined): void {
@@ -269,14 +274,6 @@ class Textarena {
     formating: ArenaFormating,
   ): ArenaSelection {
     return this.asm.model.applyFormationToSelection(selection, formating);
-  }
-
-  public unwrapSelected(selection: ArenaSelection, arena: ArenaMediatorInterface): ArenaSelection {
-    return selection;
-  }
-
-  public insertInsteadOfSelected(selection: ArenaSelection, arena: ChildArena): ArenaSelection {
-    return selection;
   }
 
   public insertBeforeSelected(selection: ArenaSelection, arena: ChildArena): ArenaSelection {

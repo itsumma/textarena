@@ -223,14 +223,14 @@ export default abstract class AbstractParentNode<
         node.setParent(this as unknown as ParentArenaNode);
         this.children.splice(index, 0, node);
         index += 1;
-      } else if (node.hasText && this.arena.arenaForText) {
-        // const newNode = NodeFactory.createChildNode(
-        //   this.arena.arenaForText,
-        //   this as unknown as ParentArenaNode,
-        // );
-        // newNode.insertText(node.getText(), 0);
-        // this.children.splice(index, 0, newNode);
-        // index += 1;
+      // } else if (node.hasText && this.arena.arenaForText) {
+      //   const newNode = NodeFactory.createChildNode(
+      //     this.arena.arenaForText,
+      //     this as unknown as ParentArenaNode,
+      //   );
+      //   newNode.insertText(node.getText(), 0);
+      //   this.children.splice(index, 0, newNode);
+      //   index += 1;
       } else {
         rest.push(node);
       }
