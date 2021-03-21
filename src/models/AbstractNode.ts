@@ -1,4 +1,6 @@
-import AnyArena from '../interfaces/arena/AnyArena';
+import { AnyArena } from '../interfaces/Arena';
+import ArenaCursorAncestor from '../interfaces/ArenaCursorAncestor';
+import { ChildArenaNode, ParentArenaNode } from '../interfaces/ArenaNode';
 
 export default abstract class AbstractNode<TArena extends AnyArena> {
   readonly hasParent: boolean = false;
@@ -11,32 +13,76 @@ export default abstract class AbstractNode<TArena extends AnyArena> {
 
   readonly single: boolean = false;
 
-  constructor(readonly arena: TArena) {
+  protected _parent: ParentArenaNode | undefined;
+
+  get parent(): ParentArenaNode {
+    if (!this._parent) {
+      throw Error('parrent not set');
+    }
+    return this._parent;
   }
 
-  // public getIndex(): number {
-  //   return this.parent.children.indexOf(this);
+  // constructor(readonly arena: TArena) {
+  //   console.log('//');
   // }
 
-  // public isLastChild(): boolean {
-  //   return this.parent.children.indexOf(this) === this.parent.children.length - 1;
-  // }
+  // Child node methods
+
+  public getIndex(): number {
+    // if (!this.parent) {
+    //   return 0;
+    // }
+    return this.parent.children.indexOf(this as unknown as ChildArenaNode);
+  }
+
+  public isLastChild(): boolean {
+    // if (!this.parent) {
+    //   return false;
+    // }
+    return this.parent.children.indexOf(this as unknown as ChildArenaNode)
+      === this.parent.children.length - 1;
+  }
 
   public getGlobalIndex(): string {
-    return '0';
+    if (!this._parent) {
+      return '0';
+    }
+    return `${this.parent.getGlobalIndex()}.${this.getIndex().toString()}`;
   }
 
-  // public getGlobalIndex(): string {
-  //   return `${this.parent.getGlobalIndex()}.${this.getIndex().toString()}`;
-  // }
+  public getParent(): ArenaCursorAncestor | undefined {
+    // if (!this.parent) {
+    //   return undefined;
+    // }
+    return { node: this.parent, offset: this.getIndex() };
+  }
 
-  // public getParent(): ArenaCursorAncestor {
-  //   return { node: this.parent, offset: this.getIndex() };
-  // }
+  public setParent(parent: ParentArenaNode): void {
+    this._parent = parent;
+  }
 
-  // public setParent(parent: ArenaNodeAncestor | (ArenaNodeAncestor & ArenaNodeScion)): void {
-  //   this.parent = parent;
-  // }
+  // TODO deprecate
+  public getUnprotectedParent(): ArenaCursorAncestor | undefined {
+    if (this.parent) {
+      if (this.parent.arena.protected) {
+        if (this.parent.hasParent) {
+          return this.parent.getUnprotectedParent();
+        }
+        return undefined;
+      }
+      return { node: this.parent, offset: this.getIndex() };
+    }
+    return undefined;
+  }
+
+  public remove(): ArenaCursorAncestor | undefined {
+    if (!this.parent) {
+      return undefined;
+    }
+    return this.parent.removeChild(this.getIndex());
+  }
+
+  // Attributes methods
 
   public setAttribute(name: string, value: string): void {
     this.attributes[name] = value;

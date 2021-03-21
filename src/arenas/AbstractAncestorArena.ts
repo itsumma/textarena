@@ -1,13 +1,12 @@
-import AnyArena from '../interfaces/arena/AnyArena';
-import ArenaAncestor from '../interfaces/arena/ArenaAncestor';
+import { ArenaMediatorInterface, ArenaTextInterface, ChildArena } from '../interfaces/Arena';
 import { ArenaOptionsAncestor } from '../interfaces/ArenaOptions';
-import ArenaWithText from '../interfaces/arena/ArenaWithText';
 import AbstractArena from './AbstractArena';
 
-export default class AncestorArena
-  extends AbstractArena
-  implements ArenaAncestor {
-  readonly hasParent: false = false;
+export default abstract class AbstractAncestorArena
+  extends AbstractArena {
+  readonly root: boolean = false;
+
+  readonly hasParent: boolean = true;
 
   readonly hasChildren: true = true;
 
@@ -23,18 +22,20 @@ export default class AncestorArena
 
   readonly protected: boolean = false;
 
-  readonly protectedChildren: AnyArena[] = [];
+  readonly protectedChildren: ChildArena[] = [];
 
-  public arenaForText: ArenaAncestor | ArenaWithText | undefined;
+  public arenaForText: ArenaMediatorInterface | ArenaTextInterface;
 
-  readonly allowedArenas: AnyArena[] = [];
+  readonly allowedArenas: ChildArena[] = [];
 
   constructor(options: ArenaOptionsAncestor) {
     super(options);
-    if (options.protected && options.protectedChildren !== undefined) {
+    if ('protectedChildren' in options) {
       this.protected = true;
       this.protectedChildren = options.protectedChildren;
+      this.allowedArenas = options.protectedChildren;
     } else {
+      this.allowedArenas = options.allowedArenas || [];
       if (options.automerge) {
         this.automerge = options.automerge;
       }
@@ -44,18 +45,17 @@ export default class AncestorArena
     }
 
     this.arenaForText = options.arenaForText;
-    this.allowedArenas = options.allowedArenas || [];
   }
 
-  addAllowedChild(arena: AnyArena): void {
+  addAllowedChild(arena: ChildArena): void {
     this.allowedArenas.push(arena);
   }
 
-  setArenaForText(arena: ArenaAncestor | ArenaWithText): void {
+  setArenaForText(arena: ArenaMediatorInterface | ArenaTextInterface): void {
     this.arenaForText = arena;
   }
 
-  getArenaForText(): ArenaAncestor | ArenaWithText | undefined {
+  getArenaForText(): ArenaMediatorInterface | ArenaTextInterface | undefined {
     return this.arenaForText;
   }
 }

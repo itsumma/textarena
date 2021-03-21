@@ -29,13 +29,33 @@
     } catch {}
     if (!dataHtml) {
       dataHtml = `
+        <arena-image src="https://storage.yandexcloud.net/itsizo.app/7b128593-5c11-4850-8560-6047d71e79b5.jpg">
+          <p slot=image-caption>
+        Мозьно мине карсиньки  <a href="https://storage.yandexcloud.net">грюсить</a>
+          </p>
+        </arena-image>
         <p>Alt (⌥) + O — переключает между обычным текстом и нумерованным списком.</p>
+        <arena-recomendation postid="Статья про здоровье"></arena-recomendation>
         <h2>Легко доступные стили оформления текста</h2><h3>Заголовки</h3>
         <ol>
         <li>H2 — второй по величине.</li>
         <li>H3 — третий по величине.</li>
         <li>H4 — четвёртый.</li>
         </ol>
+        <arena-callout>
+          <p slot="title">
+            Внимание!
+          </p>
+          <arena-callout-body slot="body">
+            <ul>
+            <li>
+            Это удобно
+            </li><li>
+            Это быстро
+            </li>
+            </ul>
+          </arena-callout-body>
+        </arena-callout>
         <p>Почему нет первого? Во-первых, какие заголовки доступны в редакторе, настраивается. Во-вторых, не рекомендуется на странице использовать более одного заголовка первого уровня. На этой странице уже есть — «TEXTARENA» — в верху страницы.</p>
 
         `;

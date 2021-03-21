@@ -1,6 +1,4 @@
-import AnyArena from './arena/AnyArena';
-import ArenaWithText from './arena/ArenaWithText';
-import ArenaAncestor from './arena/ArenaAncestor';
+import { ArenaMediatorInterface, ArenaTextInterface, ChildArena } from './Arena';
 
 export type ArenaOptionsCore = {
   name: string,
@@ -12,26 +10,30 @@ export type ArenaOptionsCore = {
   hasText?: boolean,
   inline?: boolean,
   single?: boolean,
+  root?: boolean;
 };
 
 export type ArenaOptionsAncestor = ArenaOptionsCore & {
-  hasParent?: boolean,
-  hasChildren: true,
+  // hasChildren?: true,
+  // hasParent?: boolean,
   hasText?: false,
   inline?: false,
   single?: false,
+  // root?: boolean;
 
   automerge?: boolean,
   group?: boolean,
-  protected?: boolean,
-  protectedChildren?: AnyArena[],
-  arenaForText: ArenaAncestor | ArenaWithText | undefined,
-  allowedArenas: AnyArena[],
-};
+  // protected?: boolean,
+  arenaForText: ArenaMediatorInterface | ArenaTextInterface
+} & ({
+  allowedArenas: ChildArena[],
+} | {
+  protectedChildren: ChildArena[],
+});
 
 export type ArenaOptionsInline = ArenaOptionsCore & {
   hasParent?: false,
-  hasChildren?: false,
+  // hasChildren?: false,
   hasText?: false,
   inline: true,
   single?: false,
@@ -39,7 +41,7 @@ export type ArenaOptionsInline = ArenaOptionsCore & {
 
 export type ArenaOptionsSingle = ArenaOptionsCore & {
   hasParent?: true,
-  hasChildren?: false,
+  // hasChildren?: false,
   hasText?: false,
   inline?: false,
   single: true,
@@ -47,21 +49,27 @@ export type ArenaOptionsSingle = ArenaOptionsCore & {
 
 export type ArenaOptionsWithText = ArenaOptionsCore & {
   hasParent?: true;
-  hasChildren?: false;
+  // hasChildren?: false;
   hasText: true;
   inline?: false;
   single?: false;
-  nextArena?: ArenaWithText | ArenaAncestor,
+  nextArena?: ArenaTextInterface | ArenaMediatorInterface,
+};
+
+export type ArenaOptionsMediator = ArenaOptionsAncestor & {
+  // hasChildren: true,
+  // hasParent?: true,
 };
 
 export type ArenaOptionsRoot = ArenaOptionsAncestor & {
-  hasParent: false;
+  // hasChildren: true,
+  // hasParent?: false,
 };
 
 export type ArenaOptionsChild = ArenaOptionsInline |
                     ArenaOptionsSingle |
                     ArenaOptionsWithText |
-                    ArenaOptionsAncestor;
+                    ArenaOptionsMediator;
 
 type ArenaOptions = ArenaOptionsRoot | ArenaOptionsChild;
 

@@ -1,9 +1,8 @@
 import Textarena from '../Textarena';
 import ArenaPlugin from '../interfaces/ArenaPlugin';
 import ArenaSelection from '../helpers/ArenaSelection';
-import ArenaWithText from '../interfaces/arena/ArenaWithText';
-import ArenaNode from '../interfaces/ArenaNode';
-import ArenaAncestor from '../interfaces/arena/ArenaAncestor';
+import { ArenaMediatorInterface, ArenaTextInterface } from '../interfaces/Arena';
+import { ChildArenaNode } from '../interfaces/ArenaNode';
 
 type MarkOptions = {
   tag: string,
@@ -55,16 +54,16 @@ const blockquotePlugin = (opts?: BlockquoteOptions): ArenaPlugin => ({
         tag,
         attributes,
         allowedArenas,
-        hasChildren: true,
-        arenaForText: paragraph as ArenaWithText,
+        arenaForText: paragraph as ArenaTextInterface,
         automerge: true,
       },
       marks,
       [textarena.getRootArenaName()],
-    ) as ArenaAncestor;
+    ) as ArenaMediatorInterface;
     textarena.registerCommand(
       command,
-      (ta: Textarena, selection: ArenaSelection) => ta.applyArenaToSelection(selection, arena),
+      (ta: Textarena, selection: ArenaSelection) =>
+        ta.applyArenaToSelection(selection, arena),
     );
     textarena.registerShortcut(
       shortcut,
@@ -77,7 +76,7 @@ const blockquotePlugin = (opts?: BlockquoteOptions): ArenaPlugin => ({
       shortcut,
       hint,
       command,
-      checkStatus: (node: ArenaNode):
+      checkStatus: (node: ChildArenaNode):
         boolean => node.arena === arena,
     });
   },

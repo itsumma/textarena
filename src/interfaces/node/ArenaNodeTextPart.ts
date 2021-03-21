@@ -1,12 +1,11 @@
-import RichTextManager from '../helpers/RichTextManager';
-import ArenaWithText from './arena/ArenaWithText';
-import ArenaInline from './arena/ArenaInline';
-import ArenaNodeInline from './ArenaNodeInline';
-import ArenaFormating from './ArenaFormating';
-import ArenaCursor from './ArenaCursor';
+import RichTextManager from '../../helpers/RichTextManager';
+import ArenaFormating from '../ArenaFormating';
+import ArenaCursorText from '../ArenaCursorText';
+import { ArenaInlineInterface, ArenaTextInterface } from '../Arena';
+import { ArenaNodeInline } from '../ArenaNode';
 
 export default interface ArenaNodeTextPart {
-  readonly arena: ArenaWithText;
+  readonly arena: ArenaTextInterface;
 
   readonly hasParent: true;
   readonly hasChildren: false;
@@ -22,7 +21,7 @@ export default interface ArenaNodeTextPart {
     text: string | RichTextManager,
     offset: number,
     keepFormatings?: boolean,
-  ): ArenaCursor;
+  ): ArenaCursorText;
 
   removeText(start: number, end?: number): void;
 
@@ -42,9 +41,17 @@ export default interface ArenaNodeTextPart {
 
   clearSpaces(): void;
 
-  addInlineNode(arena: ArenaInline, start: number, end: number): ArenaNodeInline | undefined;
+  addInlineNode(
+    arena: ArenaInlineInterface,
+    start: number,
+    end: number,
+  ): ArenaNodeInline | undefined;
 
-  getInlineNode(arena: ArenaInline, start: number, end: number): ArenaNodeInline | undefined;
+  getInlineNode(
+    arena: ArenaInlineInterface,
+    start: number,
+    end: number,
+  ): ArenaNodeInline | undefined;
 
   removeInlineNode(node: ArenaNodeInline): void;
 

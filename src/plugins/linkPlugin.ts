@@ -4,7 +4,7 @@ import {
 import Textarena from '../Textarena';
 import ArenaPlugin from '../interfaces/ArenaPlugin';
 import ArenaSelection from '../helpers/ArenaSelection';
-import ArenaInline from '../interfaces/arena/ArenaInline';
+import { ArenaInlineInterface } from '../interfaces/Arena';
 
 @customElement('arena-link')
 export class Link extends LitElement {
@@ -109,12 +109,12 @@ const linkPlugin = (opts?: typeof defaultOptions): ArenaPlugin => ({
         inline: true,
       },
       marks,
-    );
+    ) as ArenaInlineInterface;
     textarena.registerCommand(
       command,
       (ta: Textarena, selection: ArenaSelection) => {
         // eslint-disable-next-line no-alert
-        const oldNode = ta.getInlineNode(selection, arena as ArenaInline);
+        const oldNode = ta.getInlineNode(selection, arena);
         let link = '';
         if (oldNode) {
           link = oldNode.getAttribute('href');
@@ -131,7 +131,7 @@ const linkPlugin = (opts?: typeof defaultOptions): ArenaPlugin => ({
             ta.updateInlineNode(selection, oldNode);
             oldNode.setAttribute('href', link);
           } else {
-            const node = ta.addInlineNode(selection, arena as ArenaInline);
+            const node = ta.addInlineNode(selection, arena);
             if (node) {
               node.setAttribute('href', link);
             }

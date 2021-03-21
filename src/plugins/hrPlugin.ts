@@ -1,7 +1,8 @@
 import Textarena from '../Textarena';
 import ArenaPlugin from '../interfaces/ArenaPlugin';
 import ArenaSelection from '../helpers/ArenaSelection';
-import ArenaNodeText from '../interfaces/ArenaNodeText';
+import { ArenaSingleInterface } from '../interfaces/Arena';
+import { ArenaNodeText } from '../interfaces/ArenaNode';
 
 const defaultOptions = {
   name: 'hr',
@@ -33,10 +34,11 @@ const hrPlugin = (opts?: typeof defaultOptions): ArenaPlugin => ({
         },
       ],
       [textarena.getRootArenaName()],
-    );
+    ) as ArenaSingleInterface;
     textarena.registerCommand(
       command,
-      (ta: Textarena, selection: ArenaSelection) => ta.insertBeforeSelected(selection, arena),
+      (ta: Textarena, selection: ArenaSelection) =>
+        ta.insertBeforeSelected(selection, arena),
     );
 
     textarena.registerShortcut(
@@ -50,7 +52,8 @@ const hrPlugin = (opts?: typeof defaultOptions): ArenaPlugin => ({
       shortcut,
       hint,
       command,
-      canShow: (node: ArenaNodeText) => node.parent.arena.allowedArenas.includes(arena),
+      canShow: (node: ArenaNodeText) =>
+        node.parent.arena.allowedArenas.includes(arena),
     });
     textarena.addSimpleArenas(arena);
   },

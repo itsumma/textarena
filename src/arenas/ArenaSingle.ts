@@ -1,9 +1,9 @@
-import ArenaSingle from '../interfaces/arena/ArenaSingle';
+import { ArenaSingleInterface } from '../interfaces/Arena';
 import AbstractArena from './AbstractArena';
 
-export default class SingleArena
+export default class ArenaSingle
   extends AbstractArena
-  implements ArenaSingle {
+  implements ArenaSingleInterface {
   readonly hasParent: true = true;
 
   readonly hasChildren: false = false;

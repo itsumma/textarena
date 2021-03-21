@@ -1,5 +1,5 @@
-import ArenaCursor from './ArenaCursor';
+import ArenaCursorText from './ArenaCursorText';
 
-type ArenaMiddleware = (cursor: ArenaCursor) => ArenaCursor;
+type ArenaMiddleware = (cursor: ArenaCursorText) => ArenaCursorText;
 
 export default ArenaMiddleware;

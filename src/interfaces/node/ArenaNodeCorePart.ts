@@ -1,14 +1,12 @@
 import { TemplateResult } from 'lit-html';
-import RichTextManager from '../helpers/RichTextManager';
-import AnyArena from './arena/AnyArena';
-import ArenaCursor from './ArenaCursor';
-import { ArenaNodeChild } from './ArenaNode';
-import { ArenaFormatings } from './ArenaFormating';
-import ArenaCursorAncestor from './ArenaCursorAncestor';
+import RichTextManager from '../../helpers/RichTextManager';
+import ArenaCursorChild from '../ArenaCursorChild';
+import ArenaCursorText from '../ArenaCursorText';
+import { ArenaFormatings } from '../ArenaFormating';
+// import { ChildArena } from '../Arena';
+import { ChildArenaNode } from '../ArenaNode';
 
 export default interface ArenaNodeCorePart<T> {
-  readonly arena: AnyArena;
-
   readonly hasParent: boolean;
   readonly hasChildren: boolean;
   readonly hasText: boolean;
@@ -19,23 +17,21 @@ export default interface ArenaNodeCorePart<T> {
     text: string | RichTextManager,
     offset: number,
     keepFormatings?: boolean,
-  ): ArenaCursor;
+  ): ArenaCursorText;
 
-  createAndInsertNode(arena: AnyArena, offset: number):
-    ArenaNodeChild | undefined;
+  // createAndInsertNode(arena: ChildArena, offset: number):
+  //   ChildArenaNode | undefined;
 
   // TODO createAndInsertNode(arena: Arena, offset: number):
   //  ArenaNode & ArenaNodeScion | Exception;
 
   getGlobalIndex(): string;
 
-  getUnprotectedParent(): ArenaCursorAncestor | undefined;
-
   getHtml(model: ArenaFormatings): TemplateResult | string;
 
   getOutputHtml(model: ArenaFormatings, deep?: number): string;
 
-  getTextCursor(index: number): ArenaCursor;
+  getTextCursor(index: number): ArenaCursorText;
 
   setAttribute(name: string, value: string): void;
 

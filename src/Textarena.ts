@@ -1,14 +1,13 @@
 import ArenaSelection from './helpers/ArenaSelection';
 import ElementHelper from './helpers/ElementHelper';
 
-import AnyArena from './interfaces/arena/AnyArena';
-import ArenaAncestor from './interfaces/arena/ArenaAncestor';
+import {
+  ArenaInlineInterface, ArenaMediatorInterface, ArenaTextInterface, ChildArena,
+} from './interfaces/Arena';
+import { ArenaNodeInline } from './interfaces/ArenaNode';
 import ArenaFormating, { TagAndAttributes } from './interfaces/ArenaFormating';
-import ArenaInline from './interfaces/arena/ArenaInline';
-import ArenaNodeInline from './interfaces/ArenaNodeInline';
 import ArenaOptionsChild from './interfaces/ArenaOptions';
 import ArenaPlugin from './interfaces/ArenaPlugin';
-import ArenaWithText from './interfaces/arena/ArenaWithText';
 import ChangeDataListener from './interfaces/ChangeHandler';
 import CommandAction from './interfaces/CommandAction';
 import CreatorBarOptions from './interfaces/CreatorBarOptions';
@@ -84,18 +83,6 @@ const defaultOptions: TextarenaOptions = {
 };
 
 class Textarena {
-  protected debug = false;
-
-  protected container: ElementHelper;
-
-  protected editor: ElementHelper;
-
-  protected options: TextarenaOptions = {};
-
-  protected meta: MetaData = {};
-
-  protected asm: ArenaServiceManager;
-
   constructor(container: HTMLElement, options?: TextarenaOptions) {
     // DOM Elements
     this.container = new ElementHelper(container, 'textarena-container', '');
@@ -211,21 +198,21 @@ class Textarena {
     return this.asm.model.rootArenaName;
   }
 
-  protected simpleArenas: AnyArena[] = [];
+  protected simpleArenas: ChildArena[] = [];
 
-  public getSimpleArenas(): AnyArena[] {
+  public getSimpleArenas(): ChildArena[] {
     return this.simpleArenas;
   }
 
-  public addSimpleArenas(arena: AnyArena): void {
+  public addSimpleArenas(arena: ChildArena): void {
     this.simpleArenas.push(arena);
   }
 
-  public setDefaultTextArena(arena: ArenaAncestor | ArenaWithText): void {
-    this.asm.model.model.arena.setArenaForText(arena as ArenaWithText);
+  public setDefaultTextArena(arena: ArenaMediatorInterface | ArenaTextInterface): void {
+    this.asm.model.setDefaultTextArena(arena);
   }
 
-  public getDefaultTextArena(): ArenaAncestor | ArenaWithText | undefined {
+  public getDefaultTextArena(): ArenaMediatorInterface | ArenaTextInterface | undefined {
     return this.asm.model.model.arena.getArenaForText();
   }
 
@@ -233,7 +220,7 @@ class Textarena {
     arenaOptions: ArenaOptionsChild,
     markers?: TagAndAttributes[],
     parentArenas?: string[],
-  ): AnyArena {
+  ): ChildArena | ArenaInlineInterface {
     return this.asm.model.registerArena(
       arenaOptions,
       markers,
@@ -272,7 +259,7 @@ class Textarena {
 
   public applyArenaToSelection(
     selection: ArenaSelection,
-    arena: ArenaAncestor | ArenaWithText,
+    arena: ArenaMediatorInterface | ArenaTextInterface,
   ): ArenaSelection {
     return this.asm.model.applyArenaToSelection(selection, arena);
   }
@@ -284,15 +271,15 @@ class Textarena {
     return this.asm.model.applyFormationToSelection(selection, formating);
   }
 
-  public unwrapSelected(selection: ArenaSelection, arena: ArenaAncestor): ArenaSelection {
+  public unwrapSelected(selection: ArenaSelection, arena: ArenaMediatorInterface): ArenaSelection {
     return selection;
   }
 
-  public insertInsteadOfSelected(selection: ArenaSelection, arena: AnyArena): ArenaSelection {
+  public insertInsteadOfSelected(selection: ArenaSelection, arena: ChildArena): ArenaSelection {
     return selection;
   }
 
-  public insertBeforeSelected(selection: ArenaSelection, arena: AnyArena): ArenaSelection {
+  public insertBeforeSelected(selection: ArenaSelection, arena: ChildArena): ArenaSelection {
     return this.asm.model.insertBeforeSelected(selection, arena);
   }
 
@@ -304,21 +291,45 @@ class Textarena {
     return this.asm.model.moveChild(selection, direction);
   }
 
-  public addInlineNode(selection: ArenaSelection, arena: ArenaInline): ArenaNodeInline | undefined {
+  public addInlineNode(
+    selection: ArenaSelection,
+    arena: ArenaInlineInterface,
+  ): ArenaNodeInline | undefined {
     return this.asm.model.addInlineNode(selection, arena);
   }
 
-  public getInlineNode(selection: ArenaSelection, arena: ArenaInline): ArenaNodeInline | undefined {
+  public getInlineNode(
+    selection: ArenaSelection,
+    arena: ArenaInlineInterface,
+  ): ArenaNodeInline | undefined {
     return this.asm.model.getInlineNode(selection, arena);
   }
 
-  public removeInlineNode(selection: ArenaSelection, node: ArenaNodeInline): void {
+  public removeInlineNode(
+    selection: ArenaSelection,
+    node: ArenaNodeInline,
+  ): void {
     return this.asm.model.removeInlineNode(selection, node);
   }
 
-  public updateInlineNode(selection: ArenaSelection, node: ArenaNodeInline): void {
+  public updateInlineNode(
+    selection: ArenaSelection,
+    node: ArenaNodeInline,
+  ): void {
     return this.asm.model.updateInlineNode(selection, node);
   }
+
+  protected debug = false;
+
+  protected container: ElementHelper;
+
+  protected editor: ElementHelper;
+
+  protected options: TextarenaOptions = {};
+
+  protected meta: MetaData = {};
+
+  protected asm: ArenaServiceManager;
 
   protected start(): void {
     this.asm.eventManager.subscribe('modelChanged', (e) => {

@@ -1,29 +1,24 @@
 import { TemplateResult } from 'lit-html';
 
 import ArenaFactory from '../arenas/ArenaFactory';
-
 import { Direction } from '../events/RemoveEvent';
-
-import AnyArena from '../interfaces/arena/AnyArena';
-import ArenaCursor from '../interfaces/ArenaCursor';
+import ArenaSelection from '../helpers/ArenaSelection';
+import {
+  AnyArena, ArenaInlineInterface, ArenaMediatorInterface,
+  ArenaRootInterface, ArenaTextInterface, ChildArena,
+} from '../interfaces/Arena';
+import {
+  AnyArenaNode, ArenaNodeRoot, ArenaNodeText,
+  ArenaNodeInline, ArenaNodeMediator,
+  ChildArenaNode, ParentArenaNode,
+} from '../interfaces/ArenaNode';
+import ArenaCursorText from '../interfaces/ArenaCursorText';
 import ArenaCursorAncestor from '../interfaces/ArenaCursorAncestor';
 import ArenaFormating, { ArenaFormatings, TagAndAttributes } from '../interfaces/ArenaFormating';
-import ArenaInline from '../interfaces/arena/ArenaInline';
-import ArenaNode from '../interfaces/ArenaNode';
-import ArenaNodeAncestor from '../interfaces/ArenaNodeAncestor';
-import ArenaNodeInline from '../interfaces/ArenaNodeInline';
-import ArenaNodeScion from '../interfaces/ArenaNodeScion';
-import ArenaNodeText from '../interfaces/ArenaNodeText';
 import ArenaOptionsChild from '../interfaces/ArenaOptions';
-import ArenaRoot from '../interfaces/arena/ArenaRoot';
-import ArenaWithText from '../interfaces/arena/ArenaWithText';
-
-import ArenaSelection from '../helpers/ArenaSelection';
-
-import RootNode from '../models/RootNode';
+import NodeFactory from '../models/NodeFactory';
 
 import ArenaServiceManager from './ArenaServiceManager';
-import ArenaAncestor from '../interfaces/arena/ArenaAncestor';
 
 type ArenaMark = {
   attributes: string[],
@@ -38,43 +33,54 @@ type FormatingMark = {
 export default class ArenaModel {
   public readonly rootArenaName = '__ROOT__';
 
+  get model(): ArenaNodeRoot {
+    if (!this.rootNode) {
+      throw new Error('Root node not defined');
+    }
+    return this.rootNode;
+  }
+
   constructor(protected asm: ArenaServiceManager) {
-    this.rootArena = this.registerArena({
+  }
+
+  public setDefaultTextArena(
+    arena: ArenaMediatorInterface | ArenaTextInterface,
+  ): void {
+    this.rootArena = ArenaFactory.createRoot({
+      root: true,
       name: this.rootArenaName,
       tag: '',
       attributes: [],
-      hasChildren: true,
-    }) as ArenaRoot;
-    this.rootModel = new RootNode(this.rootArena);
+      allowedArenas: [arena],
+      arenaForText: arena,
+    });
+    this.arenasByName[this.rootArena.name] = this.rootArena;
+    this.rootNode = NodeFactory.createRootNode(this.rootArena);
   }
 
   getOutputHtml(): string {
-    return this.rootModel.getOutputHtml(this.getFormatings());
+    return this.model.getOutputHtml(this.getFormatings());
   }
 
   getHtml(): TemplateResult | string {
-    return this.rootModel.getHtml(this.getFormatings());
-  }
-
-  get model(): ArenaNodeAncestor {
-    return this.rootModel;
+    return this.model.getHtml(this.getFormatings());
   }
 
   public registerArena(
     arenaOptions: ArenaOptionsChild,
     markers?: TagAndAttributes[],
     parentArenas?: string[],
-  ): AnyArena {
-    const arena = ArenaFactory.create(arenaOptions);
+  ): ChildArena | ArenaInlineInterface {
+    const arena = ArenaFactory.createChild(arenaOptions);
     this.arenas.push(arena);
     this.arenasByName[arena.name] = arena;
-    if (parentArenas) {
+    if (!arena.inline && parentArenas) {
       parentArenas.forEach((parentName) => {
         const parentArena = this.arenasByName[parentName];
         if (!parentArena) {
           throw new Error(`Arena "${parentName}" not found`);
         }
-        if (!('hasChildren' in parentArena)) {
+        if (!parentArena.hasChildren) {
           throw new Error(`Arena "${parentName}" has not children`);
         }
         parentArena.addAllowedChild(arena);
@@ -131,28 +137,28 @@ export default class ArenaModel {
 
   public getTextNodeById(id: string): ArenaNodeText | undefined {
     const path = id.split('.').map((i) => parseInt(i, 10));
-    let cursor: ArenaNode | RootNode | undefined = this.rootModel;
+    let cursor: AnyArenaNode | undefined = this.model;
     if (path.shift() === 0) {
       path.forEach((i) => {
-        if (cursor && 'hasChildren' in cursor) {
+        if (cursor && cursor.hasChildren) {
           cursor = cursor.children[i];
         } else {
           cursor = undefined;
         }
       });
-      if (cursor && 'hasText' in cursor) {
+      if (cursor && cursor.hasText) {
         return cursor;
       }
     }
     return undefined;
   }
 
-  public getNodeById(id: string): ArenaNode | undefined {
+  public getNodeById(id: string): AnyArenaNode | undefined {
     const path = id.split('.').map((i) => parseInt(i, 10));
-    let cursor: ArenaNode | RootNode | undefined = this.rootModel;
+    let cursor: AnyArenaNode | undefined = this.model;
     if (path.shift() === 0) {
       path.forEach((i) => {
-        if (cursor && 'hasChildren' in cursor) {
+        if (cursor && cursor.hasChildren) {
           cursor = cursor.children[i];
         } else {
           cursor = undefined;
@@ -160,16 +166,6 @@ export default class ArenaModel {
       });
     }
     return cursor;
-  }
-
-  public getAncestors(node: ArenaNode): ArenaCursorAncestor[] {
-    if ('hasParent' in node) {
-      return [
-        ...this.getAncestors(node.parent),
-        { node: node.parent, offset: node.getIndex() },
-      ];
-    }
-    return [];
   }
 
   public insertHtml(selection: ArenaSelection, html: string): ArenaSelection {
@@ -188,9 +184,9 @@ export default class ArenaModel {
     return newSelection;
   }
 
-  private applyMiddlewares(cursor: ArenaCursor): ArenaCursor {
+  private applyMiddlewares(cursor: ArenaCursorText): ArenaCursorText {
     let result = cursor;
-    if ('allowText' in cursor.node.arena) {
+    if (cursor.node.arena.hasText) {
       const { middlewares } = cursor.node.arena;
       for (let i = 0; i < middlewares.length; i += 1) {
         result = middlewares[i](result);
@@ -264,15 +260,15 @@ export default class ArenaModel {
       }
       return newSelection;
     }
-    const toRemove: ArenaNodeScion[] = [];
+    const toRemove: ChildArenaNode[] = [];
     this.runNodesOfSelection(
       newSelection,
-      (node: ArenaNode, start?: number, end?: number) => {
+      (node: ChildArenaNode, start?: number, end?: number) => {
         if (start === undefined && end === undefined) {
-          if ('hasParent' in node) {
+          if (node.hasParent) {
             toRemove.push(node);
           }
-        } else if ('hasText' in node) {
+        } else if (node.hasText) {
           node.removeText(start || 0, end);
         }
       },
@@ -369,10 +365,10 @@ export default class ArenaModel {
   }
 
   protected getParentWhoCanCreateNode(
-    node: ArenaNode,
-    arena: ArenaWithText,
+    node: AnyArenaNode,
+    arena: ArenaTextInterface,
   ): ArenaCursorAncestor | undefined {
-    if (!('hasParent' in node)) {
+    if (!node.hasParent) {
       return undefined;
     }
     if (node.parent.arena.protected) {
@@ -380,13 +376,13 @@ export default class ArenaModel {
     }
     const { parent } = node;
     const offset = node.getIndex();
-    if (parent.canCreateNode(arena)) {
+    if (parent.isAllowedNode(arena)) {
       return {
         node: parent,
         offset,
       };
     }
-    if ('hasParent' in parent) {
+    if (parent.hasParent) {
       const grandpa = parent.parent;
       if (offset === 0) {
         // try to create before parent
@@ -397,7 +393,7 @@ export default class ArenaModel {
         parent.arena,
         parent.getIndex() + 1,
       );
-      if (secondParent && 'hasChildren' in secondParent) {
+      if (secondParent && secondParent.hasChildren) {
         secondParent.insertChildren(parent.cutChildren(offset));
         // try to create between parents
         return this.getParentWhoCanCreateNode(secondParent, arena);
@@ -406,8 +402,11 @@ export default class ArenaModel {
     return undefined;
   }
 
-  protected transformNode(node: ArenaNode, arena: ArenaWithText): ArenaNodeText | undefined {
-    if ('hasText' in node) {
+  protected transformNode(
+    node: AnyArenaNode,
+    arena: ArenaTextInterface,
+  ): ArenaNodeText | undefined {
+    if (node.hasText) {
       const cursor = this.getParentWhoCanCreateNode(node, arena);
       if (cursor) {
         const newNode = cursor.node.createAndInsertNode(
@@ -420,7 +419,7 @@ export default class ArenaModel {
           return newNode;
         }
       }
-    } else if ('hasChildren' in node) {
+    } else if (node.hasChildren) {
       [...node.children].forEach((child) => this.transformNode(child, arena));
     }
     return undefined;
@@ -428,16 +427,16 @@ export default class ArenaModel {
 
   protected applyTextArenaToSelection(
     selection: ArenaSelection,
-    arena: ArenaWithText,
+    arena: ArenaTextInterface,
   ): ArenaSelection {
     const {
       startNode, startOffset, endNode, endOffset,
     } = selection;
     const newSelection = selection.clone();
-    const toTransform: ArenaNode[] = [];
+    const toTransform: AnyArenaNode[] = [];
     this.runNodesOfSelection(
       selection,
-      (node: ArenaNode) => {
+      (node: AnyArenaNode) => {
         toTransform.push(node);
       },
     );
@@ -465,7 +464,7 @@ export default class ArenaModel {
    */
   protected applyProtectedArenaToSelection(
     selection: ArenaSelection,
-    arena: ArenaAncestor,
+    arena: ArenaMediatorInterface,
   ): ArenaSelection {
     const commonAncestorCursor = this.runNodesOfSelection(
       selection,
@@ -474,12 +473,12 @@ export default class ArenaModel {
       return selection;
     }
     const [commonAncestor, start, end] = commonAncestorCursor;
-    if (!commonAncestor.canCreateNode(arena)) {
+    if (!commonAncestor.isAllowedNode(arena)) {
       return selection;
     }
     const childrentToWrap = commonAncestor.cutChildren(start, end - start + 1);
     const newNode = commonAncestor.createAndInsertNode(arena, end + 1);
-    if (newNode && 'hasChildren' in newNode) {
+    if (newNode && newNode.hasChildren) {
       const rest = newNode.insertChildren(childrentToWrap);
       if (rest.length) {
         commonAncestor.insertChildren(rest, newNode.getIndex() + 1);
@@ -488,8 +487,8 @@ export default class ArenaModel {
     return selection;
   }
 
-  protected tryToFindAncestor(node: ArenaNode, arena) {
-    if ('hasParent' in node) {
+  protected tryToFindAncestor(node: AnyArenaNode, arena) {
+    if (node.hasParent) {
       if (node.arena === arena) {
         return node;
       }
@@ -498,8 +497,8 @@ export default class ArenaModel {
     return undefined;
   }
 
-  protected tryToFindAncestor2(node: ArenaNode, arena) {
-    if ('hasParent' in node) {
+  protected tryToFindAncestor2(node: AnyArenaNode, arena) {
+    if (node.hasParent) {
       if (node.parent.arena.allowedArenas.includes(arena)) {
         return node;
       }
@@ -508,7 +507,7 @@ export default class ArenaModel {
     return undefined;
   }
 
-  protected unwrapNode(node: ArenaNode & ArenaNodeAncestor) {
+  protected unwrapNode(node: AnyArenaNode & ParentArenaNode) {
     const { parent } = node;
     const offset = node.getIndex();
     const children = node.cutChildren(0);
@@ -517,7 +516,10 @@ export default class ArenaModel {
     node.remove();
   }
 
-  public toggleArenaForSelection(selection: ArenaSelection, arena: ArenaAncestor): ArenaSelection {
+  public toggleArenaForSelection(
+    selection: ArenaSelection,
+    arena: ArenaMediatorInterface,
+  ): ArenaSelection {
     if (arena.protected) {
       return selection;
     }
@@ -540,7 +542,7 @@ export default class ArenaModel {
     let dad;
     let childrentToWrap;
     let offset = start;
-    if (commonAncestor.canCreateNode(arena)) {
+    if (commonAncestor.isAllowedNode(arena)) {
       dad = commonAncestor;
       childrentToWrap = dad.cutChildren(start, end - start + 1);
       offset = start;
@@ -585,7 +587,7 @@ export default class ArenaModel {
         } else {
           if (toWrap.length > 0) {
             const newNode = dad.createAndInsertNode(arena, offset);
-            (newNode as ArenaNodeAncestor).insertChildren(toWrap, 0);
+            (newNode as ParentArenaNode).insertChildren(toWrap, 0);
             // if (toWrap.length === i) {
             //   newSelection.setStartNode(newNode.getChild(0), startOffset);
             // }
@@ -598,7 +600,7 @@ export default class ArenaModel {
       }
       if (toWrap.length > 0) {
         const newNode = dad.createAndInsertNode(arena, offset);
-        (newNode as ArenaNodeAncestor).insertChildren(toWrap, 0);
+        (newNode as ParentArenaNode).insertChildren(toWrap, 0);
         // if (toWrap.length === childrentToWrap.length) {
         //   newSelection.setStartNode(newNode.getChild(0), startOffset);
         // }
@@ -614,7 +616,7 @@ export default class ArenaModel {
       return selection;
     }
     const { node } = selection.getCursor();
-    if (node.parent.canCreateNode(arena)) {
+    if (node.parent.isAllowedNode(arena)) {
       node.parent.createAndInsertNode(arena, node.getIndex());
     }
     return selection;
@@ -622,7 +624,7 @@ export default class ArenaModel {
 
   public applyArenaToSelection(
     selection: ArenaSelection,
-    arena: ArenaAncestor | ArenaWithText,
+    arena: ArenaMediatorInterface | ArenaTextInterface,
   ): ArenaSelection {
     if (arena.hasText) {
       this.applyTextArenaToSelection(selection, arena);
@@ -650,13 +652,13 @@ export default class ArenaModel {
     } else {
       this.runNodesOfSelection(
         selection,
-        (node: ArenaNode, start?: number, end?: number) => {
-          if ('hasText' in node) {
+        (node: AnyArenaNode, start?: number, end?: number) => {
+          if (node.hasText) {
             node.toggleFormating(formating.name, start || 0, end || node.getTextLength());
           }
-          if ('hasChildren' in node) {
-            this.runOfChildren(node, (n: ArenaNode) => {
-              if ('hasText' in n) {
+          if (node.hasChildren) {
+            this.runOfChildren(node, (n: AnyArenaNode) => {
+              if (n.hasText) {
                 n.toggleFormating(formating.name, 0, n.getTextLength());
               }
             });
@@ -667,7 +669,10 @@ export default class ArenaModel {
     return selection;
   }
 
-  public addInlineNode(selection: ArenaSelection, arena: ArenaInline): ArenaNodeInline | undefined {
+  public addInlineNode(
+    selection: ArenaSelection,
+    arena: ArenaInlineInterface,
+  ): ArenaNodeInline | undefined {
     if (selection.isSameNode() && !selection.isCollapsed()) {
       const { startNode, startOffset, endOffset } = selection;
       return startNode.addInlineNode(arena, startOffset, endOffset);
@@ -675,7 +680,10 @@ export default class ArenaModel {
     return undefined;
   }
 
-  public getInlineNode(selection: ArenaSelection, arena: ArenaInline): ArenaNodeInline | undefined {
+  public getInlineNode(
+    selection: ArenaSelection,
+    arena: ArenaInlineInterface,
+  ): ArenaNodeInline | undefined {
     if (selection.isSameNode()) {
       const { startNode, startOffset, endOffset } = selection;
       return startNode.getInlineNode(arena, startOffset, endOffset);
@@ -700,8 +708,8 @@ export default class ArenaModel {
 
   public runNodesOfSelection(
     selection: ArenaSelection,
-    callback?: (node: ArenaNode, start?: number, end?: number) => void,
-  ): [ ArenaNodeAncestor, number, number ] | undefined {
+    callback?: (node: ChildArenaNode, start?: number, end?: number) => void,
+  ): [ ParentArenaNode, number, number ] | undefined {
     const {
       startNode,
       startOffset,
@@ -725,7 +733,7 @@ export default class ArenaModel {
     const [commonAncestor] = commonAncestorCursor;
 
     let startCursor: ArenaCursorAncestor = startNode.getParent();
-    const startNodes: ArenaNode[] = [];
+    const startNodes: AnyArenaNode[] = [];
     while (startCursor.node !== commonAncestor) {
       const len = startCursor.node.children.length;
       for (let i = startCursor.offset + 1; i < len; i += 1) {
@@ -738,7 +746,7 @@ export default class ArenaModel {
     }
 
     let endCursor: ArenaCursorAncestor = endNode.getParent();
-    const endNodes: ArenaNode[] = [];
+    const endNodes: AnyArenaNode[] = [];
     while (endCursor.node !== commonAncestor) {
       for (let i = 0; i < endCursor.offset; i += 1) {
         const child = endCursor.node.getChild(i);
@@ -774,14 +782,14 @@ export default class ArenaModel {
 
   protected formatingMarks: { [tag: string]: FormatingMark[] } = { };
 
-  protected rootArena: ArenaRoot;
+  protected rootArena: ArenaRootInterface | undefined;
 
-  protected rootModel: RootNode;
+  protected rootNode: ArenaNodeRoot | undefined;
 
   protected separateNode(
-    node: ArenaNodeScion & ArenaNodeAncestor,
+    node: ArenaNodeMediator,
     offset: number,
-  ): undefined | ArenaNodeAncestor {
+  ): undefined | ParentArenaNode {
     if (offset === 0 || offset >= node.children.length) {
       return undefined;
     }
@@ -789,7 +797,7 @@ export default class ArenaModel {
       return undefined;
     }
     const newNode = node.parent.createAndInsertNode(node.arena, node.getIndex() + 1);
-    if (!newNode || !('hasChildren' in newNode)) {
+    if (!newNode || !(newNode.hasChildren)) {
       return undefined;
     }
     newNode.insertChildren(node.cutChildren(offset));
@@ -802,7 +810,7 @@ export default class ArenaModel {
     if (grandpaCursor && grandpaCursor.node.arena.arenaForText) {
       // Try to get out from this node (ex. in a list)
       const index = node.getIndex();
-      if ('parent' in parent && parent.parent === grandpaCursor.node) {
+      if (parent.hasParent && parent.parent === grandpaCursor.node) {
         // try to separate
         this.separateNode(parent, index);
       } else if (index > 0 && !node.isLastChild()) {
@@ -817,8 +825,8 @@ export default class ArenaModel {
     return undefined;
   }
 
-  protected getNextSibling(node: ArenaNode): ArenaNodeText | undefined {
-    if (!('parent' in node)) {
+  protected getNextSibling(node: AnyArenaNode): ArenaNodeText | undefined {
+    if (!(node.hasParent)) {
       return undefined;
     }
     const next = node.parent.getChild(node.getIndex() + 1);
@@ -828,8 +836,8 @@ export default class ArenaModel {
     return this.getNextSibling(node.parent);
   }
 
-  protected runOfChildren(node: ArenaNode, callback: (n: ArenaNode) => void): void {
-    if ('hasChildren' in node) {
+  protected runOfChildren(node: AnyArenaNode, callback: (n: AnyArenaNode) => void): void {
+    if (node.hasChildren) {
       node.children.forEach((child) => {
         this.runOfChildren(child, callback);
       });
@@ -838,8 +846,18 @@ export default class ArenaModel {
     }
   }
 
-  protected getCommonAncestor(nodeA: ArenaNode, nodeB: ArenaNode):
-    [ ArenaNodeAncestor, number, number ] | undefined {
+  protected getAncestors(node: AnyArenaNode): ArenaCursorAncestor[] {
+    if (node.hasParent) {
+      return [
+        ...this.getAncestors(node.parent),
+        { node: node.parent, offset: node.getIndex() },
+      ];
+    }
+    return [];
+  }
+
+  protected getCommonAncestor(nodeA: AnyArenaNode, nodeB: AnyArenaNode):
+    [ ParentArenaNode, number, number ] | undefined {
     if (nodeA === nodeB) {
       return undefined;
     }
@@ -849,7 +867,7 @@ export default class ArenaModel {
     if (commonMaxDeep === 0) {
       return undefined;
     }
-    let result: [ ArenaNodeAncestor, number, number ] | undefined;
+    let result: [ ParentArenaNode, number, number ] | undefined;
     for (let i = 0; i < commonMaxDeep; i += 1) {
       if (ancestorsForA[i].node === ancestorsForB[i].node) {
         result = [ancestorsForA[i].node, ancestorsForA[i].offset, ancestorsForB[i].offset];
@@ -858,5 +876,30 @@ export default class ArenaModel {
       }
     }
     return result;
+  }
+
+  public getOrCreateNodeForText(
+    node: AnyArenaNode,
+    offset?: number,
+  ): ArenaCursorText | undefined {
+    if (node.hasText) {
+      return {
+        node,
+        offset: offset === undefined ? node.getTextLength() : offset,
+      };
+    }
+    if (node.hasChildren && node.arena.arenaForText) {
+      // TODO for protected do not create node, but get from children
+      let newNode:
+        ChildArenaNode | undefined = NodeFactory.createChildNode(node.arena.arenaForText);
+      newNode = node.insertNode(newNode, offset);
+      if (newNode) {
+        return this.getOrCreateNodeForText(newNode);
+      }
+    }
+    if (node.hasParent) {
+      return this.getOrCreateNodeForText(node.parent, node.getIndex() + 1);
+    }
+    return undefined
   }
 }

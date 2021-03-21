@@ -1,27 +1,31 @@
 /* eslint-disable max-classes-per-file */
-import AnyArena from '../interfaces/arena/AnyArena';
-import ArenaOptions from '../interfaces/ArenaOptions';
+import { ArenaOptionsChild, ArenaOptionsRoot } from '../interfaces/ArenaOptions';
 
-import AncestorArena from './AncestorArena';
-import RootArena from './RootArena';
-import SingleArena from './SingleArena';
-import TextArena from './TextArena';
-import InlineArena from './InlineArena';
+import ArenaRoot from './ArenaRoot';
+import ArenaSingle from './ArenaSingle';
+import ArenaText from './ArenaText';
+import ArenaInline from './ArenaInline';
+import ArenaMediator from './ArenaMediator';
+import { ArenaInlineInterface, ArenaRootInterface, ChildArena } from '../interfaces/Arena';
 
 export default class ArenaFactory {
-  static create(arenaOptions: ArenaOptions): AnyArena<ArenaOptions> {
-    if (arenaOptions.hasChildren) {
-      if (arenaOptions.hasParent === false) {
-        return new RootArena(arenaOptions);
-      }
-      return new AncestorArena(arenaOptions);
+  static createRoot(arenaOptions: ArenaOptionsRoot): ArenaRootInterface {
+    return new ArenaRoot(arenaOptions);
+  }
+
+  static createChild(arenaOptions: ArenaOptionsChild): ChildArena | ArenaInlineInterface {
+    if ('allowedArenas' in arenaOptions) {
+      return new ArenaMediator(arenaOptions);
     }
     if (arenaOptions.single) {
-      return new SingleArena(arenaOptions);
+      return new ArenaSingle(arenaOptions);
     }
     if (arenaOptions.inline) {
-      return new InlineArena(arenaOptions);
+      return new ArenaInline(arenaOptions);
     }
-    return new TextArena(arenaOptions);
+    if (arenaOptions.hasText) {
+      return new ArenaText(arenaOptions);
+    }
+    throw new Error('Cant create Arena');
   }
 }

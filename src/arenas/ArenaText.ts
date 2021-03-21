@@ -1,13 +1,12 @@
 import { ArenaOptionsWithText } from '../interfaces/ArenaOptions';
-import ArenaAncestor from '../interfaces/arena/ArenaAncestor';
 import ArenaMiddleware from '../interfaces/ArenaMiddleware';
-import ArenaWithText from '../interfaces/arena/ArenaWithText';
 
 import AbstractArena from './AbstractArena';
+import { ArenaMediatorInterface, ArenaTextInterface } from '../interfaces/Arena';
 
-export default class TextArena
+export default class ArenaText
   extends AbstractArena
-  implements ArenaWithText {
+  implements ArenaTextInterface {
   readonly hasParent: true = true;
 
   readonly hasChildren: false = false;
@@ -18,7 +17,7 @@ export default class TextArena
 
   readonly single: false = false;
 
-  readonly nextArena: ArenaWithText | ArenaAncestor | undefined;
+  readonly nextArena: ArenaTextInterface | ArenaMediatorInterface | undefined;
 
   middlewares: ArenaMiddleware[] = [];
 

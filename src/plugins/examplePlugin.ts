@@ -4,7 +4,8 @@ import {
 import Textarena from '../Textarena';
 import ArenaPlugin from '../interfaces/ArenaPlugin';
 import ArenaSelection from '../helpers/ArenaSelection';
-import ArenaNodeText from '../interfaces/ArenaNodeText';
+import { ArenaNodeText } from '../interfaces/ArenaNode';
+import { ArenaSingleInterface } from '../interfaces/Arena';
 
 @customElement('arena-recomendation')
 export class Callout extends LitElement {
@@ -170,7 +171,7 @@ const examplePlugin = (): ArenaPlugin => ({
         },
       ],
       [ta.getRootArenaName()],
-    );
+    ) as ArenaSingleInterface;
     ta.registerCommand(
       'add-recomendation',
       (someTa: Textarena, selection: ArenaSelection) => {
@@ -190,7 +191,8 @@ const examplePlugin = (): ArenaPlugin => ({
       shortcut: 'Alt + KeyR',
       hint: 'r',
       command: 'add-recomendation',
-      canShow: (node: ArenaNodeText) => node.parent.arena.allowedArenas.includes(arena),
+      canShow: (node: ArenaNodeText) =>
+        node.parent.arena.allowedArenas.includes(arena),
     });
   },
 });

@@ -1,4 +1,4 @@
-import ArenaNodeText from './ArenaNodeText';
+import { ArenaNodeText } from './ArenaNode';
 
 export default interface CreatorOptions {
   name: string;

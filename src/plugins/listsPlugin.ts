@@ -1,11 +1,9 @@
 import Textarena from '../Textarena';
 import ArenaSelection from '../helpers/ArenaSelection';
 import ArenaPlugin from '../interfaces/ArenaPlugin';
-import ArenaCursor from '../interfaces/ArenaCursor';
-import ArenaWithText from '../interfaces/arena/ArenaWithText';
-import ArenaNode from '../interfaces/ArenaNode';
-import ArenaNodeText from '../interfaces/ArenaNodeText';
-import ArenaAncestor from '../interfaces/arena/ArenaAncestor';
+import ArenaCursorText from '../interfaces/ArenaCursorText';
+import { ArenaMediatorInterface, ArenaTextInterface } from '../interfaces/Arena';
+import { ArenaNodeText, ChildArenaNode } from '../interfaces/ArenaNode';
 
 type ListOptions = {
   name: string,
@@ -82,7 +80,7 @@ const listsPlugin = (opts?: ListsOptions): ArenaPlugin => ({
           attributes: item.attributes,
         },
       ],
-    );
+    ) as ArenaTextInterface;
     lists.forEach(({
       name,
       tag,
@@ -100,8 +98,7 @@ const listsPlugin = (opts?: ListsOptions): ArenaPlugin => ({
           tag,
           attributes,
           allowedArenas: [li],
-          arenaForText: li as ArenaWithText,
-          hasChildren: true,
+          arenaForText: li,
           automerge: true,
           group: true,
         },
@@ -112,7 +109,7 @@ const listsPlugin = (opts?: ListsOptions): ArenaPlugin => ({
           },
         ],
         [textarena.getRootArenaName()],
-      ) as ArenaAncestor;
+      ) as ArenaMediatorInterface;
       textarena.registerCommand(
         command,
         (ta: Textarena, selection: ArenaSelection) =>
@@ -129,7 +126,7 @@ const listsPlugin = (opts?: ListsOptions): ArenaPlugin => ({
         shortcut,
         command,
         hint,
-        checkStatus: (node: ArenaNode):
+        checkStatus: (node: ChildArenaNode):
           boolean => 'parent' in node && node.parent.arena === listArena,
       });
       textarena.registerCreator({
@@ -139,21 +136,24 @@ const listsPlugin = (opts?: ListsOptions): ArenaPlugin => ({
         shortcut,
         command,
         hint,
-        canShow: (node: ArenaNodeText) => node.parent.arena.allowedArenas.includes(listArena),
+        canShow: (node: ArenaNodeText) =>
+          node.parent.arena.allowedArenas.includes(listArena),
       });
-      (paragraph as ArenaWithText).registerMiddleware((cursor: ArenaCursor) => {
-        const text = cursor.node.getRawText();
-        const match = text.match(pattern);
-        if (match) {
-          const newNode = cursor.node.createAndInsertNode(listArena, 0);
-          if (newNode) {
-            const newCursor = newNode.insertText(match[1], 0);
-            cursor.node.remove();
-            return newCursor;
+      if (paragraph.hasText) {
+        paragraph.registerMiddleware((cursor: ArenaCursorText) => {
+          const text = cursor.node.getRawText();
+          const match = text.match(pattern);
+          if (match) {
+            const newNode = cursor.node.createAndInsertNode(listArena, 0);
+            if (newNode) {
+              const newCursor = newNode.insertText(match[1], 0);
+              cursor.node.remove();
+              return newCursor;
+            }
           }
-        }
-        return cursor;
-      });
+          return cursor;
+        });
+      }
       textarena.addSimpleArenas(listArena);
     });
   },

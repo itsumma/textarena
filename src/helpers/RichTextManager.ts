@@ -1,10 +1,10 @@
 /* eslint-disable no-lonely-if */
 import ArenaFormating, { ArenaFormatings } from '../interfaces/ArenaFormating';
-import ArenaInline from '../interfaces/arena/ArenaInline';
-import ArenaNodeInline from '../interfaces/ArenaNodeInline';
-import InlineNode from '../models/InlineNode';
 import Intervaler from './Intervaler';
 import InlineIntervaler from './InlineIntervaler';
+import { ArenaInlineInterface } from '../interfaces/Arena';
+import { ArenaNodeInline } from '../interfaces/ArenaNode';
+import NodeFactory from '../models/NodeFactory';
 
 export type Formatings = {
   [name: string]: Intervaler
@@ -229,25 +229,22 @@ export default class RichTextManager {
   }
 
   public addInlineNode(
-    arena: ArenaInline,
+    arena: ArenaInlineInterface,
     start: number,
     end: number,
   ): ArenaNodeInline | undefined {
-    const node = new InlineNode(arena);
-    if (node instanceof InlineNode) {
-      this.inlines.addInterval(start, end, node);
-      return node;
-    }
-    return undefined;
+    const node = NodeFactory.createInlineNode(arena);
+    this.inlines.addInterval(start, end, node);
+    return node;
   }
 
   public getInlineNode(
-    arena: ArenaInline,
+    arena: ArenaInlineInterface,
     start: number,
     end: number,
   ): ArenaNodeInline | undefined {
     const node = this.inlines.getNode(start, end);
-    if (node instanceof InlineNode && node.arena === arena) {
+    if (node && node.arena === arena) {
       return node;
     }
     return undefined;

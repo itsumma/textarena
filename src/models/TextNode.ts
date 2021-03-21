@@ -1,31 +1,35 @@
 import { TemplateResult, html } from 'lit-html';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html';
-import AnyArena from '../interfaces/arena/AnyArena';
 import RichTextManager from '../helpers/RichTextManager';
-import ArenaCursor from '../interfaces/ArenaCursor';
-import ArenaCursorAncestor from '../interfaces/ArenaCursorAncestor';
-import ArenaWithText from '../interfaces/arena/ArenaWithText';
+import { ArenaInlineInterface, ArenaTextInterface, ChildArena } from '../interfaces/Arena';
+import ArenaCursorText from '../interfaces/ArenaCursorText';
 import ArenaFormating, { ArenaFormatings } from '../interfaces/ArenaFormating';
-import ArenaNodeInline from '../interfaces/ArenaNodeInline';
-import ArenaInline from '../interfaces/arena/ArenaInline';
+import {
+  ArenaNodeInline, ArenaNodeText, ChildArenaNode, ParentArenaNode,
+} from '../interfaces/ArenaNode';
 import AbstractNode from './AbstractNode';
-import { ArenaNodeParent, ArenaNodeText } from '../interfaces/ArenaNode';
 
-export default class RichNode
-  extends AbstractNode<ArenaWithText>
+export default class TextNode
+  extends AbstractNode<ArenaTextInterface>
   implements ArenaNodeText {
   readonly hasParent: true = true;
 
+  readonly hasChildren: false = false;
+
   readonly hasText: true = true;
+
+  readonly inline: false = false;
+
+  readonly single: false = false;
 
   private richTextManager;
 
   constructor(
-    arena: ArenaWithText,
-    public parent: ArenaNodeParent,
+    public arena: ArenaTextInterface,
+    // public parent?: ParentArenaNode,
     text?: string | RichTextManager,
   ) {
-    super(arena);
+    super();
     if (text && text instanceof RichTextManager) {
       this.richTextManager = text.clone();
     } else {
@@ -33,53 +37,38 @@ export default class RichNode
     }
   }
 
-  public getIndex(): number {
-    return this.parent.children.indexOf(this);
+  public getHtml(frms: ArenaFormatings): TemplateResult | string {
+    const content = this.richTextManager.getHtml(frms);
+    return this.arena.getTemplate(
+      html`${unsafeHTML(content)}`,
+      this.getGlobalIndex(),
+      this.attributes,
+    );
   }
 
-  public isLastChild(): boolean {
-    return this.parent.children.indexOf(this) === this.parent.children.length - 1;
+  public getOutputHtml(frms: ArenaFormatings, deep: number): string {
+    const text = this.richTextManager.getHtml(frms);
+    return this.arena.getOutputTemplate(text, deep, this.attributes);
   }
 
-  public getGlobalIndex(): string {
-    return `${this.parent.getGlobalIndex()}.${this.getIndex().toString()}`;
-  }
-
-  public getParent(): ArenaCursorAncestor {
-    return { node: this.parent, offset: this.getIndex() };
-  }
-
-  public setParent(parent: ArenaNodeAncestor | (ArenaNodeAncestor & ArenaNodeScion)): void {
-    this.parent = parent;
-  }
-
-  public getUnprotectedParent(): ArenaCursorAncestor | undefined {
-    if (this.parent.arena.protected) {
-      return this.parent.getUnprotectedParent();
-    }
-    return { node: this.parent, offset: this.getIndex() };
-  }
-
-  public remove(): ArenaCursorAncestor {
-    return this.parent.removeChild(this.getIndex());
-  }
-
-  getTextCursor(index: number): ArenaCursor {
+  getTextCursor(index: number): ArenaCursorText {
     return {
       node: this,
       offset: index === -1 ? this.getTextLength() : index,
     };
   }
 
-  public createAndInsertNode(arena: AnyArena): ArenaNodeScion | ArenaNodeText | undefined {
-    return this.parent.createAndInsertNode(arena, this.getIndex() + 1);
-  }
+  // public createAndInsertNode(arena: ChildArena): ChildArenaNode | undefined {
+  //   return this.parent.createAndInsertNode(arena, this.getIndex() + 1);
+  // }
+
+  // Text node methods //
 
   public insertText(
     text: string | RichTextManager,
     offset: number,
     keepFormatings = false,
-  ): ArenaCursor {
+  ): ArenaCursorText {
     return {
       node: this,
       offset: this.richTextManager.insertText(text, offset, keepFormatings),
@@ -110,20 +99,6 @@ export default class RichNode
     this.richTextManager.toggleFormating(name, start, end);
   }
 
-  public getHtml(frms: ArenaFormatings): TemplateResult | string {
-    const content = this.richTextManager.getHtml(frms);
-    return this.arena.getTemplate(
-      html`${unsafeHTML(content)}`,
-      this.getGlobalIndex(),
-      this.attributes,
-    );
-  }
-
-  public getOutputHtml(frms: ArenaFormatings, deep: number): string {
-    const text = this.richTextManager.getHtml(frms);
-    return this.arena.getOutputTemplate(text, deep, this.attributes);
-  }
-
   public getText(): RichTextManager {
     return this.richTextManager;
   }
@@ -145,7 +120,7 @@ export default class RichNode
   }
 
   public addInlineNode(
-    arena: ArenaInline,
+    arena: ArenaInlineInterface,
     start: number,
     end: number,
   ): ArenaNodeInline | undefined {
@@ -153,7 +128,7 @@ export default class RichNode
   }
 
   public getInlineNode(
-    arena: ArenaInline,
+    arena: ArenaInlineInterface,
     start: number,
     end: number,
   ): ArenaNodeInline | undefined {
@@ -164,10 +139,15 @@ export default class RichNode
     this.richTextManager.removeInlineNode(node);
   }
 
-  updateInlineNode(node: ArenaNodeInline, start: number, end: number): void {
+  public updateInlineNode(node: ArenaNodeInline, start: number, end: number): void {
     this.richTextManager.updateInlineNode(node, start, end);
   }
 
-
-
+  public clone(): TextNode {
+    return new TextNode(
+      this.arena,
+      // this.parent,
+      this.richTextManager.clone(),
+    );
+  }
 }
