@@ -375,8 +375,8 @@ export default class ArenaBrowser {
     if (event instanceof InputEvent) {
       const selection = this.asm.view.getCurrentSelection();
       if (selection) {
-        this.asm.model.insertTextToModel(selection, event.character, true);
-        this.asm.eventManager.fire({ name: 'modelChanged' });
+        const newSelection = this.asm.model.insertTextToModel(selection, event.character, true);
+        this.asm.eventManager.fire({ name: 'modelChanged', data: newSelection });
       }
     }
     if (event instanceof RemoveEvent) {

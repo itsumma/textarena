@@ -58,6 +58,10 @@ export default class ArenaModel {
     this.rootNode = NodeFactory.createRootNode(this.rootArena);
   }
 
+  public setRoot(root: ArenaNodeRoot) {
+    this.rootNode = root;
+  }
+
   public getOutputHtml(): string {
     return this.model.getOutputHtml(this.getFormatings());
   }
