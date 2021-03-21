@@ -4,7 +4,7 @@ import ElementHelper from './helpers/ElementHelper';
 import {
   ArenaInlineInterface, ArenaMediatorInterface, ArenaTextInterface, ChildArena,
 } from './interfaces/Arena';
-import { ArenaNodeInline } from './interfaces/ArenaNode';
+import { ArenaNodeInline, ChildArenaNode, ParentArenaNode } from './interfaces/ArenaNode';
 import ArenaFormating, { TagAndAttributes } from './interfaces/ArenaFormating';
 import ArenaOptionsChild from './interfaces/ArenaOptions';
 import ArenaPlugin from './interfaces/ArenaPlugin';
@@ -282,6 +282,22 @@ class Textarena {
 
   public breakSelection(selection: ArenaSelection): ArenaSelection {
     return this.asm.model.breakSelection(selection);
+  }
+
+  public createAndInsertNode(
+    arena: ChildArena,
+    parent: ParentArenaNode,
+    offset: number,
+    before = false,
+    onlyChild = false,
+  ): ChildArenaNode | undefined {
+    return this.asm.model.createAndInsertNode(
+      arena,
+      parent,
+      offset,
+      before,
+      onlyChild,
+    );
   }
 
   public moveChild(selection: ArenaSelection, direction: 'up' | 'down'): ArenaSelection {

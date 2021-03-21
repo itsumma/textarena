@@ -34,5 +34,5 @@ export default interface ArenaNodeAncestorPart {
 
   removeChildren(start: number, length?: number): void;
 
-  mergeChildren(): void;
+  mergeChildren(index: number): ArenaCursorAncestor;
 }

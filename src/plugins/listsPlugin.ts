@@ -42,7 +42,7 @@ const defaultOptions: ListsOptions = {
       shortcut: 'Alt + KeyL',
       command: 'convert-to-unordered-list',
       hint: 'l',
-      pattern: /^-\s+(.*)$/,
+      pattern: /^(-\s+).*$/,
     },
     {
       name: 'ordered-list',
@@ -53,7 +53,7 @@ const defaultOptions: ListsOptions = {
       shortcut: 'Alt + KeyO',
       command: 'convert-to-ordered-list',
       hint: 'o',
-      pattern: /^\d+(?:\.|\))\s+(.*)$/,
+      pattern: /^(\d+(?:\.|\))\s+).*$/,
     },
   ],
 };
@@ -140,16 +140,22 @@ const listsPlugin = (opts?: ListsOptions): ArenaPlugin => ({
           node.parent.arena.allowedArenas.includes(listArena),
       });
       if (paragraph.hasText) {
-        paragraph.registerMiddleware((cursor: ArenaCursorText) => {
+        paragraph.registerMiddleware((ta: Textarena, cursor: ArenaCursorText) => {
           const text = cursor.node.getRawText();
           const match = text.match(pattern);
           if (match) {
-            const newNode = cursor.node.createAndInsertNode(listArena, 0);
-            if (newNode) {
-              const newCursor = newNode.insertText(match[1], 0);
-              cursor.node.remove();
-              return newCursor;
-            }
+            const sel = new ArenaSelection(
+              cursor.node,
+              cursor.offset,
+              cursor.node,
+              cursor.offset,
+              'forward',
+            );
+            const newSel = ta.applyArenaToSelection(sel, listArena);
+            const cursor2 = newSel.getCursor();
+            cursor2.node.cutText(0, match[1].length);
+            cursor2.offset = 0;
+            return cursor2;
           }
           return cursor;
         });

@@ -250,6 +250,7 @@ export default abstract class AbstractParentNode<
             prev.children.length,
           );
         } else if (child.children.length !== 0) {
+          // eslint-disable-next-line no-continue
           continue;
         }
         this.children.splice(i, 1);

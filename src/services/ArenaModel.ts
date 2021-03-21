@@ -19,6 +19,7 @@ import ArenaOptionsChild from '../interfaces/ArenaOptions';
 import NodeFactory from '../models/NodeFactory';
 
 import ArenaServiceManager from './ArenaServiceManager';
+import ArenaText from '../arenas/ArenaText';
 
 type ArenaMark = {
   attributes: string[],
@@ -478,86 +479,6 @@ export default class ArenaModel {
     return selection;
   }
 
-  /**
-   * Wrap selected nodes by protected Node described by given Arena.
-   * All selected children will be took of and inserted in new Node, if it allow Arena.
-   * Rest children will be back in them ancestor after new Node.
-   * @param selection ArenaSelection
-   * @param arena ArenaAncestor
-   * @returns ArenaSelection
-   */
-  protected applyProtectedArenaToSelection(
-    selection: ArenaSelection,
-    arena: ArenaMediatorInterface,
-  ): ArenaSelection {
-    const commonAncestorCursor = this.runNodesOfSelection(
-      selection,
-    );
-    if (!commonAncestorCursor) {
-      return selection;
-    }
-    const [commonAncestor, start, end] = commonAncestorCursor;
-    if (!commonAncestor.isAllowedNode(arena)) {
-      return selection;
-    }
-    const newNode = this.createAndInsertNode(arena, commonAncestor, start);
-    if (newNode && newNode.hasChildren) {
-      const childrentToWrap = commonAncestor.cutChildren(start + 1, end - start + 1);
-      const rest = newNode.insertChildren(childrentToWrap);
-      if (rest.length) {
-        commonAncestor.insertChildren(rest, newNode.getIndex() + 1);
-      }
-    }
-    return selection;
-  }
-
-  protected tryToFindAncestor(
-    node: AnyArenaNode,
-    arena: ArenaMediatorInterface,
-  ): ArenaNodeMediator | undefined {
-    if (node.hasParent) {
-      if (node.arena === arena && node.hasChildren) {
-        return node;
-      }
-      return this.tryToFindAncestor(node.parent, arena);
-    }
-    return undefined;
-  }
-
-  protected tryToFindAncestor2(
-    node: ParentArenaNode,
-    arena: ArenaMediatorInterface,
-  ): ArenaNodeMediator | undefined {
-    if (node.hasParent) {
-      if (node.parent.arena.allowedArenas.includes(arena)) {
-        return node;
-      }
-      return this.tryToFindAncestor2(node.parent, arena);
-    }
-    return undefined;
-  }
-
-  protected unwrapNode(node: ArenaNodeMediator): void {
-    const { parent } = node;
-    const offset = node.getIndex();
-    const children = node.cutChildren(0);
-    children.map((child) => {
-      if (parent.isAllowedNode(child.arena)) {
-        return child;
-      }
-      if (child.hasText) {
-        const newNode = NodeFactory.createChildNode(parent.arena.arenaForText);
-        if (newNode) {
-          newNode.insertText(child.getText(), 0);
-          return newNode;
-        }
-      }
-    });
-    // TODO catch rest nodes
-    parent.insertChildren(children, offset);
-    node.remove();
-  }
-
   public toggleArenaForSelection(
     selection: ArenaSelection,
     arena: ArenaMediatorInterface,
@@ -647,7 +568,7 @@ export default class ArenaModel {
         // }
         // newSelection.setEndNode(newNode.getChild(toWrap.length - 1), endOffset);
       }
-      dad.mergeChildren();
+      dad.mergeChildren(0);
     }
     return newSelection;
   }
@@ -892,7 +813,7 @@ export default class ArenaModel {
         return undefined;
       }
       const text = node.getText();
-      let offset = grandpaCursor.offset;
+      let { offset } = grandpaCursor;
       if (index > 0 || parent.children.length === 1) {
         offset += 1;
       }
@@ -965,7 +886,7 @@ export default class ArenaModel {
     if (cursor.node.arena.hasText) {
       const { middlewares } = cursor.node.arena;
       for (let i = 0; i < middlewares.length; i += 1) {
-        result = middlewares[i](result);
+        result = middlewares[i](this.asm.textarena, result);
       }
     }
     return result;
@@ -1223,5 +1144,85 @@ export default class ArenaModel {
       });
     }
     return newSelection;
+  }
+
+  /**
+   * Wrap selected nodes by protected Node described by given Arena.
+   * All selected children will be took of and inserted in new Node, if it allow Arena.
+   * Rest children will be back in them ancestor after new Node.
+   * @param selection ArenaSelection
+   * @param arena ArenaAncestor
+   * @returns ArenaSelection
+   */
+  protected applyProtectedArenaToSelection(
+    selection: ArenaSelection,
+    arena: ArenaMediatorInterface,
+  ): ArenaSelection {
+    const commonAncestorCursor = this.runNodesOfSelection(
+      selection,
+    );
+    if (!commonAncestorCursor) {
+      return selection;
+    }
+    const [commonAncestor, start, end] = commonAncestorCursor;
+    if (!commonAncestor.isAllowedNode(arena)) {
+      return selection;
+    }
+    const newNode = this.createAndInsertNode(arena, commonAncestor, start);
+    if (newNode && newNode.hasChildren) {
+      const childrentToWrap = commonAncestor.cutChildren(start + 1, end - start + 1);
+      const rest = newNode.insertChildren(childrentToWrap);
+      if (rest.length) {
+        commonAncestor.insertChildren(rest, newNode.getIndex() + 1);
+      }
+    }
+    return selection;
+  }
+
+  protected tryToFindAncestor(
+    node: AnyArenaNode,
+    arena: ArenaMediatorInterface,
+  ): ArenaNodeMediator | undefined {
+    if (node.hasParent) {
+      if (node.arena === arena && node.hasChildren) {
+        return node;
+      }
+      return this.tryToFindAncestor(node.parent, arena);
+    }
+    return undefined;
+  }
+
+  protected tryToFindAncestor2(
+    node: ParentArenaNode,
+    arena: ArenaMediatorInterface,
+  ): ArenaNodeMediator | undefined {
+    if (node.hasParent) {
+      if (node.parent.arena.allowedArenas.includes(arena)) {
+        return node;
+      }
+      return this.tryToFindAncestor2(node.parent, arena);
+    }
+    return undefined;
+  }
+
+  protected unwrapNode(node: ArenaNodeMediator): void {
+    const { parent } = node;
+    const offset = node.getIndex();
+    const children = node.cutChildren(0);
+    const childrenToInsert: ChildArenaNode[] = [];
+    children.forEach((child) => {
+      if (parent.isAllowedNode(child.arena)) {
+        childrenToInsert.push(child);
+      } else if (child.hasText) {
+        const newNode = NodeFactory.createChildNode(parent.arena.arenaForText);
+        if (newNode) {
+          newNode.insertText(child.getText(), 0);
+          childrenToInsert.push(newNode);
+        }
+      }
+    });
+    // TODO catch rest nodes
+    parent.insertChildren(childrenToInsert, offset);
+    node.remove();
   }
 }
