@@ -50,10 +50,7 @@ export default abstract class AbstractNode<TArena extends AnyArena> {
     return `${this.parent.getGlobalIndex()}.${this.getIndex().toString()}`;
   }
 
-  public getParent(): ArenaCursorAncestor | undefined {
-    // if (!this.parent) {
-    //   return undefined;
-    // }
+  public getParent(): ArenaCursorAncestor {
     return { node: this.parent, offset: this.getIndex() };
   }
 
@@ -75,10 +72,7 @@ export default abstract class AbstractNode<TArena extends AnyArena> {
     return undefined;
   }
 
-  public remove(): ArenaCursorAncestor | undefined {
-    if (!this.parent) {
-      return undefined;
-    }
+  public remove(): ArenaCursorAncestor {
     return this.parent.removeChild(this.getIndex());
   }
 

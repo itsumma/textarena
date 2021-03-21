@@ -14,7 +14,8 @@ export default class ArenaFactory {
   }
 
   static createChild(arenaOptions: ArenaOptionsChild): ChildArena | ArenaInlineInterface {
-    if ('allowedArenas' in arenaOptions) {
+    if ('allowedArenas' in arenaOptions
+      || 'protectedChildren' in arenaOptions) {
       return new ArenaMediator(arenaOptions);
     }
     if (arenaOptions.single) {

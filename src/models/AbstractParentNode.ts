@@ -250,7 +250,7 @@ export default abstract class AbstractParentNode<
             prev.children.length,
           );
         } else if (child.children.length !== 0) {
-          break;
+          continue;
         }
         this.children.splice(i, 1);
         if (i >= newIndex) {
@@ -280,5 +280,6 @@ export default abstract class AbstractParentNode<
 
   public removeChildren(start: number, length?: number): void {
     this.cutChildren(start, length);
+    this.mergeChildren(start);
   }
 }

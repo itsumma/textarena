@@ -104,7 +104,7 @@ const calloutPlugin = (opts?: typeof defaultOptions): ArenaPlugin => ({
           'slot=title',
         ],
         hasText: true,
-        nextArena: calloutBodyContainer,
+        nextArena: paragraph,
       },
       [
         {

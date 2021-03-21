@@ -6,13 +6,13 @@ export default interface ArenaNodeScionPart {
 
   readonly parent: ParentArenaNode;
 
-  remove(): ArenaCursorAncestor | undefined
+  remove(): ArenaCursorAncestor
 
   getIndex(): number;
 
   isLastChild(): boolean;
 
-  getParent(): ArenaCursorAncestor | undefined;
+  getParent(): ArenaCursorAncestor;
 
   setParent(parent: ParentArenaNode): void;
 

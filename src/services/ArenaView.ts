@@ -1,6 +1,6 @@
 import { render } from 'lit-html';
 import ArenaSelection from '../helpers/ArenaSelection';
-import ArenaNodeText from '../interfaces/ArenaNodeText';
+import { ArenaNodeText } from '../interfaces/ArenaNode';
 import ArenaServiceManager from './ArenaServiceManager';
 
 export default class ArenaView {
@@ -48,6 +48,16 @@ export default class ArenaView {
         const [anchorNode, anchorOffset] = startResult;
         const [focusNode, focusOffset] = endResult;
         s.setBaseAndExtent(anchorNode, anchorOffset, focusNode, focusOffset);
+        setTimeout(() => {
+          try {
+            (focusNode as HTMLElement)?.scrollIntoView({
+              block: 'nearest',
+              behavior: 'smooth',
+            });
+          } catch (e) {
+            //
+          }
+        }, 100);
       }
     }
     return this;
