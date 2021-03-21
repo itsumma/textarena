@@ -19,7 +19,6 @@ import ArenaOptionsChild from '../interfaces/ArenaOptions';
 import NodeFactory from '../models/NodeFactory';
 
 import ArenaServiceManager from './ArenaServiceManager';
-import ArenaText from '../arenas/ArenaText';
 
 type ArenaMark = {
   attributes: string[],

@@ -4,7 +4,7 @@ import ElementHelper from '../helpers/ElementHelper';
 import CreatorBarOptions from '../interfaces/CreatorBarOptions';
 import CreatorOptions from '../interfaces/CreatorOptions';
 import ArenaServiceManager from './ArenaServiceManager';
-import ArenaNodeText from '../interfaces/ArenaNodeText';
+import { ArenaNodeText } from '../interfaces/ArenaNode';
 
 type Creator = {
   elem: ElementHelper;

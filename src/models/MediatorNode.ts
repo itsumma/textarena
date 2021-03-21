@@ -1,7 +1,7 @@
 import AbstractParentNode from './AbstractParentNode';
 // import NodeFactory from './NodeFactory';
 import { ArenaMediatorInterface } from '../interfaces/Arena';
-import { ArenaNodeMediator, ChildArenaNode, ParentArenaNode } from '../interfaces/ArenaNode';
+import { ArenaNodeMediator, ChildArenaNode } from '../interfaces/ArenaNode';
 
 // TODO сделать вариант когда у нас фиксированное количество дочерних нод,
 // например callout (title, paragraph)

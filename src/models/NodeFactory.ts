@@ -6,7 +6,7 @@ import {
   ArenaInlineInterface, ArenaRootInterface, ChildArena,
 } from '../interfaces/Arena';
 import {
-  ArenaNodeInline, ArenaNodeRoot, ChildArenaNode, ParentArenaNode,
+  ArenaNodeInline, ArenaNodeRoot, ChildArenaNode,
 } from '../interfaces/ArenaNode';
 import InlineNode from './InlineNode';
 

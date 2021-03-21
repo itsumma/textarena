@@ -1,4 +1,4 @@
-import ArenaNodeInline from '../interfaces/ArenaNodeInline';
+import { ArenaNodeInline } from '../interfaces/ArenaNode';
 
 type Interval = {
   node: ArenaNodeInline,

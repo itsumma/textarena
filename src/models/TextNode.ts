@@ -1,11 +1,11 @@
 import { TemplateResult, html } from 'lit-html';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html';
 import RichTextManager from '../helpers/RichTextManager';
-import { ArenaInlineInterface, ArenaTextInterface, ChildArena } from '../interfaces/Arena';
+import { ArenaInlineInterface, ArenaTextInterface } from '../interfaces/Arena';
 import ArenaCursorText from '../interfaces/ArenaCursorText';
 import ArenaFormating, { ArenaFormatings } from '../interfaces/ArenaFormating';
 import {
-  ArenaNodeInline, ArenaNodeText, ChildArenaNode, ParentArenaNode,
+  ArenaNodeInline, ArenaNodeText,
 } from '../interfaces/ArenaNode';
 import AbstractNode from './AbstractNode';
 

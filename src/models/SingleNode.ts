@@ -3,8 +3,8 @@ import ArenaCursorText from '../interfaces/ArenaCursorText';
 import RichTextManager from '../helpers/RichTextManager';
 import { ArenaFormatings } from '../interfaces/ArenaFormating';
 import AbstractNode from './AbstractNode';
-import { ArenaSingleInterface, ChildArena } from '../interfaces/Arena';
-import { ArenaNodeSingle, ChildArenaNode, ParentArenaNode } from '../interfaces/ArenaNode';
+import { ArenaSingleInterface } from '../interfaces/Arena';
+import { ArenaNodeSingle } from '../interfaces/ArenaNode';
 
 export default class SingleNode
   extends AbstractNode<ArenaSingleInterface>

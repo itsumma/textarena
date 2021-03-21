@@ -1,10 +1,7 @@
 import { TemplateResult } from 'lit-html';
 import RichTextManager from '../../helpers/RichTextManager';
-import ArenaCursorChild from '../ArenaCursorChild';
 import ArenaCursorText from '../ArenaCursorText';
 import { ArenaFormatings } from '../ArenaFormating';
-// import { ChildArena } from '../Arena';
-import { ChildArenaNode } from '../ArenaNode';
 
 export default interface ArenaNodeCorePart<T> {
   readonly hasParent: boolean;
