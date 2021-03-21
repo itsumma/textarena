@@ -1,7 +1,7 @@
 import { TemplateResult } from 'lit-html';
 import { ArenaFormatings } from '../interfaces/ArenaFormating';
 import ArenaNodeInline from '../interfaces/ArenaNodeInline';
-import ArenaInline from '../interfaces/ArenaInline';
+import ArenaInline from '../interfaces/arena/ArenaInline';
 
 export default class InlineNode implements ArenaNodeInline {
   readonly hasParent: true = true;

@@ -4,8 +4,8 @@ import {
 import Textarena from '../Textarena';
 import ArenaSelection from '../helpers/ArenaSelection';
 import ArenaPlugin from '../interfaces/ArenaPlugin';
-import ArenaAncestor from '../interfaces/ArenaAncestor';
-import ArenaWithText from '../interfaces/ArenaWithText';
+import ArenaAncestor from '../interfaces/arena/ArenaAncestor';
+import ArenaWithText from '../interfaces/arena/ArenaWithText';
 import ArenaNodeText from '../interfaces/ArenaNodeText';
 
 // This decorator defines the element.
@@ -104,8 +104,7 @@ const calloutPlugin = (opts?: typeof defaultOptions): ArenaPlugin => ({
         attributes: [
           'slot=title',
         ],
-        allowText: true,
-        allowFormating: true,
+        hasText: true,
         nextArena: calloutBodyContainer as ArenaAncestor,
       },
       [
@@ -145,7 +144,7 @@ const calloutPlugin = (opts?: typeof defaultOptions): ArenaPlugin => ({
     textarena.registerCommand(
       command,
       (ta: Textarena, selection: ArenaSelection) => {
-        const sel = ta.wrapSelected(selection, arena);
+        const sel = ta.applyArenaToSelection(selection, arena);
         return sel;
       },
     );

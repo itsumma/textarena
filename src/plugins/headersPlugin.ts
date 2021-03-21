@@ -1,7 +1,7 @@
 import Textarena from '../Textarena';
 import ArenaSelection from '../helpers/ArenaSelection';
 import ArenaPlugin from '../interfaces/ArenaPlugin';
-import ArenaWithText from '../interfaces/ArenaWithText';
+import ArenaWithText from '../interfaces/arena/ArenaWithText';
 import ArenaNode from '../interfaces/ArenaNode';
 import ArenaNodeText from '../interfaces/ArenaNodeText';
 
@@ -32,8 +32,7 @@ const headersPlugin = (opts?: ListsOptions): ArenaPlugin => ({
             name: `header${number}`,
             tag: `H${number}`,
             attributes: [],
-            allowText: true,
-            allowFormating: false,
+            hasText: true,
             nextArena: paragraph as ArenaWithText,
           },
           [
@@ -47,7 +46,7 @@ const headersPlugin = (opts?: ListsOptions): ArenaPlugin => ({
         textarena.registerCommand(
           `convert-to-header${number}`,
           (ta: Textarena, selection: ArenaSelection) =>
-            ta.transformModel(selection, arena as ArenaWithText),
+            ta.applyArenaToSelection(selection, arena as ArenaWithText),
         );
         textarena.registerShortcut(
           `Alt + Digit${number}`,

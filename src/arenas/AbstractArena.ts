@@ -1,6 +1,5 @@
 import { TemplateResult, defaultTemplateProcessor } from 'lit-html';
 import ArenaOptions from '../interfaces/ArenaOptions';
-import ArenaNode from '../interfaces/ArenaNode';
 
 export default abstract class AbstractArena {
   readonly name: string;
@@ -11,10 +10,6 @@ export default abstract class AbstractArena {
 
   readonly allowedAttributes: string[] = [];
 
-  readonly automerge: boolean = false;
-
-  readonly initCallback: ((node: ArenaNode) => ArenaNode) | undefined;
-
   constructor(options: ArenaOptions) {
     this.name = options.name;
     this.tag = options.tag;
@@ -22,10 +17,6 @@ export default abstract class AbstractArena {
     if (options.allowedAttributes) {
       this.allowedAttributes = options.allowedAttributes;
     }
-    if (options.automerge) {
-      this.automerge = true;
-    }
-    this.initCallback = options.init;
   }
 
   protected getAttributesString(id: string, attributes: { [key: string] :string }): string {
@@ -83,12 +74,5 @@ export default abstract class AbstractArena {
     const tag = this.tag.toLowerCase();
     const content = children ? `\n${children}\n` : '';
     return `${tab}<${tag.toLowerCase()}${attrs}>${content}${tab}</${tag.toLowerCase()}>`;
-  }
-
-  public init(node: ArenaNode): ArenaNode {
-    if (this.initCallback) {
-      return this.initCallback(node);
-    }
-    return node;
   }
 }

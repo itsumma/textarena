@@ -4,7 +4,7 @@ import {
 import Textarena from '../Textarena';
 import ArenaPlugin from '../interfaces/ArenaPlugin';
 import ArenaSelection from '../helpers/ArenaSelection';
-import ArenaInline from '../interfaces/ArenaInline';
+import ArenaInline from '../interfaces/arena/ArenaInline';
 
 @customElement('arena-link')
 export class Link extends LitElement {

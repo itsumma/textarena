@@ -1,28 +1,36 @@
 import { TemplateResult, html } from 'lit-html';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html';
-import Arena from '../interfaces/Arena';
-import ArenaNodeText from '../interfaces/ArenaNodeText';
+import AnyArena from '../interfaces/arena/AnyArena';
 import RichTextManager from '../helpers/RichTextManager';
-import ArenaNodeAncestor from '../interfaces/ArenaNodeAncestor';
-import ArenaNodeScion from '../interfaces/ArenaNodeScion';
 import ArenaCursor from '../interfaces/ArenaCursor';
 import ArenaCursorAncestor from '../interfaces/ArenaCursorAncestor';
-import ArenaWithText from '../interfaces/ArenaWithText';
+import ArenaWithText from '../interfaces/arena/ArenaWithText';
 import ArenaFormating, { ArenaFormatings } from '../interfaces/ArenaFormating';
 import ArenaNodeInline from '../interfaces/ArenaNodeInline';
-import ArenaInline from '../interfaces/ArenaInline';
+import ArenaInline from '../interfaces/arena/ArenaInline';
+import AbstractNode from './AbstractNode';
+import { ArenaNodeParent, ArenaNodeText } from '../interfaces/ArenaNode';
 
-export default class RichNode implements ArenaNodeText {
+export default class RichNode
+  extends AbstractNode<ArenaWithText>
+  implements ArenaNodeText {
   readonly hasParent: true = true;
 
   readonly hasText: true = true;
 
-  private richTextManager = new RichTextManager();
+  private richTextManager;
 
   constructor(
-    public arena: ArenaWithText,
-    public parent: ArenaNodeAncestor,
+    arena: ArenaWithText,
+    public parent: ArenaNodeParent,
+    text?: string | RichTextManager,
   ) {
+    super(arena);
+    if (text && text instanceof RichTextManager) {
+      this.richTextManager = text.clone();
+    } else {
+      this.richTextManager = new RichTextManager();
+    }
   }
 
   public getIndex(): number {
@@ -63,7 +71,7 @@ export default class RichNode implements ArenaNodeText {
     };
   }
 
-  public createAndInsertNode(arena: Arena): ArenaNodeScion | ArenaNodeText | undefined {
+  public createAndInsertNode(arena: AnyArena): ArenaNodeScion | ArenaNodeText | undefined {
     return this.parent.createAndInsertNode(arena, this.getIndex() + 1);
   }
 
@@ -160,13 +168,6 @@ export default class RichNode implements ArenaNodeText {
     this.richTextManager.updateInlineNode(node, start, end);
   }
 
-  public setAttribute(name: string, value: string): void {
-    this.attributes[name] = value;
-  }
 
-  public getAttribute(name: string): string {
-    return this.attributes[name] || '';
-  }
 
-  protected attributes: { [key: string] :string } = {};
 }

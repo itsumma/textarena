@@ -9,6 +9,10 @@ type Interval = {
 export default class InlineIntervaler {
   private intervals: Interval[] = [];
 
+  constructor(intervals?: Interval[]) {
+    this.intervals = intervals || [];
+  }
+
   getIntervals(): Interval[] {
     return this.intervals;
   }
@@ -251,5 +255,11 @@ export default class InlineIntervaler {
       }
     }
     return false;
+  }
+
+  clone(): InlineIntervaler {
+    return new InlineIntervaler(
+      this.intervals.map((interval) => ({ ...interval })),
+    );
   }
 }

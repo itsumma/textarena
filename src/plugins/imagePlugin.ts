@@ -4,7 +4,7 @@ import {
 import Textarena from '../Textarena';
 import ArenaSelection from '../helpers/ArenaSelection';
 import ArenaPlugin from '../interfaces/ArenaPlugin';
-import ArenaWithText from '../interfaces/ArenaWithText';
+import ArenaWithText from '../interfaces/arena/ArenaWithText';
 import ArenaNodeText from '../interfaces/ArenaNodeText';
 
 // This decorator defines the element.
@@ -184,8 +184,7 @@ const imagePlugin = (opts?: typeof defaultOptions): ArenaPlugin => ({
         attributes: [
           'slot=image-caption',
         ],
-        allowText: true,
-        allowFormating: true,
+        hasText: true,
         nextArena: paragraph,
       },
       [
@@ -219,7 +218,7 @@ const imagePlugin = (opts?: typeof defaultOptions): ArenaPlugin => ({
     textarena.registerCommand(
       command,
       (ta: Textarena, selection: ArenaSelection) => {
-        const sel = ta.insertInsteadOfSelected(selection, arena);
+        const sel = ta.insertBeforeSelected(selection, arena);
         return sel;
       },
     );

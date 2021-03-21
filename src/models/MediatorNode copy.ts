@@ -6,34 +6,28 @@ import ArenaAncestor from '../interfaces/arena/ArenaAncestor';
 import ArenaCursor from '../interfaces/ArenaCursor';
 import ArenaCursorAncestor from '../interfaces/ArenaCursorAncestor';
 import { ArenaFormatings } from '../interfaces/ArenaFormating';
-import ArenaNode, { ArenaNodeChild, ArenaNodeMediator, ArenaNodeParent } from '../interfaces/ArenaNode';
+import ArenaNodeAncestor from '../interfaces/ArenaNodeAncestor';
+import ArenaNodeScion from '../interfaces/ArenaNodeScion';
+import ArenaNodeText from '../interfaces/ArenaNodeText';
+import ArenaNode from '../interfaces/ArenaNode';
 import RichTextManager from '../helpers/RichTextManager';
 import NodeFactory from './NodeFactory';
-import AbstractParentNode from './AbstractParentNode';
 
 // TODO сделать вариант когда у нас фиксированное количество дочерних нод,
 // например callout (title, paragraph)
 // или quote (title, section).
 
-export default class MediatorNode
-  extends AbstractParentNode<ArenaAncestor>
-  implements ArenaNodeMediator {
-  readonly root: false = false;
-
+export default class MediatorNode implements ArenaNodeScion, ArenaNodeAncestor {
   readonly hasParent: true = true;
 
-  readonly hasText: false = false;
+  readonly hasChildren: true = true;
 
-  readonly inline: false = false;
-
-  readonly single: false = false;
+  public children: (ArenaNode & ArenaNodeScion)[] = [];
 
   constructor(
-    arena: ArenaAncestor,
-    public parent: ArenaNodeParent,
-    children?: ArenaNodeChild[],
+    public arena: ArenaAncestor,
+    public parent: ArenaNodeAncestor,
   ) {
-    super(arena, children);
     if (arena.protected) {
       this.children = arena.protectedChildren.map(
         (childArena) => NodeFactory.createNode(childArena, this),
@@ -57,7 +51,7 @@ export default class MediatorNode
     return { node: this.parent, offset: this.getIndex() };
   }
 
-  public setParent(parent: ArenaNodeParent): void {
+  public setParent(parent: ArenaNodeAncestor | (ArenaNodeAncestor & ArenaNodeScion)): void {
     this.parent = parent;
   }
 
@@ -230,10 +224,39 @@ export default class MediatorNode
     return this.parent.removeChild(this.getIndex());
   }
 
-  public clone(): ArenaNodeMediator {
-    return new MediatorNode(
-      this.arena,
-      this.children.map((child) => child.clone()),
-    );
+  public mergeChildren(index: number): ArenaCursorAncestor {
+    let newIndex = index;
+    for (let i = 1; i < this.children.length; i += 1) {
+      const child = this.children[i];
+      const prev = this.children[i - 1];
+      if (child.arena.hasChildren && child.arena.automerge && child.children.length === 0) {
+        this.children.splice(i, 1);
+        if (i >= newIndex) {
+          newIndex -= 1;
+        }
+        i -= 1;
+      } else if (child.arena.hasChildren && child.arena.automerge && child.arena === prev.arena) {
+        (prev as unknown as ArenaNodeAncestor).insertChildren(
+          (child as unknown as ArenaNodeAncestor).children,
+          prev.children.length,
+        );
+        this.children.splice(i, 1);
+        if (i >= newIndex) {
+          newIndex -= 1;
+        }
+        i -= 1;
+      }
+    }
+    return { node: this, offset: newIndex };
   }
+
+  public setAttribute(name: string, value: string): void {
+    this.attributes[name] = value;
+  }
+
+  public getAttribute(name: string): string {
+    return this.attributes[name] || '';
+  }
+
+  protected attributes: { [key: string] :string } = {};
 }

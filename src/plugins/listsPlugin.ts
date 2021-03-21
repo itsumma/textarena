@@ -2,10 +2,10 @@ import Textarena from '../Textarena';
 import ArenaSelection from '../helpers/ArenaSelection';
 import ArenaPlugin from '../interfaces/ArenaPlugin';
 import ArenaCursor from '../interfaces/ArenaCursor';
-import ArenaWithText from '../interfaces/ArenaWithText';
+import ArenaWithText from '../interfaces/arena/ArenaWithText';
 import ArenaNode from '../interfaces/ArenaNode';
 import ArenaNodeText from '../interfaces/ArenaNodeText';
-import ArenaAncestor from '../interfaces/ArenaAncestor';
+import ArenaAncestor from '../interfaces/arena/ArenaAncestor';
 
 type ListOptions = {
   name: string,
@@ -55,7 +55,7 @@ const defaultOptions: ListsOptions = {
       shortcut: 'Alt + KeyO',
       command: 'convert-to-ordered-list',
       hint: 'o',
-      pattern: /^\d+\.|\)\s+(.*)$/,
+      pattern: /^\d+(?:\.|\))\s+(.*)$/,
     },
   ],
 };
@@ -73,8 +73,7 @@ const listsPlugin = (opts?: ListsOptions): ArenaPlugin => ({
     const li = textarena.registerArena(
       {
         ...item,
-        allowText: true,
-        allowFormating: true,
+        hasText: true,
         nextArena: undefined,
       },
       [
@@ -104,6 +103,7 @@ const listsPlugin = (opts?: ListsOptions): ArenaPlugin => ({
           arenaForText: li as ArenaWithText,
           hasChildren: true,
           automerge: true,
+          group: true,
         },
         [
           {
@@ -115,7 +115,8 @@ const listsPlugin = (opts?: ListsOptions): ArenaPlugin => ({
       ) as ArenaAncestor;
       textarena.registerCommand(
         command,
-        (ta: Textarena, selection: ArenaSelection) => ta.wrapSelected(selection, listArena),
+        (ta: Textarena, selection: ArenaSelection) =>
+          ta.applyArenaToSelection(selection, listArena),
       );
       textarena.registerShortcut(
         shortcut,

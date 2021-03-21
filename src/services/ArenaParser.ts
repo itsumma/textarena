@@ -1,4 +1,4 @@
-import Arena from '../interfaces/Arena';
+import AnyArena from '../interfaces/arena/AnyArena';
 import ArenaFormating from '../interfaces/ArenaFormating';
 import ArenaNode from '../interfaces/ArenaNode';
 import ArenaNodeText from '../interfaces/ArenaNodeText';
@@ -130,7 +130,7 @@ export default class ArenaParser {
     return [arenaNode, offset, false];
   }
 
-  private checkArenaMark(node: HTMLElement): Arena | undefined {
+  private checkArenaMark(node: HTMLElement): AnyArena | undefined {
     const marks = this.asm.model.getArenaMarks(node.tagName);
     if (marks) {
       for (let i = 0; i < marks.length; i += 1) {
@@ -188,7 +188,7 @@ export default class ArenaParser {
         const elementNode = childNode as HTMLElement;
         const newFormatings = this.getText(elementNode);
         const arena = this.checkArenaMark(elementNode);
-        if (arena && 'inline' in arena) {
+        if (arena?.inline) {
           const inlineNode = newFormatings.addInlineNode(arena, 0, newFormatings.getTextLength());
           if (inlineNode) {
             elementNode.getAttributeNames().forEach((attr) => {

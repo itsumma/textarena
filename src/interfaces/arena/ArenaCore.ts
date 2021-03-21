@@ -1,16 +1,16 @@
 import { TemplateResult } from 'lit-html';
-import ArenaNode from './ArenaNode';
 
 interface ArenaCore {
   readonly name: string;
-
   readonly tag: string;
-
   readonly attributes: string[];
-
   readonly allowedAttributes: string[];
 
-  automerge: boolean;
+  readonly hasParent: boolean;
+  readonly hasChildren: boolean;
+  readonly hasText: boolean;
+  readonly inline: boolean;
+  readonly single: boolean;
 
   getTemplate(
     children: TemplateResult | string | undefined,
@@ -23,8 +23,6 @@ interface ArenaCore {
     deep: number,
     attributes: { [key: string] :string },
   ): string;
-
-  init(node: ArenaNode): ArenaNode;
 }
 
 export default ArenaCore;

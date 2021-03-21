@@ -1,7 +1,7 @@
-import ArenaNodeAncestor from './ArenaNodeAncestor';
+import ArenaNodeAncestorPart from './ArenaNodeAncestorPart';
 
 export type ArenaCursorAncestor = {
-  node: ArenaNodeAncestor;
+  node: ArenaNodeAncestorPart;
   offset: number;
 };
 

@@ -1,11 +1,15 @@
 import { TemplateResult } from 'lit-html';
-import Arena from './Arena';
+import ArenaInline from './arena/ArenaInline';
 import { ArenaFormatings } from './ArenaFormating';
 
 export default interface ArenaNodeInline {
-  inline: true;
+  readonly arena: ArenaInline;
 
-  readonly arena: Arena;
+  readonly hasParent: false;
+  readonly hasChildren: false;
+  readonly hasText: false;
+  readonly inline: true;
+  readonly single: false;
 
   getHtml(model: ArenaFormatings): TemplateResult | string;
 
@@ -13,9 +17,9 @@ export default interface ArenaNodeInline {
 
   getTags(): [string, string];
 
-  setAttribute(name: string, value: string): void;
-
   getAttribute(name: string): string;
+
+  setAttribute(name: string, value: string): void;
 
   clone(): ArenaNodeInline;
 }

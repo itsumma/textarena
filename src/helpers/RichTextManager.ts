@@ -1,6 +1,6 @@
 /* eslint-disable no-lonely-if */
 import ArenaFormating, { ArenaFormatings } from '../interfaces/ArenaFormating';
-import ArenaInline from '../interfaces/ArenaInline';
+import ArenaInline from '../interfaces/arena/ArenaInline';
 import ArenaNodeInline from '../interfaces/ArenaNodeInline';
 import InlineNode from '../models/InlineNode';
 import Intervaler from './Intervaler';
@@ -259,6 +259,17 @@ export default class RichTextManager {
 
   public updateInlineNode(node: ArenaNodeInline, start: number, end: number): void {
     this.inlines.updateNode(node, start, end);
+  }
+
+  clone(): RichTextManager {
+    const formatings = Object.fromEntries(Object
+      .entries(this.formatings)
+      .map(([name, intervaler]) => [name, intervaler.clone()]));
+    return new RichTextManager(
+      this.text,
+      formatings,
+      this.inlines.clone(),
+    );
   }
 
   protected inlines: InlineIntervaler;

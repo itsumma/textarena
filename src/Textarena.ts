@@ -1,14 +1,14 @@
 import ArenaSelection from './helpers/ArenaSelection';
 import ElementHelper from './helpers/ElementHelper';
 
-import Arena from './interfaces/Arena';
-import ArenaAncestor from './interfaces/ArenaAncestor';
+import AnyArena from './interfaces/arena/AnyArena';
+import ArenaAncestor from './interfaces/arena/ArenaAncestor';
 import ArenaFormating, { TagAndAttributes } from './interfaces/ArenaFormating';
-import ArenaInline from './interfaces/ArenaInline';
+import ArenaInline from './interfaces/arena/ArenaInline';
 import ArenaNodeInline from './interfaces/ArenaNodeInline';
-import ArenaOptions from './interfaces/ArenaOptions';
+import ArenaOptionsChild from './interfaces/ArenaOptions';
 import ArenaPlugin from './interfaces/ArenaPlugin';
-import ArenaWithText from './interfaces/ArenaWithText';
+import ArenaWithText from './interfaces/arena/ArenaWithText';
 import ChangeDataListener from './interfaces/ChangeHandler';
 import CommandAction from './interfaces/CommandAction';
 import CreatorBarOptions from './interfaces/CreatorBarOptions';
@@ -19,6 +19,7 @@ import TextarenaOptions from './interfaces/TextarenaOptions';
 import ToolbarOptions from './interfaces/ToolbarOptions';
 import ToolOptions from './interfaces/ToolOptions';
 
+import blockquotePlugin from './plugins/blockquotePlugin';
 import calloutPlugin from './plugins/calloutPlugin';
 import commonPlugin from './plugins/commonPlugin';
 import formatingsPlugin from './plugins/formatingsPlugin';
@@ -49,6 +50,7 @@ const defaultOptions: TextarenaOptions = {
       'header2',
       'header3',
       'header4',
+      'blockquote',
       'link',
     ],
   },
@@ -73,6 +75,7 @@ const defaultOptions: TextarenaOptions = {
     headersPlugin(),
     hrPlugin(),
     listsPlugin(),
+    blockquotePlugin(),
     calloutPlugin(),
     imagePlugin(),
     linkPlugin(),
@@ -208,13 +211,13 @@ class Textarena {
     return this.asm.model.rootArenaName;
   }
 
-  protected simpleArenas: Arena[] = [];
+  protected simpleArenas: AnyArena[] = [];
 
-  public getSimpleArenas(): Arena[] {
+  public getSimpleArenas(): AnyArena[] {
     return this.simpleArenas;
   }
 
-  public addSimpleArenas(arena: Arena): void {
+  public addSimpleArenas(arena: AnyArena): void {
     this.simpleArenas.push(arena);
   }
 
@@ -227,10 +230,10 @@ class Textarena {
   }
 
   public registerArena(
-    arenaOptions: ArenaOptions,
+    arenaOptions: ArenaOptionsChild,
     markers?: TagAndAttributes[],
     parentArenas?: string[],
-  ): Arena {
+  ): AnyArena {
     return this.asm.model.registerArena(
       arenaOptions,
       markers,
@@ -267,28 +270,30 @@ class Textarena {
     this.asm.creatorBar.registerCreator(opts);
   }
 
-  public transformModel(selection: ArenaSelection, arena: ArenaWithText): ArenaSelection {
-    return this.asm.model.transformModel(selection, arena);
+  public applyArenaToSelection(
+    selection: ArenaSelection,
+    arena: ArenaAncestor | ArenaWithText,
+  ): ArenaSelection {
+    return this.asm.model.applyArenaToSelection(selection, arena);
   }
 
-  public wrapSelected(selection: ArenaSelection, arena: ArenaAncestor): ArenaSelection {
-    return selection;
+  public applyFormationToSelection(
+    selection: ArenaSelection,
+    formating: ArenaFormating,
+  ): ArenaSelection {
+    return this.asm.model.applyFormationToSelection(selection, formating);
   }
 
   public unwrapSelected(selection: ArenaSelection, arena: ArenaAncestor): ArenaSelection {
     return selection;
   }
 
-  public toggleWrapSelected(selection: ArenaSelection, arena: ArenaAncestor): ArenaSelection {
+  public insertInsteadOfSelected(selection: ArenaSelection, arena: AnyArena): ArenaSelection {
     return selection;
   }
 
-  public insertInsteadOfSelected(selection: ArenaSelection, arena: Arena): ArenaSelection {
-    return selection;
-  }
-
-  public insertBeforeSelected(selection: ArenaSelection, arena: Arena): ArenaSelection {
-    return selection;
+  public insertBeforeSelected(selection: ArenaSelection, arena: AnyArena): ArenaSelection {
+    return this.asm.model.insertBeforeSelected(selection, arena);
   }
 
   public breakSelection(selection: ArenaSelection): ArenaSelection {
@@ -297,10 +302,6 @@ class Textarena {
 
   public moveChild(selection: ArenaSelection, direction: 'up' | 'down'): ArenaSelection {
     return this.asm.model.moveChild(selection, direction);
-  }
-
-  public formatingModel(selection: ArenaSelection, formating: ArenaFormating): ArenaSelection {
-    return this.asm.model.formatingModel(selection, formating);
   }
 
   public addInlineNode(selection: ArenaSelection, arena: ArenaInline): ArenaNodeInline | undefined {

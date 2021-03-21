@@ -1,20 +1,30 @@
 import RichTextManager from '../helpers/RichTextManager';
-import ArenaNodeScion from './ArenaNodeScion';
-import ArenaWithText from './ArenaWithText';
-import ArenaInline from './ArenaInline';
+import ArenaWithText from './arena/ArenaWithText';
+import ArenaInline from './arena/ArenaInline';
 import ArenaNodeInline from './ArenaNodeInline';
 import ArenaFormating from './ArenaFormating';
+import ArenaCursor from './ArenaCursor';
 
-export default interface ArenaNodeText extends ArenaNodeScion {
-  hasText: true;
-
+export default interface ArenaNodeTextPart {
   readonly arena: ArenaWithText;
 
-  removeText(start: number, end?: number): void;
+  readonly hasParent: true;
+  readonly hasChildren: false;
+  readonly hasText: true;
+  readonly inline: false;
+  readonly single: false;
 
   getText(): RichTextManager;
 
   getRawText(): string;
+
+  insertText(
+    text: string | RichTextManager,
+    offset: number,
+    keepFormatings?: boolean,
+  ): ArenaCursor;
+
+  removeText(start: number, end?: number): void;
 
   cutText(start: number, end?: number): RichTextManager;
 

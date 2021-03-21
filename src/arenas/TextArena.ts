@@ -1,27 +1,33 @@
-import { Middleware } from '../interfaces/Arena';
-import ArenaAncestor from '../interfaces/ArenaAncestor';
 import { ArenaOptionsWithText } from '../interfaces/ArenaOptions';
-import ArenaWithText from '../interfaces/ArenaWithText';
+import ArenaAncestor from '../interfaces/arena/ArenaAncestor';
+import ArenaMiddleware from '../interfaces/ArenaMiddleware';
+import ArenaWithText from '../interfaces/arena/ArenaWithText';
+
 import AbstractArena from './AbstractArena';
 
 export default class TextArena
   extends AbstractArena
   implements ArenaWithText {
-  readonly allowText = true;
+  readonly hasParent: true = true;
+
+  readonly hasChildren: false = false;
+
+  readonly hasText: true = true;
+
+  readonly inline: false = false;
+
+  readonly single: false = false;
 
   readonly nextArena: ArenaWithText | ArenaAncestor | undefined;
 
-  readonly allowFormating: boolean;
-
-  middlewares: Middleware[] = [];
+  middlewares: ArenaMiddleware[] = [];
 
   constructor(options: ArenaOptionsWithText) {
     super(options);
-    this.allowFormating = options.allowFormating;
     this.nextArena = options.nextArena;
   }
 
-  registerMiddleware(middleware: Middleware): void {
+  registerMiddleware(middleware: ArenaMiddleware): void {
     this.middlewares.push(middleware);
   }
 }
