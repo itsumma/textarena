@@ -32,6 +32,7 @@ import paragraphPlugin from './plugins/paragraphPlugin';
 import ArenaCommandManager from './services/ArenaCommandManager';
 import ArenaServiceManager from './services/ArenaServiceManager';
 import examplePlugin from './plugins/examplePlugin';
+import collapsePlugin from './plugins/collapse-plugin';
 
 const defaultOptions: TextarenaOptions = {
   editable: true,
@@ -64,6 +65,7 @@ const defaultOptions: TextarenaOptions = {
       'callout',
       'image',
       'exampleRecomendation',
+      'collapse',
     ],
   },
   plugins: [
@@ -77,6 +79,7 @@ const defaultOptions: TextarenaOptions = {
     imagePlugin(),
     linkPlugin(),
     examplePlugin(),
+    collapsePlugin(),
   ],
 };
 

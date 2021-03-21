@@ -67,6 +67,7 @@ const paragraphPlugin = (opts?: ParagraphOptions): ArenaPlugin => ({
       checkStatus: (node: ArenaNode):
         boolean => node.arena === arena,
     });
+    textarena.addSimpleArenas(arena);
   },
 });
 
