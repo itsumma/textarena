@@ -4,8 +4,8 @@ import {
 import Textarena from '../Textarena';
 import ArenaSelection from '../helpers/ArenaSelection';
 import ArenaPlugin from '../interfaces/ArenaPlugin';
-import ArenaWithText from '../interfaces/ArenaWithText';
-import ArenaNodeText from '../interfaces/ArenaNodeText';
+import { ArenaMediatorInterface, ArenaTextInterface } from '../interfaces/Arena';
+import { ArenaNodeText } from '../interfaces/ArenaNode';
 
 // This decorator defines the element.
 
@@ -185,8 +185,7 @@ const imagePlugin = (opts?: typeof defaultOptions): ArenaPlugin => ({
         attributes: [
           'slot=image-caption',
         ],
-        allowText: true,
-        allowFormating: true,
+        hasText: true,
         nextArena: paragraph,
       },
       [
@@ -198,7 +197,7 @@ const imagePlugin = (opts?: typeof defaultOptions): ArenaPlugin => ({
         },
       ],
       [],
-    );
+    ) as ArenaTextInterface;
     const arena = textarena.registerArena(
       {
         name,
@@ -209,18 +208,18 @@ const imagePlugin = (opts?: typeof defaultOptions): ArenaPlugin => ({
         protectedChildren: [
           imageCaptionParagraph,
         ],
-        arenaForText: imageCaptionParagraph as ArenaWithText,
+        arenaForText: imageCaptionParagraph,
         allowedArenas: [
           imageCaptionParagraph,
         ],
       },
       marks,
       [textarena.getRootArenaName()],
-    );
+    ) as ArenaMediatorInterface;
     textarena.registerCommand(
       command,
       (ta: Textarena, selection: ArenaSelection) => {
-        const sel = ta.transformModel(selection, arena);
+        const sel = ta.insertBeforeSelected(selection, arena);
         return sel;
       },
     );
@@ -236,7 +235,8 @@ const imagePlugin = (opts?: typeof defaultOptions): ArenaPlugin => ({
       shortcut,
       hint,
       command,
-      canShow: (node: ArenaNodeText) => node.parent.arena.allowedArenas.includes(arena),
+      canShow: (node: ArenaNodeText) =>
+        node.parent.arena.allowedArenas.includes(arena),
     });
   },
 });

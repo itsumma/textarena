@@ -1,11 +1,47 @@
-import ArenaCursor from './ArenaCursor';
-import ArenaSingle from './ArenaSingle';
-import ArenaAncestor from './ArenaAncestor';
-import ArenaWithText from './ArenaWithText';
-import ArenaInline from './ArenaInline';
+import ArenaMiddleware from './ArenaMiddleware';
+import ArenaAncestorCore from './arena/ArenaAncestorCore';
+import ArenaCore from './arena/ArenaCore';
 
-export type Middleware = (cursor: ArenaCursor) => ArenaCursor;
+export interface ArenaRootInterface extends ArenaAncestorCore {
+  readonly root: true;
+  readonly hasParent: false;
+}
 
-type Arena = ArenaInline | ArenaSingle | ArenaAncestor | ArenaWithText;
+export interface ArenaMediatorInterface extends ArenaAncestorCore {
+  readonly root: boolean;
+  readonly hasParent: boolean;
+}
 
-export default Arena;
+export interface ArenaTextInterface extends ArenaCore {
+  readonly hasParent: true;
+  readonly hasChildren: false;
+  readonly hasText: true;
+  readonly inline: false;
+  readonly single: false;
+
+  readonly nextArena: ArenaTextInterface | ArenaMediatorInterface | undefined;
+  middlewares: ArenaMiddleware[];
+  registerMiddleware: (middleware: ArenaMiddleware) => void;
+}
+
+export interface ArenaSingleInterface extends ArenaCore {
+  readonly hasParent: true;
+  readonly hasChildren: false;
+  readonly hasText: false;
+  readonly inline: false;
+  readonly single: true;
+}
+
+export interface ArenaInlineInterface extends ArenaCore {
+  readonly hasParent: false;
+  readonly hasChildren: false;
+  readonly hasText: false;
+  readonly inline: true;
+  readonly single: false;
+}
+
+export type ParentArena = ArenaMediatorInterface | ArenaRootInterface;
+
+export type ChildArena = ArenaMediatorInterface | ArenaSingleInterface | ArenaTextInterface;
+
+export type AnyArena = ArenaRootInterface | ChildArena | ArenaInlineInterface;

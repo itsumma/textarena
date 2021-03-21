@@ -3,8 +3,9 @@ import {
 } from 'lit-element';
 import Textarena from '../Textarena';
 import ArenaPlugin from '../interfaces/ArenaPlugin';
-import ArenaNodeText from '../interfaces/ArenaNodeText';
 import ArenaSelection from '../helpers/ArenaSelection';
+import { ArenaNodeText } from '../interfaces/ArenaNode';
+import { ArenaSingleInterface } from '../interfaces/Arena';
 
 export class Recomendation extends LitElement {
   protected currentPostId = '';
@@ -170,11 +171,11 @@ const examplePlugin = (): ArenaPlugin => ({
         },
       ],
       [ta.getRootArenaName()],
-    );
+    ) as ArenaSingleInterface;
     ta.registerCommand(
       'add-recomendation',
       (someTa: Textarena, selection: ArenaSelection) => {
-        const sel = someTa.transformModel(selection, arena);
+        const sel = someTa.insertBeforeSelected(selection, arena);
         return sel;
       },
     );
@@ -190,7 +191,8 @@ const examplePlugin = (): ArenaPlugin => ({
       shortcut: 'Alt + KeyR',
       hint: 'r',
       command: 'add-recomendation',
-      canShow: (node: ArenaNodeText) => node.parent.arena.allowedArenas.includes(arena),
+      canShow: (node: ArenaNodeText) =>
+        node.parent.arena.allowedArenas.includes(arena),
     });
   },
 });

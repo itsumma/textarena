@@ -1,12 +1,11 @@
-import Arena from '../interfaces/Arena';
 import ArenaFormating from '../interfaces/ArenaFormating';
-import ArenaNode from '../interfaces/ArenaNode';
-import ArenaNodeText from '../interfaces/ArenaNodeText';
-import ArenaNodeScion from '../interfaces/ArenaNodeScion';
 
 import RichTextManager from '../helpers/RichTextManager';
 
 import ArenaServiceManager from './ArenaServiceManager';
+import { AnyArenaNode, ArenaNodeText, ChildArenaNode } from '../interfaces/ArenaNode';
+import { AnyArena } from '../interfaces/Arena';
+import NodeFactory from '../models/NodeFactory';
 
 export default class ArenaParser {
   constructor(protected asm: ArenaServiceManager) {
@@ -26,9 +25,9 @@ export default class ArenaParser {
 
   public insertHtmlToModel(
     htmlString: string,
-    arenaNode: ArenaNode,
+    arenaNode: AnyArenaNode,
     offset: number,
-  ): [ArenaNode, number] {
+  ): [AnyArenaNode, number] {
     const node = document.createElement('DIV');
     node.innerHTML = htmlString;
     return this.insertChildren(node, arenaNode, offset);
@@ -36,9 +35,9 @@ export default class ArenaParser {
 
   private insertChildren(
     node: HTMLElement,
-    arenaNode: ArenaNode,
+    arenaNode: AnyArenaNode,
     offset: number,
-  ): [ArenaNode, number] {
+  ): [AnyArenaNode, number] {
     let currentNode = arenaNode;
     let currentOffset = offset;
     let firstTextNode = true;
@@ -62,50 +61,69 @@ export default class ArenaParser {
     return [currentNode, currentOffset];
   }
 
+  // TODO describe
   private insertChild(
     node: ChildNode,
-    arenaNode: ArenaNode,
+    arenaNode: AnyArenaNode,
     offset: number,
     firstTextNode: boolean,
     // first: boolean,
     // last: boolean,
-  ): [ArenaNode, number, boolean] {
+  ): [AnyArenaNode, number, boolean] {
     // console.log('isert', node, arenaNode);
     if (node.nodeType === Node.TEXT_NODE) {
       const text = this.clearText(
         node.textContent,
         // first,
         // last,
-        !('hasText' in arenaNode),
+        !(arenaNode.hasText),
       );
       if (text.length === 0) {
         return [arenaNode, offset, false];
       }
-      const result = arenaNode.insertText(text, offset);
-      return [result.node, result.offset, true];
+      const cursor = this.asm.model.getOrCreateNodeForText(arenaNode, offset);
+
+      if (cursor) {
+        // TODO do not insert but replace
+        const result = cursor.node.insertText(text, cursor.offset);
+        return [result.node, result.offset, true];
+      }
+      return [arenaNode, offset, false];
     }
     if (node.nodeType === Node.ELEMENT_NODE) {
       const elementNode = node as HTMLElement;
       const arena = this.checkArenaMark(elementNode);
-      if (arena) {
+      if (arena && !arena.inline) {
         // if ('hasText' in arenaNode && firstTextNode) {
         //   const result = this.insertChildren(elementNode, arenaNode, offset);
         //   return [...result, true];
         // }
         // const newArenaNode = arenaNode.createAndInsertNode(arena, offset);
-        let newArenaNode: ArenaNode & (ArenaNodeScion | ArenaNodeText) | undefined;
-        if ('hasText' in arenaNode && firstTextNode && arenaNode.getTextLength() === 0) {
+        let newArenaNode: ChildArenaNode | undefined;
+        if (arenaNode.hasText && firstTextNode && arenaNode.getTextLength() === 0) {
           const cursor = arenaNode.remove();
-          newArenaNode = cursor.node.createAndInsertNode(arena, cursor.offset);
-        } else {
-          newArenaNode = arenaNode.createAndInsertNode(arena, offset);
+          if (cursor) {
+            if (cursor.node.isAllowedNode(arena)) {
+              newArenaNode = NodeFactory.createChildNode(arena);
+              newArenaNode = cursor.node.insertNode(newArenaNode, cursor.offset);
+              // arenaNode.createAndInsertNode(arena, offset);
+            }
+            // newArenaNode = cursor.node.createAndInsertNode(arena, cursor.offset);
+          } else {
+            throw new Error('Arena was not be removed');
+          }
+        } else if (arenaNode.hasChildren && arenaNode.isAllowedNode(arena)) {
+          newArenaNode = NodeFactory.createChildNode(arena);
+          newArenaNode = arenaNode.insertNode(newArenaNode);
+          // arenaNode.createAndInsertNode(arena, offset);
+          // newArenaNode = arenaNode.createAndInsertNode(arena, offset);
         }
         if (newArenaNode) {
           this.setAttributes(newArenaNode, elementNode);
-          if ('hasText' in newArenaNode) {
+          if (newArenaNode.hasText) {
             const formatings = this.getText(elementNode);
             this.asm.logger.log('this is arena for text', formatings);
-            newArenaNode.insertText(formatings, 0);
+            newArenaNode.insertText(formatings, newArenaNode.getTextLength());
             this.clearTextNode(newArenaNode);
           } else {
             this.insertChildren(elementNode, newArenaNode, 0);
@@ -130,7 +148,7 @@ export default class ArenaParser {
     return [arenaNode, offset, false];
   }
 
-  private checkArenaMark(node: HTMLElement): Arena | undefined {
+  private checkArenaMark(node: HTMLElement): AnyArena | undefined {
     const marks = this.asm.model.getArenaMarks(node.tagName);
     if (marks) {
       for (let i = 0; i < marks.length; i += 1) {
@@ -188,7 +206,7 @@ export default class ArenaParser {
         const elementNode = childNode as HTMLElement;
         const newFormatings = this.getText(elementNode);
         const arena = this.checkArenaMark(elementNode);
-        if (arena && 'inline' in arena) {
+        if (arena?.inline) {
           const inlineNode = newFormatings.addInlineNode(arena, 0, newFormatings.getTextLength());
           if (inlineNode) {
             elementNode.getAttributeNames().forEach((attr) => {
@@ -238,13 +256,13 @@ export default class ArenaParser {
     return result;
   }
 
-  protected clearTextNode(newArenaNode: ArenaNodeText): void {
-    newArenaNode.ltrim();
-    newArenaNode.rtrim();
-    newArenaNode.clearSpaces();
+  protected clearTextNode(textNode: ArenaNodeText): void {
+    textNode.ltrim();
+    textNode.rtrim();
+    textNode.clearSpaces();
   }
 
-  protected setAttributes(node: ArenaNode, element: HTMLElement): void {
+  protected setAttributes(node: AnyArenaNode, element: HTMLElement): void {
     element.getAttributeNames().forEach((attr) => {
       if (node.arena.allowedAttributes.includes(attr)) {
         node.setAttribute(attr, element.getAttribute(attr) || '');

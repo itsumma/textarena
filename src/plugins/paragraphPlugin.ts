@@ -1,8 +1,8 @@
 import Textarena from '../Textarena';
 import ArenaPlugin from '../interfaces/ArenaPlugin';
+import { ArenaTextInterface } from '../interfaces/Arena';
+import { ChildArenaNode } from '../interfaces/ArenaNode';
 import ArenaSelection from '../helpers/ArenaSelection';
-import ArenaWithText from '../interfaces/ArenaWithText';
-import ArenaNode from '../interfaces/ArenaNode';
 
 type MarkOptions = {
   tag: string,
@@ -42,16 +42,15 @@ const paragraphPlugin = (opts?: ParagraphOptions): ArenaPlugin => ({
         name,
         tag,
         attributes,
-        allowText: true,
-        allowFormating: true,
+        hasText: true,
       },
       marks,
-      [textarena.getRootArenaName()],
-    );
-    textarena.setDefaultTextArena(arena as ArenaWithText);
+    ) as ArenaTextInterface;
+    textarena.setDefaultTextArena(arena as ArenaTextInterface);
     textarena.registerCommand(
       'convert-to-paragraph',
-      (ta: Textarena, selection: ArenaSelection) => ta.transformModel(selection, arena),
+      (ta: Textarena, selection: ArenaSelection) =>
+        ta.applyArenaToSelection(selection, arena),
     );
     textarena.registerShortcut(
       'Alt + Digit0',
@@ -64,7 +63,7 @@ const paragraphPlugin = (opts?: ParagraphOptions): ArenaPlugin => ({
       shortcut: 'Alt + Digit0',
       hint: '0',
       command: 'convert-to-paragraph',
-      checkStatus: (node: ArenaNode):
+      checkStatus: (node: ChildArenaNode):
         boolean => node.arena === arena,
     });
     textarena.addSimpleArenas(arena);

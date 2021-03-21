@@ -91,13 +91,26 @@
   }
 
   blockquote {
-    background: #ececec;
-    padding: 1em;
+    padding-left: 1em;
     margin: 0 0 1em;
     min-height: 1.6em;
+    border-left: 0.2em solid gray;
 
     &:last-child {
       margin-bottom: 0;
+    }
+  }
+
+  .pseudo-cursor {
+    height: 0.5rem;
+    position: relative;
+
+    &:hover {
+      background: #ececec;
+    }
+
+    &[focus] {
+      height: auto;
     }
   }
 }

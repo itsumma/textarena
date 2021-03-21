@@ -1,12 +1,11 @@
 import {
-  LitElement, html, css,  property, TemplateResult,
+  LitElement, html, css, property, TemplateResult,
 } from 'lit-element';
 import Textarena from '../Textarena';
 import ArenaSelection from '../helpers/ArenaSelection';
 import ArenaPlugin from '../interfaces/ArenaPlugin';
-import ArenaAncestor from '../interfaces/ArenaAncestor';
-import ArenaWithText from '../interfaces/ArenaWithText';
-import ArenaNodeText from '../interfaces/ArenaNodeText';
+import { ArenaMediatorInterface, ArenaTextInterface } from '../interfaces/Arena';
+import { ArenaNodeText } from '../interfaces/ArenaNode';
 
 // This decorator defines the element.
 
@@ -86,7 +85,7 @@ const calloutPlugin = (opts?: typeof defaultOptions): ArenaPlugin => ({
         ],
         hasChildren: true,
         allowedArenas,
-        arenaForText: paragraph as ArenaWithText,
+        arenaForText: paragraph as ArenaTextInterface,
       },
       [
         {
@@ -97,7 +96,7 @@ const calloutPlugin = (opts?: typeof defaultOptions): ArenaPlugin => ({
         },
       ],
       [],
-    );
+    ) as ArenaMediatorInterface;
     const calloutTitleParagraph = textarena.registerArena(
       {
         name: 'callout-title-paragraph',
@@ -105,9 +104,8 @@ const calloutPlugin = (opts?: typeof defaultOptions): ArenaPlugin => ({
         attributes: [
           'slot=title',
         ],
-        allowText: true,
-        allowFormating: true,
-        nextArena: calloutBodyContainer as ArenaAncestor,
+        hasText: true,
+        nextArena: paragraph,
       },
       [
         {
@@ -118,22 +116,17 @@ const calloutPlugin = (opts?: typeof defaultOptions): ArenaPlugin => ({
         },
       ],
       [],
-    );
+    ) as ArenaTextInterface;
     const arena = textarena.registerArena(
       {
         name,
         tag,
         attributes,
-        hasChildren: true,
         protectedChildren: [
           calloutTitleParagraph,
           calloutBodyContainer,
         ],
-        arenaForText: calloutBodyContainer as ArenaWithText,
-        allowedArenas: [
-          calloutTitleParagraph,
-          calloutBodyContainer,
-        ],
+        arenaForText: calloutBodyContainer,
       },
       [
         {
@@ -142,11 +135,11 @@ const calloutPlugin = (opts?: typeof defaultOptions): ArenaPlugin => ({
         },
       ],
       [textarena.getRootArenaName()],
-    );
+    ) as ArenaMediatorInterface;
     textarena.registerCommand(
       command,
       (ta: Textarena, selection: ArenaSelection) => {
-        const sel = ta.transformModel(selection, arena);
+        const sel = ta.applyArenaToSelection(selection, arena);
         return sel;
       },
     );
@@ -162,7 +155,8 @@ const calloutPlugin = (opts?: typeof defaultOptions): ArenaPlugin => ({
       shortcut,
       hint,
       command,
-      canShow: (node: ArenaNodeText) => node.parent.arena.allowedArenas.includes(arena),
+      canShow: (node: ArenaNodeText) =>
+        node.parent.arena.allowedArenas.includes(arena),
     });
   },
 });

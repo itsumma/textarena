@@ -1,9 +1,8 @@
 import Textarena from '../Textarena';
 import ArenaSelection from '../helpers/ArenaSelection';
 import ArenaPlugin from '../interfaces/ArenaPlugin';
-import ArenaWithText from '../interfaces/ArenaWithText';
-import ArenaNode from '../interfaces/ArenaNode';
-import ArenaNodeText from '../interfaces/ArenaNodeText';
+import { ArenaTextInterface } from '../interfaces/Arena';
+import { ArenaNodeText, ChildArenaNode } from '../interfaces/ArenaNode';
 
 const posibleTags = ['h1', 'h2', 'h3', 'h4'];
 
@@ -32,9 +31,8 @@ const headersPlugin = (opts?: ListsOptions): ArenaPlugin => ({
             name: `header${number}`,
             tag: `H${number}`,
             attributes: [],
-            allowText: true,
-            allowFormating: false,
-            nextArena: paragraph as ArenaWithText,
+            hasText: true,
+            nextArena: paragraph,
           },
           [
             {
@@ -43,10 +41,11 @@ const headersPlugin = (opts?: ListsOptions): ArenaPlugin => ({
             },
           ],
           [textarena.getRootArenaName()],
-        );
+        ) as ArenaTextInterface;
         textarena.registerCommand(
           `convert-to-header${number}`,
-          (ta: Textarena, selection: ArenaSelection) => ta.transformModel(selection, arena),
+          (ta: Textarena, selection: ArenaSelection) =>
+            ta.applyArenaToSelection(selection, arena),
         );
         textarena.registerShortcut(
           `Alt + Digit${number}`,
@@ -59,8 +58,8 @@ const headersPlugin = (opts?: ListsOptions): ArenaPlugin => ({
           shortcut: `Alt + Digit${number}`,
           hint: number.toString(),
           command: `convert-to-header${number}`,
-          checkStatus: (node: ArenaNode):
-            boolean => node.arena === arena,
+          checkStatus: (node: ChildArenaNode): boolean =>
+            node.arena === arena,
         });
         textarena.registerCreator({
           name: `header${number}`,
@@ -69,7 +68,8 @@ const headersPlugin = (opts?: ListsOptions): ArenaPlugin => ({
           shortcut: `Alt + Digit${number}`,
           hint: number.toString(),
           command: `convert-to-header${number}`,
-          canShow: (node: ArenaNodeText) => node.parent.arena.allowedArenas.includes(arena),
+          canShow: (node: ArenaNodeText) =>
+            node.parent.arena.allowedArenas.includes(arena),
         });
       }
     });

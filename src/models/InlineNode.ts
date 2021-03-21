@@ -1,17 +1,24 @@
 import { TemplateResult } from 'lit-html';
+import { ArenaInlineInterface } from '../interfaces/Arena';
 import { ArenaFormatings } from '../interfaces/ArenaFormating';
-import ArenaNodeInline from '../interfaces/ArenaNodeInline';
-import ArenaInline from '../interfaces/ArenaInline';
+import { ArenaNodeInline } from '../interfaces/ArenaNode';
 
-export default class InlineNode implements ArenaNodeInline {
-  readonly hasParent: true = true;
+export default class InlineNode
+implements ArenaNodeInline {
+  readonly hasParent: false = false;
+
+  readonly hasChildren: false = false;
+
+  readonly hasText: false = false;
 
   readonly inline: true = true;
+
+  readonly single: false = false;
 
   protected attributes: { [key: string] :string } = {};
 
   constructor(
-    public arena: ArenaInline,
+    public arena: ArenaInlineInterface,
   ) {
   }
 

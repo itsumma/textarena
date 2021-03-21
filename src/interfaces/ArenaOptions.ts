@@ -1,46 +1,76 @@
-import Arena from './Arena';
-import ArenaNode from './ArenaNode';
-import ArenaWithText from './ArenaWithText';
-import ArenaAncestor from './ArenaAncestor';
+import { ArenaMediatorInterface, ArenaTextInterface, ChildArena } from './Arena';
 
-export type AbstractArena = {
+export type ArenaOptionsCore = {
   name: string,
   tag: string,
-  // template: (child: TemplateResult | string, id: string) => TemplateResult | string,
   attributes: string[],
   allowedAttributes?: string[],
+  hasParent?: boolean,
+  hasChildren?: boolean,
+  hasText?: boolean,
+  inline?: boolean,
+  single?: boolean,
+  root?: boolean;
+};
+
+export type ArenaOptionsAncestor = ArenaOptionsCore & {
+  // hasChildren?: true,
+  // hasParent?: boolean,
+  hasText?: false,
+  inline?: false,
+  single?: false,
+  // root?: boolean;
+
   automerge?: boolean,
-  init?: (node: ArenaNode) => ArenaNode;
-};
+  group?: boolean,
+  // protected?: boolean,
+  arenaForText: ArenaMediatorInterface | ArenaTextInterface
+} & ({
+  allowedArenas: ChildArena[],
+} | {
+  protectedChildren: ChildArena[],
+});
 
-export type ArenaOptionsInline = AbstractArena & {
+export type ArenaOptionsInline = ArenaOptionsCore & {
+  hasParent?: false,
+  // hasChildren?: false,
+  hasText?: false,
   inline: true,
+  single?: false,
 };
 
-export type ArenaOptionsSingle = AbstractArena & {
+export type ArenaOptionsSingle = ArenaOptionsCore & {
+  hasParent?: true,
+  // hasChildren?: false,
+  hasText?: false,
+  inline?: false,
   single: true,
 };
 
-export type ArenaOptionsWithText = AbstractArena & {
-  allowText: true,
-  allowFormating: boolean,
-  nextArena?: ArenaWithText | ArenaAncestor,
+export type ArenaOptionsWithText = ArenaOptionsCore & {
+  hasParent?: true;
+  // hasChildren?: false;
+  hasText: true;
+  inline?: false;
+  single?: false;
+  nextArena?: ArenaTextInterface | ArenaMediatorInterface,
 };
 
-export type ArenaOptionsAncestor = AbstractArena & {
-  hasChildren: true,
-  allowedArenas?: Arena[],
-  arenaForText?: ArenaWithText,
-  protectedChildren?: Arena[]
+export type ArenaOptionsMediator = ArenaOptionsAncestor & {
+  // hasChildren: true,
+  // hasParent?: true,
 };
 
 export type ArenaOptionsRoot = ArenaOptionsAncestor & {
-  root: true,
+  // hasChildren: true,
+  // hasParent?: false,
 };
 
-type ArenaOptions = ArenaOptionsInline |
+export type ArenaOptionsChild = ArenaOptionsInline |
                     ArenaOptionsSingle |
                     ArenaOptionsWithText |
-                    ArenaOptionsAncestor;
+                    ArenaOptionsMediator;
+
+type ArenaOptions = ArenaOptionsRoot | ArenaOptionsChild;
 
 export default ArenaOptions;

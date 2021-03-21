@@ -1,21 +1,43 @@
-import Arena from '../interfaces/Arena';
-import ArenaNodeAncestor from '../interfaces/ArenaNodeAncestor';
-import ArenaNodeScion from '../interfaces/ArenaNodeScion';
 import MediatorNode from './MediatorNode';
-import RichNode from './RichNode';
+import TextNode from './TextNode';
+import RootNode from './RootNode';
 import SingleNode from './SingleNode';
+import {
+  ArenaInlineInterface, ArenaRootInterface, ChildArena,
+} from '../interfaces/Arena';
+import {
+  ArenaNodeInline, ArenaNodeRoot, ChildArenaNode,
+} from '../interfaces/ArenaNode';
+import InlineNode from './InlineNode';
 
 export default class NodeFactory {
-  static createNode(arena: Arena, parent: ArenaNodeAncestor): ArenaNodeScion {
-    if ('allowText' in arena) {
-      return new RichNode(arena, parent);
+  static createRootNode(arena: ArenaRootInterface): ArenaNodeRoot {
+    return new RootNode(arena);
+  }
+
+  static createChildNode(
+    arena: ChildArena,
+    // parent: ParentArenaNode,
+  ): ChildArenaNode {
+    if (arena.hasChildren) {
+      let children;
+      if (arena.protected) {
+        children = arena.protectedChildren.map(
+          (childArena) => this.createChildNode(childArena),
+        );
+      }
+      return new MediatorNode(arena, children);
     }
-    if ('single' in arena) {
-      return new SingleNode(arena, parent);
+    if (arena.hasText) {
+      return new TextNode(arena);
     }
-    if ('hasChildren' in arena) {
-      return new MediatorNode(arena, parent);
+    if (arena.single) {
+      return new SingleNode(arena);
     }
     throw new Error('Cant create Node');
+  }
+
+  static createInlineNode(arena: ArenaInlineInterface): ArenaNodeInline {
+    return new InlineNode(arena);
   }
 }

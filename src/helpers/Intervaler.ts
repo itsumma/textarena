@@ -4,7 +4,11 @@ type Interval = {
 };
 
 export default class Intervaler {
-  private intervals: Interval[] = [];
+  private intervals: Interval[];
+
+  constructor(intervals?: Interval[]) {
+    this.intervals = intervals || [];
+  }
 
   getIntervals(): Interval[] {
     return this.intervals;
@@ -267,5 +271,11 @@ export default class Intervaler {
       }
     }
     return false;
+  }
+
+  clone(): Intervaler {
+    return new Intervaler(
+      this.intervals.map((interval) => ({ ...interval })),
+    );
   }
 }

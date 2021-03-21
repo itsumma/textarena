@@ -1,10 +1,9 @@
 import Textarena from '../Textarena';
 import ArenaSelection from '../helpers/ArenaSelection';
 import ArenaPlugin from '../interfaces/ArenaPlugin';
-import ArenaCursor from '../interfaces/ArenaCursor';
-import ArenaWithText from '../interfaces/ArenaWithText';
-import ArenaNode from '../interfaces/ArenaNode';
-import ArenaNodeText from '../interfaces/ArenaNodeText';
+import ArenaCursorText from '../interfaces/ArenaCursorText';
+import { ArenaMediatorInterface, ArenaTextInterface } from '../interfaces/Arena';
+import { ArenaNodeText, ChildArenaNode } from '../interfaces/ArenaNode';
 
 type ListOptions = {
   name: string,
@@ -43,7 +42,7 @@ const defaultOptions: ListsOptions = {
       shortcut: 'Alt + KeyL',
       command: 'convert-to-unordered-list',
       hint: 'l',
-      pattern: /^-\s+(.*)$/,
+      pattern: /^(-\s+).*$/,
     },
     {
       name: 'ordered-list',
@@ -54,7 +53,7 @@ const defaultOptions: ListsOptions = {
       shortcut: 'Alt + KeyO',
       command: 'convert-to-ordered-list',
       hint: 'o',
-      pattern: /^\d+\.|\)\s+(.*)$/,
+      pattern: /^(\d+(?:\.|\))\s+).*$/,
     },
   ],
 };
@@ -72,8 +71,7 @@ const listsPlugin = (opts?: ListsOptions): ArenaPlugin => ({
     const li = textarena.registerArena(
       {
         ...item,
-        allowText: true,
-        allowFormating: true,
+        hasText: true,
         nextArena: undefined,
       },
       [
@@ -82,7 +80,7 @@ const listsPlugin = (opts?: ListsOptions): ArenaPlugin => ({
           attributes: item.attributes,
         },
       ],
-    );
+    ) as ArenaTextInterface;
     lists.forEach(({
       name,
       tag,
@@ -100,9 +98,9 @@ const listsPlugin = (opts?: ListsOptions): ArenaPlugin => ({
           tag,
           attributes,
           allowedArenas: [li],
-          arenaForText: li as ArenaWithText,
-          hasChildren: true,
+          arenaForText: li,
           automerge: true,
+          group: true,
         },
         [
           {
@@ -111,10 +109,11 @@ const listsPlugin = (opts?: ListsOptions): ArenaPlugin => ({
           },
         ],
         [textarena.getRootArenaName()],
-      );
+      ) as ArenaMediatorInterface;
       textarena.registerCommand(
         command,
-        (ta: Textarena, selection: ArenaSelection) => ta.transformModel(selection, listArena),
+        (ta: Textarena, selection: ArenaSelection) =>
+          ta.applyArenaToSelection(selection, listArena),
       );
       textarena.registerShortcut(
         shortcut,
@@ -127,7 +126,7 @@ const listsPlugin = (opts?: ListsOptions): ArenaPlugin => ({
         shortcut,
         command,
         hint,
-        checkStatus: (node: ArenaNode):
+        checkStatus: (node: ChildArenaNode):
           boolean => 'parent' in node && node.parent.arena === listArena,
       });
       textarena.registerCreator({
@@ -137,21 +136,30 @@ const listsPlugin = (opts?: ListsOptions): ArenaPlugin => ({
         shortcut,
         command,
         hint,
-        canShow: (node: ArenaNodeText) => node.parent.arena.allowedArenas.includes(listArena),
+        canShow: (node: ArenaNodeText) =>
+          node.parent.arena.allowedArenas.includes(listArena),
       });
-      (paragraph as ArenaWithText).registerMiddleware((cursor: ArenaCursor) => {
-        const text = cursor.node.getRawText();
-        const match = text.match(pattern);
-        if (match) {
-          const newNode = cursor.node.createAndInsertNode(listArena, 0);
-          if (newNode) {
-            const newCursor = newNode.insertText(match[1], 0);
-            cursor.node.remove();
-            return newCursor;
+      if (paragraph.hasText) {
+        paragraph.registerMiddleware((ta: Textarena, cursor: ArenaCursorText) => {
+          const text = cursor.node.getRawText();
+          const match = text.match(pattern);
+          if (match) {
+            const sel = new ArenaSelection(
+              cursor.node,
+              cursor.offset,
+              cursor.node,
+              cursor.offset,
+              'forward',
+            );
+            const newSel = ta.applyArenaToSelection(sel, listArena);
+            const cursor2 = newSel.getCursor();
+            cursor2.node.cutText(0, match[1].length);
+            cursor2.offset = 0;
+            return cursor2;
           }
-        }
-        return cursor;
-      });
+          return cursor;
+        });
+      }
       textarena.addSimpleArenas(listArena);
     });
   },

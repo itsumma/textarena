@@ -1,7 +1,7 @@
 import Textarena from '../Textarena';
 import ArenaPlugin from '../interfaces/ArenaPlugin';
 import ArenaSelection from '../helpers/ArenaSelection';
-import ArenaNode from '../interfaces/ArenaNode';
+import { ChildArenaNode } from '../interfaces/ArenaNode';
 
 type MarkOptions = {
   tag: string,
@@ -164,7 +164,7 @@ const formatingsPlugin = (opts?: FormatingsOptions): ArenaPlugin => ({
         command,
         (ta: Textarena, selection: ArenaSelection) => {
           selection.trim();
-          return ta.formatingModel(selection, formating);
+          return ta.applyFormationToSelection(selection, formating);
         },
       );
       textarena.registerShortcut(
@@ -178,8 +178,8 @@ const formatingsPlugin = (opts?: FormatingsOptions): ArenaPlugin => ({
           command,
           hint,
           shortcut,
-          checkStatus: (node: ArenaNode, start?: number, end?: number): boolean => {
-            if ('hasText' in node) {
+          checkStatus: (node: ChildArenaNode, start?: number, end?: number): boolean => {
+            if (node.hasText) {
               return node.getText().hasFormating(name, start, end);
             }
             return true;

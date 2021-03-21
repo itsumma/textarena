@@ -1,27 +1,31 @@
-import ArenaOptions, { ArenaOptionsRoot } from '../interfaces/ArenaOptions';
-import Arena from '../interfaces/Arena';
-import AncestorArena from './AncestorArena';
-import RootArena from './RootArena';
-import SingleArena from './SingleArena';
-import TextArena from './TextArena';
-import InlineArena from './InlineArena';
+/* eslint-disable max-classes-per-file */
+import { ArenaOptionsChild, ArenaOptionsRoot } from '../interfaces/ArenaOptions';
+
+import ArenaRoot from './ArenaRoot';
+import ArenaSingle from './ArenaSingle';
+import ArenaText from './ArenaText';
+import ArenaInline from './ArenaInline';
+import ArenaMediator from './ArenaMediator';
+import { ArenaInlineInterface, ArenaRootInterface, ChildArena } from '../interfaces/Arena';
 
 export default class ArenaFactory {
-  static create(arenaOptions: ArenaOptions | ArenaOptionsRoot): Arena {
-    if ('root' in arenaOptions && arenaOptions.root === true) {
-      return new RootArena(arenaOptions);
+  static createRoot(arenaOptions: ArenaOptionsRoot): ArenaRootInterface {
+    return new ArenaRoot(arenaOptions);
+  }
+
+  static createChild(arenaOptions: ArenaOptionsChild): ChildArena | ArenaInlineInterface {
+    if ('allowedArenas' in arenaOptions
+      || 'protectedChildren' in arenaOptions) {
+      return new ArenaMediator(arenaOptions);
     }
-    if ('single' in arenaOptions && arenaOptions.single === true) {
-      return new SingleArena(arenaOptions);
+    if (arenaOptions.single) {
+      return new ArenaSingle(arenaOptions);
     }
-    if ('inline' in arenaOptions && arenaOptions.inline === true) {
-      return new InlineArena(arenaOptions);
+    if (arenaOptions.inline) {
+      return new ArenaInline(arenaOptions);
     }
-    if ('hasChildren' in arenaOptions && arenaOptions.hasChildren === true) {
-      return new AncestorArena(arenaOptions);
-    }
-    if ('allowText' in arenaOptions && arenaOptions.allowText === true) {
-      return new TextArena(arenaOptions);
+    if (arenaOptions.hasText) {
+      return new ArenaText(arenaOptions);
     }
     throw new Error('Cant create Arena');
   }

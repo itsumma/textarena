@@ -4,9 +4,8 @@ import {
 import { classMap } from 'lit-html/directives/class-map';
 import Textarena from '../Textarena';
 import ArenaPlugin from '../interfaces/ArenaPlugin';
-import ArenaWithText from '../interfaces/ArenaWithText';
 import ArenaSelection from '../helpers/ArenaSelection';
-import ArenaAncestor from '../interfaces/ArenaAncestor';
+import { ArenaMediatorInterface, ArenaTextInterface } from '../interfaces/Arena';
 
 // This decorator defines the element.
 export class Collapse extends LitElement {
@@ -40,7 +39,7 @@ export class Collapse extends LitElement {
     }
     `;
 
-  protected open = false;
+  protected open = true;
 
   handleClick(): void {
     this.open = !this.open;
@@ -101,7 +100,7 @@ const collapsePlugin = (opts?: typeof defaultOptions): ArenaPlugin => ({
         ],
         hasChildren: true,
         allowedArenas,
-        arenaForText: paragraph as ArenaWithText,
+        arenaForText: paragraph as ArenaTextInterface,
       },
       [
         {
@@ -112,7 +111,7 @@ const collapsePlugin = (opts?: typeof defaultOptions): ArenaPlugin => ({
         },
       ],
       [],
-    );
+    ) as ArenaMediatorInterface;
     const collapseTitleParagraph = textarena.registerArena(
       {
         name: 'collapse-title-paragraph',
@@ -120,9 +119,8 @@ const collapsePlugin = (opts?: typeof defaultOptions): ArenaPlugin => ({
         attributes: [
           'slot=title',
         ],
-        allowText: true,
-        allowFormating: true,
-        nextArena: collapseBodyContainer as ArenaAncestor,
+        hasText: true,
+        nextArena: paragraph,
       },
       [
         {
@@ -133,22 +131,17 @@ const collapsePlugin = (opts?: typeof defaultOptions): ArenaPlugin => ({
         },
       ],
       [],
-    );
+    ) as ArenaTextInterface;
     const arena = textarena.registerArena(
       {
         name,
         tag,
         attributes,
-        hasChildren: true,
         protectedChildren: [
           collapseTitleParagraph,
           collapseBodyContainer,
         ],
-        arenaForText: collapseBodyContainer as ArenaWithText,
-        allowedArenas: [
-          collapseTitleParagraph,
-          collapseBodyContainer,
-        ],
+        arenaForText: collapseBodyContainer,
       },
       [
         {
@@ -157,11 +150,11 @@ const collapsePlugin = (opts?: typeof defaultOptions): ArenaPlugin => ({
         },
       ],
       [textarena.getRootArenaName()],
-    );
+    ) as ArenaMediatorInterface;
     textarena.registerCommand(
       command,
       (ta: Textarena, selection: ArenaSelection) => {
-        const sel = ta.transformModel(selection, arena);
+        const sel = ta.applyArenaToSelection(selection, arena);
         return sel;
       },
     );

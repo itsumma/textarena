@@ -1,68 +1,31 @@
 import { TemplateResult } from 'lit-html';
-import ArenaNodeAncestor from '../interfaces/ArenaNodeAncestor';
-import ArenaNodeScion from '../interfaces/ArenaNodeScion';
-import Arena from '../interfaces/Arena';
-import ArenaNodeText from '../interfaces/ArenaNodeText';
-import ArenaCursor from '../interfaces/ArenaCursor';
+import ArenaCursorText from '../interfaces/ArenaCursorText';
 import RichTextManager from '../helpers/RichTextManager';
-import ArenaCursorAncestor from '../interfaces/ArenaCursorAncestor';
-import ArenaSingle from '../interfaces/ArenaSingle';
 import { ArenaFormatings } from '../interfaces/ArenaFormating';
+import AbstractNode from './AbstractNode';
+import { ArenaSingleInterface } from '../interfaces/Arena';
+import { ArenaNodeSingle } from '../interfaces/ArenaNode';
 
-export default class SingleNode implements ArenaNodeScion {
+export default class SingleNode
+  extends AbstractNode<ArenaSingleInterface>
+  implements ArenaNodeSingle {
   readonly hasParent: true = true;
 
+  readonly hasChildren: false = false;
+
+  readonly hasText: false = false;
+
+  readonly inline: false = false;
+
+  readonly single: true = true;
+
+  // eslint-disable-next-line @typescript-eslint/no-useless-constructor
   constructor(
-    public arena: ArenaSingle,
-    public parent: ArenaNodeAncestor,
+    public arena: ArenaSingleInterface,
+    // parent?: ParentArenaNode,
   ) {
-  }
-
-  public getIndex(): number {
-    return this.parent.children.indexOf(this);
-  }
-
-  public isLastChild(): boolean {
-    return this.parent.children.indexOf(this) === this.parent.children.length - 1;
-  }
-
-  public getParent(): ArenaCursorAncestor {
-    return { node: this.parent, offset: this.getIndex() };
-  }
-
-  public setParent(parent: ArenaNodeAncestor | (ArenaNodeAncestor & ArenaNodeScion)): void {
-    this.parent = parent;
-  }
-
-  public getUnprotectedParent(): ArenaCursorAncestor | undefined {
-    if (this.parent.arena.protected) {
-      return this.parent.getUnprotectedParent();
-    }
-    return { node: this.parent, offset: this.getIndex() };
-  }
-
-  public getGlobalIndex(): string {
-    return `${this.parent.getGlobalIndex()}.${this.getIndex().toString()}`;
-  }
-
-  public insertText(
-    text: string | RichTextManager,
-  ): ArenaCursor {
-    return this.parent.insertText(text, this.getIndex() + 1);
-  }
-
-  public getTextCursor(): ArenaCursor {
-    return this.parent.getTextCursor(this.getIndex());
-  }
-
-  public createAndInsertNode(
-    arena: Arena,
-  ): ArenaNodeScion | ArenaNodeText | undefined {
-    return this.parent.createAndInsertNode(arena, this.getIndex() + 1);
-  }
-
-  public remove(): ArenaCursorAncestor {
-    return this.parent.removeChild(this.getIndex());
+    super();
+    // this.parent = parent;
   }
 
   public getHtml(): TemplateResult | string {
@@ -73,13 +36,24 @@ export default class SingleNode implements ArenaNodeScion {
     return this.arena.getOutputTemplate('', deep, this.attributes);
   }
 
-  public setAttribute(name: string, value: string): void {
-    this.attributes[name] = value;
+  public insertText(
+    text: string | RichTextManager,
+  ): ArenaCursorText {
+    return this.parent.insertText(text, this.getIndex() + 1);
   }
 
-  public getAttribute(name: string): string {
-    return this.attributes[name] || '';
+  public getTextCursor(): ArenaCursorText {
+    return this.parent.getTextCursor(this.getIndex());
   }
 
-  protected attributes: { [key: string] :string } = {};
+  // public createAndInsertNode(arena: ChildArena): ChildArenaNode | undefined {
+  //   return this.parent.createAndInsertNode(arena, this.getIndex() + 1);
+  // }
+
+  public clone(): SingleNode {
+    return new SingleNode(
+      this.arena,
+      // this.parent,
+    );
+  }
 }
