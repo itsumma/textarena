@@ -1,5 +1,5 @@
 import {
-  LitElement, html, css, customElement, property, TemplateResult,
+  LitElement, html, css, property, TemplateResult,
 } from 'lit-element';
 import Textarena from '../Textarena';
 import ArenaPlugin from '../interfaces/ArenaPlugin';
@@ -8,7 +8,6 @@ import ArenaSelection from '../helpers/ArenaSelection';
 import ArenaAncestor from '../interfaces/ArenaAncestor';
 
 // This decorator defines the element.
-@customElement('arena-collapse')
 export class Collapse extends LitElement {
   // This decorator creates a property accessor that triggers rendering and
   // an observed attribute.
@@ -74,6 +73,7 @@ const defaultOptions = {
 
 const collapsePlugin = (opts?: typeof defaultOptions): ArenaPlugin => ({
   register(textarena: Textarena): void {
+    customElements.define('arena-collapse', Collapse);
     const {
       name, icon, title, tag, attributes, shortcut, hint, command,
     } = { ...defaultOptions, ...(opts || {}) };

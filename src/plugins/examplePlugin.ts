@@ -1,13 +1,12 @@
 import {
-  LitElement, html, css, customElement, property, TemplateResult,
+  LitElement, html, css, property, TemplateResult,
 } from 'lit-element';
 import Textarena from '../Textarena';
 import ArenaPlugin from '../interfaces/ArenaPlugin';
-import ArenaSelection from '../helpers/ArenaSelection';
 import ArenaNodeText from '../interfaces/ArenaNodeText';
+import ArenaSelection from '../helpers/ArenaSelection';
 
-@customElement('arena-recomendation')
-export class Callout extends LitElement {
+export class Recomendation extends LitElement {
   protected currentPostId = '';
 
   @property({
@@ -154,6 +153,7 @@ export class Callout extends LitElement {
 
 const examplePlugin = (): ArenaPlugin => ({
   register: (ta: Textarena) => {
+    customElements.define('arena-recomendation', Recomendation);
     const arena = ta.registerArena(
       {
         name: 'exampleRecomendation',

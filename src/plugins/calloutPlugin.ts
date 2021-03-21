@@ -1,5 +1,5 @@
 import {
-  LitElement, html, css, customElement, property, TemplateResult,
+  LitElement, html, css,  property, TemplateResult,
 } from 'lit-element';
 import Textarena from '../Textarena';
 import ArenaSelection from '../helpers/ArenaSelection';
@@ -9,7 +9,7 @@ import ArenaWithText from '../interfaces/ArenaWithText';
 import ArenaNodeText from '../interfaces/ArenaNodeText';
 
 // This decorator defines the element.
-@customElement('arena-callout')
+
 export class Callout extends LitElement {
   // This decorator creates a property accessor that triggers rendering and
   // an observed attribute.
@@ -68,6 +68,7 @@ const defaultOptions = {
 
 const calloutPlugin = (opts?: typeof defaultOptions): ArenaPlugin => ({
   register(textarena: Textarena): void {
+    customElements.define('arena-callout', Callout);
     const {
       name, icon, title, tag, attributes, shortcut, hint, command,
     } = { ...defaultOptions, ...(opts || {}) };
