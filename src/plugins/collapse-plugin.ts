@@ -1,6 +1,7 @@
 import {
   LitElement, html, css, property, TemplateResult,
 } from 'lit-element';
+import { classMap } from 'lit-html/directives/class-map';
 import Textarena from '../Textarena';
 import ArenaPlugin from '../interfaces/ArenaPlugin';
 import ArenaWithText from '../interfaces/ArenaWithText';
@@ -16,31 +17,35 @@ export class Collapse extends LitElement {
 
   static styles = css`
     :host {
-      background: lightgray;
-      border: 1px solid red;
       display: block;
-      padding: 1em;
-    }
-    [name="title"] {
-      font-weight: 900;
-
-    }
-    [name="title"] * {
-      margin: 0;
-    }
-    .hr {
-      white-space: nowrap;
+      padding: 1.25rem;
+      background: #f5f5f5!important;
       overflow: hidden;
-      font-size: .4em;
-      user-select: none;
+      border: .5px solid #e6e6e6;
+      box-sizing: border-box;
+      border-radius: 8px;
+      margin-bottom: 20px;
     }
-    .nb {
-      color: red;
-      user-select: none;
+    .incut_arrow {
+      transition: .4s;
     }
-    span {
-      color: green;
-    }`;
+    .incut_arrow.open {
+      transform: rotate(-180deg);
+    }
+    .body {
+      display: none;
+    }
+    .body.open {
+      display: block;
+    }
+    `;
+
+  protected open = false;
+
+  handleClick(): void {
+    this.open = !this.open;
+    this.requestUpdate();
+  }
 
   // Render element DOM by returning a `lit-html` template.
   render(): TemplateResult {
@@ -48,13 +53,18 @@ export class Collapse extends LitElement {
       <div class="stk-snippet stk-snippet-wrapper stk-container incut no-ad vrez-margins" data-ce-tag="container" data-container-name="Incut">
         <div class="stk-container my-outer-block incut_header" data-ce-tag="container">
           <slot name="title" class="stk-reset wp-exclude-emoji stk-theme_37074__style_medium_header incut_title">Заголовок</slot>
-          <div class="stk-container my-outer-block incut_svg" data-ce-tag="container">
-            <svg class="incut_arrow" width="18" height="9" viewbox="0 0 18 9" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <div @click="${this.handleClick} class="stk-container my-outer-block incut_svg" data-ce-tag="container">
+            <svg
+              class=${classMap({ 'incut_arrow': true, open: this.open })}
+              width="18" height="9" viewbox="0 0 18 9" fill="none" xmlns="http://www.w3.org/2000/svg"
+            >
               <path d="M17 1.5L9 7.5L1 1.5" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
             </svg>
           </div>
         </div>
-        <slot name='body' class="stk-reset wp-exclude-emoji stk-theme_37074__mb_cus_10 incut_text">Контент</slot>
+        <slot name='body'
+          class=${classMap({ 'body': true, open: this.open })}
+        >Контент</slot>
       </div>
     `;
   }
