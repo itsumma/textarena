@@ -300,6 +300,12 @@ export default class ArenaBrowser {
     if (code === 'KeyX' && modifiersSum === Modifiers.Ctrl) {
       return new CutEvent(e);
     }
+    if (code === 'ArrowLeft' && modifiersSum === Modifiers.Alt) {
+      return new CutEvent(e);
+    }
+    if (code === 'ArrowRight' && modifiersSum === Modifiers.Alt) {
+      return new CutEvent(e);
+    }
     if (removeCodes[keyCode]) {
       return new RemoveEvent(
         e,

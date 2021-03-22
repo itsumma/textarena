@@ -152,9 +152,18 @@ export class Recomendation extends LitElement {
   }
 }
 
-const examplePlugin = (): ArenaPlugin => ({
+const defaultOptions = {
+  component: 'arena-recomendation',
+};
+
+const examplePlugin = (opts?: typeof defaultOptions): ArenaPlugin => ({
   register: (ta: Textarena) => {
-    customElements.define('arena-recomendation', Recomendation);
+    const {
+      component,
+    } = { ...defaultOptions, ...(opts || {}) };
+    if (!customElements.get(component)) {
+      customElements.define(component, Recomendation);
+    }
     const arena = ta.registerArena(
       {
         name: 'exampleRecomendation',

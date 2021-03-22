@@ -166,14 +166,18 @@ const defaultOptions = {
       attributes: [],
     },
   ],
+  component: 'arena-image',
 };
 
 const imagePlugin = (opts?: typeof defaultOptions): ArenaPlugin => ({
   register(textarena: Textarena): void {
-    customElements.define('arena-image', Image);
     const {
-      name, icon, title, tag, attributes, allowedAttributes, shortcut, hint, command, marks,
+      name, icon, title, tag, attributes, allowedAttributes,
+      shortcut, hint, command, marks, component,
     } = { ...defaultOptions, ...(opts || {}) };
+    if (!customElements.get(component)) {
+      customElements.define(component, Image);
+    }
     const paragraph = textarena.getDefaultTextArena();
     if (!paragraph) {
       throw new Error('Default Arena for text not found');

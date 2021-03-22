@@ -78,14 +78,17 @@ const defaultOptions = {
   shortcut: 'Alt + KeyC',
   hint: 'c',
   command: 'add-collapse',
+  component: 'arena-collapse',
 };
 
 const collapsePlugin = (opts?: typeof defaultOptions): ArenaPlugin => ({
   register(textarena: Textarena): void {
-    customElements.define('arena-collapse', Collapse);
     const {
-      name, icon, title, tag, attributes, shortcut, hint, command,
+      name, icon, title, tag, attributes, shortcut, hint, command, component,
     } = { ...defaultOptions, ...(opts || {}) };
+    if (!customElements.get(component)) {
+      customElements.define(component, Collapse);
+    }
     const paragraph = textarena.getDefaultTextArena();
     if (!paragraph) {
       throw new Error('Default Arena for text not found');
