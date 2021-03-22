@@ -16,6 +16,10 @@ import ElementHelper from '../helpers/ElementHelper';
 import { keyboardKeys, Modifiers } from './ArenaCommandManager';
 import ArenaServiceManager from './ArenaServiceManager';
 
+function isMac(): boolean {
+  return window.navigator.platform.includes('Mac');
+}
+
 type ArenaChangeAttribute = CustomEvent<{
   name: string,
   value: string,
@@ -181,11 +185,12 @@ export default class ArenaBrowser {
       altKey,
       metaKey,
     } = e;
+    const MACOS = isMac();
     const modifiers = {
       Shift: shiftKey,
-      Ctrl: ctrlKey,
+      Ctrl: MACOS ? metaKey : ctrlKey,
       Alt: altKey,
-      Meta: metaKey,
+      Meta: MACOS ? ctrlKey : metaKey,
     };
     return this.asm.commandManager.getModifiersSum(modifiers);
   }
