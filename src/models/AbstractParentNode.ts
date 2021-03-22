@@ -1,6 +1,5 @@
 import { TemplateResult, html } from 'lit-html';
 import { repeat } from 'lit-html/directives/repeat';
-import RichTextManager from '../helpers/RichTextManager';
 import { ChildArena, ParentArena } from '../interfaces/Arena';
 import ArenaCursorText from '../interfaces/ArenaCursorText';
 import ArenaCursorAncestor from '../interfaces/ArenaCursorAncestor';
@@ -12,7 +11,7 @@ import AbstractNode from './AbstractNode';
 export default abstract class AbstractParentNode<
   TArena extends ParentArena
 >
-  extends AbstractNode<TArena> {
+  extends AbstractNode {
   readonly hasParent: boolean = false;
 
   readonly hasChildren: true = true;
@@ -114,8 +113,6 @@ export default abstract class AbstractParentNode<
   }
 
   public insertText(
-    text: string | RichTextManager,
-    offset: number,
   ): ArenaCursorText {
     // if (this.arena.arenaForText) {
     //   const newNode = this.createAndInsertNode(this.arena.arenaForText, offset);

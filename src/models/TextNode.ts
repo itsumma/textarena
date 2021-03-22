@@ -10,7 +10,7 @@ import {
 import AbstractNode from './AbstractNode';
 
 export default class TextNode
-  extends AbstractNode<ArenaTextInterface>
+  extends AbstractNode
   implements ArenaNodeText {
   readonly hasParent: true = true;
 

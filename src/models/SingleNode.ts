@@ -7,7 +7,7 @@ import { ArenaSingleInterface } from '../interfaces/Arena';
 import { ArenaNodeSingle } from '../interfaces/ArenaNode';
 
 export default class SingleNode
-  extends AbstractNode<ArenaSingleInterface>
+  extends AbstractNode
   implements ArenaNodeSingle {
   readonly hasParent: true = true;
 

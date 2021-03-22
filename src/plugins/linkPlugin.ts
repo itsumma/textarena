@@ -18,7 +18,8 @@ import { ArenaInlineInterface } from '../interfaces/Arena';
 //       bottom: 1rem;
 //       position: absolute;
 //       color: #ccc;
-//       box-shadow: 0 8px 23px -6px rgba(21, 40, 54, 0.31), 22px -14px 34px -18px rgba(33, 48, 73, 0.26);
+//       box-shadow: 0 8px 23px -6px rgba(21, 40, 54, 0.31),
+//                  22px -14px 34px -18px rgba(33, 48, 73, 0.26);
 //       border-radius: 4px;
 //       background-color: #333;
 //       padding: 0 .5rem;

@@ -1,8 +1,7 @@
-import { AnyArena } from '../interfaces/Arena';
 import ArenaCursorAncestor from '../interfaces/ArenaCursorAncestor';
 import { ChildArenaNode, ParentArenaNode } from '../interfaces/ArenaNode';
 
-export default abstract class AbstractNode<TArena extends AnyArena> {
+export default abstract class AbstractNode {
   readonly hasParent: boolean = false;
 
   readonly hasChildren: boolean = false;

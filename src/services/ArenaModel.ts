@@ -10,7 +10,7 @@ import {
 import {
   AnyArenaNode, ArenaNodeRoot, ArenaNodeText,
   ArenaNodeInline, ArenaNodeMediator,
-  ChildArenaNode, ParentArenaNode,
+  ChildArenaNode, ParentArenaNode, ArenaNodeSingle,
 } from '../interfaces/ArenaNode';
 import ArenaCursorText from '../interfaces/ArenaCursorText';
 import ArenaCursorAncestor from '../interfaces/ArenaCursorAncestor';
@@ -326,6 +326,10 @@ export default class ArenaModel {
           if (!nextSibling) {
             return newSelection;
           }
+          if (nextSibling.single) {
+            nextSibling.remove();
+            return newSelection;
+          }
           const cursor = nextSibling.getTextCursor(0);
           if (node.getTextLength() === 0) {
             node.remove();
@@ -348,6 +352,10 @@ export default class ArenaModel {
             // nowhere to get out
             const prevSibling = node.parent.getChild(node.getIndex() - 1);
             if (!prevSibling) {
+              return newSelection;
+            }
+            if (prevSibling.single) {
+              prevSibling.remove();
               return newSelection;
             }
             const cursor = prevSibling.getTextCursor(-1);
@@ -827,11 +835,16 @@ export default class ArenaModel {
     return undefined;
   }
 
-  protected getNextSibling(node: AnyArenaNode): ArenaNodeText | undefined {
+  protected getNextSibling(
+    node: AnyArenaNode,
+  ): ArenaNodeText | ArenaNodeSingle | undefined {
     if (!(node.hasParent)) {
       return undefined;
     }
     const next = node.parent.getChild(node.getIndex() + 1);
+    if (next && next.single) {
+      return next;
+    }
     if (next) {
       return next.getTextCursor(0).node;
     }

@@ -54,7 +54,7 @@ export class Collapse extends LitElement {
           <slot name="title" class="stk-reset wp-exclude-emoji stk-theme_37074__style_medium_header incut_title">Заголовок</slot>
           <div @click="${this.handleClick} class="stk-container my-outer-block incut_svg" data-ce-tag="container">
             <svg
-              class=${classMap({ 'incut_arrow': true, open: this.open })}
+              class=${classMap({ incut_arrow: true, open: this.open })}
               width="18" height="9" viewbox="0 0 18 9" fill="none" xmlns="http://www.w3.org/2000/svg"
             >
               <path d="M17 1.5L9 7.5L1 1.5" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
@@ -62,7 +62,7 @@ export class Collapse extends LitElement {
           </div>
         </div>
         <slot name='body'
-          class=${classMap({ 'body': true, open: this.open })}
+          class=${classMap({ body: true, open: this.open })}
         >Контент</slot>
       </div>
     `;
