@@ -3,12 +3,12 @@
   // bottom: 0;
   left: 0;
   z-index: 1;
-  width: 1.2em;
+  // width: 1.2em;
   // height: 1.6em;
   flex-direction: row;
   box-sizing: border-box;
   align-items: start;
-  transition: .3s;
+  transition: 0.3s;
   font-size: 1rem;
   width: 100%;
   overflow-x: hidden;
@@ -43,20 +43,16 @@
     box-sizing: border-box;
     font-size: 1em;
 
-    svg {
-      width: 100%;
-      fill: #888;
-    }
-
     &:hover,
     &:focus,
     &:active {
       outline: none;
       border: 0.05em solid #000;
+    }
 
-      svg {
-        fill: #000;
-      }
+    svg {
+      width: 100%;
+      fill: #888;
     }
   }
 
@@ -83,7 +79,7 @@
     padding-left: 0.5em;
     display: flex;
     flex-wrap: wrap;
-    transition: .3s;
+    transition: 0.3s;
     opacity: 0;
     flex-direction: row;
     margin-left: -100em;
@@ -108,14 +104,12 @@
     justify-content: center;
     cursor: pointer;
     transition: 0.3s;
-    background: none;
     margin-right: -1.4em;
-    padding: .4e;
+    padding: 0.4em;
     box-sizing: border-box;
     background: white;
     margin-bottom: 0.2em;
     font-size: 1em;
-
 
     &:hover,
     &:focus,
@@ -123,12 +117,7 @@
       outline: none;
       border-color: #000;
       color: #000;
-
-      svg {
-        fill: #000;
-      }
     }
-
   }
 
   &__item-icon {
