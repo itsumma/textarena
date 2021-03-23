@@ -331,6 +331,23 @@ export default class ArenaBrowser {
 
   protected mouseUpListener(e: MouseEvent): void {
     this.asm.logger.log('MouseUp event', e);
+    const event = e as unknown as { path: ChildNode[] };
+    if (Array.isArray(event.path)) {
+      const { path } = event;
+      for (let i = 0; i < path.length; i += 1) {
+        const elem = path[i];
+        if (elem.nodeType === Node.ELEMENT_NODE
+        && (elem as HTMLElement).tagName === 'TEXTARENA-REMOVE') {
+          const id = (elem as HTMLElement).getAttribute('node-id');
+          if (id) {
+            e.preventDefault();
+            this.asm.model.removeNodeById(id);
+            this.asm.eventManager.fire({ name: 'modelChanged' });
+          }
+          break;
+        }
+      }
+    }
     // this.checkSelection();
   }
 

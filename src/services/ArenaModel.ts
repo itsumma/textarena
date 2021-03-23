@@ -332,6 +332,13 @@ export default class ArenaModel {
     return newSelection;
   }
 
+  public removeNodeById(id: string): void {
+    const node = this.getNodeById(id);
+    if (node && node.hasParent) {
+      node.remove();
+    }
+  }
+
   /**
    * Remove selected text and all nodes between selections ends
    * @param selection
