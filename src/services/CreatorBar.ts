@@ -19,6 +19,8 @@ export default class CreatorBar {
 
   list: ElementHelper;
 
+  buttonWrapper: ElementHelper;
+
   availableCreators: {
     [key: string]: CreatorOptions,
   } = {};
@@ -38,7 +40,8 @@ export default class CreatorBar {
   constructor(
     private asm: ArenaServiceManager,
   ) {
-    this.elem = new ElementHelper('DIV', 'textarena-creator');
+    this.elem = new ElementHelper('ARENA-CREATOR', 'textarena-creator');
+    this.elem.setContentEditable(false);
     this.elem.onClick(() => {
       this.closeList();
     });
@@ -63,10 +66,12 @@ export default class CreatorBar {
       'textarena-creator__placeholder',
       // `Введите текст или ${altKey}-Q`,
     );
-    this.elem.appendChild(createButton);
+    this.buttonWrapper = new ElementHelper('DIV', 'textarena-creator__create-button-wrapper');
+    this.buttonWrapper.appendChild(createButton);
+    this.elem.appendChild(this.buttonWrapper);
     this.elem.appendChild(this.list);
     this.elem.appendChild(placeholder);
-    this.asm.textarena.getContainerElement().appendChild(this.getElem());
+    // this.asm.textarena.getContainerElement().appendChild(this.getElem());
     this.asm.eventManager.subscribe('moveCursor', () => {
       this.handleChangeSelection();
     });
@@ -106,8 +111,13 @@ export default class CreatorBar {
           e.preventDefault();
           this.executeTool(options);
         });
-        if (options.icon) {
-          elem.setInnerHTML(options.icon);
+        if (options.icon || options.title) {
+          const icon = new ElementHelper(
+            'DIV',
+            'textarena-creator__item-icon',
+            options.icon || options.title,
+          );
+          elem.appendChild(icon);
         }
         if (options.hint) {
           const keyElem = new ElementHelper('DIV', 'textarena-creator__hint', options.hint);
@@ -199,7 +209,11 @@ export default class CreatorBar {
 
   show(node: ArenaNodeText, target: HTMLElement): void {
     if (this.canShow(node)) {
+      target.appendChild(this.elem.getElem());
       this.showed = true;
+      this.buttonWrapper.css({
+        height: `${target.offsetHeight}px`,
+      });
       this.elem.css({
         display: 'flex',
         top: `${target.offsetTop}px`,

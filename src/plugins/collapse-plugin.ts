@@ -6,6 +6,7 @@ import Textarena from '../Textarena';
 import ArenaPlugin from '../interfaces/ArenaPlugin';
 import ArenaSelection from '../helpers/ArenaSelection';
 import { ArenaMediatorInterface, ArenaTextInterface } from '../interfaces/Arena';
+import { ArenaNodeText } from '../interfaces/ArenaNode';
 
 // This decorator defines the element.
 export class Collapse extends LitElement {
@@ -69,9 +70,26 @@ export class Collapse extends LitElement {
   }
 }
 
-const defaultOptions = {
+type MarkOptions = {
+  tag: string,
+  attributes: string[];
+};
+
+export type CollapseOptions = {
+  name: string,
+  tag: string,
+  attributes: string[],
+  title: string,
+  icon?: string,
+  shortcut: string,
+  hint: string,
+  command: string,
+  component: string,
+  marks: MarkOptions[],
+};
+
+const defaultOptions: CollapseOptions = {
   name: 'collapse',
-  icon: '<b>🌂</b>',
   title: 'Collapse',
   tag: 'ARENA-COLLAPSE',
   attributes: [],
@@ -79,12 +97,18 @@ const defaultOptions = {
   hint: 'c',
   command: 'add-collapse',
   component: 'arena-collapse',
+  marks: [
+    {
+      tag: 'ARENA-COLLAPSE',
+      attributes: [],
+    },
+  ],
 };
 
-const collapsePlugin = (opts?: typeof defaultOptions): ArenaPlugin => ({
+const collapsePlugin = (opts?: CollapseOptions): ArenaPlugin => ({
   register(textarena: Textarena): void {
     const {
-      name, icon, title, tag, attributes, shortcut, hint, command, component,
+      name, icon, title, tag, attributes, shortcut, hint, command, component, marks,
     } = { ...defaultOptions, ...(opts || {}) };
     if (!customElements.get(component)) {
       customElements.define(component, Collapse);
@@ -146,12 +170,7 @@ const collapsePlugin = (opts?: typeof defaultOptions): ArenaPlugin => ({
         ],
         arenaForText: collapseBodyContainer,
       },
-      [
-        {
-          tag,
-          attributes: [],
-        },
-      ],
+      marks,
       [textarena.getRootArenaName()],
     ) as ArenaMediatorInterface;
     textarena.registerCommand(
@@ -173,6 +192,8 @@ const collapsePlugin = (opts?: typeof defaultOptions): ArenaPlugin => ({
       shortcut,
       hint,
       command,
+      canShow: (node: ArenaNodeText) =>
+        node.parent.arena.allowedArenas.includes(arena),
     });
   },
 });

@@ -6,7 +6,9 @@ import { ArenaNodeText } from '../interfaces/ArenaNode';
 
 const defaultOptions = {
   name: 'hr',
-  icon: '<b>–</b>',
+  icon: `<svg viewBox="0 8 18 2" width="18" height="2">
+    <path d="M 4 13 L 20 13 C 20.55 13 21 12.55 21 12 C 21 11.45 20.55 11 20 11 L 4 11 C 3.45 11 3 11.45 3 12 C 3 12.55 3.45 13 4 13 Z" id="🔹-Icon-Color" fill="currentColor" transform="matrix(1, 0, 0, 1, -3, -3)"></path>
+  </svg>`,
   title: 'Horizontal rule',
   tag: 'HR',
   attributes: [],
