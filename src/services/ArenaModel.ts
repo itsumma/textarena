@@ -157,7 +157,7 @@ export default class ArenaModel {
       };
     }
     if (node.hasChildren && node.arena.arenaForText) {
-      if (node.protected || offset === undefined) {
+      if (node.protected || !offset) { // offset === 0 or undefined
         if (offset === undefined) {
           for (let i = node.children.length - 1; i >= 0; i -= 1) {
             const cursor = this.getOrCreateNodeForText(node.children[i], undefined, true);
@@ -344,8 +344,12 @@ export default class ArenaModel {
       const { node, offset } = newSelection.getCursor();
       if (direction === 'forward') {
         if (node.getTextLength() === offset) {
-          const nextSibling = this.getNextSibling(node);
+          // const nextSibling = this.getNextSibling(node);
+          const nextSibling = node.parent.getChild(node.getIndex() + 1);
           if (!nextSibling) {
+            return newSelection;
+          }
+          if (nextSibling.hasChildren && nextSibling.protected) {
             return newSelection;
           }
           if (nextSibling.single) {
@@ -377,6 +381,9 @@ export default class ArenaModel {
             // nowhere to get out
             const prevSibling = node.parent.getChild(node.getIndex() - 1);
             if (!prevSibling) {
+              return newSelection;
+            }
+            if (prevSibling.hasChildren && prevSibling.protected) {
               return newSelection;
             }
             if (prevSibling.single) {
@@ -885,6 +892,9 @@ export default class ArenaModel {
     const next = node.parent.getChild(node.getIndex() + 1);
     if (next && next.single) {
       return next;
+    }
+    if (next?.hasChildren && next.protected) {
+      return undefined;
     }
     if (next) {
       const cursor = this.getOrCreateNodeForText(next, 0);
