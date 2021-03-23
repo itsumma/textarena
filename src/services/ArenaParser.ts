@@ -20,7 +20,7 @@ export default class ArenaParser {
       this.asm.model.model,
       0,
     );
-    this.asm.model.model.getTextCursor(0);
+    this.asm.model.getOrCreateNodeForText(this.asm.model.model);
   }
 
   public insertHtmlToModel(

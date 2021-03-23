@@ -42,8 +42,8 @@ export default class SingleNode
     return this.parent.insertText(text, this.getIndex() + 1);
   }
 
-  public getTextCursor(): ArenaCursorText {
-    return this.parent.getTextCursor(this.getIndex());
+  public getTextCursor(): ArenaCursorText | undefined {
+    return undefined;
   }
 
   // public createAndInsertNode(arena: ChildArena): ChildArenaNode | undefined {

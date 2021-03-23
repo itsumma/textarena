@@ -148,6 +148,7 @@ export default class ArenaModel {
   public getOrCreateNodeForText(
     node: AnyArenaNode,
     offset?: number,
+    onlyChild = false,
   ): ArenaCursorText | undefined {
     if (node.hasText) {
       return {
@@ -156,16 +157,37 @@ export default class ArenaModel {
       };
     }
     if (node.hasChildren && node.arena.arenaForText) {
-      // TODO for protected do not create node, but get from children
-      let newNode:
-        ChildArenaNode | undefined = NodeFactory.createChildNode(node.arena.arenaForText);
-      newNode = node.insertNode(newNode, offset);
-      if (newNode) {
-        return this.getOrCreateNodeForText(newNode);
+      if (node.protected || offset === undefined) {
+        if (offset === undefined) {
+          for (let i = node.children.length - 1; i >= 0; i -= 1) {
+            const cursor = this.getOrCreateNodeForText(node.children[i], undefined, true);
+            if (cursor) {
+              return cursor;
+            }
+          }
+        } else {
+          for (let i = 0; i < node.children.length; i += 1) {
+            const cursor = this.getOrCreateNodeForText(node.children[i], undefined, true);
+            if (cursor) {
+              return cursor;
+            }
+          }
+        }
+      }
+      if (!node.protected) {
+        let newNode:
+          ChildArenaNode | undefined = NodeFactory.createChildNode(node.arena.arenaForText);
+        newNode = node.insertNode(newNode, offset);
+        if (newNode) {
+          return this.getOrCreateNodeForText(newNode);
+        }
       }
     }
-    if (node.hasParent) {
-      return this.getOrCreateNodeForText(node.parent, node.getIndex() + 1);
+    if (!onlyChild && node.hasParent) {
+      return this.getOrCreateNodeForText(
+        node.parent,
+        offset === undefined ? node.getIndex() : node.getIndex() + 1,
+      );
     }
     return undefined;
   }
@@ -330,13 +352,16 @@ export default class ArenaModel {
             nextSibling.remove();
             return newSelection;
           }
-          const cursor = nextSibling.getTextCursor(0);
-          if (node.getTextLength() === 0) {
-            node.remove();
-            newSelection.setCursor(cursor);
-          } else {
-            node.insertText(cursor.node.cutText(0), offset);
-            cursor.node.remove();
+          const cursor = this.getOrCreateNodeForText(nextSibling, 0);
+          // const cursor = nextSibling.getTextCursor(0);
+          if (cursor) {
+            if (node.getTextLength() === 0) {
+              node.remove();
+              newSelection.setCursor(cursor);
+            } else {
+              node.insertText(cursor.node.cutText(0), offset);
+              cursor.node.remove();
+            }
           }
         } else {
           node.removeText(offset, offset + 1);
@@ -345,7 +370,7 @@ export default class ArenaModel {
       if (direction === 'backward') {
         if (offset === 0) {
           // At the begining of the text node
-          const newNode = this.getOutFromMediator(node);
+          const newNode = this.getOutFromMediator(node, true);
           if (newNode) {
             newSelection.setBoth(newNode, 0);
           } else {
@@ -358,12 +383,15 @@ export default class ArenaModel {
               prevSibling.remove();
               return newSelection;
             }
-            const cursor = prevSibling.getTextCursor(-1);
-            if (node.getTextLength() !== 0) {
-              cursor.node.insertText(node.getText(), cursor.offset);
+            // const cursor = prevSibling.getTextCursor(-1);
+            const cursor = this.getOrCreateNodeForText(prevSibling);
+            if (cursor) {
+              if (node.getTextLength() !== 0) {
+                cursor.node.insertText(node.getText(), cursor.offset);
+              }
+              node.remove();
+              newSelection.setCursor(cursor);
             }
-            node.remove();
-            newSelection.setCursor(cursor);
           }
         } else {
           node.removeText(offset - 1, offset);
@@ -444,23 +472,29 @@ export default class ArenaModel {
           // nowhere to get out
           const newNode = this.createAndInsertNode(nextArena, parent, node.getIndex() + 1);
           if (newNode) {
-            const cursor = newNode.getTextCursor(0);
-            newSelection.setCursor(cursor);
+            // const cursor = newNode.getTextCursor(0);
+            const cursor = this.getOrCreateNodeForText(newNode, 0);
+            if (cursor) {
+              newSelection.setCursor(cursor);
+            }
           }
         }
       } else {
         const newNode = this.createAndInsertNode(nextArena, parent, node.getIndex(), true);
         if (newNode) {
-          newNode.getTextCursor(0);
+          this.getOrCreateNodeForText(newNode, 0);
         }
       }
     } else {
       const newNode = this.createAndInsertNode(nextArena, parent, node.getIndex() + 1);
       if (newNode) {
-        const text = node.cutText(offset);
-        const cursor = newNode.getTextCursor(0);
-        const cursor2 = cursor.node.insertText(text, cursor.offset);
-        newSelection.setCursor({ ...cursor2, offset: 0 });
+        const cursor = this.getOrCreateNodeForText(newNode, 0);
+        // const cursor = newNode.getTextCursor(0);
+        if (cursor) {
+          const text = node.cutText(offset);
+          const cursor2 = cursor.node.insertText(text, cursor.offset);
+          newSelection.setCursor({ ...cursor2, offset: 0 });
+        }
       }
     }
     return newSelection;
@@ -804,7 +838,10 @@ export default class ArenaModel {
     return newNode;
   }
 
-  protected getOutFromMediator(node: ArenaNodeText): ArenaNodeText | undefined {
+  protected getOutFromMediator(
+    node: ArenaNodeText,
+    onlyUnprotected = false,
+  ): ArenaNodeText | undefined {
     const { parent } = node;
     if (!parent.hasParent) {
       return undefined;
@@ -816,10 +853,11 @@ export default class ArenaModel {
       if (parent.hasParent && parent.parent === grandpaCursor.node) {
         // try to separate
         this.separateNode(parent, index);
-      } else if (!node.isLastChild()) {
+      } else if (onlyUnprotected
+        || !node.isLastChild()
+        || node.getTextLength() !== 0) {
         return undefined;
       }
-      const text = node.getText();
       let { offset } = grandpaCursor;
       if (index > 0 || parent.children.length === 1) {
         offset += 1;
@@ -827,6 +865,7 @@ export default class ArenaModel {
       const cursor = this.getOrCreateNodeForText(grandpaCursor.node, offset);
       // const cursor = grandpaCursor.node.insertText(text, offset);
       if (cursor) {
+        const text = node.cutText(0);
         cursor.node.insertText(text, cursor.offset);
         node.remove();
         return cursor.node;
@@ -846,7 +885,11 @@ export default class ArenaModel {
       return next;
     }
     if (next) {
-      return next.getTextCursor(0).node;
+      const cursor = this.getOrCreateNodeForText(next, 0);
+      if (cursor) {
+        // return next.getTextCursor(0).node;
+        return cursor.node;
+      }
     }
     return this.getNextSibling(node.parent);
   }
@@ -1187,8 +1230,11 @@ export default class ArenaModel {
       if (rest.length) {
         commonAncestor.insertChildren(rest, newNode.getIndex() + 1);
       }
-      const cursor = newNode.getTextCursor(0);
-      selection.setCursor(cursor);
+      // const cursor = newNode.getTextCursor(0);
+      const cursor = this.getOrCreateNodeForText(newNode, 0);
+      if (cursor) {
+        selection.setCursor(cursor);
+      }
     }
     return selection;
   }

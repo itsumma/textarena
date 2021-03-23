@@ -79,15 +79,11 @@ export default abstract class AbstractParentNode<
     );
   }
 
-  // TODO deprecate
-  public getTextCursor(index: number): ArenaCursorText {
+  public getTextCursor(index?: number): ArenaCursorText | undefined {
     if (!this.arena.arenaForText) {
-      if (this.parent) {
-        return this.parent.getTextCursor(this.getIndex());
-      }
-      throw new Error('Root node has not arena for text');
+      return undefined;
     }
-    if (index === -1) {
+    if (index === undefined) {
       for (let i = this.children.length - 1; i >= 0; i -= 1) {
         const { arena } = this.children[i];
         if (arena.hasText || (arena.hasChildren && arena.arenaForText)) {
@@ -102,14 +98,7 @@ export default abstract class AbstractParentNode<
         }
       }
     }
-    // const newNode = this.createAndInsertNode(
-    //   this.arena.arenaForText,
-    //   index === -1 ? this.children.length : index,
-    // );
-    // if (newNode) {
-    //   return newNode.getTextCursor(0);
-    // }
-    throw new Error('Arena for text was not created');
+    return undefined;
   }
 
   public insertText(
@@ -175,8 +164,13 @@ export default abstract class AbstractParentNode<
   }
 
   public removeChild(index: number): ArenaCursorAncestor {
-    if (this.arena.protected
-      || index < 0
+    if (this.arena.protected) {
+      return {
+        node: this as unknown as ParentArenaNode,
+        offset: index,
+      };
+    }
+    if (index < 0
       || index >= this.children.length) {
       return {
         node: this as unknown as ParentArenaNode,
@@ -236,12 +230,15 @@ export default abstract class AbstractParentNode<
   }
 
   public mergeChildren(index: number): ArenaCursorAncestor {
+    if (this.hasParent && this.children.length === 0) {
+      return this.remove();
+    }
     let newIndex = index;
-    for (let i = 1; i < this.children.length; i += 1) {
+    for (let i = 0; i < this.children.length; i += 1) {
       const child = this.children[i];
-      const prev = this.children[i - 1];
+      const prev = i > 0 ? this.children[i - 1] : undefined;
       if (child.hasChildren && child.automerge) {
-        if (prev.hasChildren && child.arena === prev.arena) {
+        if (prev && prev.hasChildren && child.arena === prev.arena) {
           prev.insertChildren(
             child.children,
             prev.children.length,
@@ -271,13 +268,13 @@ export default abstract class AbstractParentNode<
       } else {
         result = this.children.splice(start, length);
       }
-      this.mergeChildren(start);
+      // this.mergeChildren(start);
     }
     return result;
   }
 
   public removeChildren(start: number, length?: number): void {
     this.cutChildren(start, length);
-    this.mergeChildren(start);
+    // this.mergeChildren(start);
   }
 }
