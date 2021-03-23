@@ -25,8 +25,10 @@
   textarena-node {
     display: block;
     position: relative;
+    user-select: none;
   }
   textarena-remove {
+    user-select: none;
     display: block;
     position: absolute;
     left: -1em;

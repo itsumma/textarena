@@ -72,6 +72,9 @@ export default class ArenaParser {
   ): [AnyArenaNode, number, boolean] {
     // console.log('isert', node, arenaNode);
     if (node.nodeType === Node.TEXT_NODE) {
+      if (arenaNode.hasChildren && arenaNode.protected) {
+        return [arenaNode, offset, false];
+      }
       const text = this.clearText(
         node.textContent,
         // first,
@@ -94,6 +97,9 @@ export default class ArenaParser {
       const elementNode = node as HTMLElement;
       const arena = this.checkArenaMark(elementNode);
       if (arena && !arena.inline) {
+        // if (arenaNode.hasChildren && arenaNode.protected && !arenaNode.isAllowedNode(arena)) {
+        //   return [arenaNode, offset, false];
+        // }
         // if ('hasText' in arenaNode && firstTextNode) {
         //   const result = this.insertChildren(elementNode, arenaNode, offset);
         //   return [...result, true];
