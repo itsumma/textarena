@@ -5,7 +5,7 @@ import BrowserCommandEvent from '../events/BrowserCommandEvent';
 import CommandEvent from '../events/CommandEvent';
 import CopyEvent from '../events/CopyEvent';
 import CutEvent from '../events/CutEvent';
-import InputEvent from '../events/InputEvent';
+import ArenaInputEvent from '../events/ArenaInputEvent';
 import ModifiersEvent from '../events/ModifiersEvent';
 import PasteEvent from '../events/PasteEvent';
 import RemoveEvent from '../events/RemoveEvent';
@@ -15,6 +15,7 @@ import ElementHelper from '../helpers/ElementHelper';
 
 import { keyboardKeys, Modifiers } from './ArenaCommandManager';
 import ArenaServiceManager from './ArenaServiceManager';
+import ArenaSelection from '../helpers/ArenaSelection';
 
 function isMac(): boolean {
   return window.navigator.platform.includes('Mac');
@@ -28,7 +29,8 @@ type ArenaChangeAttribute = CustomEvent<{
 
 declare global {
   interface GlobalEventHandlersEventMap {
-    'arena-change-attribute': ArenaChangeAttribute
+    'arena-change-attribute': ArenaChangeAttribute;
+    'beforeinput': InputEvent;
   }
 }
 
@@ -122,7 +124,7 @@ function isDescendant(
 export default class ArenaBrowser {
   protected inputListenerInstance: ((e: Event) => void);
 
-  // protected beforeinputListenerInstance: ((e: Event) => void);
+  protected beforeinputListenerInstance: ((e: InputEvent) => void);
 
   protected mouseUpListenerInstance: ((e: MouseEvent) => void);
 
@@ -149,6 +151,7 @@ export default class ArenaBrowser {
   ) {
     this.editor = this.asm.textarena.getEditorElement();
     this.inputListenerInstance = this.inputListener.bind(this);
+    this.beforeinputListenerInstance = this.beforeinputListener.bind(this);
     this.mouseUpListenerInstance = this.mouseUpListener.bind(this);
     this.keyUpListenerInstance = this.keyUpListener.bind(this);
     this.keyPressListenerInstance = this.keyPressListener.bind(this);
@@ -158,6 +161,7 @@ export default class ArenaBrowser {
     this.changeAttributeListenerInstance = this.changeAttributeListener.bind(this);
     this.asm.eventManager.subscribe('turnOn', () => {
       this.editor.addEventListener('input', this.inputListenerInstance, false);
+      this.editor.addEventListener('beforeinput', this.beforeinputListenerInstance, false);
       this.editor.addEventListener('mouseup', this.mouseUpListenerInstance, false);
       this.editor.addEventListener('keyup', this.keyUpListenerInstance, false);
       this.editor.addEventListener('keypress', this.keyPressListenerInstance, false);
@@ -320,9 +324,30 @@ export default class ArenaBrowser {
       return undefined;
     }
     if (character) {
-      return new InputEvent(e, character);
+      return new ArenaInputEvent(e, character);
     }
     return undefined;
+  }
+
+  protected beforeinputListener(e: InputEvent): void {
+    this.asm.logger.log('Beforeinput event', e);
+    if (e?.inputType === 'deleteByDrag') {
+      const targetSelection = this.asm.view.detectArenaSelection();
+      if (targetSelection) {
+        this.asm.model.removeSelection(targetSelection, targetSelection.direction);
+      }
+      e.preventDefault();
+    }
+    if (e?.inputType === 'insertFromDrop') {
+      const data = (e as unknown as { dataTransfer : DataTransfer | null }).dataTransfer;
+      if (data) {
+        const targetSelection = this.asm.view.detectArenaSelection();
+        if (targetSelection) {
+          this.insertData(data, targetSelection);
+        }
+      }
+      e.preventDefault();
+    }
   }
 
   protected inputListener(e: Event): void {
@@ -400,7 +425,7 @@ export default class ArenaBrowser {
         this.asm.commandManager.execShortcut(selection, modifiersSum, command);
       }
     }
-    if (event instanceof InputEvent) {
+    if (event instanceof ArenaInputEvent) {
       const selection = this.asm.view.getCurrentSelection();
       if (selection) {
         this.asm.model.insertTextToModel(selection, event.character, true);
@@ -423,14 +448,18 @@ export default class ArenaBrowser {
     if (!clipboardData) {
       return;
     }
-    const types: string[] = [...clipboardData.types || []];
+    const selection = this.asm.view.getCurrentSelection();
+    if (!selection) {
+      return;
+    }
+    this.insertData(clipboardData, selection);
+  }
+
+  protected insertData(data: DataTransfer, selection: ArenaSelection): void {
+    const types: string[] = [...data.types || []];
     if (types.includes('text/html')) {
-      let html = clipboardData.getData('text/html');
+      let html = data.getData('text/html');
       if (!html) {
-        return;
-      }
-      const selection = this.asm.view.getCurrentSelection();
-      if (!selection) {
         return;
       }
       const matchStart = /<!--StartFragment-->/.exec(html);
@@ -448,12 +477,8 @@ export default class ArenaBrowser {
       const newSelection = this.asm.model.insertHtml(selection, html);
       this.asm.eventManager.fire({ name: 'modelChanged', data: newSelection });
     } else if (types.includes('text/plain')) {
-      const text = clipboardData.getData('text/plain');
+      const text = data.getData('text/plain');
       if (!text) {
-        return;
-      }
-      const selection = this.asm.view.getCurrentSelection();
-      if (!selection) {
         return;
       }
       this.asm.logger.log(`Insert text: «${text}»`);

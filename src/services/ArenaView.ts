@@ -63,7 +63,7 @@ export default class ArenaView {
     return this;
   }
 
-  protected detectArenaSelection(): ArenaSelection | undefined {
+  public detectArenaSelection(): ArenaSelection | undefined {
     const s = window.getSelection();
     const range = s ? s.getRangeAt(0) : undefined;
     if (s && range) {
