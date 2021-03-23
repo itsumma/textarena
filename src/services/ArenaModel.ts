@@ -816,7 +816,7 @@ export default class ArenaModel {
 
   protected rootNode: ArenaNodeRoot | undefined;
 
-  protected separateNode(
+  protected splitMediatorNode(
     node: ArenaNodeMediator,
     offset: number,
   ): undefined | ParentArenaNode {
@@ -840,10 +840,13 @@ export default class ArenaModel {
 
   protected getOutFromMediator(
     node: ArenaNodeText,
-    onlyUnprotected = false,
+    onlyGroup = false,
   ): ArenaNodeText | undefined {
     const { parent } = node;
     if (!parent.hasParent) {
+      return undefined;
+    }
+    if (onlyGroup && !parent.group) {
       return undefined;
     }
     const grandpaCursor = parent.getUnprotectedParent();
@@ -852,9 +855,8 @@ export default class ArenaModel {
       const index = node.getIndex();
       if (parent.hasParent && parent.parent === grandpaCursor.node) {
         // try to separate
-        this.separateNode(parent, index);
-      } else if (onlyUnprotected
-        || !node.isLastChild()
+        this.splitMediatorNode(parent, index);
+      } else if (!node.isLastChild()
         || node.getTextLength() !== 0) {
         return undefined;
       }
@@ -1023,7 +1025,7 @@ export default class ArenaModel {
     }
     if (parent.hasParent) {
       //  && parent.group
-      const secondParent = this.separateNode(parent, node.getIndex());
+      const secondParent = this.splitMediatorNode(parent, node.getIndex());
       if (secondParent) {
         return this.getParentWhoCanCreateNode(secondParent, arena);
       }
