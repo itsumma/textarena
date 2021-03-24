@@ -149,6 +149,32 @@ export default class ArenaModel {
     return node;
   }
 
+  public getTextCursor(
+    node: AnyArenaNode,
+    offset: number,
+  ): ArenaCursorText {
+    if (node.hasText) {
+      return {
+        node,
+        offset,
+      };
+    }
+    if (node.hasChildren && node.arena.arenaForText) {
+      const child = node.getChild(offset - 1);
+      if (child) {
+        const cursor = this.getOrCreateNodeForText(child, undefined, true);
+        if (cursor) {
+          return cursor;
+        }
+      }
+      const cursor2 = this.getOrCreateNodeForText(node, offset);
+      if (cursor2) {
+        return cursor2;
+      }
+    }
+    throw new Error('Text cursor not found');
+  }
+
   /**
    * Find or create text node in children or ancestors.
    * @param node AnyArenaNode
@@ -321,7 +347,9 @@ export default class ArenaModel {
       newSelection.startOffset,
     );
     if (result) {
-      newSelection.setBoth(result[0] as ArenaNodeText, result[1]);
+      const cursor = this.getTextCursor(result[0], result[1]);
+      newSelection.setCursor(cursor);
+      // newSelection.setBoth(result[0] as ArenaNodeText, result[1]);
     }
     return newSelection;
   }
@@ -405,6 +433,10 @@ export default class ArenaModel {
               return newSelection;
             }
             if (prevSibling.single) {
+              prevSibling.remove();
+              return newSelection;
+            }
+            if (prevSibling.hasText && prevSibling.getTextLength() === 0) {
               prevSibling.remove();
               return newSelection;
             }
@@ -545,7 +577,7 @@ export default class ArenaModel {
     return selection;
   }
 
-  public toggleArenaForSelection(
+  protected toggleArenaForSelection(
     selection: ArenaSelection,
     arena: ArenaMediatorInterface,
   ): ArenaSelection {

@@ -371,7 +371,7 @@ export default class ArenaBrowser {
             if (sel) {
               this.asm.history.save(sel);
             }
-            this.asm.eventManager.fire({ name: 'modelChanged' });
+            this.asm.eventManager.fire({ name: 'modelChanged', data: sel });
           }
           break;
         }

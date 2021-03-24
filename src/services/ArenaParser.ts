@@ -130,9 +130,15 @@ export default class ArenaParser {
           }
         } else if (arenaNode.hasChildren && arenaNode.isAllowedNode(arena)) {
           newArenaNode = this.asm.model.createChildNode(arena);
-          newArenaNode = arenaNode.insertNode(newArenaNode);
+          newArenaNode = arenaNode.insertNode(newArenaNode, offset);
           // arenaNode.createAndInsertNode(arena, offset);
           // newArenaNode = arenaNode.createAndInsertNode(arena, offset);
+        } else if (arenaNode.hasParent && !(arenaNode.hasChildren && arenaNode.protected)) {
+          newArenaNode = this.asm.model.createAndInsertNode(
+            arena,
+            arenaNode.parent,
+            arenaNode.getIndex() + 1,
+          );
         }
         if (newArenaNode) {
           this.setAttributes(newArenaNode, elementNode);
@@ -141,6 +147,8 @@ export default class ArenaParser {
             this.asm.logger.log('this is arena for text', formatings);
             newArenaNode.insertText(formatings, newArenaNode.getTextLength());
             this.clearTextNode(newArenaNode);
+          } else if (newArenaNode.single) {
+            return [newArenaNode.parent, newArenaNode.getIndex() + 1, true];
           } else {
             this.insertChildren(elementNode, newArenaNode, 0);
           }
