@@ -1,11 +1,6 @@
 import AbstractParentNode from './AbstractParentNode';
-// import NodeFactory from './NodeFactory';
 import { ArenaMediatorInterface } from '../interfaces/Arena';
 import { ArenaNodeMediator } from '../interfaces/ArenaNode';
-
-// TODO сделать вариант когда у нас фиксированное количество дочерних нод,
-// например callout (title, paragraph)
-// или quote (title, section).
 
 export default class MediatorNode
   extends AbstractParentNode<ArenaMediatorInterface>
@@ -20,19 +15,12 @@ export default class MediatorNode
 
   readonly single: false = false;
 
-  // constructor(
-  //   public arena: ArenaMediatorInterface,
-  //   // public parent?: ParentArenaNode,
-  //   children?: ChildArenaNode[],
-  // ) {
-  //   super(arena, children);
-  // }
-
   public clone(): ArenaNodeMediator {
     return new MediatorNode(
       this.arena,
-      // this.parent,
+      this.id,
       this.children.map((child) => child.clone()),
+      this.attributes,
     );
   }
 }

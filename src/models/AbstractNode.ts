@@ -1,7 +1,11 @@
+import { TreeArena } from '../interfaces/Arena';
+import ArenaAttributes from '../interfaces/ArenaAttributes';
 import ArenaCursorAncestor from '../interfaces/ArenaCursorAncestor';
 import { ChildArenaNode, ParentArenaNode } from '../interfaces/ArenaNode';
 
-export default abstract class AbstractNode {
+export default abstract class AbstractNode<
+  TArena extends TreeArena
+> {
   readonly hasParent: boolean = false;
 
   readonly hasChildren: boolean = false;
@@ -21,9 +25,13 @@ export default abstract class AbstractNode {
     return this._parent;
   }
 
-  // constructor(readonly arena: TArena) {
-  //   console.log('//');
-  // }
+  constructor(
+    readonly arena: TArena,
+    readonly id: string,
+    attributes?: ArenaAttributes,
+  ) {
+    this.attributes = attributes || {};
+  }
 
   // Child node methods
 
@@ -85,5 +93,5 @@ export default abstract class AbstractNode {
     return this.attributes[name] || '';
   }
 
-  protected attributes: { [key: string] :string } = {};
+  protected attributes: ArenaAttributes = {};
 }

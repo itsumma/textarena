@@ -9,6 +9,7 @@ import {
   ArenaNodeInline, ArenaNodeRoot, ChildArenaNode,
 } from '../interfaces/ArenaNode';
 import InlineNode from './InlineNode';
+import NodeRegistry from '../helpers/NodeRegistry';
 
 export default class NodeFactory {
   static createRootNode(arena: ArenaRootInterface): ArenaNodeRoot {
@@ -17,22 +18,31 @@ export default class NodeFactory {
 
   static createChildNode(
     arena: ChildArena,
-    // parent: ParentArenaNode,
+    registry: NodeRegistry,
   ): ChildArenaNode {
     if (arena.hasChildren) {
       let children;
       if (arena.protected) {
         children = arena.protectedChildren.map(
-          (childArena) => this.createChildNode(childArena),
+          (childArena) => this.createChildNode(childArena, registry),
         );
       }
-      return new MediatorNode(arena, children);
+      const id = registry.generateId();
+      const node = new MediatorNode(arena, id, children);
+      registry.registerNode(id, node);
+      return node;
     }
     if (arena.hasText) {
-      return new TextNode(arena);
+      const id = registry.generateId();
+      const node = new TextNode(arena, id);
+      registry.registerNode(id, node);
+      return node;
     }
     if (arena.single) {
-      return new SingleNode(arena);
+      const id = registry.generateId();
+      const node = new SingleNode(arena, id);
+      registry.registerNode(id, node);
+      return node;
     }
     throw new Error('Cant create Node');
   }

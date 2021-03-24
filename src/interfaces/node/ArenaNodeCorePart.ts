@@ -4,6 +4,8 @@ import ArenaCursorText from '../ArenaCursorText';
 import { ArenaFormatings } from '../ArenaFormating';
 
 export default interface ArenaNodeCorePart<T> {
+  readonly id: string;
+
   readonly hasParent: boolean;
   readonly hasChildren: boolean;
   readonly hasText: boolean;

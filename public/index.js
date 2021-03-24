@@ -84,7 +84,7 @@
       elem,
       {
         editable: true,
-        debug: true,
+        debug: false,
         onChange,
         onReady: onChange,
         initData,

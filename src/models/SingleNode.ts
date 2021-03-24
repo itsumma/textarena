@@ -7,7 +7,7 @@ import { ArenaSingleInterface } from '../interfaces/Arena';
 import { ArenaNodeSingle } from '../interfaces/ArenaNode';
 
 export default class SingleNode
-  extends AbstractNode
+  extends AbstractNode<ArenaSingleInterface>
   implements ArenaNodeSingle {
   readonly hasParent: true = true;
 
@@ -18,15 +18,6 @@ export default class SingleNode
   readonly inline: false = false;
 
   readonly single: true = true;
-
-  // eslint-disable-next-line @typescript-eslint/no-useless-constructor
-  constructor(
-    public arena: ArenaSingleInterface,
-    // parent?: ParentArenaNode,
-  ) {
-    super();
-    // this.parent = parent;
-  }
 
   public getHtml(): TemplateResult | string {
     return this.arena.getTemplate(undefined, this.getGlobalIndex(), this.attributes);
@@ -53,7 +44,8 @@ export default class SingleNode
   public clone(): SingleNode {
     return new SingleNode(
       this.arena,
-      // this.parent,
+      this.id,
+      this.attributes,
     );
   }
 }

@@ -16,7 +16,7 @@ export default class RootNode
     public arena: ArenaRootInterface,
     children?: ChildArenaNode[],
   ) {
-    super(arena, children);
+    super(arena, '', children);
   }
 
   public clone(): RootNode {

@@ -44,4 +44,6 @@ export type ParentArena = ArenaMediatorInterface | ArenaRootInterface;
 
 export type ChildArena = ArenaMediatorInterface | ArenaSingleInterface | ArenaTextInterface;
 
+export type TreeArena = ArenaRootInterface | ChildArena;
+
 export type AnyArena = ArenaRootInterface | ChildArena | ArenaInlineInterface;

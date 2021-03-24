@@ -6,12 +6,12 @@ import ArenaCursorAncestor from '../interfaces/ArenaCursorAncestor';
 import { ArenaFormatings } from '../interfaces/ArenaFormating';
 import { ChildArenaNode, ParentArenaNode } from '../interfaces/ArenaNode';
 import AbstractNode from './AbstractNode';
-// import NodeFactory from './NodeFactory';
+import ArenaAttributes from '../interfaces/ArenaAttributes';
 
 export default abstract class AbstractParentNode<
   TArena extends ParentArena
 >
-  extends AbstractNode {
+  extends AbstractNode<TArena> {
   readonly hasParent: boolean = false;
 
   readonly hasChildren: true = true;
@@ -37,10 +37,12 @@ export default abstract class AbstractParentNode<
   public children: ChildArenaNode[] = [];
 
   constructor(
-    public arena: TArena,
+    arena: TArena,
+    id: string,
     children?: ChildArenaNode[],
+    attributes?: ArenaAttributes,
   ) {
-    super();
+    super(arena, id, attributes);
     if (children) {
       children.forEach((child) => child.setParent(this as unknown as ParentArenaNode));
       this.children = children;
@@ -138,27 +140,6 @@ export default abstract class AbstractParentNode<
     return this.arena.allowedArenas.includes(arena);
   }
 
-  // createAndInsertNode(arena: ChildArena, offset: number): ChildArenaNode | undefined {
-  //   if (this.arena.protected) {
-  //     const { protectedChildren } = this.arena;
-  //     if (offset < protectedChildren.length) {
-  //       for (let i = 0; i < protectedChildren.length; i += 1) {
-  //         if (protectedChildren[i] === arena) {
-  //           return this.children[i];
-  //         }
-  //       }
-  //     }
-  //   } else if (this.arena.allowedArenas.includes(arena)) {
-  //     // const node = NodeFactory.createChildNode(arena, this as unknown as ParentArenaNode);
-  //     // this.children.splice(offset, 0, node);
-  //     // return node;
-  //   }
-  //   if (this.parent) {
-  //     return this.parent.createAndInsertNode(arena, this.getIndex() + 1);
-  //   }
-  //   return undefined;
-  // }
-
   public insertNode(node: ChildArenaNode, offset?: number):
     ChildArenaNode | undefined {
     if (this.arena.protected) {
@@ -232,14 +213,6 @@ export default abstract class AbstractParentNode<
         node.setParent(this as unknown as ParentArenaNode);
         this.children.splice(index, 0, node);
         index += 1;
-      // } else if (node.hasText && this.arena.arenaForText) {
-      //   const newNode = NodeFactory.createChildNode(
-      //     this.arena.arenaForText,
-      //     this as unknown as ParentArenaNode,
-      //   );
-      //   newNode.insertText(node.getText(), 0);
-      //   this.children.splice(index, 0, newNode);
-      //   index += 1;
       } else {
         rest.push(node);
       }
