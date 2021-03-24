@@ -1,6 +1,5 @@
 import { TemplateResult, html } from 'lit-html';
 import { repeat } from 'lit-html/directives/repeat';
-import RichTextManager from '../helpers/RichTextManager';
 import { ChildArena, ParentArena } from '../interfaces/Arena';
 import ArenaCursorText from '../interfaces/ArenaCursorText';
 import ArenaCursorAncestor from '../interfaces/ArenaCursorAncestor';
@@ -12,7 +11,7 @@ import AbstractNode from './AbstractNode';
 export default abstract class AbstractParentNode<
   TArena extends ParentArena
 >
-  extends AbstractNode<TArena> {
+  extends AbstractNode {
   readonly hasParent: boolean = false;
 
   readonly hasChildren: true = true;
@@ -63,13 +62,31 @@ export default abstract class AbstractParentNode<
     if (this.children.length === 0) {
       return '';
     }
-    return this.arena.getTemplate(
+    const id = this.getGlobalIndex();
+    const content = this.arena.getTemplate(
       html`
         ${repeat(this.children, (c, index) => index, (child) => child.getHtml(frms))}
       `,
-      this.getGlobalIndex(),
+      id,
       this.attributes,
     );
+    if (this.protected) {
+      const removeButton = html`<textarena-remove node-id="${id}">
+      <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+      viewBox="0 0 512.001 512.001" xml:space="preserve">
+      <g>
+        <path d="M294.111,256.001L504.109,46.003c10.523-10.524,10.523-27.586,0-38.109c-10.524-10.524-27.587-10.524-38.11,0L256,217.892
+          L46.002,7.894c-10.524-10.524-27.586-10.524-38.109,0s-10.524,27.586,0,38.109l209.998,209.998L7.893,465.999
+          c-10.524,10.524-10.524,27.586,0,38.109c10.524,10.524,27.586,10.523,38.109,0L256,294.11l209.997,209.998
+          c10.524,10.524,27.587,10.523,38.11,0c10.523-10.524,10.523-27.586,0-38.109L294.111,256.001z" fill="currentColor"/>
+      </g>
+      </svg>
+      </textarena-remove>`;
+      return html`
+        <textarena-node>${removeButton}${content}</textarena-node>
+      `;
+    }
+    return content;
   }
 
   public getOutputHtml(frms: ArenaFormatings, deep = 0): string {
@@ -80,15 +97,11 @@ export default abstract class AbstractParentNode<
     );
   }
 
-  // TODO deprecate
-  public getTextCursor(index: number): ArenaCursorText {
+  public getTextCursor(index?: number): ArenaCursorText | undefined {
     if (!this.arena.arenaForText) {
-      if (this.parent) {
-        return this.parent.getTextCursor(this.getIndex());
-      }
-      throw new Error('Root node has not arena for text');
+      return undefined;
     }
-    if (index === -1) {
+    if (index === undefined) {
       for (let i = this.children.length - 1; i >= 0; i -= 1) {
         const { arena } = this.children[i];
         if (arena.hasText || (arena.hasChildren && arena.arenaForText)) {
@@ -103,19 +116,10 @@ export default abstract class AbstractParentNode<
         }
       }
     }
-    // const newNode = this.createAndInsertNode(
-    //   this.arena.arenaForText,
-    //   index === -1 ? this.children.length : index,
-    // );
-    // if (newNode) {
-    //   return newNode.getTextCursor(0);
-    // }
-    throw new Error('Arena for text was not created');
+    return undefined;
   }
 
   public insertText(
-    text: string | RichTextManager,
-    offset: number,
   ): ArenaCursorText {
     // if (this.arena.arenaForText) {
     //   const newNode = this.createAndInsertNode(this.arena.arenaForText, offset);
@@ -178,8 +182,13 @@ export default abstract class AbstractParentNode<
   }
 
   public removeChild(index: number): ArenaCursorAncestor {
-    if (this.arena.protected
-      || index < 0
+    if (this.arena.protected) {
+      return {
+        node: this as unknown as ParentArenaNode,
+        offset: index,
+      };
+    }
+    if (index < 0
       || index >= this.children.length) {
       return {
         node: this as unknown as ParentArenaNode,
@@ -239,12 +248,15 @@ export default abstract class AbstractParentNode<
   }
 
   public mergeChildren(index: number): ArenaCursorAncestor {
+    if (this.hasParent && this.children.length === 0) {
+      return this.remove();
+    }
     let newIndex = index;
-    for (let i = 1; i < this.children.length; i += 1) {
+    for (let i = 0; i < this.children.length; i += 1) {
       const child = this.children[i];
-      const prev = this.children[i - 1];
+      const prev = i > 0 ? this.children[i - 1] : undefined;
       if (child.hasChildren && child.automerge) {
-        if (prev.hasChildren && child.arena === prev.arena) {
+        if (prev && prev.hasChildren && child.arena === prev.arena) {
           prev.insertChildren(
             child.children,
             prev.children.length,
@@ -274,13 +286,13 @@ export default abstract class AbstractParentNode<
       } else {
         result = this.children.splice(start, length);
       }
-      this.mergeChildren(start);
+      // this.mergeChildren(start);
     }
     return result;
   }
 
   public removeChildren(start: number, length?: number): void {
     this.cutChildren(start, length);
-    this.mergeChildren(start);
+    // this.mergeChildren(start);
   }
 }

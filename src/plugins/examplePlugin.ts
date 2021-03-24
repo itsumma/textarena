@@ -152,28 +152,66 @@ export class Recomendation extends LitElement {
   }
 }
 
-const examplePlugin = (): ArenaPlugin => ({
+type MarkOptions = {
+  tag: string,
+  attributes: string[];
+};
+
+export type ExampleOptions = {
+  name: string,
+  tag: string,
+  attributes: string[],
+  allowedAttributes: string[],
+  title: string,
+  icon?: string,
+  shortcut: string,
+  hint: string,
+  command: string,
+  component: string,
+  marks: MarkOptions[],
+};
+
+const defaultOptions: ExampleOptions = {
+  name: 'exampleRecomendation',
+  title: 'Example recomendation',
+  tag: 'ARENA-RECOMENDATION',
+  attributes: [
+  ],
+  allowedAttributes: ['postid'],
+  shortcut: 'Alt + KeyR',
+  hint: 'r',
+  command: 'add-callout',
+  component: 'arena-recomendation',
+  marks: [
+    {
+      tag: 'ARENA-RECOMENDATION',
+      attributes: [],
+    },
+  ],
+};
+
+const examplePlugin = (opts?: ExampleOptions): ArenaPlugin => ({
   register: (ta: Textarena) => {
-    customElements.define('arena-recomendation', Recomendation);
+    const {
+      name, icon, title, tag, attributes,
+      allowedAttributes, shortcut, hint, command, component, marks,
+    } = { ...defaultOptions, ...(opts || {}) };
+    if (!customElements.get(component)) {
+      customElements.define(component, Recomendation);
+    }
     const arena = ta.registerArena(
       {
-        name: 'exampleRecomendation',
-        tag: 'ARENA-RECOMENDATION',
-        attributes: [
-        ],
-        allowedAttributes: ['postid'],
+        name,
+        tag,
+        attributes,
+        allowedAttributes,
         single: true,
       },
-      [
-        {
-          tag: 'ARENA-RECOMENDATION',
-          attributes: [],
-        },
-      ],
+      marks,
       [ta.getRootArenaName()],
     ) as ArenaSingleInterface;
     ta.registerCommand(
-      'add-recomendation',
+      command,
       (someTa: Textarena, selection: ArenaSelection) => {
         const sel = someTa.insertBeforeSelected(selection, arena);
         return sel;
@@ -181,16 +219,16 @@ const examplePlugin = (): ArenaPlugin => ({
     );
 
     ta.registerShortcut(
-      'Alt + KeyR',
-      'add-recomendation',
+      shortcut,
+      command,
     );
     ta.registerCreator({
-      name: 'exampleRecomendation',
-      icon: '👍',
-      title: 'Example recomendation',
-      shortcut: 'Alt + KeyR',
-      hint: 'r',
-      command: 'add-recomendation',
+      name,
+      icon,
+      title,
+      shortcut,
+      hint,
+      command,
       canShow: (node: ArenaNodeText) =>
         node.parent.arena.allowedArenas.includes(arena),
     });

@@ -210,7 +210,7 @@ test('simple shift', () => {
   const i = new Intervaler();
   i.addInterval(2, 5);
   i.shift(3, 1);
-  expect(i.getIntervals()).toEqual([{ start: 2, end: 6 }]);
+  expect(i.getIntervals()).toEqual([{ start: 2, end: 3 }, { start: 4, end: 6 }]);
 });
 test('simple merge', () => {
   const i = new Intervaler();

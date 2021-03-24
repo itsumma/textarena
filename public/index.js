@@ -29,6 +29,7 @@
     } catch {}
     if (!dataHtml) {
       dataHtml = `
+      <p></p>
         <arena-image src="https://storage.yandexcloud.net/itsizo.app/7b128593-5c11-4850-8560-6047d71e79b5.jpg">
           <p slot=image-caption>
         Мозьно мине карсиньки  <a href="https://storage.yandexcloud.net">грюсить</a>

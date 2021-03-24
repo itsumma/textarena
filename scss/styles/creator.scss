@@ -1,52 +1,58 @@
 .textarena-creator {
   position: absolute;
-  bottom: 0;
+  // bottom: 0;
   left: 0;
   z-index: 1;
-  width: 1.2rem;
-  height: 1.6rem;
+  // width: 1.2em;
+  // height: 1.6em;
   flex-direction: row;
   box-sizing: border-box;
-  align-items: center;
+  align-items: start;
   transition: 0.3s;
-  overflow: hidden;
+  font-size: 1rem;
+  width: 100%;
+  overflow-x: hidden;
+  overflow-y: visible;
 
   &_active {
     width: 100%;
     z-index: 1;
   }
 
+  &__create-button-wrapper {
+    display: block;
+    display: flex;
+    align-items: center;
+  }
+
   &__create-button {
-    margin-left: 0.1rem;
-    margin-right: 0.1rem;
-    padding: 0 0.2rem;
+    margin-left: 0.1em;
+    margin-right: 0.1em;
+    padding: 0 0.2em;
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 1rem;
-    min-width: 1rem;
-    height: 1rem;
-    border: 1px solid #888;
+    width: 1em;
+    min-width: 1em;
+    height: 1em;
+    border: 0.05em solid #888;
     border-radius: 100%;
     cursor: pointer;
     transition: 0.3s;
     background: none;
     box-sizing: border-box;
-
-    svg {
-      width: 100%;
-      fill: #888;
-    }
+    font-size: 1em;
 
     &:hover,
     &:focus,
     &:active {
       outline: none;
-      border: 1px solid #000;
+      border: 0.05em solid #000;
+    }
 
-      svg {
-        fill: #000;
-      }
+    svg {
+      width: 100%;
+      fill: #888;
     }
   }
 
@@ -70,14 +76,18 @@
   }
 
   &__list {
-    padding-left: 0.5rem;
+    padding-left: 0.5em;
     display: flex;
     flex-wrap: wrap;
     transition: 0.3s;
     opacity: 0;
+    flex-direction: row;
+    margin-left: -100em;
+    font-size: 1em;
   }
 
   &_active &__list {
+    margin-left: 0;
     flex-direction: row;
     opacity: 1;
   }
@@ -85,34 +95,44 @@
   &__item {
     display: flex;
     position: relative;
-    width: 1.4rem;
-    height: 1.4rem;
-    border: 1px solid #888;
+    min-width: 2em;
+    height: 2em;
+    border: 0.05em solid #888;
     color: #888;
-    border-radius: 100%;
+    border-radius: 2em;
     align-items: center;
     justify-content: center;
     cursor: pointer;
     transition: 0.3s;
-    background: none;
-    margin-right: -1.4rem;
+    margin-right: -1.4em;
+    padding: 0.4em;
     box-sizing: border-box;
+    background: white;
+    margin-bottom: 0.2em;
+    font-size: 1em;
 
     &:hover,
     &:focus,
     &:active {
       outline: none;
-      border: 1px solid #000;
+      border-color: #000;
       color: #000;
+    }
+  }
 
-      svg {
-        fill: #000;
-      }
+  &__item-icon {
+    font-size: 0.8em;
+    display: flex;
+    justify-content: center;
+
+    svg {
+      // width: 60%;
+      height: 100%;
     }
   }
 
   &_active &__item {
-    margin-right: 0.5rem;
+    margin-right: 0.5em;
   }
 
   &__hint { @include key; }

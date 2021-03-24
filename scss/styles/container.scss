@@ -12,38 +12,32 @@
   h1 {
     font-size: 3rem;
     font-weight: bold;
-    min-height: 1.6em;
   }
 
   h2 {
     font-size: 2rem;
     font-weight: bold;
-    min-height: 1.6em;
   }
 
   h3 {
     font-size: 1.5rem;
     font-weight: bold;
-    min-height: 1.6em;
   }
 
   h4 {
     font-size: 1rem;
     font-weight: bold;
-    min-height: 1.6em;
   }
 
   h5 {
     font-size: 1rem;
     font-weight: normal;
-    min-height: 1.6em;
   }
 
   h6 {
     font-style: italic;
     font-size: 1rem;
     font-weight: normal;
-    min-height: 1.6em;
   }
 
   h1,
@@ -53,6 +47,7 @@
   h5,
   h6 {
     line-height: 1.2em;
+    min-height: 1.2em;
     margin: 1em 0 0.5em;
 
     &:first-child {

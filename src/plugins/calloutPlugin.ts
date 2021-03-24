@@ -54,23 +54,49 @@ export class Callout extends LitElement {
   }
 }
 
-const defaultOptions = {
+type MarkOptions = {
+  tag: string,
+  attributes: string[];
+};
+
+export type CalloutOptions = {
+  name: string,
+  tag: string,
+  attributes: string[],
+  title: string,
+  icon?: string,
+  shortcut: string,
+  hint: string,
+  command: string,
+  component: string,
+  marks: MarkOptions[],
+};
+
+const defaultOptions: CalloutOptions = {
   name: 'callout',
-  icon: '<b>NB</b>',
   title: 'Callout',
   tag: 'ARENA-CALLOUT',
   attributes: [],
   shortcut: 'Alt + KeyC',
   hint: 'c',
   command: 'add-callout',
+  component: 'arena-callout',
+  marks: [
+    {
+      tag: 'ARENA-CALLOUT',
+      attributes: [],
+    },
+  ],
 };
 
-const calloutPlugin = (opts?: typeof defaultOptions): ArenaPlugin => ({
+const calloutPlugin = (opts?: CalloutOptions): ArenaPlugin => ({
   register(textarena: Textarena): void {
-    customElements.define('arena-callout', Callout);
     const {
-      name, icon, title, tag, attributes, shortcut, hint, command,
+      name, icon, title, tag, attributes, shortcut, hint, command, component, marks,
     } = { ...defaultOptions, ...(opts || {}) };
+    if (!customElements.get(component)) {
+      customElements.define(component, Callout);
+    }
     const paragraph = textarena.getDefaultTextArena();
     if (!paragraph) {
       throw new Error('Default Arena for text not found');
@@ -128,12 +154,7 @@ const calloutPlugin = (opts?: typeof defaultOptions): ArenaPlugin => ({
         ],
         arenaForText: calloutBodyContainer,
       },
-      [
-        {
-          tag,
-          attributes: [],
-        },
-      ],
+      marks,
       [textarena.getRootArenaName()],
     ) as ArenaMediatorInterface;
     textarena.registerCommand(

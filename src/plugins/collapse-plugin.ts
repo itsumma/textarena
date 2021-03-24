@@ -6,6 +6,7 @@ import Textarena from '../Textarena';
 import ArenaPlugin from '../interfaces/ArenaPlugin';
 import ArenaSelection from '../helpers/ArenaSelection';
 import { ArenaMediatorInterface, ArenaTextInterface } from '../interfaces/Arena';
+import { ArenaNodeText } from '../interfaces/ArenaNode';
 
 // This decorator defines the element.
 export class Collapse extends LitElement {
@@ -54,7 +55,7 @@ export class Collapse extends LitElement {
           <slot name="title" class="stk-reset wp-exclude-emoji stk-theme_37074__style_medium_header incut_title">Заголовок</slot>
           <div @click="${this.handleClick} class="stk-container my-outer-block incut_svg" data-ce-tag="container">
             <svg
-              class=${classMap({ 'incut_arrow': true, open: this.open })}
+              class=${classMap({ incut_arrow: true, open: this.open })}
               width="18" height="9" viewbox="0 0 18 9" fill="none" xmlns="http://www.w3.org/2000/svg"
             >
               <path d="M17 1.5L9 7.5L1 1.5" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
@@ -62,30 +63,56 @@ export class Collapse extends LitElement {
           </div>
         </div>
         <slot name='body'
-          class=${classMap({ 'body': true, open: this.open })}
+          class=${classMap({ body: true, open: this.open })}
         >Контент</slot>
       </div>
     `;
   }
 }
 
-const defaultOptions = {
+type MarkOptions = {
+  tag: string,
+  attributes: string[];
+};
+
+export type CollapseOptions = {
+  name: string,
+  tag: string,
+  attributes: string[],
+  title: string,
+  icon?: string,
+  shortcut: string,
+  hint: string,
+  command: string,
+  component: string,
+  marks: MarkOptions[],
+};
+
+const defaultOptions: CollapseOptions = {
   name: 'collapse',
-  icon: '<b>🌂</b>',
   title: 'Collapse',
   tag: 'ARENA-COLLAPSE',
   attributes: [],
   shortcut: 'Alt + KeyC',
   hint: 'c',
   command: 'add-collapse',
+  component: 'arena-collapse',
+  marks: [
+    {
+      tag: 'ARENA-COLLAPSE',
+      attributes: [],
+    },
+  ],
 };
 
-const collapsePlugin = (opts?: typeof defaultOptions): ArenaPlugin => ({
+const collapsePlugin = (opts?: CollapseOptions): ArenaPlugin => ({
   register(textarena: Textarena): void {
-    customElements.define('arena-collapse', Collapse);
     const {
-      name, icon, title, tag, attributes, shortcut, hint, command,
+      name, icon, title, tag, attributes, shortcut, hint, command, component, marks,
     } = { ...defaultOptions, ...(opts || {}) };
+    if (!customElements.get(component)) {
+      customElements.define(component, Collapse);
+    }
     const paragraph = textarena.getDefaultTextArena();
     if (!paragraph) {
       throw new Error('Default Arena for text not found');
@@ -143,12 +170,7 @@ const collapsePlugin = (opts?: typeof defaultOptions): ArenaPlugin => ({
         ],
         arenaForText: collapseBodyContainer,
       },
-      [
-        {
-          tag,
-          attributes: [],
-        },
-      ],
+      marks,
       [textarena.getRootArenaName()],
     ) as ArenaMediatorInterface;
     textarena.registerCommand(
@@ -170,6 +192,8 @@ const collapsePlugin = (opts?: typeof defaultOptions): ArenaPlugin => ({
       shortcut,
       hint,
       command,
+      canShow: (node: ArenaNodeText) =>
+        node.parent.arena.allowedArenas.includes(arena),
     });
   },
 });
