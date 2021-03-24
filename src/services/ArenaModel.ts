@@ -149,6 +149,7 @@ export default class ArenaModel {
     node: AnyArenaNode,
     offset?: number,
     onlyChild = false,
+    forceCreate = false,
   ): ArenaCursorText | undefined {
     if (node.hasText) {
       return {
@@ -157,7 +158,7 @@ export default class ArenaModel {
       };
     }
     if (node.hasChildren && node.arena.arenaForText) {
-      if (node.protected || !offset) { // offset === 0 or undefined
+      if (!forceCreate && (node.protected || !offset)) { // offset === 0 or undefined
         if (offset === undefined) {
           for (let i = node.children.length - 1; i >= 0; i -= 1) {
             const cursor = this.getOrCreateNodeForText(node.children[i], undefined, true);
@@ -860,13 +861,16 @@ export default class ArenaModel {
     if (!parent.hasParent) {
       return undefined;
     }
-    if (onlyGroup && !parent.group) {
+    if (onlyGroup && parent.protected) {
+      return undefined;
+    }
+    const index = node.getIndex();
+    if (onlyGroup && !parent.group && index > 0) {
       return undefined;
     }
     const grandpaCursor = parent.getUnprotectedParent();
     if (grandpaCursor && grandpaCursor.node.arena.arenaForText) {
       // Try to get out from this node (ex. in a list)
-      const index = node.getIndex();
       if (parent.hasParent && parent.parent === grandpaCursor.node) {
         // try to separate
         this.splitMediatorNode(parent, index);
@@ -878,7 +882,7 @@ export default class ArenaModel {
       if (index > 0 || parent.children.length === 1) {
         offset += 1;
       }
-      const cursor = this.getOrCreateNodeForText(grandpaCursor.node, offset);
+      const cursor = this.getOrCreateNodeForText(grandpaCursor.node, offset, false, true);
       // const cursor = grandpaCursor.node.insertText(text, offset);
       if (cursor) {
         const text = node.cutText(0);
