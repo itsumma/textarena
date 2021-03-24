@@ -46,10 +46,15 @@ export type Modifiers = {
   Meta: boolean,
 };
 
+type Commands = {
+  [key: string]: {
+    action: CommandAction,
+    saveToHistory: boolean,
+  }
+};
+
 export default class ArenaCommandManager {
-  commands: {
-    [key: string]: CommandAction,
-  } = {};
+  commands: Commands = {};
 
   shortcuts: {
     [key: string]: string,
@@ -61,8 +66,12 @@ export default class ArenaCommandManager {
   registerCommand(
     command: string,
     action: CommandAction,
+    saveToHistory = true,
   ): ArenaCommandManager {
-    this.commands[command] = action;
+    this.commands[command] = {
+      action,
+      saveToHistory,
+    };
     return this;
   }
 
@@ -76,11 +85,18 @@ export default class ArenaCommandManager {
     return this;
   }
 
-  execCommand(command: string, selection?: ArenaSelection): void {
+  execCommand(
+    command: string,
+    selection?: ArenaSelection,
+  ): void {
     this.asm.logger.log('exec command', command, selection);
     if (this.commands[command]) {
       if (selection) {
-        const newSelection = this.commands[command](this.asm.textarena, selection);
+        const { action, saveToHistory } = this.commands[command];
+        const newSelection = action(this.asm.textarena, selection);
+        if (saveToHistory) {
+          this.asm.history.save(newSelection);
+        }
         this.asm.eventManager.fire({ name: 'modelChanged', data: newSelection });
       }
     }

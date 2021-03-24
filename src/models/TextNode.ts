@@ -2,6 +2,7 @@ import { TemplateResult, html } from 'lit-html';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html';
 import RichTextManager from '../helpers/RichTextManager';
 import { ArenaInlineInterface, ArenaTextInterface } from '../interfaces/Arena';
+import ArenaAttributes from '../interfaces/ArenaAttributes';
 import ArenaCursorText from '../interfaces/ArenaCursorText';
 import ArenaFormating, { ArenaFormatings } from '../interfaces/ArenaFormating';
 import {
@@ -10,7 +11,7 @@ import {
 import AbstractNode from './AbstractNode';
 
 export default class TextNode
-  extends AbstractNode
+  extends AbstractNode<ArenaTextInterface>
   implements ArenaNodeText {
   readonly hasParent: true = true;
 
@@ -25,11 +26,12 @@ export default class TextNode
   private richTextManager;
 
   constructor(
-    public arena: ArenaTextInterface,
-    // public parent?: ParentArenaNode,
+    arena: ArenaTextInterface,
+    id: string,
+    attributes?: ArenaAttributes,
     text?: string | RichTextManager,
   ) {
-    super();
+    super(arena, id, attributes);
     if (text && text instanceof RichTextManager) {
       this.richTextManager = text.clone();
     } else {
@@ -146,7 +148,8 @@ export default class TextNode
   public clone(): TextNode {
     return new TextNode(
       this.arena,
-      // this.parent,
+      this.id,
+      this.attributes,
       this.richTextManager.clone(),
     );
   }

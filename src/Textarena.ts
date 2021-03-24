@@ -64,6 +64,7 @@ const defaultOptions: TextarenaOptions = {
       'header3',
       'header4',
       'image',
+      'blockquote',
       'callout',
       'exampleRecomendation',
       'collapse',
@@ -162,7 +163,8 @@ class Textarena {
 
   public setData(data: TextarenaData | undefined): void {
     const html = data && typeof data.dataHtml === 'string' ? data.dataHtml : '';
-    this.asm.parser.insertHtmlToRoot(html);
+    const sel = this.asm.parser.insertHtmlToRoot(html);
+    this.asm.history.reset(sel);
     this.asm.view.render();
   }
 

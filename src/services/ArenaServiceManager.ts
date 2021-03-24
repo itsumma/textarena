@@ -1,6 +1,7 @@
 import Textarena from '../Textarena';
 import ArenaBrowser from './ArenaBrowser';
 import ArenaCommandManager from './ArenaCommandManager';
+import ArenaHistory from './ArenaHistory';
 import ArenaLogger from './ArenaLogger';
 import ArenaModel from './ArenaModel';
 import ArenaParser from './ArenaParser';
@@ -28,6 +29,8 @@ export default class ArenaServiceManager {
 
   public creatorBar: CreatorBar;
 
+  public history: ArenaHistory;
+
   constructor(public textarena: Textarena) {
     this.eventManager = new EventManager(this);
     this.logger = new ArenaLogger();
@@ -38,5 +41,6 @@ export default class ArenaServiceManager {
     this.commandManager = new ArenaCommandManager(this);
     this.toolbar = new Toolbar(this);
     this.creatorBar = new CreatorBar(this);
+    this.history = new ArenaHistory(this);
   }
 }

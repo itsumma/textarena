@@ -1,4 +1,5 @@
 import { TemplateResult, defaultTemplateProcessor } from 'lit-html';
+import ArenaAttributes from '../interfaces/ArenaAttributes';
 import ArenaOptions from '../interfaces/ArenaOptions';
 
 export default abstract class AbstractArena {
@@ -19,7 +20,7 @@ export default abstract class AbstractArena {
     }
   }
 
-  protected getAttributesString(id: string, attributes: { [key: string] :string }): string {
+  protected getAttributesString(id: string, attributes: ArenaAttributes): string {
     let str = '';
     if (id) {
       str += ` observe-id="${id}"`;
@@ -41,7 +42,7 @@ export default abstract class AbstractArena {
   public getTemplate(
     children: TemplateResult | string,
     id: string,
-    attributes: { [key: string] :string },
+    attributes: ArenaAttributes,
   ): TemplateResult | string {
     if (!this.tag) {
       return children;
@@ -67,7 +68,7 @@ export default abstract class AbstractArena {
   public getOutputTemplate(
     children: string | undefined,
     deep: number,
-    attributes: { [key: string] :string },
+    attributes: ArenaAttributes,
   ): string {
     const attrs = this.getAttributesString('', attributes);
     const tab = '  '.repeat(deep);

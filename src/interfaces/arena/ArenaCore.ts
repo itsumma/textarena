@@ -1,4 +1,5 @@
 import { TemplateResult } from 'lit-html';
+import ArenaAttributes from '../ArenaAttributes';
 
 interface ArenaCore {
   readonly name: string;
@@ -15,13 +16,13 @@ interface ArenaCore {
   getTemplate(
     children: TemplateResult | string | undefined,
     id: string,
-    attributes: { [key: string] :string },
+    attributes: ArenaAttributes,
   ): TemplateResult | string;
 
   getOutputTemplate(
     children: string | undefined,
     deep: number,
-    attributes: { [key: string] :string },
+    attributes: ArenaAttributes,
   ): string;
 }
 

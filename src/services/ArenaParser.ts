@@ -5,7 +5,7 @@ import RichTextManager from '../helpers/RichTextManager';
 import ArenaServiceManager from './ArenaServiceManager';
 import { AnyArenaNode, ArenaNodeText, ChildArenaNode } from '../interfaces/ArenaNode';
 import { AnyArena } from '../interfaces/Arena';
-import NodeFactory from '../models/NodeFactory';
+import ArenaSelection from '../helpers/ArenaSelection';
 
 export default class ArenaParser {
   constructor(protected asm: ArenaServiceManager) {
@@ -13,14 +13,24 @@ export default class ArenaParser {
 
   public insertHtmlToRoot(
     htmlString: string,
-  ): void {
+  ): ArenaSelection | undefined {
     this.asm.logger.log(htmlString);
     this.insertHtmlToModel(
       htmlString,
       this.asm.model.model,
       0,
     );
-    this.asm.model.getOrCreateNodeForText(this.asm.model.model);
+    const cursor = this.asm.model.getOrCreateNodeForText(this.asm.model.model);
+    if (cursor) {
+      return new ArenaSelection(
+        cursor.node,
+        cursor.offset,
+        cursor.node,
+        cursor.offset,
+        'backward',
+      );
+    }
+    return undefined;
   }
 
   public insertHtmlToModel(
@@ -110,7 +120,7 @@ export default class ArenaParser {
           const cursor = arenaNode.remove();
           if (cursor) {
             if (cursor.node.isAllowedNode(arena)) {
-              newArenaNode = NodeFactory.createChildNode(arena);
+              newArenaNode = this.asm.model.createChildNode(arena);
               newArenaNode = cursor.node.insertNode(newArenaNode, cursor.offset);
               // arenaNode.createAndInsertNode(arena, offset);
             }
@@ -119,7 +129,7 @@ export default class ArenaParser {
             throw new Error('Arena was not be removed');
           }
         } else if (arenaNode.hasChildren && arenaNode.isAllowedNode(arena)) {
-          newArenaNode = NodeFactory.createChildNode(arena);
+          newArenaNode = this.asm.model.createChildNode(arena);
           newArenaNode = arenaNode.insertNode(newArenaNode);
           // arenaNode.createAndInsertNode(arena, offset);
           // newArenaNode = arenaNode.createAndInsertNode(arena, offset);

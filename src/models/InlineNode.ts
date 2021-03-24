@@ -1,5 +1,6 @@
 import { TemplateResult } from 'lit-html';
 import { ArenaInlineInterface } from '../interfaces/Arena';
+import ArenaAttributes from '../interfaces/ArenaAttributes';
 import { ArenaFormatings } from '../interfaces/ArenaFormating';
 import { ArenaNodeInline } from '../interfaces/ArenaNode';
 
@@ -15,7 +16,7 @@ implements ArenaNodeInline {
 
   readonly single: false = false;
 
-  protected attributes: { [key: string] :string } = {};
+  protected attributes: ArenaAttributes = {};
 
   constructor(
     public arena: ArenaInlineInterface,

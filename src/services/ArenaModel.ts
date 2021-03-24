@@ -19,6 +19,7 @@ import ArenaOptionsChild from '../interfaces/ArenaOptions';
 import NodeFactory from '../models/NodeFactory';
 
 import ArenaServiceManager from './ArenaServiceManager';
+import NodeRegistry from '../helpers/NodeRegistry';
 
 type ArenaMark = {
   attributes: string[],
@@ -56,6 +57,10 @@ export default class ArenaModel {
     });
     this.arenasByName[this.rootArena.name] = this.rootArena;
     this.rootNode = NodeFactory.createRootNode(this.rootArena);
+  }
+
+  public setRoot(root: ArenaNodeRoot): void {
+    this.rootNode = root;
   }
 
   public getOutputHtml(): string {
@@ -139,6 +144,11 @@ export default class ArenaModel {
     return this.formatingMarks[tagName];
   }
 
+  public createChildNode(arena: ChildArena): ChildArenaNode {
+    const node = NodeFactory.createChildNode(arena, this.registry);
+    return node;
+  }
+
   /**
    * Find or create text node in children or ancestors.
    * @param node AnyArenaNode
@@ -177,7 +187,7 @@ export default class ArenaModel {
       }
       if (!node.protected) {
         let newNode:
-          ChildArenaNode | undefined = NodeFactory.createChildNode(node.arena.arenaForText);
+          ChildArenaNode | undefined = this.createChildNode(node.arena.arenaForText);
         newNode = node.insertNode(newNode, offset);
         if (newNode) {
           return this.getOrCreateNodeForText(newNode);
@@ -208,7 +218,7 @@ export default class ArenaModel {
     onlyChild = false,
   ): ChildArenaNode | undefined {
     if (parent.isAllowedNode(arena)) {
-      const newNode = NodeFactory.createChildNode(arena);
+      const newNode = this.createChildNode(arena);
       return parent.insertNode(newNode, offset);
     }
     if (parent.protected) {
@@ -815,6 +825,8 @@ export default class ArenaModel {
     return commonAncestorCursor;
   }
 
+  protected registry = new NodeRegistry();
+
   protected arenas: AnyArena[] = [];
 
   protected arenasByName: { [name: string]: AnyArena } = { };
@@ -1297,7 +1309,7 @@ export default class ArenaModel {
       if (parent.isAllowedNode(child.arena)) {
         childrenToInsert.push(child);
       } else if (child.hasText) {
-        const newNode = NodeFactory.createChildNode(parent.arena.arenaForText);
+        const newNode = this.createChildNode(parent.arena.arenaForText);
         if (newNode) {
           newNode.insertText(child.getText(), 0);
           childrenToInsert.push(newNode);

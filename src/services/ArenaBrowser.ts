@@ -367,6 +367,10 @@ export default class ArenaBrowser {
           if (id) {
             e.preventDefault();
             this.asm.model.removeNodeById(id);
+            const sel = this.asm.view.getCurrentSelection();
+            if (sel) {
+              this.asm.history.save(sel);
+            }
             this.asm.eventManager.fire({ name: 'modelChanged' });
           }
           break;
@@ -415,6 +419,7 @@ export default class ArenaBrowser {
       const selection = this.asm.view.getCurrentSelection();
       if (selection) {
         const newSelection = this.asm.model.removeSelection(selection, selection.direction);
+        this.asm.history.save(newSelection);
         this.asm.eventManager.fire({ name: 'modelChanged', data: newSelection });
       }
     }
@@ -428,14 +433,16 @@ export default class ArenaBrowser {
     if (event instanceof ArenaInputEvent) {
       const selection = this.asm.view.getCurrentSelection();
       if (selection) {
-        this.asm.model.insertTextToModel(selection, event.character, true);
-        this.asm.eventManager.fire({ name: 'modelChanged' });
+        const newSelection = this.asm.model.insertTextToModel(selection, event.character, true);
+        this.asm.history.save(newSelection);
+        this.asm.eventManager.fire({ name: 'modelChanged', data: newSelection });
       }
     }
     if (event instanceof RemoveEvent) {
       const selection = this.asm.view.getCurrentSelection();
       if (selection) {
         const newSelection = this.asm.model.removeSelection(selection, event.direction);
+        this.asm.history.save(newSelection);
         this.asm.eventManager.fire({ name: 'modelChanged', data: newSelection });
       }
     }
@@ -475,6 +482,7 @@ export default class ArenaBrowser {
       // html = html.replace(/\u00A0/, ' ');
       this.asm.logger.log(`Insert html: «${html}»`);
       const newSelection = this.asm.model.insertHtml(selection, html);
+      this.asm.history.save(newSelection);
       this.asm.eventManager.fire({ name: 'modelChanged', data: newSelection });
     } else if (types.includes('text/plain')) {
       const text = data.getData('text/plain');
@@ -483,6 +491,7 @@ export default class ArenaBrowser {
       }
       this.asm.logger.log(`Insert text: «${text}»`);
       const newSelection = this.asm.model.insertTextToModel(selection, text);
+      this.asm.history.save(newSelection);
       this.asm.eventManager.fire({ name: 'modelChanged', data: newSelection });
     }
   }
@@ -499,6 +508,10 @@ export default class ArenaBrowser {
       const node = this.asm.model.getNodeById(id);
       if (node) {
         node.setAttribute(name, value);
+        const sel = this.asm.view.getCurrentSelection();
+        if (sel) {
+          this.asm.history.save(sel);
+        }
         this.asm.eventManager.fire({ name: 'modelChanged' });
       }
     }
