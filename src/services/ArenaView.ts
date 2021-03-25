@@ -88,7 +88,7 @@ export default class ArenaView {
   ): [string, number] | undefined {
     if (node.nodeType === Node.ELEMENT_NODE) {
       const elementNode = node as HTMLElement;
-      const id = elementNode.getAttribute('observe-id');
+      const id = elementNode.getAttribute('arena-id');
       if (id) {
         if (!node.textContent
           || (!/\u00A0/.test(node.textContent) && /^[\s\n]*$/g.test(node.textContent))
@@ -164,7 +164,7 @@ export default class ArenaView {
     node: ArenaNodeText,
     offset: number,
   ): [ChildNode, number] | undefined {
-    const element = this.findElementById(node.getGlobalIndex());
+    const element = this.findElementById(node.getId());
     if (!element) {
       return undefined;
     }
@@ -179,7 +179,7 @@ export default class ArenaView {
   }
 
   public findElementById(id: string): Element | null {
-    return document.querySelector(`[observe-id="${id}"]`);
+    return document.querySelector(`[arena-id="${id}"]`);
   }
 
   protected reachOffset(element: Element, offset: number): [ChildNode, number] | number {

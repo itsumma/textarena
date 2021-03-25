@@ -35,6 +35,10 @@ export default abstract class AbstractNode<
 
   // Child node methods
 
+  public getId(): string {
+    return this.id;
+  }
+
   public getIndex(): number {
     // if (!this.parent) {
     //   return 0;
@@ -50,12 +54,12 @@ export default abstract class AbstractNode<
       === this.parent.children.length - 1;
   }
 
-  public getGlobalIndex(): string {
-    if (!this._parent) {
-      return '0';
-    }
-    return `${this.parent.getGlobalIndex()}.${this.getIndex().toString()}`;
-  }
+  // public getGlobalIndex(): string {
+  //   if (!this._parent) {
+  //     return '0';
+  //   }
+  //   return `${this.parent.getGlobalIndex()}.${this.getIndex().toString()}`;
+  // }
 
   public getParent(): ArenaCursorAncestor {
     return { node: this.parent, offset: this.getIndex() };
@@ -85,7 +89,7 @@ export default abstract class AbstractNode<
 
   // Attributes methods
 
-  public setAttribute(name: string, value: string): void {
+  public setAttribute(name: string, value: string | boolean): void {
     this.attributes[name] = value;
   }
 
@@ -93,7 +97,7 @@ export default abstract class AbstractNode<
     Object.entries(attrs).forEach(([name, value]) => this.setAttribute(name, value));
   }
 
-  public getAttribute(name: string): string {
+  public getAttribute(name: string): string | boolean {
     return this.attributes[name] || '';
   }
 

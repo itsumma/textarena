@@ -314,21 +314,26 @@ export default class ArenaModel {
    * @returns ArenaNodeText | undefined
    */
   public getTextNodeById(id: string): ArenaNodeText | undefined {
-    const path = id.split('.').map((i) => parseInt(i, 10));
-    let cursor: AnyArenaNode | undefined = this.model;
-    if (path.shift() === 0) {
-      path.forEach((i) => {
-        if (cursor && cursor.hasChildren) {
-          cursor = cursor.children[i];
-        } else {
-          cursor = undefined;
-        }
-      });
-      if (cursor && cursor.hasText) {
-        return cursor;
-      }
+    const node = this.getNodeById(id);
+    if (node?.hasText) {
+      return node;
     }
     return undefined;
+    // const path = id.split('.').map((i) => parseInt(i, 10));
+    // let cursor: AnyArenaNode | undefined = this.model;
+    // if (path.shift() === 0) {
+    //   path.forEach((i) => {
+    //     if (cursor && cursor.hasChildren) {
+    //       cursor = cursor.children[i];
+    //     } else {
+    //       cursor = undefined;
+    //     }
+    //   });
+    //   if (cursor && cursor.hasText) {
+    //     return cursor;
+    //   }
+    // }
+    // return undefined;
   }
 
   /**
@@ -337,18 +342,19 @@ export default class ArenaModel {
    * @returns AnyArenaNode | undefined
    */
   public getNodeById(id: string): AnyArenaNode | undefined {
-    const path = id.split('.').map((i) => parseInt(i, 10));
-    let cursor: AnyArenaNode | undefined = this.model;
-    if (path.shift() === 0) {
-      path.forEach((i) => {
-        if (cursor && cursor.hasChildren) {
-          cursor = cursor.children[i];
-        } else {
-          cursor = undefined;
-        }
-      });
-    }
-    return cursor;
+    return this.registry.get(id);
+    // const path = id.split('.').map((i) => parseInt(i, 10));
+    // let cursor: AnyArenaNode | undefined = this.model;
+    // if (path.shift() === 0) {
+    //   path.forEach((i) => {
+    //     if (cursor && cursor.hasChildren) {
+    //       cursor = cursor.children[i];
+    //     } else {
+    //       cursor = undefined;
+    //     }
+    //   });
+    // }
+    // return cursor;
   }
 
   public insertHtml(selection: ArenaSelection, html: string): ArenaSelection {

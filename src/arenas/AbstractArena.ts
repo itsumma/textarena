@@ -23,7 +23,7 @@ export default abstract class AbstractArena {
   protected getAttributesString(id: string, attributes: ArenaAttributes): string {
     let str = '';
     if (id) {
-      str += ` observe-id="${id}"`;
+      str += ` arena-id="${id}"`;
     }
     this.attributes.forEach((attr) => {
       str += ` ${attr}`;

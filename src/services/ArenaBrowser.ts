@@ -525,7 +525,7 @@ export default class ArenaBrowser {
 
   protected changeAttributeListener(e: ArenaChangeAttribute): void {
     const { attrs, target } = e.detail;
-    const id = target.getAttribute('observe-id');
+    const id = target.getAttribute('arena-id');
     if (id) {
       const node = this.asm.model.getNodeById(id);
       if (node) {

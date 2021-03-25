@@ -20,7 +20,7 @@ export default class SingleNode
   readonly single: true = true;
 
   public getHtml(): TemplateResult | string {
-    return this.arena.getTemplate(undefined, this.getGlobalIndex(), this.attributes);
+    return this.arena.getTemplate(undefined, this.getId(), this.attributes);
   }
 
   public getOutputHtml(_frms: ArenaFormatings, deep = 0): string {

@@ -208,11 +208,12 @@ class EmbedYoutube extends WebComponent {
     }`;
 
   handleToggle(e: Event): void {
-    if (e.path[0]) {
-      const event = new CustomEvent('toggle', {
-        detail: e.path[0].checked,
+    const event = e as unknown as { path: HTMLInputElement[] };
+    if (event.path[0]) {
+      const customEvent = new CustomEvent('toggle', {
+        detail: event.path[0].checked,
       });
-      this.dispatchEvent(event);
+      this.dispatchEvent(customEvent);
     }
   }
 
@@ -313,7 +314,6 @@ class EmbedForm extends WebComponent {
     const { value } = e.currentTarget as HTMLInputElement;
     this.inputValue = value;
   }
-
 
   // Render element DOM by returning a `lit-html` template.
   render(): TemplateResult {
@@ -526,14 +526,12 @@ const embedPlugin = (opts?: ExampleOptions): ArenaPlugin => ({
       setTimeout(() => {
         if (typeof window !== 'undefined' && window.twttr) {
           const items = document.querySelectorAll('.twitter-tweet');
-          console.log('ITEEEEEEEEEEEEEEEEEEEEEms!', items);
           items.forEach((el) => {
             const id = el.getAttribute('postid');
             const requested = el.getAttribute('requested');
             if (id && !requested) {
-              console.log('REQUEEEEEEEEEEST!', id, el);
               el.setAttribute('requested', 'true');
-              window.twttr.widgets.createTweet(id, el as HTMLElement);
+              window.twttr?.widgets.createTweet(id, el as HTMLElement);
             }
           });
         }

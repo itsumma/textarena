@@ -29,19 +29,19 @@ export default class NodeFactory {
       }
       const id = registry.generateId();
       const node = new MediatorNode(arena, id, children);
-      registry.registerNode(id, node);
+      registry.set(id, node);
       return node;
     }
     if (arena.hasText) {
       const id = registry.generateId();
       const node = new TextNode(arena, id);
-      registry.registerNode(id, node);
+      registry.set(id, node);
       return node;
     }
     if (arena.single) {
       const id = registry.generateId();
       const node = new SingleNode(arena, id);
-      registry.registerNode(id, node);
+      registry.set(id, node);
       return node;
     }
     throw new Error('Cant create Node');

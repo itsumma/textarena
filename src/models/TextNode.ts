@@ -43,7 +43,7 @@ export default class TextNode
     const content = this.richTextManager.getHtml(frms);
     return this.arena.getTemplate(
       html`${unsafeHTML(content)}`,
-      this.getGlobalIndex(),
+      this.getId(),
       this.attributes,
     );
   }
