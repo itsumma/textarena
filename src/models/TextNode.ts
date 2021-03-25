@@ -48,8 +48,13 @@ export default class TextNode
     );
   }
 
-  public getOutputHtml(frms: ArenaFormatings, deep: number): string {
-    const text = this.richTextManager.getHtml(frms);
+  public getOutputHtml(
+    frms: ArenaFormatings,
+    deep = 0,
+    start?: number,
+    end?: number,
+  ): string {
+    const text = this.richTextManager.getHtml(frms, start, end);
     return this.arena.getOutputTemplate(text, deep, this.attributes);
   }
 

@@ -28,7 +28,7 @@ export default interface ArenaNodeCorePart<T> {
 
   getHtml(model: ArenaFormatings): TemplateResult | string;
 
-  getOutputHtml(model: ArenaFormatings, deep?: number): string;
+  getOutputHtml(frms: ArenaFormatings, deep?: number, start?: number, end?: number): string;
 
   getTextCursor(index?: number): ArenaCursorText | undefined;
 

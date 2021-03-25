@@ -107,12 +107,18 @@ export default class RichTextManager {
     return this.formatings;
   }
 
-  public getHtml(frms: ArenaFormatings): string {
+  public getHtml(
+    frms: ArenaFormatings,
+    start?: number,
+    end?: number,
+  ): string {
     const { text } = this;
     if (text === '') {
       return '<br/>';
     }
-    const tree = this.getHtmlTree(frms);
+    const globalStart = start || 0;
+    const globalEnd = end || this.text.length;
+    const tree = this.getHtmlTree(frms, globalStart, globalEnd);
     const [html] = this.getHtmlFromTree(tree);
     return html;
   }
@@ -348,11 +354,15 @@ export default class RichTextManager {
     });
   }
 
-  protected getHtmlTree(frms: ArenaFormatings): FNode[] {
+  protected getHtmlTree(
+    frms: ArenaFormatings,
+    globalStart: number,
+    globalEnd: number,
+  ): FNode[] {
     const rootNodes: FNode[] = [{
       name: '',
-      start: 0,
-      end: this.text.length,
+      start: globalStart,
+      end: globalEnd,
       children: [],
     }];
 

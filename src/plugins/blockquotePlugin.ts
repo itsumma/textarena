@@ -69,6 +69,7 @@ const blockquotePlugin = (opts?: BlockquoteOptions): ArenaPlugin => ({
         allowedArenas,
         arenaForText: paragraph as ArenaTextInterface,
         automerge: true,
+        group: true,
       },
       marks,
       [textarena.getRootArenaName()],

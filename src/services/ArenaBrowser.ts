@@ -136,6 +136,8 @@ export default class ArenaBrowser {
 
   protected selectListenerInstance: ((e: Event) => void);
 
+  protected copyListenerInstance: ((event: ClipboardEvent) => void);
+
   protected pasteListenerInstance: ((event: ClipboardEvent) => void);
 
   protected changeAttributeListenerInstance: ((event: ArenaChangeAttribute) => void);
@@ -157,6 +159,7 @@ export default class ArenaBrowser {
     this.keyPressListenerInstance = this.keyPressListener.bind(this);
     this.keyDownListenerInstance = this.keyDownListener.bind(this);
     this.selectListenerInstance = this.selectListener.bind(this);
+    this.copyListenerInstance = this.copyListener.bind(this);
     this.pasteListenerInstance = this.pasteListener.bind(this);
     this.changeAttributeListenerInstance = this.changeAttributeListener.bind(this);
     this.asm.eventManager.subscribe('turnOn', () => {
@@ -166,6 +169,7 @@ export default class ArenaBrowser {
       this.editor.addEventListener('keyup', this.keyUpListenerInstance, false);
       this.editor.addEventListener('keypress', this.keyPressListenerInstance, false);
       this.editor.addEventListener('keydown', this.keyDownListenerInstance, false);
+      this.editor.addEventListener('copy', this.copyListenerInstance, false);
       this.editor.addEventListener('paste', this.pasteListenerInstance, false);
       this.editor.addEventListener('arena-change-attribute', this.changeAttributeListenerInstance, false);
       document.addEventListener('selectionchange', this.selectListenerInstance, false);
@@ -176,6 +180,7 @@ export default class ArenaBrowser {
       this.editor.removeEventListener('keyup', this.keyUpListenerInstance);
       this.editor.removeEventListener('keypress', this.keyPressListenerInstance);
       this.editor.removeEventListener('keydown', this.keyDownListenerInstance);
+      this.editor.removeEventListener('copy', this.copyListenerInstance);
       this.editor.removeEventListener('paste', this.pasteListenerInstance);
       this.editor.removeEventListener('arena-change-attribute', this.changeAttributeListenerInstance);
       document.removeEventListener('selectionchange', this.selectListenerInstance);
@@ -448,6 +453,22 @@ export default class ArenaBrowser {
     }
   }
 
+  protected copyListener(e: ClipboardEvent): void {
+    this.asm.logger.log('Paste event', e);
+    e.preventDefault();
+    const { clipboardData } = e;
+    if (!clipboardData) {
+      return;
+    }
+    const selection = this.asm.view.getCurrentSelection();
+    if (!selection) {
+      e.preventDefault();
+      return;
+    }
+    const result = this.asm.model.getOutHtmlOfSelection(selection);
+    clipboardData.setData('text/html', result);
+  }
+
   protected pasteListener(e: ClipboardEvent): void {
     this.asm.logger.log('Paste event', e);
     e.preventDefault();
@@ -490,6 +511,7 @@ export default class ArenaBrowser {
         return;
       }
       this.asm.logger.log(`Insert text: «${text}»`);
+      // TODO middleware
       const newSelection = this.asm.model.insertTextToModel(selection, text);
       this.asm.history.save(newSelection);
       this.asm.eventManager.fire({ name: 'modelChanged', data: newSelection });

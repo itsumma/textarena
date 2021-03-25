@@ -70,6 +70,9 @@ export default abstract class AbstractArena {
     deep: number,
     attributes: ArenaAttributes,
   ): string {
+    if (!this.tag) {
+      return children || '';
+    }
     const attrs = this.getAttributesString('', attributes);
     const tab = '  '.repeat(deep);
     const tag = this.tag.toLowerCase();
