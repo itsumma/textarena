@@ -2,6 +2,7 @@ import { TemplateResult } from 'lit-html';
 import RichTextManager from '../../helpers/RichTextManager';
 import ArenaCursorText from '../ArenaCursorText';
 import { ArenaFormatings } from '../ArenaFormating';
+import ArenaAttributes from '../ArenaAttributes';
 
 export default interface ArenaNodeCorePart<T> {
   readonly id: string;
@@ -33,6 +34,8 @@ export default interface ArenaNodeCorePart<T> {
   getTextCursor(index?: number): ArenaCursorText | undefined;
 
   setAttribute(name: string, value: string): void;
+
+  setAttributes(attrs: ArenaAttributes): void;
 
   getAttribute(name: string): string;
 

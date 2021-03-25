@@ -18,7 +18,7 @@
 
   if (elem && (typeof Textarena !== 'undefined')) {
     let dataHtml;
-    // const storedData = localStorage.getItem('dataHtml');
+    const storedData = localStorage.getItem('dataHtml');
     try {
       if (storedData) {
         data = JSON.parse(storedData);
@@ -29,7 +29,11 @@
     } catch {}
     if (!dataHtml) {
       dataHtml = `
-      <p></p>
+        <p></p>
+        <arena-embed contenteditable="false" href="https://www.youtube.com/embed/xY4fWRrwwOU" type="youtube" border=""></arena-embed>
+        <arena-embed-simple type="twitter" contenteditable="false" href="https://twitter.com/StalinGulag/status/1374843004503089157?s=20" postid="1374843004503089157"></arena-embed-simple>
+        <arena-embed-simple type="instagram" contenteditable="false" href="https://www.instagram.com/p/CMxXv-pFi6y/?utm_source=ig_web_copy_link"></arena-embed-simple>
+        <arena-embed-simple type="facebook" contenteditable="false" href="https://www.facebook.com/asus.ru/posts/3907045806048911"></arena-embed-simple>
         <arena-image src="https://storage.yandexcloud.net/itsizo.app/7b128593-5c11-4850-8560-6047d71e79b5.jpg">
           <p slot=image-caption>
         Мозьно мине карсиньки  <a href="https://storage.yandexcloud.net">грюсить</a>

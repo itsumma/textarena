@@ -89,6 +89,10 @@ export default abstract class AbstractNode<
     this.attributes[name] = value;
   }
 
+  public setAttributes(attrs: ArenaAttributes): void {
+    Object.entries(attrs).forEach(([name, value]) => this.setAttribute(name, value));
+  }
+
   public getAttribute(name: string): string {
     return this.attributes[name] || '';
   }

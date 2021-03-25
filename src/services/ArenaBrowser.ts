@@ -16,14 +16,14 @@ import ElementHelper from '../helpers/ElementHelper';
 import { keyboardKeys, Modifiers } from './ArenaCommandManager';
 import ArenaServiceManager from './ArenaServiceManager';
 import ArenaSelection from '../helpers/ArenaSelection';
+import ArenaAttributes from '../interfaces/ArenaAttributes';
 
 function isMac(): boolean {
   return window.navigator.platform.includes('Mac');
 }
 
 type ArenaChangeAttribute = CustomEvent<{
-  name: string,
-  value: string,
+  attrs: ArenaAttributes,
   target: HTMLElement,
 }>;
 
@@ -207,7 +207,7 @@ export default class ArenaBrowser {
   protected checkSelection(): void {
     this.asm.view.resetCurrentSelection();
     const s = window.getSelection();
-    if (!s) {
+    if (!s || !s.rangeCount) {
       return;
     }
     if (!s.anchorNode || !isDescendant(this.editor, s.anchorNode)) {
@@ -524,12 +524,12 @@ export default class ArenaBrowser {
   }
 
   protected changeAttributeListener(e: ArenaChangeAttribute): void {
-    const { name, value, target } = e.detail;
+    const { attrs, target } = e.detail;
     const id = target.getAttribute('observe-id');
     if (id) {
       const node = this.asm.model.getNodeById(id);
       if (node) {
-        node.setAttribute(name, value);
+        node.setAttributes(attrs);
         const sel = this.asm.view.getCurrentSelection();
         if (sel) {
           this.asm.history.save(sel);

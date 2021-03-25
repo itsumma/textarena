@@ -65,7 +65,7 @@ export default class ArenaView {
 
   public detectArenaSelection(): ArenaSelection | undefined {
     const s = window.getSelection();
-    const range = s ? s.getRangeAt(0) : undefined;
+    const range = s && s.rangeCount > 0 ? s.getRangeAt(0) : undefined;
     if (s && range) {
       const startId = this.getNodeIdAndOffset(range.startContainer, range.startOffset);
       const endId = this.getNodeIdAndOffset(range.endContainer, range.endOffset);

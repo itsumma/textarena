@@ -108,4 +108,22 @@
       height: auto;
     }
   }
+
+  arena-embed-simple {
+    display: block;
+    margin: 0 0 1em;
+    min-height: 1.6em;
+    blockquote {
+      padding: 0;
+      border: none;
+    }
+  }
+
+  .embed__content {
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 1rem;
+    padding: 1rem;
+    margin: 0 0 1em;
+  }
 }

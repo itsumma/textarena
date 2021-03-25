@@ -6,10 +6,10 @@ export type MediaEvent = {
   data?: unknown,
 };
 
-type Handler = (event?: string | MediaEvent) => void;
+export type ArenaHandler = (event?: string | MediaEvent) => void;
 
 type Handlers = {
-  [key: string]: Handler[];
+  [key: string]: ArenaHandler[];
 };
 
 export default class EventManager {
@@ -26,7 +26,7 @@ export default class EventManager {
     }
   }
 
-  subscribe(event: string, handler: Handler): void {
+  subscribe(event: string, handler: ArenaHandler): void {
     if (!this.handlers[event]) {
       this.handlers[event] = [];
     }
