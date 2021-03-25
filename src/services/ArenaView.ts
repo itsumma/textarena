@@ -17,6 +17,7 @@ export default class ArenaView {
     if (this.currentSelection) {
       this.applyArenaSelection(this.currentSelection);
     }
+    this.asm.eventManager.fire({ name: 'rendered' });
   }
 
   public getCurrentSelection(): ArenaSelection | undefined {

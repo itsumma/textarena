@@ -1,6 +1,6 @@
 /* eslint-disable max-classes-per-file */
 import {
-  LitElement, html, css, property, TemplateResult, query,
+  LitElement, html, css, property, TemplateResult,
 } from 'lit-element';
 import { classMap } from 'lit-html/directives/class-map';
 import Textarena from '../Textarena';
@@ -8,6 +8,7 @@ import ArenaPlugin from '../interfaces/ArenaPlugin';
 import ArenaSelection from '../helpers/ArenaSelection';
 import { ArenaNodeText } from '../interfaces/ArenaNode';
 import { ArenaSingleInterface } from '../interfaces/Arena';
+import WebComponent from '../helpers/WebComponent';
 import ArenaAttributes from '../interfaces/ArenaAttributes';
 
 const HOSTS = {
@@ -53,52 +54,45 @@ const createElemEmbed = (href: string) => {
       type: 'youtube',
       href: src,
     };
-  } if (name === 'facebook') {
-    const body = document.createElement('div');
-    body.setAttribute('data-href', href);
-    let width = '500';
-    if (window.innerWidth < 720) {
-      width = '300';
-    } else if (window.innerHeight <= 480) {
-      width = '280';
-    }
-    body.setAttribute('data-width', width);
-    body.classList.add('fb-post');
-    elem.append(body);
-    return elem;
-  } if (name === 'twitter') {
+  }
+  if (name === 'facebook') {
+    return {
+      type: 'facebook',
+      href,
+    };
+  }
+  if (name === 'twitter') {
     const paths = url.pathname.split('/');
     if (paths[paths.length - 2] === 'status') {
-      const id = paths[paths.length - 1];
-      if (id) {
+      const postid = paths[paths.length - 1];
+      if (postid) {
         return {
           type: 'twitter',
-          id,
+          postid,
+          href,
         };
       }
     }
-  } else if (name === 'instagram') {
-    const blockquoteElement = document.createElement('blockquote');
-    blockquoteElement.setAttribute('class', 'instagram-media');
-    blockquoteElement.setAttribute('data-instgrm-version', '4');
-    elem.append(blockquoteElement);
-
-    const aElement = document.createElement('a');
-    aElement.setAttribute('href', href);
-    blockquoteElement.append(aElement);
-
-    return elem;
+  }
+  if (name === 'instagram') {
+    return {
+      type: 'twitter',
+      href,
+    };
   }
   return undefined;
 };
 
-export class Embed extends LitElement {
-  protected currentHref = '';
-
+class Embed extends LitElement {
   @property({
     type: String,
   })
   type: string | undefined;
+
+  @property({
+    type: String,
+  })
+  href: string | undefined;
 
   @property({
     type: String,
@@ -110,66 +104,67 @@ export class Embed extends LitElement {
   })
   border: boolean | undefined;
 
+  createRenderRoot(): LitElement {
+    return this;
+  }
+
+  handleToggle({ detail }: { detail: boolean }): void {
+    this.fireChangeAttribute({
+      border: detail,
+    });
+  }
+
+  handleForm({ detail }: { detail: ArenaAttributes }): void {
+    this.fireChangeAttribute(detail);
+  }
+
+  fireChangeAttribute(attrs: ArenaAttributes): void {
+    const event = new CustomEvent('arena-change-attribute', {
+      bubbles: true,
+      detail: {
+        attrs,
+        target: this,
+      },
+    });
+    this.dispatchEvent(event);
+  }
+
+  render(): TemplateResult {
+    if (this.type === 'youtube' && this.href) {
+      return html`
+        <arena-embed-youtube
+          ?border=${this.border}
+          @toggle=${this.handleToggle}
+          href="${this.href}"
+        ></arena-embed-youtube>`;
+    }
+    if (this.type && this.href) {
+      return html`
+        <arena-embed-simple
+          type="${this.type}"
+          href="${this.href}"
+          postid="${this.postid || ''}"
+        ></arena-embed-simple>`;
+    }
+    return html`<arena-embed-form @change="${this.handleForm}"></arena-embed-form>`;
+  }
+}
+
+class EmbedYoutube extends WebComponent {
   @property({
     type: String,
     reflect: true,
   })
-  set href(value: string) {
-    this.currentHref = value;
-  }
+  href: string | undefined;
 
-  get href(): string {
-    return this.currentHref;
-  }
-
-  inputValue = '';
+  @property({
+    type: Boolean,
+  })
+  border: boolean | undefined;
 
   static styles = css`
     :host {
-      /* background: lightgray;
-      border: 1px solid red;
-      display: block;
-      padding: 1em;
-      user-select: none; */
-    }
-    .wrapper {
-      background: white;
-      border: 1px solid #ccc;
-      border-radius: 1rem;
-      padding: 1rem;
-      margin: 0 0 1em;
-    }
-    .form {
-      display: flex;
-    }
-    .form__label {
-      margin-right: 1rem;
-    }
-    .form__input {
-      border: 0;
-      border-bottom: 1px solid #ccc;
-      margin-right: 1rem;
-      font-size: 1em;
-      flex: 1;
-    }
-    .form__input:active,
-    .form__input:focus,
-    .form__input:hover {
-      outline: none;
-      border-color: black;
-    }
-    .form__btn {
-      background: white;
-      border: 1px solid #ccc;
-      border-radius: 1rem;
-      font-size: 1em;
-      padding: 0.1em 1em;
-    }
-    .form__btn:active,
-    .form__btn:focus,
-    .form__btn:hover {
-      outline: none;
-      border-color: black;
+      user-select: none;
     }
     .embed-youtube {
       width: 100%;
@@ -212,128 +207,18 @@ export class Embed extends LitElement {
       top: 1rem;
     }`;
 
-  constructor() {
-    super();
-    this.addEventListener('keydown', this.handleEvent);
-    this.addEventListener('input', this.handleEvent);
-    this.addEventListener('mouseup', this.handleEvent);
-    this.addEventListener('keyup', this.handleEvent);
-    this.addEventListener('keypress', this.handleEvent);
-    this.addEventListener('keydown', this.handleEvent);
-    this.addEventListener('paste', this.handleEvent);
-    this.addEventListener('selectionchange', this.handleEvent);
-    if (this.href) {
-      this.fetchPost(this.href);
-    }
-  }
-
-  disconnectedCallback(): void {
-    this.removeEventListener('keydown', this.handleEvent);
-    this.removeEventListener('input', this.handleEvent);
-    this.removeEventListener('mouseup', this.handleEvent);
-    this.removeEventListener('keyup', this.handleEvent);
-    this.removeEventListener('keypress', this.handleEvent);
-    this.removeEventListener('keydown', this.handleEvent);
-    this.removeEventListener('paste', this.handleEvent);
-    this.removeEventListener('selectionchange', this.handleEvent);
-  }
-
-  createRenderRoot(): ShadowRoot {
-    if (this.type) {
-      return this;
-    }
-    return this.attachShadow({
-      mode: 'open',
-      // delegatesFocus: true,
-    });
-  }
-
-  handleEvent(event: Event): void {
-    // Prevent event from ArenaBrowser
-    event.stopPropagation();
-  }
-
-  handleSubmit(e: Event): void {
-    e.preventDefault();
-    if (this.inputValue) {
-      const result = createElemEmbed(this.inputValue);
-      if (result) {
-        if (result.type === 'twitter') {
-          this.fireChangeAttribute({
-            href: this.inputValue,
-            type: result.type,
-            postid: result.id,
-          });
-        } else if (result.type === 'youtube') {
-          this.fireChangeAttribute({
-            href: result.href,
-            type: result.type,
-          });
-        }
-      }
-    }
-  }
-
-  fireChangeAttribute(attrs: ArenaAttributes): void {
-    const event = new CustomEvent('arena-change-attribute', {
-      bubbles: true,
-      detail: {
-        attrs,
-        target: this,
-      },
-    });
-    this.dispatchEvent(event);
-  }
-
-  handleInput(e: InputEvent): void {
-    if (!e.currentTarget) {
-      return;
-    }
-    const { value } = e.currentTarget as HTMLInputElement;
-    this.inputValue = value;
-  }
-
   handleToggle(e: Event): void {
     if (e.path[0]) {
-      this.fireChangeAttribute({
-        border: e.path[0].checked,
+      const event = new CustomEvent('toggle', {
+        detail: e.path[0].checked,
       });
+      this.dispatchEvent(event);
     }
   }
 
   // Render element DOM by returning a `lit-html` template.
-  render(): TemplateResult {
-    const loading = html`<p class="embed__content">
-      Грузится ембед… <a href="${this.href || ''}">${this.href}</a>
-    </p>`;
-    if (this.type === 'facebook') {
-      return html`
-        <div
-          data-href="${this.href || ''}"
-          class="fb-post"
-        >
-          ${loading}
-        </blockquote>`;
-    }
-    if (this.type === 'instagram') {
-      return html`
-        <blockquote
-          class="instagram-media"
-          data-instgrm-version="4"
-          postid=${this.postid || ''}
-          data-lang="ru">
-          ${loading}
-        </blockquote>`;
-    }
-    if (this.type === 'twitter') {
-      return html`
-        <blockquote class="twitter-tweet" postid=${this.postid || ''} data-lang="ru">
-          <p class="embed__content">
-            Грузится ембед… <a href="${this.href || ''}">${this.href}</a>
-          </p>
-        </blockquote>`;
-    }
-    if (this.type === 'youtube' && this.href) {
+  render(): TemplateResult | undefined {
+    if (this.href) {
       return html`<div class=${classMap({ 'embed-youtube': true, 'embed-youtube_border': !!this.border })}>
         <div class="embed-youtube__toggle">
           Border: <input type="checkbox" @change="${this.handleToggle}" ?checked="${this.border}" />
@@ -348,7 +233,90 @@ export class Embed extends LitElement {
           allowfullscreen=""></iframe>
       </div>`;
     }
+    return undefined;
+  }
+}
 
+class EmbedForm extends WebComponent {
+  protected currentHref = '';
+
+  @property({
+    type: String,
+    reflect: true,
+  })
+  href: string | undefined;
+
+  inputValue = '';
+
+  static styles = css`
+    :host {
+      user-select: none;
+    }
+    .wrapper {
+      background: white;
+      border: 1px solid #ccc;
+      border-radius: 1rem;
+      padding: 1rem;
+      margin: 0 0 1em;
+    }
+    .form {
+      display: flex;
+    }
+    .form__label {
+      margin-right: 1rem;
+    }
+    .form__input {
+      border: 0;
+      border-bottom: 1px solid #ccc;
+      border-radius: 0;
+      margin-right: 1rem;
+      font-size: 1em;
+      flex: 1;
+    }
+    .form__input:active,
+    .form__input:focus,
+    .form__input:hover {
+      outline: none;
+      border-color: black;
+    }
+    .form__btn {
+      background: white;
+      border: 1px solid #ccc;
+      border-radius: 1rem;
+      font-size: 1em;
+      padding: 0.1em 1em;
+    }
+    .form__btn:active,
+    .form__btn:focus,
+    .form__btn:hover {
+      outline: none;
+      border-color: black;
+    }`;
+
+  handleSubmit(e: Event): void {
+    e.preventDefault();
+    if (this.inputValue) {
+      const result = createElemEmbed(this.inputValue);
+      if (result) {
+        const event = new CustomEvent('change', {
+          detail: result,
+        });
+        this.dispatchEvent(event);
+      }
+    }
+  }
+
+  handleInput(e: InputEvent): void {
+    if (!e.currentTarget) {
+      return;
+    }
+    const { value } = e.currentTarget as HTMLInputElement;
+    this.inputValue = value;
+  }
+
+
+  // Render element DOM by returning a `lit-html` template.
+  render(): TemplateResult {
     return html`<div class="wrapper">
       <form @submit="${this.handleSubmit}" class="form">
         <label for="link_input" class="form__label">Link:</label>
@@ -373,83 +341,51 @@ class SimpleEmbed extends LitElement {
   postid: string | undefined;
 
   @property({
-    type: Boolean,
-  })
-  border: boolean | undefined;
-
-  @property({
     type: String,
-    reflect: true,
   })
   href: string | undefined;
-
-  constructor() {
-    super();
-    this.addEventListener('keydown', this.handleEvent);
-    this.addEventListener('input', this.handleEvent);
-    this.addEventListener('mouseup', this.handleEvent);
-    this.addEventListener('keyup', this.handleEvent);
-    this.addEventListener('keypress', this.handleEvent);
-    this.addEventListener('keydown', this.handleEvent);
-    this.addEventListener('paste', this.handleEvent);
-    this.addEventListener('selectionchange', this.handleEvent);
-  }
-
-  disconnectedCallback(): void {
-    this.removeEventListener('keydown', this.handleEvent);
-    this.removeEventListener('input', this.handleEvent);
-    this.removeEventListener('mouseup', this.handleEvent);
-    this.removeEventListener('keyup', this.handleEvent);
-    this.removeEventListener('keypress', this.handleEvent);
-    this.removeEventListener('keydown', this.handleEvent);
-    this.removeEventListener('paste', this.handleEvent);
-    this.removeEventListener('selectionchange', this.handleEvent);
-  }
 
   createRenderRoot(): LitElement {
     return this;
   }
 
-  handleEvent(event: Event): void {
-    // Prevent event from ArenaBrowser
-    event.stopPropagation();
-  }
-
   // Render element DOM by returning a `lit-html` template.
-  render(): TemplateResult {
-    const loading = html`<p class="embed__content">
-      Грузится ембед… <a href="${this.href || ''}">${this.href}</a>
-    </p>`;
-    if (this.type === 'facebook') {
-      return html`
-        <div
-          data-href="${this.href || ''}"
-          data-name="facebook"
-          class="fb-post"
-          data-width="500"
-        >
-          ${loading}
-        </blockquote>`;
+  render(): TemplateResult | undefined {
+    if (this.href) {
+      const loading = html`<p class="embed__content">
+        Грузится ембед… <a href="${this.href || ''}">${this.href}</a>
+      </p>`;
+      if (this.type === 'facebook') {
+        return html`
+          <div
+            data-href="${this.href}"
+            data-name="facebook"
+            class="fb-post"
+            data-width="500"
+          >
+            ${loading}
+          </div>`;
+      }
+      if (this.type === 'instagram') {
+        return html`
+          <blockquote
+            class="instagram-media"
+            data-instgrm-version="4"
+            postid=${this.postid || ''}
+            data-lang="ru">
+            ${loading}
+          </blockquote>`;
+      }
+      if (this.type === 'twitter') {
+        return html`
+          <blockquote class="twitter-tweet" postid=${this.postid || ''} data-lang="ru">
+            <p class="embed__content">
+              Грузится ембед… <a href="${this.href}">${this.href}</a>
+            </p>
+          </blockquote>`;
+      }
     }
-    if (this.type === 'instagram') {
-      return html`
-        <blockquote
-          class="instagram-media"
-          data-instgrm-version="4"
-          postid=${this.postid || ''}
-          data-lang="ru">
-          ${loading}
-        </blockquote>`;
-    }
-    if (this.type === 'twitter') {
-      return html`
-        <blockquote class="twitter-tweet" postid=${this.postid || ''} data-lang="ru">
-          <p class="embed__content">
-            Грузится ембед… <a href="${this.href || ''}">${this.href}</a>
-          </p>
-        </blockquote>`;
-    }
-    return html``;
+    return undefined;
   }
 }
 
@@ -507,6 +443,8 @@ const defaultOptions: ExampleOptions = {
   hint: 'e',
   command: 'add-embed',
   component: 'arena-embed',
+  // componentSimple: 'arena-embed-simple',
+  // componentForm: 'arena-embed-form',
   marks: [
     {
       tag: 'ARENA-EMBED',
@@ -526,6 +464,12 @@ const embedPlugin = (opts?: ExampleOptions): ArenaPlugin => ({
     }
     if (!customElements.get('arena-embed-simple')) {
       customElements.define('arena-embed-simple', SimpleEmbed);
+    }
+    if (!customElements.get('arena-embed-form')) {
+      customElements.define('arena-embed-form', EmbedForm);
+    }
+    if (!customElements.get('arena-embed-youtube')) {
+      customElements.define('arena-embed-youtube', EmbedYoutube);
     }
     const arena = ta.registerArena(
       {
@@ -578,28 +522,31 @@ const embedPlugin = (opts?: ExampleOptions): ArenaPlugin => ({
       ],
       [ta.getRootArenaName()],
     ) as ArenaSingleInterface;
-    ta.subscribe('modelChanged', () => {
-      if (typeof window !== 'undefined' && window.twttr) {
-        // const items = document.querySelectorAll('.twitter-tweet');
-        // items.forEach((el) => {
-        //   const id = el.getAttribute('postid');
-        //   const requested = el.getAttribute('requested');
-        //   if (id && !requested) {
-        //     console.log('REQUEEEEEEEEEEST!', id, el);
-        //     el.setAttribute('requested', 'true');
-        //     window.twttr.widgets.createTweet(id, el as HTMLElement);
-        //   }
-        // });
-      }
-      if (typeof window !== 'undefined' && window.FB) {
-        window.FB.init({
-          xfbml: true,
-          version: 'v6.0',
-        });
-      }
-      if (typeof window !== 'undefined' && window.instgrm) {
-        window.instgrm.Embeds.process();
-      }
+    ta.subscribe('rendered', () => {
+      setTimeout(() => {
+        if (typeof window !== 'undefined' && window.twttr) {
+          const items = document.querySelectorAll('.twitter-tweet');
+          console.log('ITEEEEEEEEEEEEEEEEEEEEEms!', items);
+          items.forEach((el) => {
+            const id = el.getAttribute('postid');
+            const requested = el.getAttribute('requested');
+            if (id && !requested) {
+              console.log('REQUEEEEEEEEEEST!', id, el);
+              el.setAttribute('requested', 'true');
+              window.twttr.widgets.createTweet(id, el as HTMLElement);
+            }
+          });
+        }
+        if (typeof window !== 'undefined' && window.FB) {
+          window.FB.init({
+            xfbml: true,
+            version: 'v6.0',
+          });
+        }
+        if (typeof window !== 'undefined' && window.instgrm) {
+          window.instgrm.Embeds.process();
+        }
+      }, 100);
     });
   },
 });
