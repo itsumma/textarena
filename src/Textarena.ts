@@ -21,6 +21,7 @@ import ToolOptions from './interfaces/ToolOptions';
 import blockquotePlugin from './plugins/blockquotePlugin';
 import calloutPlugin from './plugins/calloutPlugin';
 import commonPlugin from './plugins/commonPlugin';
+import embedPlugin from './plugins/embedPlugin';
 import formatingsPlugin from './plugins/formatingsPlugin';
 import headersPlugin from './plugins/headersPlugin';
 import hrPlugin from './plugins/hrPlugin';
@@ -31,6 +32,7 @@ import paragraphPlugin from './plugins/paragraphPlugin';
 
 import ArenaCommandManager from './services/ArenaCommandManager';
 import ArenaServiceManager from './services/ArenaServiceManager';
+import { ArenaHandler } from './services/EventManager';
 import examplePlugin from './plugins/examplePlugin';
 import collapsePlugin from './plugins/collapse-plugin';
 
@@ -65,6 +67,7 @@ const defaultOptions: TextarenaOptions = {
       'header4',
       'image',
       'blockquote',
+      'embed',
       'callout',
       'exampleRecomendation',
       'collapse',
@@ -80,6 +83,7 @@ const defaultOptions: TextarenaOptions = {
     blockquotePlugin(),
     calloutPlugin(),
     imagePlugin(),
+    embedPlugin(),
     linkPlugin(),
     examplePlugin(),
     collapsePlugin(),
@@ -143,12 +147,12 @@ class Textarena {
   public getData(): TextarenaData {
     return {
       html: this.getHtml(),
-      dataHtml: this.editor.getInnerHTML()
-        .replace(/<!--(?!-->)*-->/g, '')
-        .replace(/^[\s\n]+/, '')
-        .replace(/[\s\n]+$/, '')
-        .replace(/(<[\w-]+)\s+observe-id="[\d.]+"/g, '$1')
-        .replace(/(<p)/g, '\n$1'),
+      dataHtml: this.asm.model.getOutputHtml(),
+      // .replace(/<!--(?!-->)*-->/g, '')
+      // .replace(/^[\s\n]+/, '')
+      // .replace(/[\s\n]+$/, '')
+      // .replace(/(<[\w-]+)\s+observe-id="[\d.]+"/g, '$1')
+      // .replace(/(<p)/g, '\n$1'),
       json: this.getJson(),
     };
   }
@@ -337,6 +341,10 @@ class Textarena {
     return this.asm.model.updateInlineNode(selection, node);
   }
 
+  public subscribe(event: string, handler: ArenaHandler): void {
+    this.asm.eventManager.subscribe(event, handler);
+  }
+
   protected debug = false;
 
   protected container: ElementHelper;
@@ -368,7 +376,22 @@ class Textarena {
 }
 
 declare global {
-  interface Window { asm: undefined | ArenaServiceManager; }
+  interface Window {
+    asm: undefined | ArenaServiceManager,
+    twttr: undefined | {
+      widgets: {
+        createTweet: (id: string, el: HTMLElement) => void,
+      },
+    };
+    FB: undefined | {
+      init: (opts: { xfbml: boolean, version: string }) => void,
+    };
+    instgrm: undefined | {
+      Embeds: {
+        process: () => void,
+      },
+    };
+  }
 }
 
 export default Textarena;

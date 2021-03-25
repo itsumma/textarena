@@ -91,9 +91,18 @@ export default abstract class AbstractParentNode<
     return content;
   }
 
-  public getOutputHtml(frms: ArenaFormatings, deep = 0): string {
+  public getOutputHtml(
+    frms: ArenaFormatings,
+    deep = 0,
+    start?: number,
+    end?: number,
+  ): string {
+    const content = [];
+    for (let i = start || 0; i < (end || this.children.length); i += 1) {
+      content.push(this.children[i].getOutputHtml(frms, deep + 1));
+    }
     return this.arena.getOutputTemplate(
-      this.children.map((child) => child.getOutputHtml(frms, deep + 1)).join('\n'),
+      content.join('\n'),
       deep,
       this.attributes,
     );

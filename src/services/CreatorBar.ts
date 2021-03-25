@@ -245,6 +245,6 @@ export default class CreatorBar {
   closeList(): void {
     this.active = false;
     this.elem.removeClass('textarena-creator_active');
-    this.asm.textarena.getEditorElement().focus();
+    // this.asm.textarena.getEditorElement().focus();
   }
 }

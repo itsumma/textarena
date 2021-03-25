@@ -29,12 +29,16 @@ export default abstract class AbstractArena {
       str += ` ${attr}`;
     });
     Object.entries(attributes).forEach(([name, value]) => {
-      const escapedValue = value.replace(/&/g, '&amp;')
-        .replace(/'/g, '&apos;')
-        .replace(/"/g, '&quot;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;');
-      str += ` ${name}="${escapedValue}"`;
+      if (typeof value === 'boolean' && value) {
+        str += ` ${name}`;
+      } else if (typeof value === 'string') {
+        const escapedValue = value.replace(/&/g, '&amp;')
+          .replace(/'/g, '&apos;')
+          .replace(/"/g, '&quot;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;');
+        str += ` ${name}="${escapedValue}"`;
+      }
     });
     return str;
   }
@@ -70,6 +74,9 @@ export default abstract class AbstractArena {
     deep: number,
     attributes: ArenaAttributes,
   ): string {
+    if (!this.tag) {
+      return children || '';
+    }
     const attrs = this.getAttributesString('', attributes);
     const tab = '  '.repeat(deep);
     const tag = this.tag.toLowerCase();

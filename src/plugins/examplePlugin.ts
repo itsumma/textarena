@@ -180,7 +180,7 @@ const defaultOptions: ExampleOptions = {
   allowedAttributes: ['postid'],
   shortcut: 'Alt + KeyR',
   hint: 'r',
-  command: 'add-callout',
+  command: 'add-recomendation',
   component: 'arena-recomendation',
   marks: [
     {

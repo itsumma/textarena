@@ -64,11 +64,26 @@ export default class ArenaModel {
   }
 
   public getOutputHtml(): string {
-    return this.model.getOutputHtml(this.getFormatings());
+    return this.model.getOutputHtml(this.getFormatings(), -1);
   }
 
   public getHtml(): TemplateResult | string {
     return this.model.getHtml(this.getFormatings());
+  }
+
+  public getOutHtmlOfSelection(selection: ArenaSelection): string {
+    if (selection.isCollapsed()) {
+      return '';
+    }
+    let result = '';
+    const frms = this.getFormatings();
+    this.runNodesOfSelection(
+      selection,
+      (node: AnyArenaNode, start?: number, end?: number) => {
+        result += node.getOutputHtml(frms, 0, start, end);
+      },
+    );
+    return result;
   }
 
   public getJson(): string {
