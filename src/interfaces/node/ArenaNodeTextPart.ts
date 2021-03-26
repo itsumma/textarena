@@ -29,6 +29,8 @@ export default interface ArenaNodeTextPart {
 
   getTextLength(): number;
 
+  isEmpty(): boolean;
+
   insertFormating(name: string, start: number, end: number): void;
 
   toggleFormating(name: string, start: number, end: number): void;

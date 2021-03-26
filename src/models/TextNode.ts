@@ -126,6 +126,10 @@ export default class TextNode
     return this.richTextManager.getTextLength();
   }
 
+  public isEmpty(): boolean {
+    return /^[\s\n]*$/.test(this.getRawText());
+  }
+
   public addInlineNode(
     arena: ArenaInlineInterface,
     start: number,
