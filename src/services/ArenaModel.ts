@@ -44,6 +44,14 @@ export default class ArenaModel {
     return this.rootNode;
   }
 
+  public getRegistry(): NodeRegistry {
+    return this.registry;
+  }
+
+  public setRegistry(registry: NodeRegistry): void {
+    this.registry = registry;
+  }
+
   public setRoot(root: ArenaNodeRoot): void {
     this.rootNode = root;
   }
@@ -391,11 +399,12 @@ export default class ArenaModel {
     return newSelection;
   }
 
-  public removeNodeById(id: string): void {
+  public removeNodeById(id: string): ArenaCursorAncestor | undefined {
     const node = this.getNodeById(id);
     if (node && node.hasParent) {
-      node.remove();
+      return node.remove();
     }
+    return undefined;
   }
 
   /**

@@ -134,11 +134,12 @@ export default class ArenaParser {
           }
           newArenaNode.insertText(text, newArenaNode.getTextLength());
           this.clearTextNode(newArenaNode);
-        } else if (newArenaNode.hasChildren) {
-          this.insertChildren(elementNode, newArenaNode, 0);
+          return [newArenaNode.parent, newArenaNode.getIndex() + 1, true];
+        }
+        if (newArenaNode.hasChildren) {
+          return [...this.insertChildren(elementNode, newArenaNode, 0), true];
         }
 
-        return [newArenaNode.parent, newArenaNode.getIndex() + 1, true];
         // if (arenaNode.hasChildren && arenaNode.protected && !arenaNode.isAllowedNode(arena)) {
         //   return [arenaNode, offset, false];
         // }

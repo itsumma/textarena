@@ -126,7 +126,9 @@ export default class ArenaView {
 
   protected getChildNodes(node: HTMLElement): ChildNode[] {
     return Array.from(node.childNodes)
-      .filter((child) => [Node.TEXT_NODE, Node.ELEMENT_NODE].includes(child.nodeType));
+      .filter((child) => [Node.TEXT_NODE, Node.ELEMENT_NODE].includes(child.nodeType))
+      .filter((child) => child.nodeType !== Node.ELEMENT_NODE
+        || (child as HTMLElement).contentEditable !== 'false');
   }
 
   protected isEmptyNode(node: Node): boolean {

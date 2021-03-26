@@ -371,8 +371,21 @@ export default class ArenaBrowser {
           const id = (elem as HTMLElement).getAttribute('node-id');
           if (id) {
             e.preventDefault();
-            this.asm.model.removeNodeById(id);
-            const sel = this.asm.view.getCurrentSelection();
+            let sel;
+            const cursor = this.asm.model.removeNodeById(id);
+            if (cursor) {
+              const textCursor = this.asm.model.getTextCursor(cursor.node, cursor.offset);
+              sel = new ArenaSelection(
+                textCursor.node,
+                textCursor.offset,
+                textCursor.node,
+                textCursor.offset,
+                'forward',
+              );
+            }
+            if (!sel) {
+              sel = this.asm.view.getCurrentSelection();
+            }
             if (sel) {
               this.asm.history.save(sel);
             }

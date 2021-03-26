@@ -1,8 +1,9 @@
 /* eslint-disable no-bitwise */
 import ArenaSelection from '../helpers/ArenaSelection';
-import { ArenaNodeRoot } from '../interfaces/ArenaNode';
+import { ArenaNodeRoot, AnyArenaNode } from '../interfaces/ArenaNode';
 import Textarena from '../Textarena';
 import ArenaServiceManager from './ArenaServiceManager';
+import NodeRegistry from '../helpers/NodeRegistry';
 
 export default class ArenaHistory {
   constructor(protected asm: ArenaServiceManager) {
@@ -49,9 +50,12 @@ export default class ArenaHistory {
     //   e.data.direction,
     // );
     const root = this.asm.model.model.clone();
+    const registry = new NodeRegistry();
+    this.registerNode(registry, root);
     const sel = selection?.clone();
     this.log.push([
       root,
+      registry,
       sel,
     ]);
     this.currentIndex = this.log.length - 1;
@@ -60,11 +64,7 @@ export default class ArenaHistory {
   public undo(selection: ArenaSelection): ArenaSelection | undefined {
     if (this.currentIndex > 0) {
       this.currentIndex -= 1;
-      const [root, sel] = this.log[this.currentIndex];
-      this.asm.model.setRoot(
-        root,
-      );
-      return sel;
+      return this.applyCurrent();
     }
     return selection;
   }
@@ -72,16 +72,30 @@ export default class ArenaHistory {
   public redo(selection: ArenaSelection): ArenaSelection | undefined {
     if (this.currentIndex < this.log.length - 1) {
       this.currentIndex += 1;
-      const [root, sel] = this.log[this.currentIndex];
-      this.asm.model.setRoot(
-        root,
-      );
-      return sel;
+      return this.applyCurrent();
     }
     return selection;
   }
 
-  protected log: [ArenaNodeRoot, ArenaSelection | undefined][] = [];
+  protected applyCurrent(): ArenaSelection | undefined {
+    const [root, registry, sel] = this.log[this.currentIndex];
+    this.asm.model.setRegistry(registry);
+    this.asm.model.setRoot(
+      root,
+    );
+    return sel;
+  }
+
+  protected registerNode(registry: NodeRegistry, node: AnyArenaNode): void {
+    registry.set(node.getId(), node);
+    if (node.hasChildren) {
+      node.children.forEach((child) => {
+        this.registerNode(registry, child);
+      });
+    }
+  }
+
+  protected log: [ArenaNodeRoot, NodeRegistry, ArenaSelection | undefined][] = [];
 
   protected currentIndex = 0;
 }
