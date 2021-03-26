@@ -96,7 +96,7 @@ const quotePlugin = (opts?: Options): ArenaPlugin => ({
     if (!paragraph) {
       throw new Error('Default Arena for text not found');
     }
-    const allowedArenas = textarena.getSimpleArenas();
+    // const allowedArenas = textarena.getSimpleArenas();
     const bodyContainer = textarena.registerArena(
       {
         name: 'quote-body-container',
@@ -120,7 +120,7 @@ const quotePlugin = (opts?: Options): ArenaPlugin => ({
         tag: 'CITE',
         attributes: ['slot=quote_role', 'class=textarena-quote__role'],
         hasText: true,
-        nextArena: paragraph,
+        nextArena: bodyContainer,
       },
       [
         {
