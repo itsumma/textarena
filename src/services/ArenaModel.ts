@@ -34,6 +34,9 @@ type FormatingMark = {
 export default class ArenaModel {
   public readonly rootArenaName = '__ROOT__';
 
+  constructor(protected asm: ArenaServiceManager) {
+  }
+
   get model(): ArenaNodeRoot {
     if (!this.rootNode) {
       throw new Error('Root node not defined');
@@ -41,8 +44,11 @@ export default class ArenaModel {
     return this.rootNode;
   }
 
-  constructor(protected asm: ArenaServiceManager) {
+  public setRoot(root: ArenaNodeRoot): void {
+    this.rootNode = root;
   }
+
+  // #region Arenas and Formatings
 
   public setDefaultTextArena(
     arena: ArenaMediatorInterface | ArenaTextInterface,
@@ -57,37 +63,6 @@ export default class ArenaModel {
     });
     this.arenasByName[this.rootArena.name] = this.rootArena;
     this.rootNode = NodeFactory.createRootNode(this.rootArena);
-  }
-
-  public setRoot(root: ArenaNodeRoot): void {
-    this.rootNode = root;
-  }
-
-  public getOutputHtml(): string {
-    return this.model.getOutputHtml(this.getFormatings(), -1);
-  }
-
-  public getHtml(): TemplateResult | string {
-    return this.model.getHtml(this.getFormatings());
-  }
-
-  public getOutHtmlOfSelection(selection: ArenaSelection): string {
-    if (selection.isCollapsed()) {
-      return '';
-    }
-    let result = '';
-    const frms = this.getFormatings();
-    this.runNodesOfSelection(
-      selection,
-      (node: AnyArenaNode, start?: number, end?: number) => {
-        result += node.getOutputHtml(frms, 0, start, end);
-      },
-    );
-    return result;
-  }
-
-  public getJson(): string {
-    return '';
   }
 
   public registerArena(
@@ -159,11 +134,46 @@ export default class ArenaModel {
     return this.formatingMarks[tagName];
   }
 
+  // #endregion
+
+  // #region Exporting
+
+  public getOutputHtml(): string {
+    return this.model.getOutputHtml(this.getFormatings(), -1);
+  }
+
+  public getHtml(): TemplateResult | string {
+    return this.model.getHtml(this.getFormatings());
+  }
+
+  public getOutHtmlOfSelection(selection: ArenaSelection): string {
+    if (selection.isCollapsed()) {
+      return '';
+    }
+    let result = '';
+    const frms = this.getFormatings();
+    this.runNodesOfSelection(
+      selection,
+      (node: AnyArenaNode, start?: number, end?: number) => {
+        result += node.getOutputHtml(frms, 0, start, end);
+      },
+    );
+    return result;
+  }
+
+  public getJson(): string {
+    return '';
+  }
+
+  // #endregion
+
+  /** */
   public createChildNode(arena: ChildArena): ChildArenaNode {
     const node = NodeFactory.createChildNode(arena, this.registry);
     return node;
   }
 
+  /** */
   public getTextCursor(
     node: AnyArenaNode,
     offset: number,
@@ -191,6 +201,7 @@ export default class ArenaModel {
   }
 
   /**
+   * TODO split in two methods: with creating and without
    * Find or create text node in children or ancestors.
    * @param node AnyArenaNode
    * @param offset number
@@ -319,21 +330,6 @@ export default class ArenaModel {
       return node;
     }
     return undefined;
-    // const path = id.split('.').map((i) => parseInt(i, 10));
-    // let cursor: AnyArenaNode | undefined = this.model;
-    // if (path.shift() === 0) {
-    //   path.forEach((i) => {
-    //     if (cursor && cursor.hasChildren) {
-    //       cursor = cursor.children[i];
-    //     } else {
-    //       cursor = undefined;
-    //     }
-    //   });
-    //   if (cursor && cursor.hasText) {
-    //     return cursor;
-    //   }
-    // }
-    // return undefined;
   }
 
   /**
@@ -343,18 +339,6 @@ export default class ArenaModel {
    */
   public getNodeById(id: string): AnyArenaNode | undefined {
     return this.registry.get(id);
-    // const path = id.split('.').map((i) => parseInt(i, 10));
-    // let cursor: AnyArenaNode | undefined = this.model;
-    // if (path.shift() === 0) {
-    //   path.forEach((i) => {
-    //     if (cursor && cursor.hasChildren) {
-    //       cursor = cursor.children[i];
-    //     } else {
-    //       cursor = undefined;
-    //     }
-    //   });
-    // }
-    // return cursor;
   }
 
   public insertHtml(selection: ArenaSelection, html: string): ArenaSelection {
@@ -578,6 +562,7 @@ export default class ArenaModel {
     return newSelection;
   }
 
+  /** */
   public moveChild(selection: ArenaSelection, direction: 'up' | 'down'): ArenaSelection {
     if (selection.isSameNode()) {
       const node = selection.startNode;
@@ -598,100 +583,7 @@ export default class ArenaModel {
     return selection;
   }
 
-  protected toggleArenaForSelection(
-    selection: ArenaSelection,
-    arena: ArenaMediatorInterface,
-  ): ArenaSelection {
-    const commonAncestorCursor = this.runNodesOfSelection(
-      selection,
-    );
-    if (!commonAncestorCursor) {
-      return selection;
-    }
-    const newSelection = selection.clone();
-    const [commonAncestor, start, end] = commonAncestorCursor;
-    const ancestor = this.tryToFindAncestor(commonAncestor, arena);
-    if (ancestor) {
-      this.unwrapNode(ancestor);
-      return newSelection;
-    }
-    let dad: ParentArenaNode;
-    let childrentToWrap: ChildArenaNode[];
-    let offset = start;
-    if (commonAncestor.isAllowedNode(arena)) {
-      dad = commonAncestor;
-      childrentToWrap = dad.cutChildren(start, end - start + 1);
-      offset = start;
-    } else {
-      const toWrap = this.tryToFindAncestor2(commonAncestor, arena);
-      if (!toWrap) {
-        return newSelection;
-      }
-      dad = toWrap.parent;
-      offset = toWrap.getIndex();
-      childrentToWrap = dad.cutChildren(offset, 1);
-    }
-    let wrap = false;
-    for (let i = 0; i < childrentToWrap.length; i += 1) {
-      const child = childrentToWrap[i];
-      if (arena.allowedArenas.includes(child.arena)
-      // || (arena.arenaForText && 'hasText' in child)
-      ) {
-        wrap = true;
-        break;
-      }
-    }
-    if (!wrap) {
-      childrentToWrap.forEach((child) => {
-        if (child.arena === arena && child.hasChildren) {
-          const children = child.cutChildren(0);
-          dad.insertChildren(children, offset);
-          offset += children.length;
-        } else {
-          dad.insertChildren([child], offset);
-          offset += 1;
-        }
-      });
-    } else {
-      let toWrap = [];
-      for (let i = 0; i < childrentToWrap.length; i += 1) {
-        const child = childrentToWrap[i];
-        if (arena.allowedArenas.includes(child.arena)
-        // || (arena.arenaForText && 'hasText' in child)
-        ) {
-          toWrap.push(child);
-        } else {
-          if (toWrap.length > 0) {
-            const newNode = this.createAndInsertNode(arena, dad, offset);
-            // const newNode = dad.createAndInsertNode(arena, offset);
-            if (newNode) {
-              (newNode as ParentArenaNode).insertChildren(toWrap, 0);
-              offset += 1;
-              toWrap = [];
-            }
-            // if (toWrap.length === i) {
-            //   newSelection.setStartNode(newNode.getChild(0), startOffset);
-            // }
-          }
-          dad.insertChildren([child], offset);
-          offset += 1;
-        }
-      }
-      if (toWrap.length > 0) {
-        const newNode = this.createAndInsertNode(arena, dad, offset);
-        if (newNode) {
-          (newNode as ParentArenaNode).insertChildren(toWrap, 0);
-        }
-        // if (toWrap.length === childrentToWrap.length) {
-        //   newSelection.setStartNode(newNode.getChild(0), startOffset);
-        // }
-        // newSelection.setEndNode(newNode.getChild(toWrap.length - 1), endOffset);
-      }
-      dad.mergeChildren(0);
-    }
-    return newSelection;
-  }
-
+  /** */
   public insertBeforeSelected(selection: ArenaSelection, arena: ChildArena): ArenaSelection {
     if (!selection.isSameNode()) {
       return selection;
@@ -723,7 +615,7 @@ export default class ArenaModel {
       if (arena.group) {
         return this.toggleGroupArenaForSelection(selection, arena);
       }
-      return this.toggleArenaForSelection(selection, arena);
+      return this.toggleSimpleMediatorArenaForSelection(selection, arena);
     }
     return selection;
   }
@@ -761,6 +653,7 @@ export default class ArenaModel {
     return selection;
   }
 
+  // #region [Inline Node]
   public addInlineNode(
     selection: ArenaSelection,
     arena: ArenaInlineInterface,
@@ -797,6 +690,7 @@ export default class ArenaModel {
       startNode.updateInlineNode(node, startOffset, endOffset);
     }
   }
+  // #endregion
 
   /**
    * Call callback function for all selected nodes without any child nodes.
@@ -896,6 +790,8 @@ export default class ArenaModel {
 
   protected rootNode: ArenaNodeRoot | undefined;
 
+  /** Split non protected node into two.
+   * If offset in start or end of the givven node splitting is not necessary. */
   protected splitMediatorNode(
     node: ArenaNodeMediator,
     offset: number,
@@ -918,6 +814,7 @@ export default class ArenaModel {
     return newNode;
   }
 
+  /**  */
   protected getOutFromMediator(
     node: ArenaNodeText,
     onlyGroup = false,
@@ -959,29 +856,30 @@ export default class ArenaModel {
     return undefined;
   }
 
-  protected getNextSibling(
-    node: AnyArenaNode,
-  ): ArenaNodeText | ArenaNodeSingle | undefined {
-    if (!(node.hasParent)) {
-      return undefined;
-    }
-    const next = node.parent.getChild(node.getIndex() + 1);
-    if (next && next.single) {
-      return next;
-    }
-    if (next?.hasChildren && next.protected) {
-      return undefined;
-    }
-    if (next) {
-      const cursor = this.getOrCreateNodeForText(next, 0);
-      if (cursor) {
-        // return next.getTextCursor(0).node;
-        return cursor.node;
-      }
-    }
-    return this.getNextSibling(node.parent);
-  }
+  // protected getNextSibling(
+  //   node: AnyArenaNode,
+  // ): ArenaNodeText | ArenaNodeSingle | undefined {
+  //   if (!(node.hasParent)) {
+  //     return undefined;
+  //   }
+  //   const next = node.parent.getChild(node.getIndex() + 1);
+  //   if (next && next.single) {
+  //     return next;
+  //   }
+  //   if (next?.hasChildren && next.protected) {
+  //     return undefined;
+  //   }
+  //   if (next) {
+  //     const cursor = this.getOrCreateNodeForText(next, 0);
+  //     if (cursor) {
+  //       // return next.getTextCursor(0).node;
+  //       return cursor.node;
+  //     }
+  //   }
+  //   return this.getNextSibling(node.parent);
+  // }
 
+  /** */
   protected runOfChildren(node: AnyArenaNode, callback: (n: AnyArenaNode) => void): void {
     if (node.hasChildren) {
       node.children.forEach((child) => {
@@ -992,16 +890,7 @@ export default class ArenaModel {
     }
   }
 
-  protected getAncestors(node: AnyArenaNode): ArenaCursorAncestor[] {
-    if (node.hasParent) {
-      return [
-        ...this.getAncestors(node.parent),
-        { node: node.parent, offset: node.getIndex() },
-      ];
-    }
-    return [];
-  }
-
+  // #region getCommonAncestor
   protected getCommonAncestor(nodeA: AnyArenaNode, nodeB: AnyArenaNode):
     [ ParentArenaNode, number, number ] | undefined {
     if (nodeA === nodeB) {
@@ -1024,6 +913,18 @@ export default class ArenaModel {
     return result;
   }
 
+  protected getAncestors(node: AnyArenaNode): ArenaCursorAncestor[] {
+    if (node.hasParent) {
+      return [
+        ...this.getAncestors(node.parent),
+        { node: node.parent, offset: node.getIndex() },
+      ];
+    }
+    return [];
+  }
+  // #endregion
+
+  /** */
   protected applyMiddlewares(cursor: ArenaCursorText): ArenaCursorText {
     let result = cursor;
     if (cursor.node.arena.hasText) {
@@ -1034,6 +935,8 @@ export default class ArenaModel {
     }
     return result;
   }
+
+  // #region [Apply text Arena]
 
   protected applyTextArenaToSelection(
     selection: ArenaSelection,
@@ -1123,6 +1026,9 @@ export default class ArenaModel {
     }
     return undefined;
   }
+
+  // [Apply text Arena]
+  // #endregion
 
   protected toggleGroupArenaForSelection(
     selection: ArenaSelection,
@@ -1327,6 +1233,102 @@ export default class ArenaModel {
     return selection;
   }
 
+  // #region [Toggle simple non group Arena]
+
+  protected toggleSimpleMediatorArenaForSelection(
+    selection: ArenaSelection,
+    arena: ArenaMediatorInterface,
+  ): ArenaSelection {
+    const commonAncestorCursor = this.runNodesOfSelection(
+      selection,
+    );
+    if (!commonAncestorCursor) {
+      return selection;
+    }
+    const newSelection = selection.clone();
+    const [commonAncestor, start, end] = commonAncestorCursor;
+    const ancestor = this.tryToFindAncestor(commonAncestor, arena);
+    if (ancestor) {
+      this.unwrapNode(ancestor);
+      return newSelection;
+    }
+    let dad: ParentArenaNode;
+    let childrentToWrap: ChildArenaNode[];
+    let offset = start;
+    if (commonAncestor.isAllowedNode(arena)) {
+      dad = commonAncestor;
+      childrentToWrap = dad.cutChildren(start, end - start + 1);
+      offset = start;
+    } else {
+      const toWrap = this.tryToFindAncestor2(commonAncestor, arena);
+      if (!toWrap) {
+        return newSelection;
+      }
+      dad = toWrap.parent;
+      offset = toWrap.getIndex();
+      childrentToWrap = dad.cutChildren(offset, 1);
+    }
+    let wrap = false;
+    for (let i = 0; i < childrentToWrap.length; i += 1) {
+      const child = childrentToWrap[i];
+      if (arena.allowedArenas.includes(child.arena)
+      // || (arena.arenaForText && 'hasText' in child)
+      ) {
+        wrap = true;
+        break;
+      }
+    }
+    if (!wrap) {
+      childrentToWrap.forEach((child) => {
+        if (child.arena === arena && child.hasChildren) {
+          const children = child.cutChildren(0);
+          dad.insertChildren(children, offset);
+          offset += children.length;
+        } else {
+          dad.insertChildren([child], offset);
+          offset += 1;
+        }
+      });
+    } else {
+      let toWrap = [];
+      for (let i = 0; i < childrentToWrap.length; i += 1) {
+        const child = childrentToWrap[i];
+        if (arena.allowedArenas.includes(child.arena)
+        // || (arena.arenaForText && 'hasText' in child)
+        ) {
+          toWrap.push(child);
+        } else {
+          if (toWrap.length > 0) {
+            const newNode = this.createAndInsertNode(arena, dad, offset);
+            // const newNode = dad.createAndInsertNode(arena, offset);
+            if (newNode) {
+              (newNode as ParentArenaNode).insertChildren(toWrap, 0);
+              offset += 1;
+              toWrap = [];
+            }
+            // if (toWrap.length === i) {
+            //   newSelection.setStartNode(newNode.getChild(0), startOffset);
+            // }
+          }
+          dad.insertChildren([child], offset);
+          offset += 1;
+        }
+      }
+      if (toWrap.length > 0) {
+        const newNode = this.createAndInsertNode(arena, dad, offset);
+        if (newNode) {
+          (newNode as ParentArenaNode).insertChildren(toWrap, 0);
+        }
+        // if (toWrap.length === childrentToWrap.length) {
+        //   newSelection.setStartNode(newNode.getChild(0), startOffset);
+        // }
+        // newSelection.setEndNode(newNode.getChild(toWrap.length - 1), endOffset);
+      }
+      dad.mergeChildren(0);
+    }
+    return newSelection;
+  }
+
   protected tryToFindAncestor(
     node: AnyArenaNode,
     arena: ArenaMediatorInterface,
@@ -1373,4 +1375,5 @@ export default class ArenaModel {
     parent.insertChildren(childrenToInsert, offset);
     node.remove();
   }
+  // #endregion
 }

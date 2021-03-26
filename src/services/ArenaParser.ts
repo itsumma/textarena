@@ -251,7 +251,7 @@ export default class ArenaParser {
     return formatings;
   }
 
-  clearText(
+  protected clearText(
     text: string | null,
     // first = false,
     // last = false,

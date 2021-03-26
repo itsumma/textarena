@@ -1,6 +1,7 @@
 import ArenaMiddleware from './ArenaMiddleware';
 import ArenaAncestorCore from './arena/ArenaAncestorCore';
 import ArenaCore from './arena/ArenaCore';
+import ArenaAttributes from './ArenaAttributes';
 
 export interface ArenaRootInterface extends ArenaAncestorCore {
   readonly root: true;
@@ -43,6 +44,8 @@ export interface ArenaInlineInterface extends ArenaCore {
 export type ParentArena = ArenaMediatorInterface | ArenaRootInterface;
 
 export type ChildArena = ArenaMediatorInterface | ArenaSingleInterface | ArenaTextInterface;
+
+export type ProtectedArenas = (ChildArena | [ChildArena, ArenaAttributes])[];
 
 export type TreeArena = ArenaRootInterface | ChildArena;
 

@@ -1,5 +1,7 @@
 import ArenaCore from './ArenaCore';
-import { ArenaMediatorInterface, ArenaTextInterface, ChildArena } from '../Arena';
+import {
+  ArenaMediatorInterface, ArenaTextInterface, ChildArena, ProtectedArenas,
+} from '../Arena';
 
 interface ArenaAncestorCore extends ArenaCore {
   readonly root: boolean;
@@ -12,7 +14,7 @@ interface ArenaAncestorCore extends ArenaCore {
   readonly automerge: boolean;
   readonly group: boolean;
   readonly protected: boolean;
-  readonly protectedChildren: ChildArena[];
+  readonly protectedChildren: ProtectedArenas;
   readonly arenaForText: ArenaMediatorInterface | ArenaTextInterface;
   readonly allowedArenas: ChildArena[];
   addAllowedChild(arena: ChildArena): void;

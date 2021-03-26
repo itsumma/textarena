@@ -152,7 +152,12 @@ const quotePlugin = (opts?: Options): ArenaPlugin => ({
         name,
         tag,
         attributes,
-        protectedChildren: [image, titleParagraph, roleContainer, bodyContainer],
+        protectedChildren: [
+          [image, { width: 100, height: 100 }],
+          titleParagraph,
+          roleContainer,
+          bodyContainer,
+        ],
         arenaForText: bodyContainer,
       },
       [

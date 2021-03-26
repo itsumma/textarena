@@ -1,4 +1,6 @@
-import { ArenaMediatorInterface, ArenaTextInterface, ChildArena } from './Arena';
+import {
+  ArenaMediatorInterface, ArenaTextInterface, ChildArena, ProtectedArenas,
+} from './Arena';
 
 export type ArenaOptionsCore = {
   name: string,
@@ -28,7 +30,7 @@ export type ArenaOptionsAncestor = ArenaOptionsCore & {
 } & ({
   allowedArenas: ChildArena[],
 } | {
-  protectedChildren: ChildArena[],
+  protectedChildren: ProtectedArenas,
 });
 
 export type ArenaOptionsInline = ArenaOptionsCore & {

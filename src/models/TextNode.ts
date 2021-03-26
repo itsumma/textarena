@@ -55,7 +55,7 @@ export default class TextNode
     end?: number,
   ): string {
     const text = this.richTextManager.getHtml(frms, start, end);
-    return this.arena.getOutputTemplate(text, deep, this.attributes);
+    return this.arena.getOutputTemplate(text, deep, this.attributes, true);
   }
 
   getTextCursor(index: number): ArenaCursorText {

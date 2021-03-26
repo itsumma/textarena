@@ -1,4 +1,6 @@
-import { ArenaMediatorInterface, ArenaTextInterface, ChildArena } from '../interfaces/Arena';
+import {
+  ArenaMediatorInterface, ArenaTextInterface, ChildArena, ProtectedArenas,
+} from '../interfaces/Arena';
 import { ArenaOptionsAncestor } from '../interfaces/ArenaOptions';
 import AbstractArena from './AbstractArena';
 
@@ -22,7 +24,7 @@ export default abstract class AbstractAncestorArena
 
   readonly protected: boolean = false;
 
-  readonly protectedChildren: ChildArena[] = [];
+  readonly protectedChildren: ProtectedArenas = [];
 
   public arenaForText: ArenaMediatorInterface | ArenaTextInterface;
 
@@ -33,7 +35,9 @@ export default abstract class AbstractAncestorArena
     if ('protectedChildren' in options) {
       this.protected = true;
       this.protectedChildren = options.protectedChildren;
-      this.allowedArenas = options.protectedChildren;
+      this.allowedArenas = options.protectedChildren.map(
+        (item) => (Array.isArray(item) ? item[0] : item),
+      );
     } else {
       this.allowedArenas = options.allowedArenas || [];
       if (options.automerge) {

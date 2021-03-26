@@ -10,6 +10,7 @@ import {
 } from '../interfaces/ArenaNode';
 import InlineNode from './InlineNode';
 import NodeRegistry from '../helpers/NodeRegistry';
+import ArenaAttributes from '../interfaces/ArenaAttributes';
 
 export default class NodeFactory {
   static createRootNode(arena: ArenaRootInterface): ArenaNodeRoot {
@@ -23,9 +24,18 @@ export default class NodeFactory {
     if (arena.hasChildren) {
       let children;
       if (arena.protected) {
-        children = arena.protectedChildren.map(
-          (childArena) => this.createChildNode(childArena, registry),
-        );
+        children = arena.protectedChildren.map((item) => {
+          let childArena;
+          let attributes: ArenaAttributes = {};
+          if (Array.isArray(item)) {
+            [childArena, attributes] = item;
+          } else {
+            childArena = item;
+          }
+          const node = this.createChildNode(childArena, registry);
+          node.setAttributes(attributes);
+          return node;
+        });
       }
       const id = registry.generateId();
       const node = new MediatorNode(arena, id, children);

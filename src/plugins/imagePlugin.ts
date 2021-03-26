@@ -28,6 +28,16 @@ export class Image extends WebComponent {
   })
   caption: boolean | undefined;
 
+  @property({
+    type: Number,
+  })
+  width: number | undefined;
+
+  @property({
+    type: Number,
+  })
+  height: number | undefined;
+
   loading = false;
 
   get input(): HTMLInputElement | undefined {
@@ -79,7 +89,7 @@ export class Image extends WebComponent {
     if (this.loading) {
       preview = html`<div class="preview-btn">Грузится…</div>`;
     } else if (this.src) {
-      preview = html`<img src="${this.src}" />`;
+      preview = html`<img src="${this.prepareSrc(this.src)}" />`;
     } else {
       preview = html`<label for="input" class="preview-btn"></label>`;
     }
@@ -95,6 +105,18 @@ export class Image extends WebComponent {
       <input id=input type="file" @change=${this.onChange}/>
       ${caption}
     </div>`;
+  }
+
+  private prepareSrc(src: string): string {
+    if (!this.width || !this.height) {
+      return src;
+    }
+    const arr = src.split('.');
+    if (arr.length < 2) {
+      return src;
+    }
+    arr[arr.length - 2] += `_${this.width}_${this.height}`;
+    return arr.join('.');
   }
 
   private onChange() {
@@ -155,7 +177,7 @@ const defaultOptions = {
   title: 'Image',
   tag: 'ARENA-IMAGE',
   attributes: [],
-  allowedAttributes: ['src'],
+  allowedAttributes: ['src', 'width', 'height'],
   shortcut: 'Alt + KeyI',
   hint: 'i',
   command: 'add-image',
@@ -211,14 +233,12 @@ const imagePlugin = (opts?: typeof defaultOptions): ArenaPlugin => ({
         tag,
         attributes,
         allowedAttributes,
-        hasChildren: true,
-        protectedChildren: [
-          imageCaptionParagraph,
-        ],
-        arenaForText: imageCaptionParagraph,
-        allowedArenas: [
-          imageCaptionParagraph,
-        ],
+        single: true,
+        // hasChildren: true,
+        // protectedChildren: [
+        //   imageCaptionParagraph,
+        // ],
+        // arenaForText: imageCaptionParagraph,
       },
       marks,
       [textarena.getRootArenaName()],

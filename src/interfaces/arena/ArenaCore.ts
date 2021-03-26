@@ -23,6 +23,7 @@ interface ArenaCore {
     children: string | undefined,
     deep: number,
     attributes: ArenaAttributes,
+    single?: boolean,
   ): string;
 }
 

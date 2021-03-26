@@ -108,7 +108,7 @@ export default abstract class AbstractParentNode<
       content.push(this.children[i].getOutputHtml(frms, deep + 1));
     }
     return this.arena.getOutputTemplate(
-      content.join('\n'),
+      content.join(deep >= 0 ? '\n' : '\n\n'),
       deep,
       this.attributes,
     );
