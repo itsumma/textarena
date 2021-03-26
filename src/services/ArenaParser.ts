@@ -128,8 +128,11 @@ export default class ArenaParser {
         // const newArenaNode = this.asm.model.createChildNode(arena);
         this.setAttributes(newArenaNode, elementNode);
         if (newArenaNode.hasText) {
-          const formatings = this.getText(elementNode);
-          newArenaNode.insertText(formatings, newArenaNode.getTextLength());
+          const text = this.getText(elementNode);
+          if (!text) {
+            return [...this.insertChildren(elementNode, arenaNode, offset), true];
+          }
+          newArenaNode.insertText(text, newArenaNode.getTextLength());
           this.clearTextNode(newArenaNode);
         } else if (newArenaNode.hasChildren) {
           this.insertChildren(elementNode, newArenaNode, 0);
@@ -184,14 +187,15 @@ export default class ArenaParser {
       }
       const formating = this.checkFormatingMark(elementNode);
       if (formating) {
-        const formatings = this.getText(elementNode);
-        formatings.insertFormating(formating.name, 0, formatings.getTextLength());
-        // TODO dont insert text in node, but in model service.
-        const res = arenaNode.insertText(formatings, offset);
-        return [res.node, res.offset, true];
+        const text = this.getText(elementNode);
+        if (text) {
+          text.insertFormating(formating.name, 0, text.getTextLength());
+          // TODO dont insert text in node, but in model service.
+          const res = arenaNode.insertText(text, offset);
+          return [res.node, res.offset, true];
+        }
       }
-      const res = this.insertChildren(elementNode, arenaNode, offset);
-      return [...res, true];
+      return [...this.insertChildren(elementNode, arenaNode, offset), true];
     }
     return [arenaNode, offset, false];
   }
@@ -243,16 +247,20 @@ export default class ArenaParser {
     return true;
   }
 
-  private getText(node: HTMLElement): RichTextManager {
+  private getText(node: HTMLElement): RichTextManager | undefined {
     const formatings = new RichTextManager();
     let offset = 0;
-    node.childNodes.forEach((childNode) => {
+    for (let i = 0; i < node.childNodes.length; i += 1) {
+      const childNode = node.childNodes[i];
       if (childNode.nodeType === Node.TEXT_NODE) {
         const text = this.clearText(childNode.textContent);
         offset = formatings.insertText(text, offset);
       } else if (childNode.nodeType === Node.ELEMENT_NODE) {
         const elementNode = childNode as HTMLElement;
         const newFormatings = this.getText(elementNode);
+        if (!newFormatings) {
+          return undefined;
+        }
         const arena = this.checkArenaMark(elementNode);
         if (arena?.inline) {
           const inlineNode = newFormatings.addInlineNode(arena, 0, newFormatings.getTextLength());
@@ -261,6 +269,8 @@ export default class ArenaParser {
               inlineNode.setAttribute(attr, elementNode.getAttribute(attr) || '');
             });
           }
+        } else if (arena) {
+          return undefined;
         }
         const formating = this.checkFormatingMark(elementNode);
         if (formating) {
@@ -268,10 +278,10 @@ export default class ArenaParser {
         }
         offset = formatings.insertText(newFormatings, offset);
       } else {
-        this.asm.logger.error('unaccepted node type, remove', childNode);
+        // this.asm.logger.error('unaccepted node type, remove', childNode);
       }
       // [currentNode, currentOffset] = this.parseNode(childNode, currentNode, currentOffset);
-    });
+    }
     return formatings;
   }
 
