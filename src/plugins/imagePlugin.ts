@@ -1,15 +1,16 @@
 import {
-  LitElement, html, css, property, TemplateResult,
+  html, css, property, TemplateResult,
 } from 'lit-element';
 import Textarena from '../Textarena';
 import ArenaSelection from '../helpers/ArenaSelection';
 import ArenaPlugin from '../interfaces/ArenaPlugin';
 import { ArenaMediatorInterface, ArenaTextInterface } from '../interfaces/Arena';
 import { ArenaNodeText } from '../interfaces/ArenaNode';
+import WebComponent from '../helpers/WebComponent';
 
 // This decorator defines the element.
 
-export class Image extends LitElement {
+export class Image extends WebComponent {
   // This decorator creates a property accessor that triggers rendering and
   // an observed attribute.
   @property({
@@ -17,18 +18,15 @@ export class Image extends LitElement {
   })
   type = 'great';
 
-  protected currentSrc = '';
-
   @property({
     type: String,
   })
-  set src(value: string) {
-    this.currentSrc = value;
-  }
+  src: string | undefined;
 
-  get src(): string {
-    return this.currentSrc;
-  }
+  @property({
+    type: Boolean,
+  })
+  caption: boolean | undefined;
 
   loading = false;
 
@@ -40,7 +38,7 @@ export class Image extends LitElement {
   static styles = css`
     :host {
       display: block;
-      margin: 1rem 0;
+      /* margin: 1rem 0; */
       user-select: none;
     }
     .preview-btn {
@@ -85,13 +83,17 @@ export class Image extends LitElement {
     } else {
       preview = html`<label for="input" class="preview-btn"></label>`;
     }
+    let caption;
+    if (this.caption) {
+      caption = html`<div class="caption">
+      <div class="caption-placeholder">Подпись:</div>
+      <slot name="image-caption"></slot>
+    </div>`;
+    }
     return html`<div>
       ${preview}
       <input id=input type="file" @change=${this.onChange}/>
-      <div class="caption">
-        <div class="caption-placeholder">Подпись:</div>
-        <slot name="image-caption"></slot>
-      </div>
+      ${caption}
     </div>`;
   }
 
@@ -115,9 +117,9 @@ export class Image extends LitElement {
       },
     }).then((response) => {
       if (response.ok) {
-        response.json().then((url) => {
-          if (url) {
-            this.fireChangeAttribute('src', url);
+        response.json().then((src) => {
+          if (src) {
+            this.fireChangeAttribute({ src });
           }
           this.requestUpdate();
         }).catch(() => {
@@ -131,18 +133,6 @@ export class Image extends LitElement {
       this.loading = false;
       this.requestUpdate();
     });
-  }
-
-  private fireChangeAttribute(name: string, value: string): void {
-    const event = new CustomEvent('arena-change-attribute', {
-      bubbles: true,
-      detail: {
-        name,
-        value,
-        target: this,
-      },
-    });
-    this.dispatchEvent(event);
   }
 }
 

@@ -1,7 +1,7 @@
 .textarena-container {
   position: relative;
   border: none;
-  line-height: 1.6em;
+  line-height: 1.6;
 
   &:hover,
   &:active,
@@ -96,6 +96,15 @@
     }
   }
 
+  aside {
+    display: block;
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 1rem;
+    padding: 1rem;
+    margin: 0 0 1em;
+  }
+
   .pseudo-cursor {
     height: 0.5rem;
     position: relative;
@@ -143,5 +152,46 @@
   .twitter-tweet-rendered {
     position: relative;
     margin: 0 !important;
+  }
+
+  .textarena-quote {
+    display: block;
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 1rem;
+    padding: 1rem;
+    margin: 0 0 1em;
+
+    &__author {
+      display: block;
+      font-size: 0.8em;
+      // line-height: 1em;
+      font-style: normal;
+      font-weight: 400;
+      letter-spacing: 0;
+      text-align: left;
+      width: 100%;
+    }
+
+    &__role {
+      display: block;
+      font-size: 0.6em;
+      // line-height: 0.8em;
+      font-style: normal;
+      font-weight: 400;
+      text-align: left;
+      width: 100%;
+    }
+
+    quote {
+      display: block;
+      font-size: 1.3em;
+      font-style: italic;
+      font-weight: 500;
+      // line-height: 32px;
+      text-align: center;
+      width: 100%;
+      margin: 0;
+    }
   }
 }

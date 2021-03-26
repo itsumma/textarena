@@ -75,7 +75,7 @@ export default abstract class AbstractParentNode<
         id,
         this.attributes,
       );
-      if (this.protected) {
+      if (this.protected && !this.parent.protected) {
         const removeButton = html`<textarena-remove node-id="${id}">
         <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
         viewBox="0 0 512.001 512.001" xml:space="preserve">

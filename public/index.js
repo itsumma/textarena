@@ -61,6 +61,18 @@
           </arena-callout-body>
         </arena-callout>
         <p>Почему нет первого? Во-первых, какие заголовки доступны в редакторе, настраивается. Во-вторых, не рекомендуется на странице использовать более одного заголовка первого уровня. На этой странице уже есть — «TEXTARENA» — в верху страницы.</p>
+        <arena-quote class=textarena-quote>
+          <arena-image src="https://storage.yandexcloud.net/itsizo.app/87e7c025-d3bd-4f6e-9e84-595dc629affb.jpg"></arena-image>
+          <cite slot=quote_author class=textarena-quote__author>
+        Меде́я
+          </cite>
+          <cite slot=quote_role class=textarena-quote__role>
+        царевна из страны Эета
+          </cite>
+          <quote slot=quote_body class=body>
+        …вы можете превратить старика в молодого человека, если разрежете его и бросите в кипящий котёл.
+          </quote>
+        </arena-quote>
 
         <arena-embed contenteditable="false" href="https://www.youtube.com/embed/xY4fWRrwwOU" type="youtube" border=""></arena-embed>
         <arena-embed type="twitter" contenteditable="false" href="https://twitter.com/StalinGulag/status/1374843004503089157?s=20" postid="1374843004503089157"></arena-embed>

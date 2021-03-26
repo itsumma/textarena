@@ -1,13 +1,14 @@
 import {
-  LitElement, html, css, property, TemplateResult,
+  html, css, property, TemplateResult,
 } from 'lit-element';
 import Textarena from '../Textarena';
 import ArenaPlugin from '../interfaces/ArenaPlugin';
 import ArenaSelection from '../helpers/ArenaSelection';
 import { ArenaNodeText } from '../interfaces/ArenaNode';
 import { ArenaSingleInterface } from '../interfaces/Arena';
+import WebComponent from '../helpers/WebComponent';
 
-export class Recomendation extends LitElement {
+export class Recomendation extends WebComponent {
   protected currentPostId = '';
 
   @property({
@@ -41,28 +42,9 @@ export class Recomendation extends LitElement {
 
   constructor() {
     super();
-    this.addEventListener('keydown', this.handleEvent);
-    this.addEventListener('input', this.handleEvent);
-    this.addEventListener('mouseup', this.handleEvent);
-    this.addEventListener('keyup', this.handleEvent);
-    this.addEventListener('keypress', this.handleEvent);
-    this.addEventListener('keydown', this.handleEvent);
-    this.addEventListener('paste', this.handleEvent);
-    this.addEventListener('selectionchange', this.handleEvent);
     if (this.postId) {
       this.fetchPost(this.postId);
     }
-  }
-
-  disconnectedCallback(): void {
-    this.removeEventListener('keydown', this.handleEvent);
-    this.removeEventListener('input', this.handleEvent);
-    this.removeEventListener('mouseup', this.handleEvent);
-    this.removeEventListener('keyup', this.handleEvent);
-    this.removeEventListener('keypress', this.handleEvent);
-    this.removeEventListener('keydown', this.handleEvent);
-    this.removeEventListener('paste', this.handleEvent);
-    this.removeEventListener('selectionchange', this.handleEvent);
   }
 
   fetchPost(postId: string): void {
@@ -92,30 +74,13 @@ export class Recomendation extends LitElement {
     });
   }
 
-  handleEvent(event: Event): void {
-    // Prevent event from ArenaBrowser
-    event.stopPropagation();
-  }
-
   handleClick(): void {
     if (this.inputValue) {
       // this.postId = this.inputValue;
-      this.fireChangeAttribute('postid', this.inputValue);
+      this.fireChangeAttribute({ postid: this.inputValue });
       // this.requestUpdate();
       // this.fetchPost(this.postId);
     }
-  }
-
-  fireChangeAttribute(name: string, value: string): void {
-    const event = new CustomEvent('arena-change-attribute', {
-      bubbles: true,
-      detail: {
-        name,
-        value,
-        target: this,
-      },
-    });
-    this.dispatchEvent(event);
   }
 
   handleInput(e: InputEvent): void {

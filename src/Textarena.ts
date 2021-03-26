@@ -2,6 +2,7 @@ import ArenaSelection from './helpers/ArenaSelection';
 import ElementHelper from './helpers/ElementHelper';
 
 import {
+  AnyArena,
   ArenaInlineInterface, ArenaMediatorInterface, ArenaTextInterface, ChildArena,
 } from './interfaces/Arena';
 import { ArenaNodeInline, ChildArenaNode, ParentArenaNode } from './interfaces/ArenaNode';
@@ -35,6 +36,8 @@ import ArenaServiceManager from './services/ArenaServiceManager';
 import { ArenaHandler } from './services/EventManager';
 import examplePlugin from './plugins/examplePlugin';
 import collapsePlugin from './plugins/collapse-plugin';
+import asidePlugin from './plugins/asidePlugin';
+import quotePlugin from './plugins/quotePlugin';
 
 const defaultOptions: TextarenaOptions = {
   editable: true,
@@ -67,7 +70,9 @@ const defaultOptions: TextarenaOptions = {
       'header4',
       'image',
       'blockquote',
+      'aside',
       'embed',
+      'quote',
       'callout',
       'exampleRecomendation',
       'collapse',
@@ -87,6 +92,8 @@ const defaultOptions: TextarenaOptions = {
     linkPlugin(),
     examplePlugin(),
     collapsePlugin(),
+    asidePlugin(),
+    quotePlugin(),
   ],
 };
 
@@ -228,6 +235,10 @@ class Textarena {
 
   public getDefaultTextArena(): ArenaMediatorInterface | ArenaTextInterface | undefined {
     return this.asm.model.model.arena.getArenaForText();
+  }
+
+  public getArena(name: string): AnyArena | undefined {
+    return this.asm.model.getArena(name);
   }
 
   public registerArena(
