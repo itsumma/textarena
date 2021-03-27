@@ -116,8 +116,8 @@ export default class RichTextManager {
     if (text === '') {
       return '<br/>';
     }
-    const globalStart = start || 0;
-    const globalEnd = end || this.text.length;
+    const globalStart = start ?? 0;
+    const globalEnd = end ?? this.text.length;
     const tree = this.getHtmlTree(frms, globalStart, globalEnd);
     const [html] = this.getHtmlFromTree(tree);
     return html;

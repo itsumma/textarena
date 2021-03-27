@@ -25,7 +25,7 @@ export default interface ArenaNodeCorePart<T> {
   // TODO createAndInsertNode(arena: Arena, offset: number):
   //  ArenaNode & ArenaNodeScion | Exception;
 
-  // getGlobalIndex(): string;
+  getGlobalIndex(): string;
 
   getId(): string;
 
@@ -33,13 +33,17 @@ export default interface ArenaNodeCorePart<T> {
 
   getOutputHtml(frms: ArenaFormatings, deep?: number, start?: number, end?: number): string;
 
+  getOpenTag(): string;
+
+  getCloseTag(): string;
+
   getTextCursor(index?: number): ArenaCursorText | undefined;
 
-  setAttribute(name: string, value: string | boolean): void;
+  setAttribute(name: string, value: string | boolean | number): void;
 
   setAttributes(attrs: ArenaAttributes): void;
 
-  getAttribute(name: string): string | boolean;
+  getAttribute(name: string): string | boolean | number;
 
   clone(): T;
 }

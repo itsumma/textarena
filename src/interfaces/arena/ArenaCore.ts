@@ -25,6 +25,12 @@ interface ArenaCore {
     attributes: ArenaAttributes,
     single?: boolean,
   ): string;
+
+  getOpenTag(
+    attributes: ArenaAttributes,
+  ): string;
+
+  getCloseTag(): string
 }
 
 export default ArenaCore;

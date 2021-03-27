@@ -130,14 +130,21 @@ export default class ArenaParser {
         if (newArenaNode.hasText) {
           const text = this.getText(elementNode);
           if (!text) {
-            return [...this.insertChildren(elementNode, arenaNode, offset), true];
+            //
+            return [...this.insertChildren(elementNode, newArenaNode, 0), true];
           }
           newArenaNode.insertText(text, newArenaNode.getTextLength());
           this.clearTextNode(newArenaNode);
           return [newArenaNode.parent, newArenaNode.getIndex() + 1, true];
         }
         if (newArenaNode.hasChildren) {
-          return [...this.insertChildren(elementNode, newArenaNode, 0), true];
+          const [cursorNode, cursorOffset] = this.insertChildren(elementNode, newArenaNode, 0);
+          if (cursorNode.hasParent) {
+            return [cursorNode.parent, cursorNode.getIndex() + 1, true];
+          }
+          return [cursorNode, cursorOffset, true];
+          // this.insertChildren(elementNode, newArenaNode, 0);
+          // return [newArenaNode.parent, newArenaNode.getIndex() + 1, true];
         }
 
         // if (arenaNode.hasChildren && arenaNode.protected && !arenaNode.isAllowedNode(arena)) {

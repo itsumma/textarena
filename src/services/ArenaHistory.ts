@@ -5,6 +5,8 @@ import Textarena from '../Textarena';
 import ArenaServiceManager from './ArenaServiceManager';
 import NodeRegistry from '../helpers/NodeRegistry';
 
+type SelectionIndexes = [string, number, string, number, 'forward' | 'backward'];
+
 export default class ArenaHistory {
   constructor(protected asm: ArenaServiceManager) {
     this.asm.commandManager.registerCommand(
@@ -33,37 +35,30 @@ export default class ArenaHistory {
     this.save(selection);
   }
 
-  public save(selection: ArenaSelection | undefined): void {
+  public save(selection: ArenaSelection | undefined, typing = false): void {
     if (this.currentIndex < this.log.length - 1) {
+      console.log('this.log.splice(this.currentIndex + 1)', `index: ${this.currentIndex}`, `log len: ${this.log.length}`);
       this.log.splice(this.currentIndex + 1);
+      console.log('this.log.length', this.log.length);
     }
-    // const { startNode, startOffset, endNode, endOffset, direction } = selection;
-    // const startId = startNode.getGlobalIndex();
-    // const endId = endNode.getGlobalIndex();
-    // const newStartNode = this.asm.model.getTextNodeById(startId);
-    // const newEndNode = this.asm.model.getTextNodeById(endId);
-    // const sel = new ArenaSelection(
-    //   startNode,
-    //   selection.startOffset,
-    //   endNode,
-    //   e.data.endOffset,
-    //   e.data.direction,
-    // );
     const root = this.asm.model.model.clone();
     const registry = new NodeRegistry();
-    this.registerNode(registry, root);
-    const sel = selection?.clone();
+    console.log('FIRSTTT', this.log.length === 0 || this.log[0][0].children[0]?.getOutputHtml());
+    console.log('BEFFFFFFFOre', this.log.length, root.children[0].getOutputHtml());
     this.log.push([
       root,
       registry,
-      sel,
+      selection ? this.getSelectionIndexes(selection) : undefined,
     ]);
+    console.log('FIRSTTT', this.log[0][0].children[0].getOutputHtml());
     this.currentIndex = this.log.length - 1;
   }
 
   public undo(selection: ArenaSelection): ArenaSelection | undefined {
     if (this.currentIndex > 0) {
       this.currentIndex -= 1;
+      console.log('FIRSTTT', this.log[0][0].children[0].getOutputHtml());
+      console.log('UNDOOOOOOOOO', this.currentIndex, this.log[this.currentIndex][0].children[0].getOutputHtml());
       return this.applyCurrent();
     }
     return selection;
@@ -72,6 +67,8 @@ export default class ArenaHistory {
   public redo(selection: ArenaSelection): ArenaSelection | undefined {
     if (this.currentIndex < this.log.length - 1) {
       this.currentIndex += 1;
+      console.log('FIRSTTT', this.log[0][0].children[0].getOutputHtml());
+      console.log('REEEEEEEEEEDOOOOOOO', this.currentIndex, this.log[this.currentIndex][0].children[0].getOutputHtml());
       return this.applyCurrent();
     }
     return selection;
@@ -79,11 +76,12 @@ export default class ArenaHistory {
 
   protected applyCurrent(): ArenaSelection | undefined {
     const [root, registry, sel] = this.log[this.currentIndex];
+    const newRoot = root.clone();
     this.asm.model.setRegistry(registry);
     this.asm.model.setRoot(
-      root,
+      newRoot,
     );
-    return sel;
+    return sel ? this.getSelectionFromIndexes(sel) : undefined;
   }
 
   protected registerNode(registry: NodeRegistry, node: AnyArenaNode): void {
@@ -95,7 +93,32 @@ export default class ArenaHistory {
     }
   }
 
-  protected log: [ArenaNodeRoot, NodeRegistry, ArenaSelection | undefined][] = [];
+  protected getSelectionFromIndexes(sel: SelectionIndexes): ArenaSelection | undefined {
+    const startNode = this.asm.model.getTextNodeById(sel[0]);
+    const endNode = this.asm.model.getTextNodeById(sel[2]);
+    if (startNode && endNode) {
+      return new ArenaSelection(
+        startNode,
+        sel[1],
+        endNode,
+        sel[3],
+        sel[4],
+      );
+    }
+    return undefined;
+  }
+
+  protected getSelectionIndexes(selection: ArenaSelection): SelectionIndexes {
+    return [
+      selection.startNode.getGlobalIndex(),
+      selection.startOffset,
+      selection.endNode.getGlobalIndex(),
+      selection.endOffset,
+      selection.direction,
+    ];
+  }
+
+  protected log: [ArenaNodeRoot, NodeRegistry, SelectionIndexes | undefined][] = [];
 
   protected currentIndex = 0;
 }

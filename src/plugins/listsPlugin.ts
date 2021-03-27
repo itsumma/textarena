@@ -168,24 +168,25 @@ const listsPlugin = (opts?: ListsOptions): ArenaPlugin => ({
           node.parent.arena.allowedArenas.includes(listArena),
       });
       if (paragraph.hasText) {
-        paragraph.registerMiddleware((ta: Textarena, cursor: ArenaCursorText) => {
-          const text = cursor.node.getRawText();
-          const match = text.match(pattern);
-          if (match) {
-            const sel = new ArenaSelection(
-              cursor.node,
-              cursor.offset,
-              cursor.node,
-              cursor.offset,
-              'forward',
-            );
-            const newSel = ta.applyArenaToSelection(sel, listArena);
-            const cursor2 = newSel.getCursor();
-            cursor2.node.cutText(0, match[1].length);
-            cursor2.offset = 0;
-            return cursor2;
+        paragraph.registerMiddleware((ta: Textarena, cursor: ArenaCursorText, text: string) => {
+          if (text === ' ') {
+            const match = cursor.node.getRawText().match(pattern);
+            if (match) {
+              const sel = new ArenaSelection(
+                cursor.node,
+                cursor.offset,
+                cursor.node,
+                cursor.offset,
+                'forward',
+              );
+              const newSel = ta.applyArenaToSelection(sel, listArena);
+              const cursor2 = newSel.getCursor();
+              cursor2.node.cutText(0, match[1].length);
+              cursor2.offset = 0;
+              return [true, cursor2];
+            }
           }
-          return cursor;
+          return [false, cursor];
         });
       }
       textarena.addSimpleArenas(listArena);

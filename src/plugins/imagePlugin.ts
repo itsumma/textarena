@@ -130,7 +130,6 @@ export class Image extends WebComponent {
     this.requestUpdate();
     const data = new FormData();
     data.append('file', file);
-    data.append('user', 'hubot');
     fetch('https://izo.itsumma.ru', {
       method: 'POST',
       body: data,

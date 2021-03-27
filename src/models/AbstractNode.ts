@@ -46,20 +46,28 @@ export default abstract class AbstractNode<
     return this.parent.children.indexOf(this as unknown as ChildArenaNode);
   }
 
-  public isLastChild(): boolean {
-    // if (!this.parent) {
-    //   return false;
-    // }
-    return this.parent.children.indexOf(this as unknown as ChildArenaNode)
-      === this.parent.children.length - 1;
+  public isFirstChild(): boolean {
+    return this.getIndex() === 0;
   }
 
-  // public getGlobalIndex(): string {
-  //   if (!this._parent) {
-  //     return '0';
-  //   }
-  //   return `${this.parent.getGlobalIndex()}.${this.getIndex().toString()}`;
-  // }
+  public isLastChild(): boolean {
+    return this.getIndex() === this.parent.children.length - 1;
+  }
+
+  public getGlobalIndex(): string {
+    if (!this._parent) {
+      return '0';
+    }
+    return `${this.parent.getGlobalIndex()}.${this.getIndex().toString()}`;
+  }
+
+  public getOpenTag(): string {
+    return this.arena.getOpenTag(this.attributes);
+  }
+
+  public getCloseTag(): string {
+    return this.arena.getCloseTag();
+  }
 
   public getParent(): ArenaCursorAncestor {
     return { node: this.parent, offset: this.getIndex() };
@@ -89,7 +97,7 @@ export default abstract class AbstractNode<
 
   // Attributes methods
 
-  public setAttribute(name: string, value: string | boolean): void {
+  public setAttribute(name: string, value: string | boolean | number): void {
     this.attributes[name] = value;
   }
 
@@ -98,7 +106,7 @@ export default abstract class AbstractNode<
     Object.entries(attrs).forEach(([name, value]) => this.setAttribute(name, value));
   }
 
-  public getAttribute(name: string): string | boolean {
+  public getAttribute(name: string): string | boolean | number {
     return this.attributes[name] || '';
   }
 

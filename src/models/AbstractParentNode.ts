@@ -67,7 +67,7 @@ export default abstract class AbstractParentNode<
     if (this.children.length === 0) {
       this.cache = '';
     } else {
-      const id = this.getId();
+      const id = this.getGlobalIndex();
       const content = this.arena.getTemplate(
         html`
           ${repeat(this.children, (c) => c.getId(), (child) => child.getHtml(frms))}

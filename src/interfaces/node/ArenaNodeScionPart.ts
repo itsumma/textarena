@@ -10,6 +10,8 @@ export default interface ArenaNodeScionPart {
 
   getIndex(): number;
 
+  isFirstChild(): boolean;
+
   isLastChild(): boolean;
 
   getParent(): ArenaCursorAncestor;

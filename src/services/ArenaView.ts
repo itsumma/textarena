@@ -166,7 +166,7 @@ export default class ArenaView {
     node: ArenaNodeText,
     offset: number,
   ): [ChildNode, number] | undefined {
-    const element = this.findElementById(node.getId());
+    const element = this.findElementById(node.getGlobalIndex());
     if (!element) {
       return undefined;
     }

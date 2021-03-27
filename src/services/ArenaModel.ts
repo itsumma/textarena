@@ -142,6 +142,21 @@ export default class ArenaModel {
     return this.formatingMarks[tagName];
   }
 
+  /** */
+  public applyMiddlewares(cursor: ArenaCursorText, text: string): [boolean, ArenaCursorText] {
+    let success = false;
+    let result = false;
+    let cur = cursor;
+
+    if (cursor.node.arena.hasText) {
+      const { middlewares } = cursor.node.arena;
+      for (let i = 0; i < middlewares.length; i += 1) {
+        [success, cur] = middlewares[i](this.asm.textarena, cur, text);
+        result = success || result;
+      }
+    }
+    return [result, cur];
+  }
   // #endregion
 
   // #region Exporting
@@ -163,7 +178,15 @@ export default class ArenaModel {
     this.runNodesOfSelection(
       selection,
       (node: AnyArenaNode, start?: number, end?: number) => {
+        if (node.hasParent && node.parent.group
+          && (start !== undefined || node.isFirstChild())) {
+          result += node.parent.getOpenTag();
+        }
         result += node.getOutputHtml(frms, 0, start, end);
+        if (node.hasParent && node.parent.group
+          && (end !== undefined || node.isLastChild())) {
+          result += node.parent.getCloseTag();
+        }
       },
     );
     return result;
@@ -361,7 +384,19 @@ export default class ArenaModel {
    * @returns AnyArenaNode | undefined
    */
   public getNodeById(id: string): AnyArenaNode | undefined {
-    return this.registry.get(id);
+    // return this.registry.get(id);
+    const path = id.split('.').map((i) => parseInt(i, 10));
+    let cursor: AnyArenaNode | undefined = this.model;
+    if (path.shift() === 0) {
+      path.forEach((i) => {
+        if (cursor && cursor.hasChildren) {
+          cursor = cursor.children[i];
+        } else {
+          cursor = undefined;
+        }
+      });
+    }
+    return cursor;
   }
 
   public insertHtml(selection: ArenaSelection, html: string): ArenaSelection {
@@ -385,16 +420,12 @@ export default class ArenaModel {
   public insertTextToModel(
     selection: ArenaSelection,
     text: string,
-    typing = false,
   ): ArenaSelection {
     let newSelection = selection;
     if (!selection.isCollapsed()) {
       newSelection = this.removeSelection(selection, 'backward');
     }
-    let cursor = newSelection.startNode.insertText(text, newSelection.startOffset, true);
-    if (typing) {
-      cursor = this.applyMiddlewares(cursor);
-    }
+    const cursor = newSelection.startNode.insertText(text, newSelection.startOffset, true);
     newSelection.setCursor(cursor);
     return newSelection;
   }
@@ -456,9 +487,14 @@ export default class ArenaModel {
             // nowhere to get out
             const prevSibling = node.parent.getChild(node.getIndex() - 1);
             if (!prevSibling) {
+              // TODO go to prev parent
               return newSelection;
             }
             if (prevSibling.hasChildren && prevSibling.protected) {
+              const cursor = this.getOrCreateNodeForText(prevSibling);
+              if (cursor) {
+                newSelection.setCursor(cursor);
+              }
               return newSelection;
             }
             if (prevSibling.single) {
@@ -820,7 +856,7 @@ export default class ArenaModel {
       }
     }
     endNodes.reverse().forEach((n) => callback(n));
-    callback(endNode, 0, endOffset);
+    callback(endNode, undefined, endOffset);
     return commonAncestorCursor;
   }
 
@@ -889,7 +925,8 @@ export default class ArenaModel {
         // try to separate
         this.splitMediatorNode(parent, index);
       } else if (!node.isLastChild()
-        || node.getTextLength() !== 0) {
+        || parent.children.length < 2
+        || !node.isEmpty()) {
         return undefined;
       }
       let { offset } = grandpaCursor;
@@ -975,18 +1012,6 @@ export default class ArenaModel {
     return [];
   }
   // #endregion
-
-  /** */
-  protected applyMiddlewares(cursor: ArenaCursorText): ArenaCursorText {
-    let result = cursor;
-    if (cursor.node.arena.hasText) {
-      const { middlewares } = cursor.node.arena;
-      for (let i = 0; i < middlewares.length; i += 1) {
-        result = middlewares[i](this.asm.textarena, result);
-      }
-    }
-    return result;
-  }
 
   // #region [Apply text Arena]
 

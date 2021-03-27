@@ -88,4 +88,24 @@ export default abstract class AbstractArena {
     }
     return `${tab}<${tag.toLowerCase()}${attrs}>${content}</${tag.toLowerCase()}>`;
   }
+
+  public getOpenTag(
+    attributes: ArenaAttributes,
+  ): string {
+    if (!this.tag) {
+      return '';
+    }
+    const attrs = this.getAttributesString('', attributes);
+    const tag = this.tag.toLowerCase();
+    return `<${tag.toLowerCase()}${attrs}>`;
+  }
+
+  public getCloseTag(
+  ): string {
+    if (!this.tag) {
+      return '';
+    }
+    const tag = this.tag.toLowerCase();
+    return `</${tag.toLowerCase()}>`;
+  }
 }

@@ -451,8 +451,16 @@ export default class ArenaBrowser {
     if (event instanceof ArenaInputEvent) {
       const selection = this.asm.view.getCurrentSelection();
       if (selection) {
-        const newSelection = this.asm.model.insertTextToModel(selection, event.character, true);
-        this.asm.history.save(newSelection);
+        const newSelection = this.asm.model.insertTextToModel(selection, event.character);
+        this.asm.history.save(newSelection, true);
+        const [result, cursor] = this.asm.model.applyMiddlewares(
+          newSelection.getCursor(),
+          event.character,
+        );
+        newSelection.setCursor(cursor);
+        if (result) {
+          this.asm.history.save(newSelection);
+        }
         this.asm.eventManager.fire({ name: 'modelChanged', data: newSelection });
       }
     }
