@@ -203,7 +203,7 @@ class EmbedYoutube extends WebComponent {
       border: 1px solid #ccc;
       border-radius: 1rem;
       padding: .2rem 1rem;
-      right: 1rem;
+      left: 1rem;
       top: 1rem;
     }`;
 

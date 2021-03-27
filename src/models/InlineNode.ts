@@ -33,8 +33,10 @@ implements ArenaNodeInline {
       str += ` ${attr}`;
     });
     Object.entries(this.attributes).forEach(([name, value]) => {
-      if (typeof value === 'boolean' && value) {
-        str += ` ${name}`;
+      if (typeof value === 'boolean') {
+        if (value) {
+          str += ` ${name}`;
+        }
       } else if (typeof value === 'string') {
         const escapedValue = value.toString()
           .replace(/&/g, '&amp;')

@@ -480,8 +480,7 @@ export default class ArenaBrowser {
   }
 
   protected copyListener(e: ClipboardEvent): void {
-    this.asm.logger.log('Paste event', e);
-    e.preventDefault();
+    this.asm.logger.log('Copy event', e);
     const { clipboardData } = e;
     if (!clipboardData) {
       return;
@@ -491,8 +490,13 @@ export default class ArenaBrowser {
       e.preventDefault();
       return;
     }
-    const result = this.asm.model.getOutHtmlOfSelection(selection);
-    clipboardData.setData('text/html', result);
+    const resultHtml = this.asm.model.getOutputHtmlOfSelection(selection);
+    const resultText = this.asm.model.getPlainTextOfSelection(selection);
+    console.log(resultHtml);
+    console.log(resultText);
+    clipboardData.setData('text/html', resultHtml);
+    clipboardData.setData('text/plain', resultText);
+    e.preventDefault();
   }
 
   protected pasteListener(e: ClipboardEvent): void {

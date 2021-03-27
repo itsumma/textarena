@@ -152,19 +152,18 @@ class Textarena {
 
   public getData(): TextarenaData {
     return {
-      html: this.getHtml(),
-      dataHtml: this.asm.model.getOutputHtml(),
-      // .replace(/<!--(?!-->)*-->/g, '')
-      // .replace(/^[\s\n]+/, '')
-      // .replace(/[\s\n]+$/, '')
-      // .replace(/(<[\w-]+)\s+observe-id="[\d.]+"/g, '$1')
-      // .replace(/(<p)/g, '\n$1'),
+      html: this.getPublicHtml(),
+      dataHtml: this.getDataHtml(),
       json: this.getJson(),
     };
   }
 
-  public getHtml(): string {
-    return this.asm.model.getOutputHtml();
+  public getDataHtml(): string {
+    return this.asm.model.getDataHtml();
+  }
+
+  public getPublicHtml(): string {
+    return this.asm.model.getPublicHtml();
   }
 
   public getJson(): string {

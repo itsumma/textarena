@@ -161,15 +161,33 @@ export default class ArenaModel {
 
   // #region Exporting
 
-  public getOutputHtml(): string {
+  public getDataHtml(): string {
     return this.model.getOutputHtml(this.getFormatings(), -1);
   }
 
-  public getHtml(): TemplateResult | string {
-    return this.model.getHtml(this.getFormatings());
+  public getTemplate(): TemplateResult | string {
+    return this.model.getTemplate(this.getFormatings());
   }
 
-  public getOutHtmlOfSelection(selection: ArenaSelection): string {
+  public getPublicHtml(): string {
+    return this.model.getPublicHtml(this.getFormatings());
+  }
+
+  public getPlainTextOfSelection(selection: ArenaSelection): string {
+    if (selection.isCollapsed()) {
+      return '';
+    }
+    let result: string[] = [];
+    this.runNodesOfSelection(
+      selection,
+      (node: AnyArenaNode, start?: number, end?: number) => {
+        result.push(node.getPlainText(start, end));
+      },
+    );
+    return result.join('\n');
+  }
+
+  public getOutputHtmlOfSelection(selection: ArenaSelection): string {
     if (selection.isCollapsed()) {
       return '';
     }

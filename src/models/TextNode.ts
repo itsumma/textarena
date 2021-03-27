@@ -39,13 +39,21 @@ export default class TextNode
     }
   }
 
-  public getHtml(frms: ArenaFormatings): TemplateResult | string {
+  public getTemplate(frms: ArenaFormatings): TemplateResult | string {
     const content = this.richTextManager.getHtml(frms);
     return this.arena.getTemplate(
       html`${unsafeHTML(content)}`,
       this.getGlobalIndex(),
       this.attributes,
     );
+  }
+
+  public getPublicHtml(frms: ArenaFormatings): string {
+    if (this.isEmpty()) {
+      return '';
+    }
+    const text = this.richTextManager.getHtml(frms);
+    return this.arena.getOutputTemplate(text, 0, this.attributes, true);
   }
 
   public getOutputHtml(
@@ -59,6 +67,22 @@ export default class TextNode
     }
     const text = this.richTextManager.getHtml(frms, start, end);
     return this.arena.getOutputTemplate(text, deep, this.attributes, true);
+  }
+
+  public getPlainText(
+    start?: number,
+    end?: number,
+  ): string {
+    if (this.isEmpty()) {
+      return '';
+    }
+    let text = this.richTextManager.getText();
+    if (end === undefined) {
+      text = text.slice(start || 0);
+    } else {
+      text = text.slice(start || 0, end);
+    }
+    return this.arena.getPlain(text, this);
   }
 
   getTextCursor(index: number): ArenaCursorText {

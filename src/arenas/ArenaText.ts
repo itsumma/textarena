@@ -1,8 +1,9 @@
-import { ArenaOptionsWithText } from '../interfaces/ArenaOptions';
+import { ArenaOptionsWithText, TextProcessor } from '../interfaces/ArenaOptions';
 import ArenaMiddleware from '../interfaces/ArenaMiddleware';
 
 import AbstractArena from './AbstractArena';
 import { ArenaMediatorInterface, ArenaTextInterface } from '../interfaces/Arena';
+import { ArenaNodeText } from '../interfaces/ArenaNode';
 
 export default class ArenaText
   extends AbstractArena
@@ -19,14 +20,24 @@ export default class ArenaText
 
   readonly nextArena: ArenaTextInterface | ArenaMediatorInterface | undefined;
 
+  protected getPlainProcessor: TextProcessor | undefined;
+
   middlewares: ArenaMiddleware[] = [];
 
   constructor(options: ArenaOptionsWithText) {
     super(options);
     this.nextArena = options.nextArena;
+    this.getPlainProcessor = options.getPlain;
   }
 
   registerMiddleware(middleware: ArenaMiddleware): void {
     this.middlewares.push(middleware);
+  }
+
+  getPlain(text: string, node: ArenaNodeText): string {
+    if (this.getPlainProcessor) {
+      return this.getPlainProcessor(text, node);
+    }
+    return text;
   }
 }

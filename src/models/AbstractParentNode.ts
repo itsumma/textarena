@@ -49,7 +49,7 @@ export default abstract class AbstractParentNode<
     }
   }
 
-  public getHtml(frms: ArenaFormatings): TemplateResult | string {
+  public getTemplate(frms: ArenaFormatings): TemplateResult | string {
     // TODO pseudoCursor
     // let pseudoCursorBefore: TemplateResult | string = '';
     // let pseudoCursorAfter: TemplateResult | string = '';
@@ -70,7 +70,7 @@ export default abstract class AbstractParentNode<
       const id = this.getGlobalIndex();
       const content = this.arena.getTemplate(
         html`
-          ${repeat(this.children, (c) => c.getId(), (child) => child.getHtml(frms))}
+          ${repeat(this.children, (c) => c.getId(), (child) => child.getTemplate(frms))}
         `,
         id,
         this.attributes,
@@ -97,6 +97,21 @@ export default abstract class AbstractParentNode<
     return this.cache;
   }
 
+  public getPublicHtml(frms: ArenaFormatings): string {
+    if (this.children.length === 0) {
+      return '';
+    }
+    const content = [];
+    for (let i = 0; i < this.children.length; i += 1) {
+      content.push(this.children[i].getPublicHtml(frms));
+    }
+    return this.arena.getOutputTemplate(
+      content.join('\n'),
+      0,
+      this.attributes,
+    );
+  }
+
   public getOutputHtml(
     frms: ArenaFormatings,
     deep = 0,
@@ -112,6 +127,18 @@ export default abstract class AbstractParentNode<
       deep,
       this.attributes,
     );
+  }
+
+  public getPlainText(
+    start?: number,
+    end?: number,
+  ): string {
+    let content = '';
+    for (let i = start || 0; i < (end || this.children.length); i += 1) {
+      content += this.children[i].getPlainText();
+      content += '\n';
+    }
+    return content;
   }
 
   public getTextCursor(index?: number): ArenaCursorText | undefined {

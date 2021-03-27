@@ -19,7 +19,7 @@ export default class SingleNode
 
   readonly single: true = true;
 
-  public getHtml(): TemplateResult | string {
+  public getTemplate(): TemplateResult | string {
     const id = this.getGlobalIndex();
     const content = this.arena.getTemplate(undefined, '', this.attributes);
     if (this.parent.protected) {
@@ -41,8 +41,16 @@ export default class SingleNode
     `;
   }
 
+  public getPublicHtml(): string {
+    return this.arena.getOutputTemplate('', 0, this.attributes);
+  }
+
   public getOutputHtml(_frms: ArenaFormatings, deep = 0): string {
     return this.arena.getOutputTemplate('', deep, this.attributes);
+  }
+
+  public getPlainText(): string {
+    return '';
   }
 
   public insertText(

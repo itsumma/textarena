@@ -2,6 +2,7 @@ import ArenaMiddleware from './ArenaMiddleware';
 import ArenaAncestorCore from './arena/ArenaAncestorCore';
 import ArenaCore from './arena/ArenaCore';
 import ArenaAttributes from './ArenaAttributes';
+import { ArenaNodeText } from './ArenaNode';
 
 export interface ArenaRootInterface extends ArenaAncestorCore {
   readonly root: true;
@@ -23,6 +24,7 @@ export interface ArenaTextInterface extends ArenaCore {
   readonly nextArena: ArenaTextInterface | ArenaMediatorInterface | undefined;
   middlewares: ArenaMiddleware[];
   registerMiddleware: (middleware: ArenaMiddleware) => void;
+  getPlain: (text: string, node: ArenaNodeText) => string;
 }
 
 export interface ArenaSingleInterface extends ArenaCore {

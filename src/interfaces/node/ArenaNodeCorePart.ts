@@ -29,9 +29,13 @@ export default interface ArenaNodeCorePart<T> {
 
   getId(): string;
 
-  getHtml(model: ArenaFormatings): TemplateResult | string;
+  getTemplate(frms: ArenaFormatings): TemplateResult | string;
+
+  getPublicHtml(frms: ArenaFormatings): string;
 
   getOutputHtml(frms: ArenaFormatings, deep?: number, start?: number, end?: number): string;
+
+  getPlainText(start?: number, end?: number): string;
 
   getOpenTag(): string;
 

@@ -7,7 +7,10 @@ import { ArenaNodeText, ChildArenaNode } from '../interfaces/ArenaNode';
 
 // Icons https://freeicons.io/icon-list/material-icons-editor-2
 
+type PrefixProcessor = (node: ArenaNodeText) => string;
+
 type ListOptions = {
+  prefix: PrefixProcessor,
   name: string,
   tag: string,
   attributes: string[],
@@ -36,6 +39,7 @@ const defaultOptions: ListsOptions = {
   },
   lists: [
     {
+      prefix: () => '  — ',
       name: 'unordered-list',
       tag: 'UL',
       attributes: [],
@@ -60,6 +64,7 @@ const defaultOptions: ListsOptions = {
       pattern: /^(-\s+).*$/,
     },
     {
+      prefix: (node: ArenaNodeText) => `  ${node.getIndex() + 1}. `,
       name: 'ordered-list',
       tag: 'OL',
       attributes: [],
@@ -96,11 +101,19 @@ const listsPlugin = (opts?: ListsOptions): ArenaPlugin => ({
       item,
       lists,
     } = { ...defaultOptions, ...(opts || {}) };
+    const prefixes: { [key: string]: PrefixProcessor } = {};
     const li = textarena.registerArena(
       {
         ...item,
         hasText: true,
         nextArena: undefined,
+        getPlain: (text: string, node: ArenaNodeText) => {
+          const { name } = node.parent.arena;
+          if (prefixes[name]) {
+            return prefixes[name](node) + text;
+          }
+          return text;
+        },
       },
       [
         {
@@ -110,6 +123,7 @@ const listsPlugin = (opts?: ListsOptions): ArenaPlugin => ({
       ],
     ) as ArenaTextInterface;
     lists.forEach(({
+      prefix,
       name,
       tag,
       attributes,
@@ -120,6 +134,7 @@ const listsPlugin = (opts?: ListsOptions): ArenaPlugin => ({
       hint,
       pattern,
     }) => {
+      prefixes[name] = prefix;
       const listArena = textarena.registerArena(
         {
           name,
