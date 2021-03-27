@@ -261,6 +261,9 @@ export default class Toolbar {
     this.elem.css({
       display: 'none',
     });
+    this.tools.forEach((tool: Tool) => {
+      tool.elem.removeClass('textarena-toolbar__item_show-hint');
+    });
     this.showed = false;
   }
 }

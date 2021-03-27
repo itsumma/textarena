@@ -2,6 +2,12 @@
   position: relative;
   border: none;
   line-height: 1.6;
+  width: 100%;
+  max-width: 100%;
+
+  * {
+    box-sizing: border-box;
+  }
 
   &:hover,
   &:active,

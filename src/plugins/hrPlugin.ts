@@ -55,7 +55,7 @@ const hrPlugin = (opts?: typeof defaultOptions): ArenaPlugin => ({
       hint,
       command,
       canShow: (node: ArenaNodeText) =>
-        node.parent.arena.allowedArenas.includes(arena),
+        node.parent.isAllowedNode(arena),
     });
     textarena.addSimpleArenas(arena);
   },

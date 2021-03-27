@@ -165,7 +165,7 @@ const listsPlugin = (opts?: ListsOptions): ArenaPlugin => ({
         command,
         hint,
         canShow: (node: ArenaNodeText) =>
-          node.parent.arena.allowedArenas.includes(listArena),
+          node.parent.isAllowedNode(listArena),
       });
       if (paragraph.hasText) {
         paragraph.registerMiddleware((ta: Textarena, cursor: ArenaCursorText, text: string) => {

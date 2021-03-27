@@ -69,7 +69,7 @@ const headersPlugin = (opts?: ListsOptions): ArenaPlugin => ({
           hint: number.toString(),
           command: `convert-to-header${number}`,
           canShow: (node: ArenaNodeText) =>
-            node.parent.arena.allowedArenas.includes(arena),
+            node.parent.isAllowedNode(arena),
         });
       }
     });

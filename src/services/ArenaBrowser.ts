@@ -365,7 +365,7 @@ export default class ArenaBrowser {
   protected mouseUpListener(e: MouseEvent): void {
     this.asm.logger.log('MouseUp event', e);
     const event = e as unknown as { path: ChildNode[] };
-    if (Array.isArray(event.path)) {
+    if (e.button === 0 && Array.isArray(event.path)) {
       const { path } = event;
       for (let i = 0; i < path.length; i += 1) {
         const elem = path[i];

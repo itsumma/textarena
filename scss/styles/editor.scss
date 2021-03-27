@@ -1,9 +1,10 @@
 .textarena-editor {
+  width: 100%;
+  max-width: 100%;
   position: relative;
   border: none;
-  padding: 0.1rem 2rem;
+  padding: 1rem 2rem 10rem;
   font-size: 1rem;
-  padding-bottom: 10rem;
 
   &:hover,
   &:active,
@@ -37,8 +38,8 @@
       background: white;
       padding: 0.4em;
       border-radius: 0.8em;
-      width: 0.8em;
-      height: 0.8em;
+      width: 1.4em;
+      height: 1.4em;
       color: #888;
       cursor: pointer;
       z-index: 1;

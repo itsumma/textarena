@@ -5,7 +5,7 @@ export default interface CreatorOptions {
   icon?: string;
   title: string;
   command: string;
-  hint: string;
-  shortcut: string;
+  hint?: string;
+  shortcut?: string;
   canShow?: (node: ArenaNodeText) => boolean;
 }

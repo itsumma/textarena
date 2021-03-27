@@ -9,7 +9,7 @@ import { ArenaNodeText } from '../interfaces/ArenaNode';
 type Creator = {
   elem: ElementHelper;
   options: CreatorOptions;
-  modifiers: number;
+  modifiers?: number;
 };
 
 export default class CreatorBar {
@@ -106,7 +106,14 @@ export default class CreatorBar {
         }
         const options = this.availableCreators[name];
         const elem = new ElementHelper('BUTTON', 'textarena-creator__item');
-        const [modifiers] = this.asm.commandManager.parseShortcut(options.shortcut);
+        const creator: Creator = {
+          elem,
+          options,
+        };
+        if (options.shortcut) {
+          const [modifiers] = this.asm.commandManager.parseShortcut(options.shortcut);
+          creator.modifiers = modifiers;
+        }
         elem.onClick((e) => {
           e.preventDefault();
           this.executeTool(options);
@@ -124,11 +131,7 @@ export default class CreatorBar {
           elem.appendChild(keyElem);
         }
         this.list.append(elem);
-        this.creators.push({
-          elem,
-          options,
-          modifiers,
-        });
+        this.creators.push(creator);
       });
     }
     this.enabled = !!creatorBarOptions.enabled;
@@ -245,6 +248,9 @@ export default class CreatorBar {
   closeList(): void {
     this.active = false;
     this.elem.removeClass('textarena-creator_active');
+    this.creators.forEach((tool: Creator) => {
+      tool.elem.removeClass('textarena-creator__item_show-hint');
+    });
     // this.asm.textarena.getEditorElement().focus();
   }
 }

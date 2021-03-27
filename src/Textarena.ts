@@ -38,6 +38,7 @@ import examplePlugin from './plugins/examplePlugin';
 import collapsePlugin from './plugins/collapse-plugin';
 import asidePlugin from './plugins/asidePlugin';
 import quotePlugin from './plugins/quotePlugin';
+import imageWithCaptionPlugin from './plugins/imageWithCaptionPlugin';
 
 const defaultOptions: TextarenaOptions = {
   editable: true,
@@ -67,7 +68,7 @@ const defaultOptions: TextarenaOptions = {
       'header2',
       'header3',
       'header4',
-      'image',
+      'image-with-caption',
       'blockquote',
       'aside',
       'embed',
@@ -85,6 +86,7 @@ const defaultOptions: TextarenaOptions = {
     blockquotePlugin(),
     calloutPlugin(),
     imagePlugin(),
+    imageWithCaptionPlugin(),
     embedPlugin(),
     linkPlugin(),
     examplePlugin(),

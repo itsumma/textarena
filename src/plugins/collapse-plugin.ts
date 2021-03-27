@@ -193,7 +193,7 @@ const collapsePlugin = (opts?: CollapseOptions): ArenaPlugin => ({
       hint,
       command,
       canShow: (node: ArenaNodeText) =>
-        node.parent.arena.allowedArenas.includes(arena),
+        node.parent.isAllowedNode(arena),
     });
   },
 });

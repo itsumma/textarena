@@ -181,7 +181,7 @@ const quotePlugin = (opts?: Options): ArenaPlugin => ({
       shortcut,
       hint,
       command,
-      canShow: (node: ArenaNodeText) => node.parent.arena.allowedArenas.includes(arena),
+      canShow: (node: ArenaNodeText) => node.parent.isAllowedNode(arena),
     });
   },
 });

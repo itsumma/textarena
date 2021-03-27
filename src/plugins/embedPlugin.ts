@@ -501,7 +501,7 @@ const embedPlugin = (opts?: ExampleOptions): ArenaPlugin => ({
       hint,
       command,
       canShow: (node: ArenaNodeText) =>
-        node.parent.arena.allowedArenas.includes(arena),
+        node.parent.isAllowedNode(arena),
     });
 
     ta.registerArena(
