@@ -1,9 +1,8 @@
 /* eslint-disable no-bitwise */
 import ArenaSelection from '../helpers/ArenaSelection';
-import { ArenaNodeRoot, AnyArenaNode } from '../interfaces/ArenaNode';
+import { ArenaNodeRoot } from '../interfaces/ArenaNode';
 import Textarena from '../Textarena';
 import ArenaServiceManager from './ArenaServiceManager';
-import NodeRegistry from '../helpers/NodeRegistry';
 
 type SelectionIndexes = [string, number, string, number, 'forward' | 'backward'];
 
@@ -36,29 +35,26 @@ export default class ArenaHistory {
   }
 
   public save(selection: ArenaSelection | undefined, typing = false): void {
-    if (this.currentIndex < this.log.length - 1) {
-      console.log('this.log.splice(this.currentIndex + 1)', `index: ${this.currentIndex}`, `log len: ${this.log.length}`);
-      this.log.splice(this.currentIndex + 1);
-      console.log('this.log.length', this.log.length);
-    }
     const root = this.asm.model.model.clone();
-    const registry = new NodeRegistry();
-    console.log('FIRSTTT', this.log.length === 0 || this.log[0][0].children[0]?.getOutputHtml());
-    console.log('BEFFFFFFFOre', this.log.length, root.children[0].getOutputHtml());
+    const sel = selection ? this.getSelectionIndexes(selection) : undefined;
+    if (this.currentIndex < this.log.length - 1) {
+      this.log.splice(this.currentIndex + 1);
+    } else if (typing && this.typed) {
+      this.log.splice(this.currentIndex);
+    }
+    if (typing) {
+      this.typed = true;
+    }
     this.log.push([
       root,
-      registry,
-      selection ? this.getSelectionIndexes(selection) : undefined,
+      sel,
     ]);
-    console.log('FIRSTTT', this.log[0][0].children[0].getOutputHtml());
     this.currentIndex = this.log.length - 1;
   }
 
   public undo(selection: ArenaSelection): ArenaSelection | undefined {
     if (this.currentIndex > 0) {
       this.currentIndex -= 1;
-      console.log('FIRSTTT', this.log[0][0].children[0].getOutputHtml());
-      console.log('UNDOOOOOOOOO', this.currentIndex, this.log[this.currentIndex][0].children[0].getOutputHtml());
       return this.applyCurrent();
     }
     return selection;
@@ -67,30 +63,22 @@ export default class ArenaHistory {
   public redo(selection: ArenaSelection): ArenaSelection | undefined {
     if (this.currentIndex < this.log.length - 1) {
       this.currentIndex += 1;
-      console.log('FIRSTTT', this.log[0][0].children[0].getOutputHtml());
-      console.log('REEEEEEEEEEDOOOOOOO', this.currentIndex, this.log[this.currentIndex][0].children[0].getOutputHtml());
       return this.applyCurrent();
     }
     return selection;
   }
 
+  public resetTyped(): void {
+    this.typed = false;
+  }
+
   protected applyCurrent(): ArenaSelection | undefined {
-    const [root, registry, sel] = this.log[this.currentIndex];
+    const [root, sel] = this.log[this.currentIndex];
     const newRoot = root.clone();
-    this.asm.model.setRegistry(registry);
     this.asm.model.setRoot(
       newRoot,
     );
     return sel ? this.getSelectionFromIndexes(sel) : undefined;
-  }
-
-  protected registerNode(registry: NodeRegistry, node: AnyArenaNode): void {
-    registry.set(node.getId(), node);
-    if (node.hasChildren) {
-      node.children.forEach((child) => {
-        this.registerNode(registry, child);
-      });
-    }
   }
 
   protected getSelectionFromIndexes(sel: SelectionIndexes): ArenaSelection | undefined {
@@ -118,7 +106,9 @@ export default class ArenaHistory {
     ];
   }
 
-  protected log: [ArenaNodeRoot, NodeRegistry, SelectionIndexes | undefined][] = [];
+  protected log: [ArenaNodeRoot, SelectionIndexes | undefined][] = [];
 
   protected currentIndex = 0;
+
+  protected typed = false;
 }

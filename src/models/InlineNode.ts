@@ -36,7 +36,8 @@ implements ArenaNodeInline {
       if (typeof value === 'boolean' && value) {
         str += ` ${name}`;
       } else if (typeof value === 'string') {
-        const escapedValue = value.replace(/&/g, '&amp;')
+        const escapedValue = value.toString()
+          .replace(/&/g, '&amp;')
           .replace(/'/g, '&apos;')
           .replace(/"/g, '&quot;')
           .replace(/</g, '&lt;')
@@ -57,11 +58,11 @@ implements ArenaNodeInline {
     return this.arena.getOutputTemplate('', deep, this.attributes);
   }
 
-  public setAttribute(name: string, value: string | boolean): void {
+  public setAttribute(name: string, value: string | boolean | number): void {
     this.attributes[name] = value;
   }
 
-  public getAttribute(name: string): string | boolean {
+  public getAttribute(name: string): string | boolean | number {
     return this.attributes[name] || '';
   }
 

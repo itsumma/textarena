@@ -128,7 +128,7 @@ const linkPlugin = (opts?: typeof defaultOptions): ArenaPlugin => ({
         const oldNode = ta.getInlineNode(selection, arena);
         let link = '';
         if (oldNode) {
-          link = oldNode.getAttribute('href');
+          link = oldNode.getAttribute('href').toString();
         }
         // eslint-disable-next-line no-alert
         const input = prompt('You link', link);

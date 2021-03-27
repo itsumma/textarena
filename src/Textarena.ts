@@ -62,7 +62,6 @@ const defaultOptions: TextarenaOptions = {
   creatorBar: {
     enabled: true,
     creators: [
-      'hr',
       'unordered-list',
       'ordered-list',
       'header2',
@@ -73,8 +72,6 @@ const defaultOptions: TextarenaOptions = {
       'aside',
       'embed',
       'quote',
-      'callout',
-      'exampleRecomendation',
       'collapse',
     ],
   },

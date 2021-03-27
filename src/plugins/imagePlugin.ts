@@ -4,29 +4,17 @@ import {
 import Textarena from '../Textarena';
 import ArenaSelection from '../helpers/ArenaSelection';
 import ArenaPlugin from '../interfaces/ArenaPlugin';
-import { ArenaMediatorInterface, ArenaTextInterface } from '../interfaces/Arena';
+import { ArenaMediatorInterface } from '../interfaces/Arena';
 import { ArenaNodeText } from '../interfaces/ArenaNode';
 import WebComponent from '../helpers/WebComponent';
 
 // This decorator defines the element.
 
 export class Image extends WebComponent {
-  // This decorator creates a property accessor that triggers rendering and
-  // an observed attribute.
-  @property({
-    reflect: true,
-  })
-  type = 'great';
-
   @property({
     type: String,
   })
   src: string | undefined;
-
-  @property({
-    type: Boolean,
-  })
-  caption: boolean | undefined;
 
   @property({
     type: Number,
@@ -94,12 +82,12 @@ export class Image extends WebComponent {
       preview = html`<label for="input" class="preview-btn"></label>`;
     }
     let caption;
-    if (this.caption) {
-      caption = html`<div class="caption">
-      <div class="caption-placeholder">Подпись:</div>
-      <slot name="image-caption"></slot>
-    </div>`;
-    }
+    // if (this.caption) {
+    //   caption = html`<div class="caption">
+    //   <div class="caption-placeholder">Подпись:</div>
+    //   <slot name="image-caption"></slot>
+    // </div>`;
+    // }
     return html`<div>
       ${preview}
       <input id=input type="file" @change=${this.onChange}/>
@@ -206,26 +194,26 @@ const imagePlugin = (opts?: typeof defaultOptions): ArenaPlugin => ({
     if (!paragraph) {
       throw new Error('Default Arena for text not found');
     }
-    const imageCaptionParagraph = textarena.registerArena(
-      {
-        name: 'image-caption-paragraph',
-        tag: 'P',
-        attributes: [
-          'slot=image-caption',
-        ],
-        hasText: true,
-        nextArena: paragraph,
-      },
-      [
-        {
-          tag: 'P',
-          attributes: [
-            'slot=image-caption',
-          ],
-        },
-      ],
-      [],
-    ) as ArenaTextInterface;
+    // const imageCaptionParagraph = textarena.registerArena(
+    //   {
+    //     name: 'image-caption-paragraph',
+    //     tag: 'P',
+    //     attributes: [
+    //       'slot=image-caption',
+    //     ],
+    //     hasText: true,
+    //     nextArena: paragraph,
+    //   },
+    //   [
+    //     {
+    //       tag: 'P',
+    //       attributes: [
+    //         'slot=image-caption',
+    //       ],
+    //     },
+    //   ],
+    //   [],
+    // ) as ArenaTextInterface;
     const arena = textarena.registerArena(
       {
         name,

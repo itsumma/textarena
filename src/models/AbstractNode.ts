@@ -102,7 +102,6 @@ export default abstract class AbstractNode<
   }
 
   public setAttributes(attrs: ArenaAttributes): void {
-    console.log('setAttributes', this, attrs);
     Object.entries(attrs).forEach(([name, value]) => this.setAttribute(name, value));
   }
 

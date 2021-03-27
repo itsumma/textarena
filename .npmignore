@@ -3,9 +3,11 @@
 /resources
 /test
 /.babelrc
+/.eslintignore
 /.eslintrc
 /.eslintrc.json
 /.gitignore
+/.madgerc
 /.stylelintrc.json
 /.travis.yml
 /cypress.json

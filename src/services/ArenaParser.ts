@@ -3,7 +3,7 @@ import ArenaFormating from '../interfaces/ArenaFormating';
 import RichTextManager from '../helpers/RichTextManager';
 
 import ArenaServiceManager from './ArenaServiceManager';
-import { AnyArenaNode, ArenaNodeText, ChildArenaNode } from '../interfaces/ArenaNode';
+import { AnyArenaNode, ArenaNodeText } from '../interfaces/ArenaNode';
 import { AnyArena } from '../interfaces/Arena';
 import ArenaSelection from '../helpers/ArenaSelection';
 
@@ -135,6 +135,9 @@ export default class ArenaParser {
           }
           newArenaNode.insertText(text, newArenaNode.getTextLength());
           this.clearTextNode(newArenaNode);
+          return [newArenaNode.parent, newArenaNode.getIndex() + 1, true];
+        }
+        if (newArenaNode.single) {
           return [newArenaNode.parent, newArenaNode.getIndex() + 1, true];
         }
         if (newArenaNode.hasChildren) {

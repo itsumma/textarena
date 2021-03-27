@@ -15,7 +15,7 @@
   }
 
   &_bottom {
-    transform: translate(0, 0.6em);
+    transform: translate(0, 0.4em);
   }
 
   &_bottom &__pointer {
@@ -23,7 +23,7 @@
   }
 
   &_top {
-    transform: translate(0, -0.6em);
+    transform: translate(0, -0.4em);
   }
 
   &_top &__pointer {

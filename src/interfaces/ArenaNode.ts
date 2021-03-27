@@ -57,9 +57,9 @@ export interface ArenaNodeInline {
 
   getTags(): [string, string];
 
-  getAttribute(name: string): string | boolean;
+  getAttribute(name: string): string | boolean | number;
 
-  setAttribute(name: string, value: string | boolean): void;
+  setAttribute(name: string, value: string | boolean | number): void;
 
   clone(): ArenaNodeInline;
 }

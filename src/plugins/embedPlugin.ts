@@ -257,7 +257,7 @@ class EmbedForm extends WebComponent {
       background: white;
       border: 1px solid #ccc;
       border-radius: 1rem;
-      padding: 1rem;
+      padding: 1rem 2rem;
       margin: 0 0 1em;
     }
     .form {

@@ -10,7 +10,7 @@ import {
 import {
   AnyArenaNode, ArenaNodeRoot, ArenaNodeText,
   ArenaNodeInline, ArenaNodeMediator,
-  ChildArenaNode, ParentArenaNode, ArenaNodeSingle,
+  ChildArenaNode, ParentArenaNode,
 } from '../interfaces/ArenaNode';
 import ArenaCursorText from '../interfaces/ArenaCursorText';
 import ArenaCursorAncestor from '../interfaces/ArenaCursorAncestor';

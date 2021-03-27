@@ -10,6 +10,7 @@ export default class ArenaView {
   public render(selection?: ArenaSelection): void {
     const result = this.asm.model.getHtml();
     const container = this.asm.textarena.getEditorElement().getElem();
+    console.log('REEEEEEEEEEEEnder');
     render(result, container);
     if (selection) {
       this.currentSelection = selection;

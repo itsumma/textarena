@@ -290,6 +290,9 @@ export default class ArenaBrowser {
     if (code === 'KeyF' && modifiersSum === Modifiers.Alt) {
       return new BrowserCommandEvent(e);
     }
+    if (code === 'ContextMenu') {
+      return new BrowserCommandEvent(e);
+    }
     if (/^Digit\d$/.test(code) && modifiersSum === Modifiers.Ctrl) {
       return new BrowserCommandEvent(e);
     }
@@ -328,7 +331,7 @@ export default class ArenaBrowser {
       }
       return undefined;
     }
-    if (character) {
+    if (character && code) {
       return new ArenaInputEvent(e, character);
     }
     return undefined;
@@ -395,6 +398,7 @@ export default class ArenaBrowser {
         }
       }
     }
+    this.asm.history.resetTyped();
     // this.checkSelection();
   }
 
@@ -419,6 +423,7 @@ export default class ArenaBrowser {
       return;
     }
     if (event instanceof SelectionEvent) {
+      this.asm.history.resetTyped();
       this.asm.view.resetCurrentSelection();
       return;
     }
@@ -452,7 +457,7 @@ export default class ArenaBrowser {
       const selection = this.asm.view.getCurrentSelection();
       if (selection) {
         const newSelection = this.asm.model.insertTextToModel(selection, event.character);
-        this.asm.history.save(newSelection, true);
+        this.asm.history.save(newSelection, /[a-zа-яА-Я0-9]/i.test(event.character));
         const [result, cursor] = this.asm.model.applyMiddlewares(
           newSelection.getCursor(),
           event.character,
@@ -544,9 +549,20 @@ export default class ArenaBrowser {
     this.checkSelection();
   }
 
+  protected getIdOfTarget(target: HTMLElement): string | undefined {
+    const id = target.getAttribute('arena-id');
+    if (id) {
+      return id;
+    }
+    if (target.parentElement) {
+      return this.getIdOfTarget(target.parentElement);
+    }
+    return undefined;
+  }
+
   protected changeAttributeListener(e: ArenaChangeAttribute): void {
     const { attrs, target } = e.detail;
-    const id = target.getAttribute('arena-id');
+    const id = this.getIdOfTarget(target);
     if (id) {
       const node = this.asm.model.getNodeById(id);
       if (node) {
@@ -555,7 +571,7 @@ export default class ArenaBrowser {
         if (sel) {
           this.asm.history.save(sel);
         }
-        this.asm.eventManager.fire({ name: 'modelChanged' });
+        this.asm.eventManager.fire({ name: 'modelChanged', data: sel });
       }
     }
   }
