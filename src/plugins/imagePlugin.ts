@@ -225,8 +225,10 @@ const imagePlugin = (opts?: ImagePluginOptions): ArenaPlugin => ({
       name, icon, title, tag, attributes, allowedAttributes,
       shortcut, hint, command, marks, component, srcset,
     } = { ...defaultOptions, ...(opts || {}) };
-    if (!customElements.get(component)) {
-      customElements.define(component, Image);
+    if (component) {
+      if (!customElements.get(component)) {
+        customElements.define(component, Image);
+      }
     }
     const paragraph = textarena.getDefaultTextArena();
     if (!paragraph) {

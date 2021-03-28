@@ -34,8 +34,6 @@ import paragraphPlugin from './plugins/paragraphPlugin';
 import ArenaCommandManager from './services/ArenaCommandManager';
 import ArenaServiceManager from './services/ArenaServiceManager';
 import { ArenaHandler } from './services/EventManager';
-import examplePlugin from './plugins/examplePlugin';
-import collapsePlugin from './plugins/collapse-plugin';
 import asidePlugin from './plugins/asidePlugin';
 import quotePlugin from './plugins/quotePlugin';
 import imageWithCaptionPlugin from './plugins/imageWithCaptionPlugin';
@@ -105,10 +103,9 @@ const defaultOptions: TextarenaOptions = {
       'header4',
       'image-with-caption',
       'blockquote',
-      'aside',
       'embed',
+      'aside',
       'quote',
-      'collapse',
     ],
   },
   plugins: [
@@ -124,8 +121,6 @@ const defaultOptions: TextarenaOptions = {
     imageWithCaptionPlugin(imgOpts),
     embedPlugin(),
     linkPlugin(),
-    examplePlugin(),
-    collapsePlugin(),
     asidePlugin(),
     quotePlugin(),
   ],

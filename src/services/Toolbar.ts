@@ -20,7 +20,7 @@ function getFocusElement(): HTMLElement | undefined {
 type Tool = {
   elem: ElementHelper;
   options: ToolOptions;
-  modifiers: number;
+  modifiers?: number;
 };
 
 export default class Toolbar {
@@ -83,12 +83,14 @@ export default class Toolbar {
         }
         const options = this.availableTools[toolOptions];
         const elem = new ElementHelper('DIV', 'textarena-toolbar__item');
-        const [modifiers] = this.asm.commandManager.parseShortcut(options.shortcut);
-        const tool = {
+        const tool: Tool = {
           elem,
           options,
-          modifiers,
         };
+        if (options.shortcut) {
+          const [modifiers] = this.asm.commandManager.parseShortcut(options.shortcut);
+          tool.modifiers = modifiers;
+        }
         elem.onClick((e: Event) => {
           e.preventDefault();
           this.executeTool(tool);
@@ -121,7 +123,7 @@ export default class Toolbar {
     }
     if (typeof event === 'object' && typeof event.data === 'number') {
       this.tools.forEach((tool: Tool) => {
-        if (tool.modifiers === event.data) {
+        if (tool.modifiers && tool.modifiers === event.data) {
           tool.elem.addClass('textarena-toolbar__item_show-hint');
         } else {
           tool.elem.removeClass('textarena-toolbar__item_show-hint');

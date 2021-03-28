@@ -5,7 +5,7 @@ export default interface ToolOptions {
   icon: string;
   title: string;
   command: string;
-  hint: string;
-  shortcut: string;
+  hint?: string;
+  shortcut?: string;
   checkStatus?: (node: ChildArenaNode, start?: number, end?: number) => boolean;
 }

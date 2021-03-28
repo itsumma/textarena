@@ -158,8 +158,10 @@ const imageWithCaptionPlugin = (opts?: Partial<ImagePluginOptions>): ArenaPlugin
       name, icon, title, tag, attributes, allowedAttributes,
       command, marks, component, srcset,
     } = { ...defaultOptions, ...(opts || {}) };
-    if (!customElements.get(component)) {
-      customElements.define(component, ArenaFigure);
+    if (component) {
+      if (!customElements.get(component)) {
+        customElements.define(component, ArenaFigure);
+      }
     }
     const paragraph = textarena.getDefaultTextArena();
     if (!paragraph) {
