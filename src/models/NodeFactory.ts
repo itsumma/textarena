@@ -35,12 +35,12 @@ export default class NodeFactory {
           } else {
             childArena = item;
           }
-          const node = this.createChildNode(childArena, registry, true, childContent);
+          const node = this.createChildNode(childArena, registry, isNew, childContent);
           node.setAttributes(attributes);
           return node;
         });
       } else if (isNew && content && arena.arenaForText) {
-        const node = this.createChildNode(arena.arenaForText, registry, true, content);
+        const node = this.createChildNode(arena.arenaForText, registry, isNew, content);
         children.push(node);
       }
       const id = registry.generateId();

@@ -41,10 +41,12 @@ const getPublic = (srcset: Srcset | undefined) =>
     const alt = node.getAttribute('alt') as string;
     const width = node.getAttribute('width') as number;
     const height = node.getAttribute('height') as number;
+    const slot = node.getAttribute('slot') as string;
+    const className = node.getAttribute('class') as string;
     if (!src) {
       return '';
     }
-    const img = `<img src="${prepareImageSrc(src, width, height)}" alt="${alt}">`;
+    const img = `<img src="${prepareImageSrc(src, width, height)}" alt="${alt}" slot="${slot}" class="${className}">`;
     if (srcset) {
       const sources = srcset.map((item) => `<source media="${item.media}"
       srcset="${item.rations.map((r) => `${prepareImageSrc(src, r.width, r.height)} ${r.ratio}x`).join(', ')}"/>`).join('\n');

@@ -9,6 +9,7 @@ export type TextProcessor = (text: string, node: ArenaNodeText) => string;
 export type HtmlProcessor = (
   node: AnyArenaNode,
   frms: ArenaFormatings,
+  arenaAttrs: string[],
 ) => string;
 
 export type ArenaOptionsCore = {

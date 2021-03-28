@@ -74,7 +74,7 @@ export default abstract class AbstractArena {
     frms: ArenaFormatings,
   ): string {
     if (this.getPublicProcessor) {
-      return this.getPublicProcessor(node, frms);
+      return this.getPublicProcessor(node, frms, this.attributes);
     }
     const openTag = this.getOpenTag(attributes);
     const closeTag = this.getCloseTag();

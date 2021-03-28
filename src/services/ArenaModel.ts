@@ -1146,14 +1146,14 @@ export default class ArenaModel {
       selection,
       (node: ChildArenaNode) => {
         if (node.hasText) {
-          if (node.parent.group && node.parent.hasParent) {
+          if (node.parent.isAllowedNode(arena)) {
+            toWrap.push(node);
+          } else if (node.parent.group && node.parent.hasParent) {
             if (node.parent.arena === arena) {
               toUnwrap.push(node.parent);
             } else if (node.parent.parent.isAllowedNode(arena)) {
               toWrap.push(node.parent);
             }
-          } else if (node.parent.isAllowedNode(arena)) {
-            toWrap.push(node);
           }
         } else if (node.hasChildren) {
           if (node.group) {
@@ -1169,21 +1169,7 @@ export default class ArenaModel {
     if (toWrap.length > 0) {
       toWrap.forEach((node) => {
         if (node.hasText) {
-          if (node.parent.group && node.parent.hasParent) {
-            if (node.parent.arena !== arena
-              && node.parent.parent.isAllowedNode(arena)) {
-              const newNode = this.createAndInsertNode(
-                arena,
-                node.parent.parent,
-                node.parent.getIndex(),
-              ) as ArenaNodeMediator;
-              if (newNode) {
-                newNode.insertChildren(node.parent.cutChildren(0));
-                node.parent.remove();
-                // node.parent.parent.mergeChildren();
-              }
-            }
-          } else if (node.parent.isAllowedNode(arena)) {
+          if (node.parent.isAllowedNode(arena)) {
             const newNode = this.createAndInsertNode(
               arena,
               node.parent,
@@ -1199,6 +1185,20 @@ export default class ArenaModel {
                 newSelection.setEndNode(cursor.node, endOffset);
               }
               node.remove();
+            }
+          } else if (node.parent.group && node.parent.hasParent) {
+            if (node.parent.arena !== arena
+              && node.parent.parent.isAllowedNode(arena)) {
+              const newNode = this.createAndInsertNode(
+                arena,
+                node.parent.parent,
+                node.parent.getIndex(),
+              ) as ArenaNodeMediator;
+              if (newNode) {
+                newNode.insertChildren(node.parent.cutChildren(0));
+                node.parent.remove();
+                // node.parent.parent.mergeChildren();
+              }
             }
           }
         } else if (node.hasChildren) {
