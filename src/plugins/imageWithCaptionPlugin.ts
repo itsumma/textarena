@@ -6,9 +6,37 @@ import Textarena from '../Textarena';
 import ArenaSelection from '../helpers/ArenaSelection';
 import ArenaPlugin from '../interfaces/ArenaPlugin';
 import { ArenaMediatorInterface, ArenaTextInterface } from '../interfaces/Arena';
-import { ArenaNodeText } from '../interfaces/ArenaNode';
+import { AnyArenaNode, ArenaNodeMediator, ArenaNodeText } from '../interfaces/ArenaNode';
 import WebComponent from '../helpers/WebComponent';
 import ArenaAttributes from '../interfaces/ArenaAttributes';
+import { ArenaFormatings } from '../interfaces/ArenaFormating';
+import { Srcset, prepareImageSrc, ImagePluginOptions } from './imagePlugin';
+
+export const getPublic = (srcset: Srcset | undefined) =>
+  (node: AnyArenaNode, frms: ArenaFormatings): string => {
+    const captionNode = (node as ArenaNodeMediator).getChild(0);
+    const src = node.getAttribute('src') as string;
+    const alt = node.getAttribute('alt') as string;
+    const width = node.getAttribute('width') as number;
+    const height = node.getAttribute('height') as number;
+    if (!src) {
+      return '';
+    }
+    const img = `<img src="${prepareImageSrc(src, width, height)}" alt="${alt}">`;
+    let content = img;
+    if (srcset) {
+      const sources = srcset.map((item) => `<source media="${item.media}"
+      srcset="${item.rations.map((r) => `${prepareImageSrc(src, r.width, r.height)} ${r.ratio}x`).join(', ')}"/>`).join('\n');
+      content = `
+      <picture>
+        ${sources}
+        ${img}
+      </picture>
+      `;
+    }
+
+    return `<figure>${content}${captionNode?.getPublicHtml(frms)}</figure>`;
+  };
 
 export class ArenaFigure extends WebComponent {
   @property({
@@ -90,7 +118,7 @@ export class ArenaFigure extends WebComponent {
   }
 }
 
-const defaultOptions = {
+const defaultOptions: ImagePluginOptions = {
   name: 'image-with-caption',
   icon: `<svg width="18px" height="18px" viewBox="0 0 18 18" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
     <g id="Icons" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
@@ -124,11 +152,11 @@ const defaultOptions = {
   component: 'arena-figure',
 };
 
-const imageWithCaptionPlugin = (opts?: typeof defaultOptions): ArenaPlugin => ({
+const imageWithCaptionPlugin = (opts?: Partial<ImagePluginOptions>): ArenaPlugin => ({
   register(textarena: Textarena): void {
     const {
       name, icon, title, tag, attributes, allowedAttributes,
-      command, marks, component,
+      command, marks, component, srcset,
     } = { ...defaultOptions, ...(opts || {}) };
     if (!customElements.get(component)) {
       customElements.define(component, ArenaFigure);
@@ -167,6 +195,7 @@ const imageWithCaptionPlugin = (opts?: typeof defaultOptions): ArenaPlugin => ({
           imageCaptionParagraph,
         ],
         arenaForText: imageCaptionParagraph,
+        getPublic: getPublic(srcset),
       },
       marks,
       [textarena.getRootArenaName()],

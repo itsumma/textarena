@@ -41,8 +41,8 @@ export default class SingleNode
     `;
   }
 
-  public getPublicHtml(): string {
-    return this.arena.getOutputTemplate('', 0, this.attributes);
+  public getPublicHtml(frms: ArenaFormatings): string {
+    return this.arena.getPublicHtml(undefined, this.attributes, this, frms);
   }
 
   public getOutputHtml(_frms: ArenaFormatings, deep = 0): string {

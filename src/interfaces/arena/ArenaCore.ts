@@ -1,5 +1,7 @@
 import { TemplateResult } from 'lit-html';
 import ArenaAttributes from '../ArenaAttributes';
+import { ArenaFormatings } from '../ArenaFormating';
+import { AnyArenaNode } from '../ArenaNode';
 
 interface ArenaCore {
   readonly name: string;
@@ -24,6 +26,13 @@ interface ArenaCore {
     deep: number,
     attributes: ArenaAttributes,
     single?: boolean,
+  ): string;
+
+  getPublicHtml(
+    children: string[] | string | undefined,
+    attributes: ArenaAttributes,
+    node: AnyArenaNode,
+    frms: ArenaFormatings,
   ): string;
 
   getOpenTag(

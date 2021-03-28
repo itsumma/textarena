@@ -1,6 +1,8 @@
 import { TemplateResult, defaultTemplateProcessor } from 'lit-html';
 import ArenaAttributes from '../interfaces/ArenaAttributes';
-import ArenaOptions from '../interfaces/ArenaOptions';
+import { ArenaFormatings } from '../interfaces/ArenaFormating';
+import { AnyArenaNode } from '../interfaces/ArenaNode';
+import ArenaOptions, { HtmlProcessor } from '../interfaces/ArenaOptions';
 
 export default abstract class AbstractArena {
   readonly name: string;
@@ -11,6 +13,8 @@ export default abstract class AbstractArena {
 
   readonly allowedAttributes: string[] = [];
 
+  protected getPublicProcessor: HtmlProcessor | undefined;
+
   constructor(options: ArenaOptions) {
     this.name = options.name;
     this.tag = options.tag;
@@ -18,6 +22,87 @@ export default abstract class AbstractArena {
     if (options.allowedAttributes) {
       this.allowedAttributes = options.allowedAttributes;
     }
+    this.getPublicProcessor = options.getPublic;
+  }
+
+  public getTemplate(
+    children: TemplateResult | string,
+    id: string,
+    attributes: ArenaAttributes,
+  ): TemplateResult | string {
+    if (!this.tag) {
+      return children;
+    }
+    const openTag = this.getOpenTag({ ...attributes, 'arena-id': id });
+    const closeTag = this.getCloseTag();
+    const stringArray = [
+      openTag,
+      closeTag,
+    ];
+    // FIXME
+    return new TemplateResult(
+      (stringArray as unknown as TemplateStringsArray),
+      [children],
+      'html',
+      defaultTemplateProcessor,
+    );
+  }
+
+  public getOutputTemplate(
+    children: string | undefined,
+    deep: number,
+    attributes: ArenaAttributes,
+    sigle = false,
+  ): string {
+    if (!this.tag) {
+      return children || '';
+    }
+    const tab = '  '.repeat(deep);
+    const openTag = this.getOpenTag(attributes);
+    const closeTag = this.getCloseTag();
+    let content = '';
+    if (children) {
+      content = sigle ? children : `\n${children}\n${tab}`;
+    }
+    return `${tab}${openTag}${content}${closeTag}`;
+  }
+
+  public getPublicHtml(
+    children: string[] | string | undefined,
+    attributes: ArenaAttributes,
+    node: AnyArenaNode,
+    frms: ArenaFormatings,
+  ): string {
+    if (this.getPublicProcessor) {
+      return this.getPublicProcessor(node, frms);
+    }
+    const openTag = this.getOpenTag(attributes);
+    const closeTag = this.getCloseTag();
+    let content = '';
+    if (children) {
+      content = Array.isArray(children) ? children.join('\n') : `${children}\n`;
+    }
+    return `${openTag}${content}${closeTag}`;
+  }
+
+  public getOpenTag(
+    attributes: ArenaAttributes,
+  ): string {
+    if (!this.tag) {
+      return '';
+    }
+    const attrs = this.getAttributesString('', attributes);
+    const tag = this.tag.toLowerCase();
+    return `<${tag.toLowerCase()}${attrs}>`;
+  }
+
+  public getCloseTag(
+  ): string {
+    if (!this.tag) {
+      return '';
+    }
+    const tag = this.tag.toLowerCase();
+    return `</${tag.toLowerCase()}>`;
   }
 
   protected getAttributesString(id: string, attributes: ArenaAttributes): string {
@@ -44,70 +129,5 @@ export default abstract class AbstractArena {
       }
     });
     return str;
-  }
-
-  public getTemplate(
-    children: TemplateResult | string,
-    id: string,
-    attributes: ArenaAttributes,
-  ): TemplateResult | string {
-    if (!this.tag) {
-      return children;
-    }
-    const attrs = this.getAttributesString(id, attributes);
-    const stringArray = [
-      `<${this.tag} ${attrs}>`,
-      `</${this.tag}>`,
-    ];
-    // FIXME
-    return new TemplateResult(
-      (stringArray as unknown as TemplateStringsArray),
-      [children],
-      'html',
-      defaultTemplateProcessor,
-    );
-    // return `<${this.tag} observe-id="${id}">${children}</${this.tag}>`;
-    // return html`
-    //   ${unsafeHTML(`<${this.tag} observe-id="${id}">${html`children`}</${this.tag}>`)}
-    // `;
-  }
-
-  public getOutputTemplate(
-    children: string | undefined,
-    deep: number,
-    attributes: ArenaAttributes,
-    sigle = false,
-  ): string {
-    if (!this.tag) {
-      return children || '';
-    }
-    const attrs = this.getAttributesString('', attributes);
-    const tab = '  '.repeat(deep);
-    const tag = this.tag.toLowerCase();
-    let content = '';
-    if (children) {
-      content = sigle ? children : `\n${children}\n${tab}`;
-    }
-    return `${tab}<${tag.toLowerCase()}${attrs}>${content}</${tag.toLowerCase()}>`;
-  }
-
-  public getOpenTag(
-    attributes: ArenaAttributes,
-  ): string {
-    if (!this.tag) {
-      return '';
-    }
-    const attrs = this.getAttributesString('', attributes);
-    const tag = this.tag.toLowerCase();
-    return `<${tag.toLowerCase()}${attrs}>`;
-  }
-
-  public getCloseTag(
-  ): string {
-    if (!this.tag) {
-      return '';
-    }
-    const tag = this.tag.toLowerCase();
-    return `</${tag.toLowerCase()}>`;
   }
 }

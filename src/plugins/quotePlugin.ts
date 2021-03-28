@@ -104,7 +104,7 @@ const quotePlugin = (opts?: Options): ArenaPlugin => ({
         attributes: ['slot=quote_body', 'class=body'],
         hasText: true,
         nextArena: paragraph,
-        getPlain: (text: string, node: ArenaNodeText) => `«${text}»`,
+        getPlain: (text: string) => `«${text}»`,
       },
       [
         {

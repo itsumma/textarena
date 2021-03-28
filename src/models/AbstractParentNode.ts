@@ -105,10 +105,11 @@ export default abstract class AbstractParentNode<
     for (let i = 0; i < this.children.length; i += 1) {
       content.push(this.children[i].getPublicHtml(frms));
     }
-    return this.arena.getOutputTemplate(
-      content.join('\n'),
-      0,
+    return this.arena.getPublicHtml(
+      content,
       this.attributes,
+      this as unknown as ParentArenaNode,
+      frms,
     );
   }
 

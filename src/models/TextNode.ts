@@ -53,7 +53,7 @@ export default class TextNode
       return '';
     }
     const text = this.richTextManager.getHtml(frms);
-    return this.arena.getOutputTemplate(text, 0, this.attributes, true);
+    return this.arena.getPublicHtml(text, this.attributes, this, frms);
   }
 
   public getOutputHtml(

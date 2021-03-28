@@ -40,6 +40,41 @@ import asidePlugin from './plugins/asidePlugin';
 import quotePlugin from './plugins/quotePlugin';
 import imageWithCaptionPlugin from './plugins/imageWithCaptionPlugin';
 
+const imgOpts = {
+  srcset: [
+    {
+      media: '(max-width: 320px)',
+      rations: [
+        {
+          ratio: 1,
+          width: 100,
+          height: 100,
+        },
+        {
+          ratio: 2,
+          width: 200,
+          height: 200,
+        },
+      ],
+    },
+    {
+      media: '',
+      rations: [
+        {
+          ratio: 1,
+          width: 200,
+          height: 200,
+        },
+        {
+          ratio: 2,
+          width: 400,
+          height: 400,
+        },
+      ],
+    },
+  ],
+};
+
 const defaultOptions: TextarenaOptions = {
   editable: true,
   debug: false,
@@ -86,7 +121,7 @@ const defaultOptions: TextarenaOptions = {
     blockquotePlugin(),
     calloutPlugin(),
     imagePlugin(),
-    imageWithCaptionPlugin(),
+    imageWithCaptionPlugin(imgOpts),
     embedPlugin(),
     linkPlugin(),
     examplePlugin(),

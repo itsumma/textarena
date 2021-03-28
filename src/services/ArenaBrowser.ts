@@ -492,8 +492,6 @@ export default class ArenaBrowser {
     }
     const resultHtml = this.asm.model.getOutputHtmlOfSelection(selection);
     const resultText = this.asm.model.getPlainTextOfSelection(selection);
-    console.log(resultHtml);
-    console.log(resultText);
     clipboardData.setData('text/html', resultHtml);
     clipboardData.setData('text/plain', resultText);
     e.preventDefault();

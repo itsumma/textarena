@@ -177,7 +177,7 @@ export default class ArenaModel {
     if (selection.isCollapsed()) {
       return '';
     }
-    let result: string[] = [];
+    const result: string[] = [];
     this.runNodesOfSelection(
       selection,
       (node: AnyArenaNode, start?: number, end?: number) => {
