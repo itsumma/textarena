@@ -20,6 +20,7 @@ export default class NodeFactory {
   static createChildNode(
     arena: ChildArena,
     registry: NodeRegistry,
+    isNew = false,
   ): ChildArenaNode {
     if (arena.hasChildren) {
       let children;
@@ -27,13 +28,17 @@ export default class NodeFactory {
         children = arena.protectedChildren.map((item) => {
           let childArena;
           let attributes: ArenaAttributes = {};
+          let content: string | undefined;
           if (Array.isArray(item)) {
-            [childArena, attributes] = item;
+            [childArena, attributes, content] = item;
           } else {
             childArena = item;
           }
           const node = this.createChildNode(childArena, registry);
           node.setAttributes(attributes);
+          if (isNew && node.hasText && content) {
+            node.insertText(content, 0);
+          }
           return node;
         });
       }

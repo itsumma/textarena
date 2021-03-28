@@ -217,8 +217,8 @@ export default class ArenaModel {
   // #endregion
 
   /** */
-  public createChildNode(arena: ChildArena): ChildArenaNode {
-    const node = NodeFactory.createChildNode(arena, this.registry);
+  public createChildNode(arena: ChildArena, isNew = false): ChildArenaNode {
+    const node = NodeFactory.createChildNode(arena, this.registry, isNew);
     return node;
   }
 
@@ -317,6 +317,7 @@ export default class ArenaModel {
     offset: number,
     before = false,
     onlyChild = false,
+    isNew = false,
   ): ChildArenaNode | undefined {
     if (parent.hasText) {
       if (onlyChild) {
@@ -328,13 +329,15 @@ export default class ArenaModel {
         node,
         parentOffset,
         parentOffset === 0,
+        false,
+        isNew,
       );
     }
     if (parent.single) {
       return undefined;
     }
     if (parent.isAllowedNode(arena)) {
-      const newNode = this.createChildNode(arena);
+      const newNode = this.createChildNode(arena, isNew);
       return parent.insertNode(newNode, offset);
     }
     if (parent.protected) {
@@ -348,6 +351,7 @@ export default class ArenaModel {
               parent.children.length,
               true,
               true,
+              isNew,
             );
             if (node) {
               return node;
@@ -364,6 +368,7 @@ export default class ArenaModel {
               0,
               false,
               true,
+              isNew,
             );
             if (node) {
               return node;
@@ -378,6 +383,8 @@ export default class ArenaModel {
         parent.parent,
         before ? parent.getIndex() : parent.getIndex() + 1,
         before,
+        false,
+        isNew,
       );
     }
     return undefined;
@@ -696,7 +703,7 @@ export default class ArenaModel {
     }
     const { node } = selection.getCursor();
     if (node.parent.isAllowedNode(arena)) {
-      this.createAndInsertNode(arena, node.parent, node.getIndex());
+      this.createAndInsertNode(arena, node.parent, node.getIndex(), false, false, true);
     }
     return selection;
   }

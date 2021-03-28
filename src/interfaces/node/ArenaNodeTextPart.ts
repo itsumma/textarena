@@ -27,6 +27,8 @@ export default interface ArenaNodeTextPart {
 
   cutText(start: number, end?: number): RichTextManager;
 
+  clearText(): void;
+
   getTextLength(): number;
 
   isEmpty(): boolean;

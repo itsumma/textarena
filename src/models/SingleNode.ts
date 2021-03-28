@@ -21,10 +21,10 @@ export default class SingleNode
 
   public getTemplate(): TemplateResult | string {
     const id = this.getGlobalIndex();
-    const content = this.arena.getTemplate(undefined, '', this.attributes);
     if (this.parent.protected) {
-      return content;
+      return this.arena.getTemplate(undefined, id, this.attributes);
     }
+    const content = this.arena.getTemplate(undefined, '', this.attributes);
     const removeButton = html`<textarena-remove node-id="${id}">
     <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
     viewBox="0 0 512.001 512.001" xml:space="preserve">
@@ -62,10 +62,6 @@ export default class SingleNode
   public getTextCursor(): ArenaCursorText | undefined {
     return undefined;
   }
-
-  // public createAndInsertNode(arena: ChildArena): ChildArenaNode | undefined {
-  //   return this.parent.createAndInsertNode(arena, this.getIndex() + 1);
-  // }
 
   public clone(): ArenaNodeSingle {
     return new SingleNode(

@@ -145,6 +145,13 @@ export default class RichTextManager {
     this.cutText(start, end);
   }
 
+  public clearText(): void {
+    this.text = '';
+    this.formatings = {};
+    this.promises = {};
+    this.inlines = new InlineIntervaler();
+  }
+
   public cutText(start: number, end?: number): RichTextManager {
     let text;
     if (end === undefined) {

@@ -166,16 +166,6 @@ export default abstract class AbstractParentNode<
 
   public insertText(
   ): ArenaCursorText {
-    // if (this.arena.arenaForText) {
-    //   const newNode = this.createAndInsertNode(this.arena.arenaForText, offset);
-    //   if (!newNode) {
-    //     throw new Error(`Arena "${this.arena.arenaForText.name}" was not created`);
-    //   }
-    //   return newNode.insertText(text, 0);
-    // }
-    // if (this.parent) {
-    //   return this.parent.insertText(text, this.getIndex() + 1);
-    // }
     throw new Error('Arena for text not found');
   }
 

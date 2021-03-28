@@ -61,7 +61,7 @@
     }
   }
 
-  p {
+  .paragraph {
     font-size: 1rem;
     margin: 0 0 1em;
     min-height: 1.6em;
@@ -202,5 +202,10 @@
       width: 100%;
       margin: 0;
     }
+  }
+
+  arena-image {
+    height: 100%;
+    width: 100%;
   }
 }

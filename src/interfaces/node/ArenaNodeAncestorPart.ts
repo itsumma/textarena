@@ -24,9 +24,6 @@ export default interface ArenaNodeAncestorPart {
 
   isAllowedNode(arena: ChildArena): boolean;
 
-  // createAndInsertNode(arena: ChildArena, offset: number):
-  //   ChildArenaNode | undefined;
-
   insertChildren(nodes: ChildArenaNode[], offset?: number):
   ChildArenaNode[];
 

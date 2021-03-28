@@ -47,7 +47,7 @@ export type ParentArena = ArenaMediatorInterface | ArenaRootInterface;
 
 export type ChildArena = ArenaMediatorInterface | ArenaSingleInterface | ArenaTextInterface;
 
-export type ProtectedArenas = (ChildArena | [ChildArena, ArenaAttributes])[];
+export type ProtectedArenas = (ChildArena | [ChildArena, ArenaAttributes, string?])[];
 
 export type TreeArena = ArenaRootInterface | ChildArena;
 

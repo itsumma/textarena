@@ -23,7 +23,8 @@ export class Quote extends LitElement {
       margin: 0.3rem 0.3rem 0.5rem ;
     }
     .quote_image {
-      width: 2.3rem;
+      width: 2.6rem;
+      height: 2.6rem;
     }
     .author {
       flex: 1;
@@ -155,9 +156,9 @@ const quotePlugin = (opts?: Options): ArenaPlugin => ({
         attributes,
         protectedChildren: [
           [image, { width: 100, height: 100 }],
-          titleParagraph,
-          roleContainer,
-          bodyContainer,
+          [titleParagraph, {}, 'Автор цитаты'],
+          [roleContainer, {}, 'Роль'],
+          [bodyContainer, {}, 'Цитата…'],
         ],
         arenaForText: bodyContainer,
       },
@@ -170,7 +171,7 @@ const quotePlugin = (opts?: Options): ArenaPlugin => ({
       [textarena.getRootArenaName()],
     ) as ArenaMediatorInterface;
     textarena.registerCommand(command, (ta: Textarena, selection: ArenaSelection) => {
-      const sel = ta.applyArenaToSelection(selection, arena);
+      const sel = ta.insertBeforeSelected(selection, arena);
       return sel;
     });
 

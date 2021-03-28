@@ -92,10 +92,6 @@ export default class TextNode
     };
   }
 
-  // public createAndInsertNode(arena: ChildArena): ChildArenaNode | undefined {
-  //   return this.parent.createAndInsertNode(arena, this.getIndex() + 1);
-  // }
-
   // Text node methods //
 
   public insertText(
@@ -147,6 +143,10 @@ export default class TextNode
 
   public removeText(start: number, end?: number): void {
     this.richTextManager.removeText(start, end);
+  }
+
+  public clearText(): void {
+    this.richTextManager.clearText();
   }
 
   public getTextLength(): number {

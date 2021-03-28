@@ -19,12 +19,6 @@ export default interface ArenaNodeCorePart<T> {
     keepFormatings?: boolean,
   ): ArenaCursorText;
 
-  // createAndInsertNode(arena: ChildArena, offset: number):
-  //   ChildArenaNode | undefined;
-
-  // TODO createAndInsertNode(arena: Arena, offset: number):
-  //  ArenaNode & ArenaNodeScion | Exception;
-
   getGlobalIndex(): string;
 
   getId(): string;
