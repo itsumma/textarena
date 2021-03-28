@@ -71,7 +71,7 @@ export default class CreatorBar {
     this.elem.appendChild(this.buttonWrapper);
     this.elem.appendChild(this.list);
     this.elem.appendChild(placeholder);
-    // this.asm.textarena.getContainerElement().appendChild(this.getElem());
+    this.asm.textarena.getContainerElement().appendChild(this.getElem());
     this.asm.eventManager.subscribe('moveCursor', () => {
       this.handleChangeSelection();
     });
@@ -212,7 +212,7 @@ export default class CreatorBar {
 
   show(node: ArenaNodeText, target: HTMLElement): void {
     if (this.canShow(node)) {
-      target.appendChild(this.elem.getElem());
+      // target.appendChild(this.elem.getElem());
       this.showed = true;
       this.buttonWrapper.css({
         height: `${target.offsetHeight}px`,
