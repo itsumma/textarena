@@ -64,7 +64,7 @@ export class Collapse extends LitElement {
         </div>
         <slot name='body'
           class=${classMap({ body: true, open: this.open })}
-        >Контент</slot>
+        ></slot>
       </div>
     `;
   }
@@ -165,8 +165,8 @@ const collapsePlugin = (opts?: CollapseOptions): ArenaPlugin => ({
         tag,
         attributes,
         protectedChildren: [
-          collapseTitleParagraph,
-          collapseBodyContainer,
+          [collapseTitleParagraph, {}, 'Заголовок'],
+          [collapseBodyContainer, {}, 'Контент'],
         ],
         arenaForText: collapseBodyContainer,
       },
@@ -176,7 +176,7 @@ const collapsePlugin = (opts?: CollapseOptions): ArenaPlugin => ({
     textarena.registerCommand(
       command,
       (ta: Textarena, selection: ArenaSelection) => {
-        const sel = ta.applyArenaToSelection(selection, arena);
+        const sel = ta.insertBeforeSelected(selection, arena);
         return sel;
       },
     );

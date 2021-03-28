@@ -2,6 +2,7 @@
   position: absolute;
   z-index: 1;
   font-size: 1rem;
+  pointer-events: none;
 
   &__pointer {
     position: absolute;
@@ -31,6 +32,7 @@
   }
 
   &__list {
+    pointer-events: all;
     display: flex;
     flex-wrap: wrap;
     // transform: translateX(-50%);

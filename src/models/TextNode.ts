@@ -35,7 +35,7 @@ export default class TextNode
     if (text && text instanceof RichTextManager) {
       this.richTextManager = text.clone();
     } else {
-      this.richTextManager = new RichTextManager();
+      this.richTextManager = new RichTextManager(text);
     }
   }
 

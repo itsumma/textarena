@@ -21,26 +21,27 @@ export default class NodeFactory {
     arena: ChildArena,
     registry: NodeRegistry,
     isNew = false,
+    content?: string,
   ): ChildArenaNode {
     if (arena.hasChildren) {
-      let children;
+      let children = [];
       if (arena.protected) {
         children = arena.protectedChildren.map((item) => {
           let childArena;
           let attributes: ArenaAttributes = {};
-          let content: string | undefined;
+          let childContent: string | undefined;
           if (Array.isArray(item)) {
-            [childArena, attributes, content] = item;
+            [childArena, attributes, childContent] = item;
           } else {
             childArena = item;
           }
-          const node = this.createChildNode(childArena, registry);
+          const node = this.createChildNode(childArena, registry, true, childContent);
           node.setAttributes(attributes);
-          if (isNew && node.hasText && content) {
-            node.insertText(content, 0);
-          }
           return node;
         });
+      } else if (isNew && content && arena.arenaForText) {
+        const node = this.createChildNode(arena.arenaForText, registry, true, content);
+        children.push(node);
       }
       const id = registry.generateId();
       const node = new MediatorNode(arena, id, children);
@@ -49,7 +50,7 @@ export default class NodeFactory {
     }
     if (arena.hasText) {
       const id = registry.generateId();
-      const node = new TextNode(arena, id);
+      const node = new TextNode(arena, id, {}, isNew ? content : undefined);
       registry.set(id, node);
       return node;
     }
