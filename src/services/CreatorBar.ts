@@ -10,6 +10,7 @@ type Creator = {
   elem: ElementHelper;
   options: CreatorOptions;
   modifiers?: number;
+  show: boolean;
 };
 
 export default class CreatorBar {
@@ -44,6 +45,7 @@ export default class CreatorBar {
     this.elem.setContentEditable(false);
     this.elem.onClick(() => {
       this.closeList();
+      this.asm.textarena.getEditorElement().focus();
     });
     this.list = new ElementHelper('DIV', 'textarena-creator__list');
     this.hide();
@@ -52,6 +54,7 @@ export default class CreatorBar {
       e.stopPropagation();
       if (this.active) {
         this.closeList();
+        this.asm.textarena.getEditorElement().focus();
       } else {
         this.openList();
       }
@@ -109,6 +112,7 @@ export default class CreatorBar {
         const creator: Creator = {
           elem,
           options,
+          show: true,
         };
         if (options.shortcut) {
           const [modifiers] = this.asm.commandManager.parseShortcut(options.shortcut);
@@ -179,7 +183,49 @@ export default class CreatorBar {
 
   private keyDownListener(e: KeyboardEvent): void {
     const modifiersSum = this.asm.browser.getModifiersSum(e);
-    this.showHints(modifiersSum);
+    if (this.showed && this.active) {
+      e.preventDefault();
+      if (modifiersSum === 0 && e.code === 'ArrowRight') {
+        this.activeCreator();
+      }
+      if (modifiersSum === 0 && e.code === 'ArrowLeft') {
+        this.activeCreator(false);
+      }
+      if (modifiersSum === 0 && e.code === 'Escape') {
+        this.closeList();
+        this.asm.textarena.getEditorElement().focus();
+      }
+      if (this.asm.browser.isModificationEvent(e)) {
+        this.showHints(modifiersSum);
+      } else if (modifiersSum !== 0 && e.code) {
+        this.asm.browser.keyDownListener(e);
+        this.asm.textarena.getEditorElement().focus();
+      }
+    }
+  }
+
+  private activeCreator(right = true) {
+    const activeCreator = this.creators.find(
+      (some) => some.elem.getElem() === document.activeElement,
+    );
+    const creators = this.creators.filter((creator) => creator.show);
+    const len = creators.length;
+    if (activeCreator) {
+      const index = creators.indexOf(activeCreator);
+      if (right) {
+        if (index === len - 1) {
+          creators[0].elem.focus();
+        } else {
+          creators[index + 1].elem.focus();
+        }
+      } else if (index === 0) {
+        creators[len - 1].elem.focus();
+      } else {
+        creators[index - 1].elem.focus();
+      }
+    } else if (len > 0) {
+      creators[0].elem.focus();
+    }
   }
 
   private executeTool(options: CreatorOptions): void {
@@ -190,8 +236,11 @@ export default class CreatorBar {
 
   private canShow(node: ArenaNodeText): boolean {
     let result = false;
-    this.creators.forEach(({ elem, options: { canShow } }) => {
+    this.creators.forEach((creator) => {
+      const { elem, options: { canShow } } = creator;
       const show = canShow ? canShow(node) : true;
+      // eslint-disable-next-line no-param-reassign
+      creator.show = show;
       if (show) {
         result = true;
         elem.css({

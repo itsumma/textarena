@@ -204,6 +204,12 @@ export default class ArenaBrowser {
     return this.asm.commandManager.getModifiersSum(modifiers);
   }
 
+  public isModificationEvent(e: KeyboardEvent): boolean {
+    return !!modifiersCodes[e.keyCode];
+  }
+
+
+
   protected checkSelection(): void {
     this.asm.view.resetCurrentSelection();
     const s = window.getSelection();
@@ -247,7 +253,7 @@ export default class ArenaBrowser {
     } = e;
     const modifiersSum = this.getModifiersSum(e);
     const character = e.key;
-    if (modifiersCodes[keyCode]) {
+    if (this.isModificationEvent(e)) {
       return new ModifiersEvent(e, modifiersSum);
     }
     if (reservedCodes[keyCode]) {
@@ -413,7 +419,7 @@ export default class ArenaBrowser {
     this.asm.logger.log('KeyPress event', e);
   }
 
-  protected keyDownListener(e: KeyboardEvent): void {
+  public keyDownListener(e: KeyboardEvent): void {
     const event = this.checkKeyboardEvent('keyDown', e);
     this.asm.logger.log('KeyDown event', event, e);
     if (event instanceof BrowserCommandEvent
