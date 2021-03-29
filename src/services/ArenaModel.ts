@@ -465,8 +465,25 @@ export default class ArenaModel {
     if (!selection.isCollapsed()) {
       newSelection = this.removeSelection(selection, 'backward');
     }
-    const cursor = newSelection.startNode.insertText(text, newSelection.startOffset, true);
-    newSelection.setCursor(cursor);
+    const lines = text.split('\n');
+    let node: AnyArenaNode | undefined = newSelection.startNode;
+    let offset = newSelection.startOffset;
+    let cursor: ArenaCursorText | undefined;
+    lines.forEach((line) => {
+      if (node) {
+        cursor = node.insertText(line, offset);
+        offset = 0;
+        const nextArena = cursor.node.arena.nextArena || cursor.node.arena;
+        node = this.createAndInsertNode(
+          nextArena,
+          cursor.node.parent,
+          cursor.node.getIndex() + 1,
+        );
+      }
+    });
+    if (cursor) {
+      newSelection.setCursor(cursor);
+    }
     return newSelection;
   }
 
