@@ -184,7 +184,6 @@ export default class CreatorBar {
   private keyDownListener(e: KeyboardEvent): void {
     const modifiersSum = this.asm.browser.getModifiersSum(e);
     if (this.showed && this.active) {
-      e.preventDefault();
       if (modifiersSum === 0 && e.code === 'ArrowRight') {
         this.activeCreator();
       }
@@ -196,6 +195,7 @@ export default class CreatorBar {
         this.asm.textarena.getEditorElement().focus();
       }
       if (this.asm.browser.isModificationEvent(e)) {
+        e.preventDefault();
         this.showHints(modifiersSum);
       } else if (modifiersSum !== 0 && e.code) {
         this.asm.browser.keyDownListener(e);

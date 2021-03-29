@@ -193,20 +193,29 @@ export default class ArenaModel {
     }
     let result = '';
     const frms = this.getFormatings();
+    const oneNode = selection.isSameNode();
     this.runNodesOfSelection(
       selection,
       (node: AnyArenaNode, start?: number, end?: number) => {
-        if (node.hasParent && node.parent.group
-          && (start !== undefined || node.isFirstChild())) {
-          result += node.parent.getOpenTag();
+        let nodeContent = node.getOutputHtml(frms, 0, start, end);
+        if (node.hasParent && node.parent.group && !oneNode) {
+          if (start !== undefined || node.isFirstChild()) {
+            nodeContent = node.parent.getOpenTag() + nodeContent;
+          }
+          if (end !== undefined || node.isLastChild()) {
+            nodeContent += node.parent.getCloseTag();
+          }
         }
-        result += node.getOutputHtml(frms, 0, start, end);
-        if (node.hasParent && node.parent.group
-          && (end !== undefined || node.isLastChild())) {
-          result += node.parent.getCloseTag();
-        }
+        result += nodeContent;
       },
     );
+    if (oneNode) {
+      const { startNode, startOffset, endOffset } = selection;
+      if (startOffset === 0 && endOffset === startNode.getTextLength() - 1) {
+        const { parent } = startNode;
+        result = parent.getOpenTag() + result + parent.getCloseTag();
+      }
+    }
     return result;
   }
 
@@ -378,10 +387,16 @@ export default class ArenaModel {
       }
     }
     if (!onlyChild && parent.hasParent) {
+      this.splitMediatorNode(parent, offset);
+      const secondParent = this.splitMediatorNode(parent, offset);
+      let parentOffset = offset === 0 ? parent.getIndex() : parent.getIndex() + 1;
+      if (secondParent) {
+        parentOffset = secondParent.getIndex();
+      }
       return this.createAndInsertNode(
         arena,
         parent.parent,
-        before ? parent.getIndex() : parent.getIndex() + 1,
+        parentOffset,
         before,
         false,
         isNew,
@@ -908,11 +923,14 @@ export default class ArenaModel {
   protected splitMediatorNode(
     node: ArenaNodeMediator,
     offset: number,
-  ): undefined | ParentArenaNode {
-    if (offset === 0 || offset >= node.children.length - 1) {
+  ): undefined | ArenaNodeMediator {
+    if (offset === 0 || offset >= node.children.length) {
       return undefined;
     }
     if (node.arena.protected) {
+      return undefined;
+    }
+    if (node.parent.arena.protected) {
       return undefined;
     }
     const newNode = this.createAndInsertNode(

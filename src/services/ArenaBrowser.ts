@@ -208,8 +208,6 @@ export default class ArenaBrowser {
     return !!modifiersCodes[e.keyCode];
   }
 
-
-
   protected checkSelection(): void {
     this.asm.view.resetCurrentSelection();
     const s = window.getSelection();
