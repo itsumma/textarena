@@ -301,7 +301,7 @@ export default class ArenaBrowser {
       return new BrowserCommandEvent(e);
     }
 
-    if (selectionCodes[keyCode] && !(modifiersSum & Modifiers.Alt)) {
+    if (selectionCodes[keyCode]) {
       return new SelectionEvent(e);
     }
     if (code === 'KeyA' && modifiersSum === Modifiers.Ctrl) {
