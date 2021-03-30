@@ -460,33 +460,39 @@ export default class ArenaModel {
   public insertTextToModel(
     selection: ArenaSelection,
     text: string,
+    typing = false,
   ): ArenaSelection {
     let newSelection = selection;
     if (!selection.isCollapsed()) {
       newSelection = this.removeSelection(selection, 'backward');
     }
-    const lines = text.split('\n');
-    const firstLine = lines.shift();
-    if (firstLine !== undefined) {
-      let cursor: ArenaCursorText | undefined = newSelection
-        .startNode.insertText(firstLine, newSelection.startOffset);
-      lines.forEach((line) => {
-        if (cursor) {
-          const nextArena = cursor.node.arena.nextArena || cursor.node.arena;
-          const newNode = this.createAndInsertNode(
-            nextArena,
-            cursor.node.parent,
-            cursor.node.getIndex() + 1,
-          );
-          if (newNode) {
-            cursor = newNode.insertText(line, 0);
-          } else {
-            cursor = undefined;
+    if (typing) {
+      const cursor = newSelection.startNode.insertText(text, newSelection.startOffset, true);
+      newSelection.setCursor(cursor);
+    } else {
+      const lines = text.split('\n');
+      const firstLine = lines.shift();
+      if (firstLine !== undefined) {
+        let cursor: ArenaCursorText | undefined = newSelection
+          .startNode.insertText(firstLine, newSelection.startOffset);
+        lines.forEach((line) => {
+          if (cursor) {
+            const nextArena = cursor.node.arena.nextArena || cursor.node.arena;
+            const newNode = this.createAndInsertNode(
+              nextArena,
+              cursor.node.parent,
+              cursor.node.getIndex() + 1,
+            );
+            if (newNode) {
+              cursor = newNode.insertText(line, 0);
+            } else {
+              cursor = undefined;
+            }
           }
+        });
+        if (cursor) {
+          newSelection.setCursor(cursor);
         }
-      });
-      if (cursor) {
-        newSelection.setCursor(cursor);
       }
     }
     return newSelection;

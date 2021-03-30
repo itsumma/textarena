@@ -285,9 +285,9 @@ export default class ArenaBrowser {
     if (code === 'KeyE' && modifiersSum === Modifiers.Ctrl) {
       return new BrowserCommandEvent(e);
     }
-    if (code === 'KeyK' && modifiersSum === Modifiers.Ctrl) {
-      return new BrowserCommandEvent(e);
-    }
+    // if (code === 'KeyK' && modifiersSum === Modifiers.Ctrl) {
+    //   return new BrowserCommandEvent(e);
+    // }
     if (code === 'Delete' && modifiersSum === (Modifiers.Ctrl | Modifiers.Shift)) {
       return new BrowserCommandEvent(e);
     }
@@ -460,7 +460,7 @@ export default class ArenaBrowser {
     if (event instanceof ArenaInputEvent) {
       const selection = this.asm.view.getCurrentSelection();
       if (selection) {
-        const newSelection = this.asm.model.insertTextToModel(selection, event.character);
+        const newSelection = this.asm.model.insertTextToModel(selection, event.character, true);
         this.asm.history.save(newSelection, /[a-zа-яА-Я0-9]/i.test(event.character));
         const [result, cursor] = this.asm.model.applyMiddlewares(
           newSelection.getCursor(),

@@ -91,7 +91,7 @@ const defaultOptions: LinkOptions = {
   tag: 'A',
   attributes: [],
   allowedAttributes: ['href'],
-  shortcut: 'Alt + KeyK',
+  shortcut: 'Ctrl + KeyK',
   hint: 'k',
   command: 'add-link',
   marks: [
