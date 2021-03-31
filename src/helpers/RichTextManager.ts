@@ -272,9 +272,14 @@ export default class RichTextManager {
   }
 
   clone(): RichTextManager {
-    const formatings = Object.fromEntries(Object
+    const entries: [string, Intervaler][] = Object
       .entries(this.formatings)
-      .map(([name, intervaler]) => [name, intervaler.clone()]));
+      .map(([name, intervaler]) => [name, intervaler.clone()]);
+    const formatings: Formatings = [...entries].reduce<Formatings>((obj, [key, val]) => {
+      // eslint-disable-next-line no-param-reassign
+      obj[key] = val;
+      return obj;
+    }, {});
     return new RichTextManager(
       this.text,
       formatings,
