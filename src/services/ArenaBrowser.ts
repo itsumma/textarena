@@ -322,7 +322,7 @@ export default class ArenaBrowser {
     if (code === 'ArrowRight' && modifiersSum === Modifiers.Alt) {
       return new CutEvent(e);
     }
-    if (removeCodes[keyCode]) {
+    if (removeCodes[keyCode] && modifiersSum === 0) {
       return new RemoveEvent(
         e,
         removeCodes[keyCode] === 'delete' ? 'forward' : 'backward',
@@ -440,6 +440,7 @@ export default class ArenaBrowser {
     }
     if (event instanceof ModifiersEvent) {
       this.asm.eventManager.fire({ name: 'keyDown', data: event.sum });
+      return;
     }
     if (event instanceof CutEvent) {
       document.execCommand('copy');

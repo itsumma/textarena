@@ -1,3 +1,5 @@
+import { Direction } from './events/RemoveEvent';
+
 import ArenaSelection from './helpers/ArenaSelection';
 import ElementHelper from './helpers/ElementHelper';
 
@@ -330,6 +332,10 @@ class Textarena {
 
   public breakSelection(selection: ArenaSelection): ArenaSelection {
     return this.asm.model.breakSelection(selection);
+  }
+
+  public removeSelection(selection: ArenaSelection, direction: Direction): ArenaSelection {
+    return this.asm.model.removeSelection(selection, direction);
   }
 
   public createAndInsertNode(

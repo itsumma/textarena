@@ -288,7 +288,7 @@ export default class ArenaModel {
           }
         } else {
           for (let i = 0; i < node.children.length; i += 1) {
-            const cursor = this.getOrCreateNodeForText(node.children[i], undefined, true);
+            const cursor = this.getOrCreateNodeForText(node.children[i], 0, true);
             if (cursor) {
               return cursor;
             }
