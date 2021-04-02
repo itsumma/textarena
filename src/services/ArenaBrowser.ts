@@ -313,6 +313,9 @@ export default class ArenaBrowser {
     if (code === 'KeyV' && modifiersSum === Modifiers.Ctrl) {
       return new PasteEvent(e);
     }
+    if (code === 'KeyV' && modifiersSum === (Modifiers.Ctrl | Modifiers.Shift)) {
+      return new PasteEvent(e);
+    }
     if (code === 'KeyX' && modifiersSum === Modifiers.Ctrl) {
       return new CutEvent(e);
     }
