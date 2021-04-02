@@ -130,6 +130,10 @@ export default class ArenaModel {
     return this.arenasByName[name];
   }
 
+  public getArenas(): AnyArena[] {
+    return this.arenas;
+  }
+
   public getFormatings(): ArenaFormatings {
     return this.formatingsByName;
   }

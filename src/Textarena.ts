@@ -39,6 +39,7 @@ import { ArenaHandler } from './services/EventManager';
 import asidePlugin from './plugins/asidePlugin';
 import quotePlugin from './plugins/quotePlugin';
 import imageWithCaptionPlugin from './plugins/imageWithCaptionPlugin';
+import typoSugarPlugin from './plugins/typoSugarPlugin';
 
 const imgOpts = {
   srcset: [
@@ -125,6 +126,7 @@ const defaultOptions: TextarenaOptions = {
     linkPlugin(),
     asidePlugin(),
     quotePlugin(),
+    typoSugarPlugin(),
   ],
 };
 
@@ -269,6 +271,10 @@ class Textarena {
 
   public getArena(name: string): AnyArena | undefined {
     return this.asm.model.getArena(name);
+  }
+
+  public getArenas(): AnyArena[] {
+    return this.asm.model.getArenas();
   }
 
   public registerArena(
