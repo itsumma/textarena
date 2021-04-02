@@ -116,8 +116,8 @@ const defaultOptions: FormatingsOptions = {
       name: 'strikethrough',
       tag: 'S',
       attributes: [],
-      shortcut: 'Alt + KeyS',
-      hint: 's',
+      shortcut: 'Ctrl + KeyD',
+      hint: 'd',
       command: 'format-strikethrough',
       marks: [
         {

@@ -257,9 +257,9 @@ export default class ArenaBrowser {
     if (reservedCodes[keyCode]) {
       return new BrowserCommandEvent(e);
     }
-    if (code === 'KeyD' && modifiersSum === Modifiers.Ctrl) {
-      return new BrowserCommandEvent(e);
-    }
+    // if (code === 'KeyD' && modifiersSum === Modifiers.Ctrl) {
+    //   return new BrowserCommandEvent(e);
+    // }
     if (code === 'KeyF' && modifiersSum === Modifiers.Ctrl) {
       return new BrowserCommandEvent(e);
     }
@@ -291,9 +291,9 @@ export default class ArenaBrowser {
     if (code === 'Delete' && modifiersSum === (Modifiers.Ctrl | Modifiers.Shift)) {
       return new BrowserCommandEvent(e);
     }
-    if (code === 'KeyF' && modifiersSum === Modifiers.Alt) {
-      return new BrowserCommandEvent(e);
-    }
+    // if (code === 'KeyF' && modifiersSum === Modifiers.Alt) {
+    //   return new BrowserCommandEvent(e);
+    // }
     if (code === 'ContextMenu') {
       return new BrowserCommandEvent(e);
     }
@@ -320,10 +320,10 @@ export default class ArenaBrowser {
       return new CutEvent(e);
     }
     if (code === 'ArrowLeft' && modifiersSum === Modifiers.Alt) {
-      return new CutEvent(e);
+      return new SelectionEvent(e);
     }
     if (code === 'ArrowRight' && modifiersSum === Modifiers.Alt) {
-      return new CutEvent(e);
+      return new SelectionEvent(e);
     }
     if (removeCodes[keyCode] && modifiersSum === 0) {
       return new RemoveEvent(
