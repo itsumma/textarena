@@ -53,7 +53,7 @@ export interface ArenaNodeInline {
 
   getHtml(model: ArenaFormatings): TemplateResult | string;
 
-  getOutputHtml(model: ArenaFormatings, deep?: number): string;
+  getOutputHtml(model: ArenaFormatings): string;
 
   getTags(): [string, string];
 

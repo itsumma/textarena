@@ -162,7 +162,7 @@ export default class ArenaModel {
   // #region Exporting
 
   public getDataHtml(): string {
-    return this.model.getOutputHtml(this.getFormatings(), -1);
+    return this.model.getOutputHtml(this.getFormatings());
   }
 
   public getTemplate(): TemplateResult | string {
@@ -197,7 +197,7 @@ export default class ArenaModel {
     this.runNodesOfSelection(
       selection,
       (node: AnyArenaNode, start?: number, end?: number) => {
-        let nodeContent = node.getOutputHtml(frms, 0, start, end);
+        let nodeContent = node.getOutputHtml(frms, start, end);
         if (node.hasParent && node.parent.group && !oneNode) {
           if (start !== undefined || node.isFirstChild()) {
             nodeContent = node.parent.getOpenTag() + nodeContent;

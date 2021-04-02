@@ -58,7 +58,6 @@ export default class TextNode
 
   public getOutputHtml(
     frms: ArenaFormatings,
-    deep = 0,
     start?: number,
     end?: number,
   ): string {
@@ -66,7 +65,7 @@ export default class TextNode
       return '';
     }
     const text = this.richTextManager.getHtml(frms, start, end);
-    return this.arena.getOutputTemplate(text, deep, this.attributes, true);
+    return this.arena.getOutputTemplate(text, this.attributes, true);
   }
 
   public getPlainText(

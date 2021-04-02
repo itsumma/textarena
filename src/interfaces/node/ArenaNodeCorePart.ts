@@ -27,7 +27,7 @@ export default interface ArenaNodeCorePart<T> {
 
   getPublicHtml(frms: ArenaFormatings): string;
 
-  getOutputHtml(frms: ArenaFormatings, deep?: number, start?: number, end?: number): string;
+  getOutputHtml(frms: ArenaFormatings, start?: number, end?: number): string;
 
   getPlainText(start?: number, end?: number): string;
 

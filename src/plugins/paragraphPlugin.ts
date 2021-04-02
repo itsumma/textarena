@@ -19,7 +19,7 @@ type ParagraphOptions = {
 const defaultOptions: ParagraphOptions = {
   name: 'paragraph',
   tag: 'P',
-  attributes: ['class=paragraph'],
+  attributes: ['class="paragraph"'],
   marks: [
     {
       tag: 'P',

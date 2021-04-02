@@ -1,7 +1,6 @@
 import { TemplateResult } from 'lit-html';
 import { ArenaInlineInterface } from '../interfaces/Arena';
 import ArenaAttributes from '../interfaces/ArenaAttributes';
-import { ArenaFormatings } from '../interfaces/ArenaFormating';
 import { ArenaNodeInline } from '../interfaces/ArenaNode';
 
 export default class InlineNode
@@ -56,8 +55,8 @@ implements ArenaNodeInline {
     return [`<${tag.toLowerCase()}${attrs}>`, `</${tag.toLowerCase()}>`];
   }
 
-  public getOutputHtml(_frms: ArenaFormatings, deep = 0): string {
-    return this.arena.getOutputTemplate('', deep, this.attributes);
+  public getOutputHtml(): string {
+    return this.arena.getOutputTemplate('', this.attributes);
   }
 
   public setAttribute(name: string, value: string | boolean | number): void {

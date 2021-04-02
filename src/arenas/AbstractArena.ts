@@ -50,21 +50,19 @@ export default abstract class AbstractArena {
 
   public getOutputTemplate(
     children: string | undefined,
-    deep: number,
     attributes: ArenaAttributes,
     sigle = false,
   ): string {
     if (!this.tag) {
       return children || '';
     }
-    const tab = '  '.repeat(deep);
     const openTag = this.getOpenTag(attributes);
     const closeTag = this.getCloseTag();
     let content = '';
     if (children) {
-      content = sigle ? children : `\n${children}\n${tab}`;
+      content = sigle ? children : `\n${children}\n`;
     }
-    return `${tab}${openTag}${content}${closeTag}`;
+    return `${openTag}${content}${closeTag}`;
   }
 
   public getPublicHtml(
@@ -80,7 +78,7 @@ export default abstract class AbstractArena {
     const closeTag = this.getCloseTag();
     let content = '';
     if (children) {
-      content = Array.isArray(children) ? children.join('\n') : `${children}\n`;
+      content = Array.isArray(children) ? children.join('\n') : `${children}`;
     }
     return `${openTag}${content}${closeTag}`;
   }

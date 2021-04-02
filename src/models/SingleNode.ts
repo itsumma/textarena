@@ -45,8 +45,8 @@ export default class SingleNode
     return this.arena.getPublicHtml(undefined, this.attributes, this, frms);
   }
 
-  public getOutputHtml(_frms: ArenaFormatings, deep = 0): string {
-    return this.arena.getOutputTemplate('', deep, this.attributes);
+  public getOutputHtml(): string {
+    return this.arena.getOutputTemplate('', this.attributes);
   }
 
   public getPlainText(): string {

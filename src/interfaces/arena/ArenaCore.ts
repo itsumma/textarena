@@ -23,7 +23,6 @@ interface ArenaCore {
 
   getOutputTemplate(
     children: string | undefined,
-    deep: number,
     attributes: ArenaAttributes,
     single?: boolean,
   ): string;
