@@ -38,6 +38,10 @@ const commonPlugin: () => ArenaPlugin = () => ({
       'Ctrl + Backspace',
       'deleteWordBack',
     );
+    textarena.registerShortcut(
+      'Alt + Backspace',
+      'deleteWordBack',
+    );
     textarena.registerCommand(
       'deleteWordForward',
       (ta: Textarena, selection: ArenaSelection) => {
@@ -56,6 +60,10 @@ const commonPlugin: () => ArenaPlugin = () => ({
     );
     textarena.registerShortcut(
       'Ctrl + Delete',
+      'deleteWordForward',
+    );
+    textarena.registerShortcut(
+      'Alt + Delete',
       'deleteWordForward',
     );
     textarena.registerCommand(
