@@ -48,6 +48,11 @@
   &__item {
     position: relative;
     display: flex;
+    background: none;
+    border: none;
+    color: inherit;
+    line-height: inherit;
+    font-size: 1em;
     align-items: center;
     justify-content: center;
     width: 1.4em;

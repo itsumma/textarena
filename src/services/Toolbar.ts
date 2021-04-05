@@ -82,7 +82,7 @@ export default class Toolbar {
           throw Error(`Tool "${toolOptions}" not found`);
         }
         const options = this.availableTools[toolOptions];
-        const elem = new ElementHelper('DIV', 'textarena-toolbar__item');
+        const elem = new ElementHelper('BUTTON', 'textarena-toolbar__item');
         const tool: Tool = {
           elem,
           options,
