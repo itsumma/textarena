@@ -94,6 +94,7 @@ const defaultOptions: TextarenaOptions = {
       'header3',
       'header4',
       'blockquote',
+      'clearFormatings',
     ],
   },
   creatorBar: {
@@ -330,6 +331,12 @@ class Textarena {
     formating: ArenaFormating,
   ): ArenaSelection {
     return this.asm.model.applyFormationToSelection(selection, formating);
+  }
+
+  public clearFormationInSelection(
+    selection: ArenaSelection,
+  ): ArenaSelection {
+    return this.asm.model.clearFormationInSelection(selection);
   }
 
   public insertBeforeSelected(selection: ArenaSelection, arena: ChildArena): ArenaSelection {

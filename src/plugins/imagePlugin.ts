@@ -1,5 +1,5 @@
 import {
-  html, css, property, TemplateResult,
+  html, css, property, TemplateResult, CSSResult,
 } from 'lit-element';
 import Textarena from '../Textarena';
 import ArenaSelection from '../helpers/ArenaSelection';
@@ -82,43 +82,47 @@ export class Image extends WebComponent {
     return input ? input as HTMLInputElement : undefined;
   }
 
-  static styles = css`
-    :host {
-      display: block;
-      margin: 0;
-      user-select: none;
-    }
-    .empty {
-      display: flex;
-      box-sizing: border-box;
-      justify-content: center;
-      align-items: center;
-      background: #e6e6e6;
-      /* padding-top: 56.25%; */
-      padding: .2rem;
-      border: 3px solid #d0d0d0;
-      color: #ccc;
-      height: 100%;
-      width: 100%;
-    }
-    .input {
-      display: none;
-    }
-    .img {
-      display: block;
-      max-width: 100%;
-      margin: auto;
-    }
-    .svg {
-      width: 3rem;
-      max-width: 80%;
-      max-height: 80%;
-      height: auto;
-    }
-    label {
-      cursor: pointer;
-    }
-    `;
+  static get styles(): CSSResult[] {
+    return [
+      css`
+        :host {
+          display: block;
+          margin: 0;
+          user-select: none;
+        }
+        .empty {
+          display: flex;
+          box-sizing: border-box;
+          justify-content: center;
+          align-items: center;
+          background: #e6e6e6;
+          /* padding-top: 56.25%; */
+          padding: .2rem;
+          border: 3px solid #d0d0d0;
+          color: #ccc;
+          height: 100%;
+          width: 100%;
+        }
+        .input {
+          display: none;
+        }
+        .img {
+          display: block;
+          max-width: 100%;
+          margin: auto;
+        }
+        .svg {
+          width: 3rem;
+          max-width: 80%;
+          max-height: 80%;
+          height: auto;
+        }
+        label {
+          cursor: pointer;
+        }
+      `,
+    ];
+  }
 
   // Render element DOM by returning a `lit-html` template.
   render(): TemplateResult {

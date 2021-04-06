@@ -813,6 +813,44 @@ export default class ArenaModel {
     return selection;
   }
 
+  public clearFormationInSelection(
+    selection: ArenaSelection,
+  ): ArenaSelection {
+    this.runNodesOfSelection(
+      selection,
+      (node: AnyArenaNode, start?: number, end?: number) => {
+        if (node.hasText) {
+          node.clearFormatings(start || 0, end || node.getTextLength());
+          if (node.arena.nextArena
+            && node.arena.nextArena.hasText
+            && node.arena.nextArena !== node.arena
+            && node.parent.isAllowedNode(node.arena.nextArena)) {
+            const newNode = this.createChildNode(node.arena.nextArena);
+            if (newNode) {
+              newNode.insertText(node.getText(), 0);
+              node.parent.insertNode(newNode, node.getIndex());
+              if (selection.startNode === node) {
+                selection.setStartNode(newNode as ArenaNodeText, selection.startOffset);
+              }
+              if (selection.endNode === node) {
+                selection.setEndNode(newNode as ArenaNodeText, selection.endOffset);
+              }
+              node.remove();
+            }
+          }
+        }
+        if (node.hasChildren) {
+          this.runOfChildren(node, (n: AnyArenaNode) => {
+            if (n.hasText) {
+              n.clearFormatings(start || 0, end || n.getTextLength());
+            }
+          });
+        }
+      },
+    );
+    return selection;
+  }
+
   // #region [Inline Node]
   public addInlineNode(
     selection: ArenaSelection,

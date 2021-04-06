@@ -1,5 +1,5 @@
 import {
-  html, css, property, TemplateResult,
+  html, css, property, TemplateResult, CSSResult,
 } from 'lit-element';
 import { ifDefined } from 'lit-html/directives/if-defined';
 import Textarena from '../Textarena';
@@ -66,30 +66,34 @@ export class ArenaFigure extends WebComponent {
     return input ? input as HTMLInputElement : undefined;
   }
 
-  static styles = css`
-    :host {
-      display: block;
-      margin: 0;
-      user-select: none;
-    }
-    .caption {
-      display: flex;
-      position: relative;
-      color: #7c7c7c;
-      font-size: 0.8em;
-    }
-    .caption slot {
-      margin-left: 1em;
-      /* color: #2c2c2c; */
-      flex: 1;
-      min-height: 100%;
-      display: block;
-    }
-    .caption-placeholder {
-      pointer-events: none;
-      font-style: italic;
-    }
-    `;
+  static get styles(): CSSResult[] {
+    return [
+      css`
+        :host {
+          display: block;
+          margin: 0;
+          user-select: none;
+        }
+        .caption {
+          display: flex;
+          position: relative;
+          color: #7c7c7c;
+          font-size: 0.8em;
+        }
+        .caption slot {
+          margin-left: 1em;
+          /* color: #2c2c2c; */
+          flex: 1;
+          min-height: 100%;
+          display: block;
+        }
+        .caption-placeholder {
+          pointer-events: none;
+          font-style: italic;
+        }
+      `,
+    ];
+  }
 
   // Render element DOM by returning a `lit-html` template.
   render(): TemplateResult {

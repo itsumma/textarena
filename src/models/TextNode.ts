@@ -23,7 +23,7 @@ export default class TextNode
 
   readonly single: false = false;
 
-  private richTextManager;
+  private richTextManager: RichTextManager;
 
   constructor(
     arena: ArenaTextInterface,
@@ -126,6 +126,10 @@ export default class TextNode
 
   public toggleFormating(name: string, start: number, end: number): void {
     this.richTextManager.toggleFormating(name, start, end);
+  }
+
+  public clearFormatings(start: number, end: number): void {
+    this.richTextManager.clearFormatings(start, end);
   }
 
   public getText(): RichTextManager {
