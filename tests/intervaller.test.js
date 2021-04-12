@@ -282,3 +282,31 @@ test('[5,15] remove [10,10]', () => {
   i.removeInterval(10, 10);
   expect(i.getIntervals()).toEqual([{ start: 5, end: 10 }, { start: 10, end: 15 }]);
 });
+
+test('[0,5] remove [0,10]', () => {
+  const i = new Intervaler();
+  i.addInterval(0, 5);
+  i.removeInterval(0, 10);
+  expect(i.getIntervals()).toEqual([]);
+});
+
+test('[0,10] remove [0,5]', () => {
+  const i = new Intervaler();
+  i.addInterval(0, 10);
+  i.removeInterval(0, 5);
+  expect(i.getIntervals()).toEqual([{ start: 5, end: 10 }]);
+});
+
+test('[5,10] remove [0,10]', () => {
+  const i = new Intervaler();
+  i.addInterval(5, 10);
+  i.removeInterval(0, 10);
+  expect(i.getIntervals()).toEqual([]);
+});
+
+test('[0,10] remove [5,10]', () => {
+  const i = new Intervaler();
+  i.addInterval(0, 10);
+  i.removeInterval(5, 10);
+  expect(i.getIntervals()).toEqual([{ start: 0, end: 5 }]);
+});

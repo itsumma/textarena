@@ -222,23 +222,19 @@ export default class Intervaler {
     const intervals: Interval[] = [];
     this.intervals.forEach((interval) => {
       // I - current interval
-      // C - current cut
-      // C includes I && C > I
-      if (interval.start > start && interval.end < end) {
+      // C - cut
+      // C includes I && C >= I
+      if (interval.start >= start && interval.end <= end) {
         return;
       }
       // I doesn't includes C
-      if (interval.start > end) {
+      if (interval.start >= end) {
         intervals.push({ start: interval.start, end: interval.end });
         return;
       }
       // I doesn't includes C
-      if (interval.end < start) {
+      if (interval.end <= start) {
         intervals.push({ start: interval.start, end: interval.end });
-        return;
-      }
-      // I includes C && I === C
-      if (interval.start === start && interval.end === end) {
         return;
       }
       // I includes C
@@ -248,12 +244,12 @@ export default class Intervaler {
         return;
       }
       // I includes C (left)
-      if (interval.start >= start && interval.start <= end) {
+      if (interval.start >= start && interval.end > end) {
         intervals.push({ start: end, end: interval.end });
         return;
       }
       // I includes C (right)
-      if (interval.end >= start && interval.end <= end) {
+      if (interval.end >= start && interval.start < start) {
         intervals.push({ start: interval.start, end: start });
       }
     });
