@@ -144,13 +144,13 @@ export class Image extends WebComponent {
     `;
   }
 
-  private onChange() {
+  protected onChange(): void {
     if (this.input?.files && this.input?.files?.length > 0) {
       this.upload(this.input.files[0]);
     }
   }
 
-  private upload(file: File) {
+  protected upload(file: File): void {
     this.loading = true;
     this.requestUpdate();
     const data = new FormData();

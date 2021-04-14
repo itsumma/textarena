@@ -332,7 +332,7 @@ export default class ArenaParser {
   protected setAttributes(node: AnyArenaNode, element: HTMLElement): void {
     element.getAttributeNames().forEach((attr) => {
       if (node.arena.allowedAttributes.includes(attr)) {
-        node.setAttribute(attr, element.getAttribute(attr) || '');
+        node.setAttribute(attr, element.getAttribute(attr) || true);
       }
     });
   }
