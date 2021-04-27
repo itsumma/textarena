@@ -140,6 +140,8 @@ export default class ArenaBrowser {
 
   protected pasteListenerInstance: ((event: ClipboardEvent) => void);
 
+  protected focusListenerInstance: ((event: FocusEvent) => void);
+
   protected changeAttributeListenerInstance: ((event: ArenaChangeAttribute) => void);
 
   protected lastSelectionStatus = false;
@@ -161,6 +163,7 @@ export default class ArenaBrowser {
     this.selectListenerInstance = this.selectListener.bind(this);
     this.copyListenerInstance = this.copyListener.bind(this);
     this.pasteListenerInstance = this.pasteListener.bind(this);
+    this.focusListenerInstance = this.focusListener.bind(this);
     this.changeAttributeListenerInstance = this.changeAttributeListener.bind(this);
     this.asm.eventManager.subscribe('turnOn', () => {
       this.editor.addEventListener('input', this.inputListenerInstance, false);
@@ -171,6 +174,7 @@ export default class ArenaBrowser {
       this.editor.addEventListener('keydown', this.keyDownListenerInstance, false);
       this.editor.addEventListener('copy', this.copyListenerInstance, false);
       this.editor.addEventListener('paste', this.pasteListenerInstance, false);
+      this.editor.addEventListener('focus', this.focusListenerInstance, false);
       this.editor.addEventListener('arena-change-attribute', this.changeAttributeListenerInstance, false);
       document.addEventListener('selectionchange', this.selectListenerInstance, false);
     });
@@ -182,6 +186,7 @@ export default class ArenaBrowser {
       this.editor.removeEventListener('keydown', this.keyDownListenerInstance);
       this.editor.removeEventListener('copy', this.copyListenerInstance);
       this.editor.removeEventListener('paste', this.pasteListenerInstance);
+      this.editor.removeEventListener('focus', this.focusListenerInstance);
       this.editor.removeEventListener('arena-change-attribute', this.changeAttributeListenerInstance);
       document.removeEventListener('selectionchange', this.selectListenerInstance);
     });
@@ -517,6 +522,11 @@ export default class ArenaBrowser {
       return;
     }
     this.insertData(clipboardData, selection);
+  }
+
+  protected focusListener(e: FocusEvent): void {
+    this.asm.logger.log('Focus event', e);
+    this.asm.creatorBar.closeList();
   }
 
   protected insertData(data: DataTransfer, selection: ArenaSelection): void {

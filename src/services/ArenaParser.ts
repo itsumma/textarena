@@ -108,6 +108,26 @@ export default class ArenaParser {
     if (htmlNode.nodeType === Node.ELEMENT_NODE) {
       const elementNode = htmlNode as HTMLElement;
       const arena = this.checkArenaMark(elementNode);
+      if (arena && arena.inline) {
+        const text = this.getText(elementNode);
+        if (!text) {
+          return [...this.insertChildren(elementNode, arenaNode, offset), true];
+        }
+        const inlineNode = text.addInlineNode(arena, 0, text.getTextLength());
+        if (!inlineNode) {
+          return [...this.insertChildren(elementNode, arenaNode, offset), true];
+        }
+        elementNode.getAttributeNames().forEach((attr) => {
+          inlineNode.setAttribute(attr, elementNode.getAttribute(attr) || '');
+        });
+        const cursor = this.asm.model.getOrCreateNodeForText(arenaNode, offset);
+
+        if (cursor) {
+          const result = cursor.node.insertText(text, cursor.offset);
+          return [result.node, result.offset, true];
+        }
+        return [arenaNode, offset, false];
+      }
       if (arena && !arena.inline) {
         if (firstNode && arena.hasText && arenaNode.hasText) {
           if (arenaNode.isEmpty()) {

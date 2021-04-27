@@ -161,8 +161,9 @@ export default class RichTextManager {
       text = this.text.slice(start, end);
       this.text = this.text.slice(0, start) + this.text.slice(end);
     }
+    const inlines = this.inlines.cut(start, end);
     const formatings = this.cutFormatings(start, end);
-    return new RichTextManager(text, formatings);
+    return new RichTextManager(text, formatings, inlines);
   }
 
   public insertFormating(name: string, start: number, end: number): void {
