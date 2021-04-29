@@ -99,6 +99,12 @@ export default class RichTextManager {
     return this.text;
   }
 
+  public setText(text: string): void {
+    if (text.length === this.text.length) {
+      this.text = text;
+    }
+  }
+
   public getTextLength(): number {
     return this.text.length;
   }
@@ -323,7 +329,8 @@ export default class RichTextManager {
       .replace(/>/g, '&gt;')
       .replace(/"/g, '&quot;')
       .replace(/'/g, '&#039;')
-      .replace(/\s\s/g, ' &nbsp;');
+      .replace(/\s\s/g, ' &nbsp;')
+      .replace(/\u00A0/, '&nbsp;');
     if (first) {
       result = result.replace(/^\s/, '&nbsp;');
     }

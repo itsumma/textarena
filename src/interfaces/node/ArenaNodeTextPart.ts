@@ -17,6 +17,8 @@ export default interface ArenaNodeTextPart {
 
   getRawText(): string;
 
+  setRawText(text: string): void;
+
   insertText(
     text: string | RichTextManager,
     offset: number,

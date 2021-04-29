@@ -1082,7 +1082,7 @@ export default class ArenaModel {
   // }
 
   /** */
-  protected runOfChildren(node: AnyArenaNode, callback: (n: AnyArenaNode) => void): void {
+  public runOfChildren(node: AnyArenaNode, callback: (n: AnyArenaNode) => void): void {
     if (node.hasChildren) {
       node.children.forEach((child) => {
         this.runOfChildren(child, callback);

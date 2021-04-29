@@ -140,6 +140,10 @@ export default class TextNode
     return this.richTextManager.getText();
   }
 
+  public setRawText(text: string): void {
+    return this.richTextManager.setText(text);
+  }
+
   public cutText(start: number, end?: number): RichTextManager {
     return this.richTextManager.cutText(start, end);
   }

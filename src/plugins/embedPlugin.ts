@@ -52,6 +52,7 @@ const createElemEmbed = (href: string) => {
     }
     return {
       type: 'youtube',
+      border: true,
       href: src,
     };
   }

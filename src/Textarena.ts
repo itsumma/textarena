@@ -424,6 +424,7 @@ class Textarena {
         this.options.onChange(this.getData());
       }
     });
+    this.asm.eventManager.fire('ready');
     if (this.options.onReady) {
       this.options.onReady(this.getData());
     }
