@@ -404,7 +404,7 @@ export default class ArenaBrowser {
             if (sel) {
               this.asm.history.save(sel);
             }
-            this.asm.eventManager.fire({ name: 'modelChanged', data: sel });
+            this.asm.eventManager.fire('modelChanged', sel);
           }
           break;
         }
@@ -418,7 +418,7 @@ export default class ArenaBrowser {
     this.asm.logger.log('KeyUp event', e);
     const modifiersSum = this.getModifiersSum(e);
     this.asm.eventManager.fire('moveCursor');
-    this.asm.eventManager.fire({ name: 'keyUp', data: modifiersSum });
+    this.asm.eventManager.fire('keyUp', modifiersSum);
   }
 
   protected keyPressListener(e: KeyboardEvent): void {
@@ -447,7 +447,7 @@ export default class ArenaBrowser {
       return;
     }
     if (event instanceof ModifiersEvent) {
-      this.asm.eventManager.fire({ name: 'keyDown', data: event.sum });
+      this.asm.eventManager.fire('keyDown', event.sum);
       return;
     }
     if (event instanceof CutEvent) {
@@ -456,7 +456,7 @@ export default class ArenaBrowser {
       if (selection) {
         const newSelection = this.asm.model.removeSelection(selection, selection.direction);
         this.asm.history.save(newSelection);
-        this.asm.eventManager.fire({ name: 'modelChanged', data: newSelection });
+        this.asm.eventManager.fire('modelChanged', newSelection);
       }
     }
     if (event instanceof CommandEvent) {
@@ -479,7 +479,7 @@ export default class ArenaBrowser {
         if (result) {
           this.asm.history.save(newSelection);
         }
-        this.asm.eventManager.fire({ name: 'modelChanged', data: newSelection });
+        this.asm.eventManager.fire('modelChanged', newSelection);
       }
     }
     if (event instanceof RemoveEvent) {
@@ -487,7 +487,7 @@ export default class ArenaBrowser {
       if (selection) {
         const newSelection = this.asm.model.removeSelection(selection, event.direction);
         this.asm.history.save(newSelection);
-        this.asm.eventManager.fire({ name: 'modelChanged', data: newSelection });
+        this.asm.eventManager.fire('modelChanged', newSelection);
       }
     }
   }
@@ -550,7 +550,7 @@ export default class ArenaBrowser {
       this.asm.logger.log(`Insert html: «${html}»`);
       const newSelection = this.asm.model.insertHtml(selection, html);
       this.asm.history.save(newSelection);
-      this.asm.eventManager.fire({ name: 'modelChanged', data: newSelection });
+      this.asm.eventManager.fire('modelChanged', newSelection);
     } else if (types.includes('text/plain')) {
       const text = data.getData('text/plain');
       if (!text) {
@@ -560,7 +560,7 @@ export default class ArenaBrowser {
       // TODO middleware
       const newSelection = this.asm.model.insertTextToModel(selection, text);
       this.asm.history.save(newSelection);
-      this.asm.eventManager.fire({ name: 'modelChanged', data: newSelection });
+      this.asm.eventManager.fire('modelChanged', newSelection);
     }
   }
 
@@ -591,7 +591,7 @@ export default class ArenaBrowser {
         if (sel) {
           this.asm.history.save(sel);
         }
-        this.asm.eventManager.fire({ name: 'modelChanged', data: sel });
+        this.asm.eventManager.fire('modelChanged', sel);
       }
     }
   }

@@ -164,6 +164,9 @@ class Textarena {
     if (options.onReady !== undefined) {
       this.setOnReady(options.onReady);
     }
+    if (options.onEvent !== undefined) {
+      this.setOnEvent(options.onEvent);
+    }
     if (options.plugins) {
       this.setPlugins(options.plugins);
     }
@@ -230,6 +233,10 @@ class Textarena {
 
   public setOnReady(onReady: ChangeDataListener): void {
     this.options.onReady = onReady;
+  }
+
+  public setOnEvent(onEvent: ArenaHandler): void {
+    this.options.onEvent = onEvent;
   }
 
   public setPlugins(
@@ -418,10 +425,15 @@ class Textarena {
   protected start(): void {
     this.asm.eventManager.subscribe('modelChanged', (e) => {
       if (typeof e === 'object') {
-        this.asm.view.render(e.data instanceof ArenaSelection ? e.data : undefined);
+        this.asm.view.render(e.detail instanceof ArenaSelection ? e.detail : undefined);
       }
       if (this.options.onChange) {
         this.options.onChange(this.getData());
+      }
+    });
+    this.asm.eventManager.subscribe('*', (e) => {
+      if (this.options.onEvent) {
+        this.options.onEvent(e);
       }
     });
     this.asm.eventManager.fire('ready');

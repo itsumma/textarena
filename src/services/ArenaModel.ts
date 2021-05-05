@@ -505,6 +505,7 @@ export default class ArenaModel {
   public removeNodeById(id: string): ArenaCursorAncestor | undefined {
     const node = this.getNodeById(id);
     if (node && node.hasParent) {
+      this.asm.eventManager.fire('removeNode', node);
       return node.remove();
     }
     return undefined;
@@ -531,6 +532,7 @@ export default class ArenaModel {
             return newSelection;
           }
           if (nextSibling.single) {
+            this.asm.eventManager.fire('removeNode', nextSibling);
             nextSibling.remove();
             return newSelection;
           }
@@ -538,10 +540,12 @@ export default class ArenaModel {
           // const cursor = nextSibling.getTextCursor(0);
           if (cursor) {
             if (node.getTextLength() === 0) {
+              this.asm.eventManager.fire('removeNode', node);
               node.remove();
               newSelection.setCursor(cursor);
             } else {
               node.insertText(cursor.node.cutText(0), offset);
+              this.asm.eventManager.fire('removeNode', node);
               cursor.node.remove();
             }
           }
@@ -570,10 +574,12 @@ export default class ArenaModel {
               return newSelection;
             }
             if (prevSibling.single) {
+              this.asm.eventManager.fire('removeNode', prevSibling);
               prevSibling.remove();
               return newSelection;
             }
             if (prevSibling.hasText && prevSibling.getTextLength() === 0) {
+              this.asm.eventManager.fire('removeNode', prevSibling);
               prevSibling.remove();
               return newSelection;
             }
@@ -583,6 +589,7 @@ export default class ArenaModel {
               if (node.getTextLength() !== 0) {
                 cursor.node.insertText(node.getText(), cursor.offset);
               }
+              this.asm.eventManager.fire('removeNode', node);
               node.remove();
               newSelection.setCursor(cursor);
             }
@@ -607,7 +614,10 @@ export default class ArenaModel {
         }
       },
     );
-    toRemove.forEach((node) => node.remove());
+    toRemove.forEach((node) => {
+      this.asm.eventManager.fire('removeNode', node);
+      node.remove();
+    });
     const {
       startNode,
       startOffset,
@@ -615,8 +625,10 @@ export default class ArenaModel {
     } = newSelection;
     if (startNode !== endNode) {
       if (startNode.getTextLength() === 0) {
+        this.asm.eventManager.fire('removeNode', startNode);
         startNode.remove();
         if (endNode.getTextLength() === 0) {
+          this.asm.eventManager.fire('removeNode', endNode);
           const aCursor = endNode.remove();
           const cursor = this.getOrCreateNodeForText(aCursor.node, aCursor.offset);
           if (!cursor) {
@@ -631,6 +643,7 @@ export default class ArenaModel {
           endNode.getText(),
           startOffset,
         );
+        this.asm.eventManager.fire('removeNode', endNode);
         endNode.remove();
         newSelection.setBoth(startNode, startOffset);
       }

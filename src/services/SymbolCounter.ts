@@ -73,6 +73,6 @@ export default class SymbolCounter {
     if (sel) {
       this.asm.history.save(sel);
     }
-    this.asm.eventManager.fire({ name: 'modelChanged', data: sel });
+    this.asm.eventManager.fire('modelChanged', sel);
   }
 }

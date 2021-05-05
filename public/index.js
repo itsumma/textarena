@@ -120,6 +120,7 @@
         htmlElem.innerText = data.html;
       }
     }, 500);
+    const onEvent = (e) => console.log(e);
 
     const textarena = new Textarena(
       elem,
@@ -127,6 +128,7 @@
         editable: true,
         debug: true,
         onChange,
+        onEvent,
         onReady: onChange,
         initData,
       },
