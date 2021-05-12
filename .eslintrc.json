@@ -40,7 +40,8 @@
     //     "avoidEscape": true
     //   }
     // ],
-    // "implicit-arrow-linebreak": [0]
+    "no-underscore-dangle": "off",
+    "implicit-arrow-linebreak": [0],
     "semi": "off",
     "@typescript-eslint/semi": ["error"]
   },

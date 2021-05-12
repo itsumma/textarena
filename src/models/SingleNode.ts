@@ -1,75 +1,73 @@
-import { TemplateResult } from 'lit-html';
-import ArenaNodeAncestor from '../interfaces/ArenaNodeAncestor';
-import ArenaNodeScion from '../interfaces/ArenaNodeScion';
-import Arena from '../interfaces/Arena';
-import ArenaNodeText from '../interfaces/ArenaNodeText';
-import ArenaCursor from '../interfaces/ArenaCursor';
+import { html, TemplateResult } from 'lit-html';
+import ArenaCursorText from '../interfaces/ArenaCursorText';
 import RichTextManager from '../helpers/RichTextManager';
-import ArenaCursorAncestor from '../interfaces/ArenaCursorAncestor';
-import ArenaSingle from '../interfaces/ArenaSingle';
 import { ArenaFormatings } from '../interfaces/ArenaFormating';
+import AbstractNode from './AbstractNode';
+import { ArenaSingleInterface } from '../interfaces/Arena';
+import { ArenaNodeSingle } from '../interfaces/ArenaNode';
 
-export default class SingleNode implements ArenaNodeScion {
+export default class SingleNode
+  extends AbstractNode<ArenaSingleInterface>
+  implements ArenaNodeSingle {
   readonly hasParent: true = true;
 
-  constructor(
-    public arena: ArenaSingle,
-    public parent: ArenaNodeAncestor,
-  ) {
-  }
+  readonly hasChildren: false = false;
 
-  public getIndex(): number {
-    return this.parent.children.indexOf(this);
-  }
+  readonly hasText: false = false;
 
-  public isLastChild(): boolean {
-    return this.parent.children.indexOf(this) === this.parent.children.length - 1;
-  }
+  readonly inline: false = false;
 
-  public getParent(): ArenaCursorAncestor {
-    return { node: this.parent, offset: this.getIndex() };
-  }
+  readonly single: true = true;
 
-  public setParent(parent: ArenaNodeAncestor | (ArenaNodeAncestor & ArenaNodeScion)): void {
-    this.parent = parent;
-  }
-
-  public getUnprotectedParent(): ArenaCursorAncestor | undefined {
-    if (this.parent.arena.protected) {
-      return this.parent.getUnprotectedParent();
+  public getTemplate(): TemplateResult | string {
+    const id = this.getGlobalIndex();
+    if (this.parent.protected) {
+      return this.arena.getTemplate(undefined, id, this.attributes);
     }
-    return { node: this.parent, offset: this.getIndex() };
+    const content = this.arena.getTemplate(undefined, '', this.attributes);
+    const removeButton = html`<textarena-remove node-id="${id}">
+    <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+    viewBox="0 0 512.001 512.001" xml:space="preserve">
+    <g>
+      <path d="M294.111,256.001L504.109,46.003c10.523-10.524,10.523-27.586,0-38.109c-10.524-10.524-27.587-10.524-38.11,0L256,217.892
+        L46.002,7.894c-10.524-10.524-27.586-10.524-38.109,0s-10.524,27.586,0,38.109l209.998,209.998L7.893,465.999
+        c-10.524,10.524-10.524,27.586,0,38.109c10.524,10.524,27.586,10.523,38.109,0L256,294.11l209.997,209.998
+        c10.524,10.524,27.587,10.523,38.11,0c10.523-10.524,10.523-27.586,0-38.109L294.111,256.001z" fill="currentColor"/>
+    </g>
+    </svg>
+    </textarena-remove>`;
+    return html`
+      <textarena-node arena-id="${id}">${removeButton}${content}</textarena-node>
+    `;
   }
 
-  public getGlobalIndex(): string {
-    return `${this.parent.getGlobalIndex()}.${this.getIndex().toString()}`;
+  public getPublicHtml(frms: ArenaFormatings): string {
+    return this.arena.getPublicHtml(undefined, this.attributes, this, frms);
+  }
+
+  public getOutputHtml(): string {
+    return this.arena.getOutputTemplate('', this.attributes);
+  }
+
+  public getPlainText(): string {
+    return '';
   }
 
   public insertText(
     text: string | RichTextManager,
-  ): ArenaCursor {
+  ): ArenaCursorText {
     return this.parent.insertText(text, this.getIndex() + 1);
   }
 
-  public getTextCursor(): ArenaCursor {
-    return this.parent.getTextCursor(this.getIndex());
+  public getTextCursor(): ArenaCursorText | undefined {
+    return undefined;
   }
 
-  public createAndInsertNode(
-    arena: Arena,
-  ): ArenaNodeScion | ArenaNodeText | undefined {
-    return this.parent.createAndInsertNode(arena, this.getIndex() + 1);
-  }
-
-  public remove(): ArenaCursorAncestor {
-    return this.parent.removeChild(this.getIndex());
-  }
-
-  public getHtml(): TemplateResult | string {
-    return this.arena.getTemplate(undefined, this.getGlobalIndex());
-  }
-
-  public getOutputHtml(_frms: ArenaFormatings, deep = 0): string {
-    return this.arena.getOutputTemplate('', deep);
+  public clone(): ArenaNodeSingle {
+    return new SingleNode(
+      this.arena,
+      this.id,
+      this.attributes,
+    );
   }
 }

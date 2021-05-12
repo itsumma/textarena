@@ -1,4 +1,5 @@
 import ArenaServiceManager from './ArenaServiceManager';
+import ArenaEvent from '../helpers/ArenaEvent';
 
 export type MediaEvent = {
   name: string,
@@ -6,10 +7,10 @@ export type MediaEvent = {
   data?: unknown,
 };
 
-type Handler = (event?: string | MediaEvent) => void;
+export type ArenaHandler = (event: ArenaEvent) => void;
 
 type Handlers = {
-  [key: string]: Handler[];
+  [key: string]: ArenaHandler[];
 };
 
 export default class EventManager {
@@ -18,15 +19,18 @@ export default class EventManager {
   constructor(private asm: ArenaServiceManager) {
   }
 
-  fire(event: string | MediaEvent): void {
-    this.asm.logger.log(`fire:  ${event}`);
-    const eventName = typeof event === 'string' ? event : event.name;
-    if (this.handlers[eventName]) {
-      this.handlers[eventName].map((handler) => handler(event));
+  fire(name: string, detail?: unknown): void {
+    const event = new ArenaEvent(name, detail);
+    this.asm.logger.log('fire', event);
+    if (this.handlers[name]) {
+      this.handlers[name].map((handler) => handler(event));
+    }
+    if (this.handlers['*']) {
+      this.handlers['*'].map((handler) => handler(event));
     }
   }
 
-  subscribe(event: string, handler: Handler): void {
+  subscribe(event: string, handler: ArenaHandler): void {
     if (!this.handlers[event]) {
       this.handlers[event] = [];
     }

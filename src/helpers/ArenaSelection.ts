@@ -1,5 +1,5 @@
-import ArenaNodeText from '../interfaces/ArenaNodeText';
-import ArenaCursor from '../interfaces/ArenaCursor';
+import ArenaCursorText from '../interfaces/ArenaCursorText';
+import { ArenaNodeText } from '../interfaces/ArenaNode';
 
 export type ArenaSelectionDiection = 'forward' | 'backward';
 
@@ -11,6 +11,16 @@ export default class ArenaSelection {
     public endOffset: number,
     public direction: ArenaSelectionDiection,
   ) {
+  }
+
+  clone(): ArenaSelection {
+    return new ArenaSelection(
+      this.startNode,
+      this.startOffset,
+      this.endNode,
+      this.endOffset,
+      this.direction,
+    );
   }
 
   setStartNode(
@@ -38,14 +48,14 @@ export default class ArenaSelection {
     return this.setStartNode(node, offset).setEndNode(node, offset);
   }
 
-  getCursor(): ArenaCursor {
+  getCursor(): ArenaCursorText {
     return {
       node: this.direction === 'forward' ? this.endNode : this.startNode,
       offset: this.direction === 'forward' ? this.endOffset : this.startOffset,
     };
   }
 
-  setCursor(cursor: ArenaCursor): ArenaSelection {
+  setCursor(cursor: ArenaCursorText): ArenaSelection {
     return this.setBoth(cursor.node, cursor.offset);
   }
 
@@ -88,13 +98,20 @@ export default class ArenaSelection {
   }
 
   trim(): ArenaSelection {
+    if (this.isCollapsed()) {
+      return this;
+    }
     const textA = this.startNode.getRawText().slice(this.startOffset);
     const matchA = textA.match(/^( +)/g);
     if (matchA) {
       const len = matchA[0].length;
-      this.startOffset += len;
+      if (this.startNode !== this.endNode) {
+        this.startOffset += len;
+      } else {
+        this.startOffset = Math.min(this.startOffset + len, this.endOffset);
+      }
     }
-    const textB = this.startNode.getRawText().slice(0, this.startOffset);
+    const textB = this.endNode.getRawText().slice(0, this.endOffset);
     const matchB = textB.match(/( +)$/g);
     if (matchB) {
       const len = matchB[0].length;

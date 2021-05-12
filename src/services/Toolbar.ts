@@ -1,9 +1,9 @@
 import ToolbarOptions from '../interfaces/ToolbarOptions';
 import ToolOptions from '../interfaces/ToolOptions';
-import ArenaNode from '../interfaces/ArenaNode';
 import ElementHelper from '../helpers/ElementHelper';
 import { MediaEvent } from './EventManager';
 import ArenaServiceManager from './ArenaServiceManager';
+import { ChildArenaNode } from '../interfaces/ArenaNode';
 
 function getFocusElement(): HTMLElement | undefined {
   const s = window.getSelection();
@@ -20,7 +20,7 @@ function getFocusElement(): HTMLElement | undefined {
 type Tool = {
   elem: ElementHelper;
   options: ToolOptions;
-  modifiers: number;
+  modifiers?: number;
 };
 
 export default class Toolbar {
@@ -82,19 +82,22 @@ export default class Toolbar {
           throw Error(`Tool "${toolOptions}" not found`);
         }
         const options = this.availableTools[toolOptions];
-        const elem = new ElementHelper('DIV', 'textarena-toolbar__item');
-        const [modifiers] = this.asm.commandManager.parseShortcut(options.shortcut);
-        const tool = {
+        const elem = new ElementHelper('BUTTON', 'textarena-toolbar__item');
+        const tool: Tool = {
           elem,
           options,
-          modifiers,
         };
+        if (options.shortcut) {
+          const [modifiers] = this.asm.commandManager.parseShortcut(options.shortcut);
+          tool.modifiers = modifiers;
+        }
         elem.onClick((e: Event) => {
           e.preventDefault();
           this.executeTool(tool);
         });
         if (options.icon) {
-          elem.setInnerHTML(options.icon);
+          const span = new ElementHelper('DIV', 'textarena-toolbar__item-icon', options.icon);
+          elem.appendChild(span);
         }
         if (options.hint) {
           const keyElem = new ElementHelper('DIV', 'textarena-toolbar__hint', options.hint);
@@ -120,7 +123,7 @@ export default class Toolbar {
     }
     if (typeof event === 'object' && typeof event.data === 'number') {
       this.tools.forEach((tool: Tool) => {
-        if (tool.modifiers === event.data) {
+        if (tool.modifiers && tool.modifiers === event.data) {
           tool.elem.addClass('textarena-toolbar__item_show-hint');
         } else {
           tool.elem.removeClass('textarena-toolbar__item_show-hint');
@@ -143,17 +146,20 @@ export default class Toolbar {
       status[name] = !!checkStatus;
     });
     if (sel) {
-      this.asm.model.runNodesOfSelection(sel, (node: ArenaNode, start?: number, end?: number) => {
-        this.tools.forEach(({ options: { name, checkStatus } }: Tool) => {
-          if (status[name]) {
-            if (!checkStatus) {
-              status[name] = false;
-            } else {
-              status[name] = checkStatus(node, start, end);
+      this.asm.model.runNodesOfSelection(
+        sel,
+        (node: ChildArenaNode, start?: number, end?: number) => {
+          this.tools.forEach(({ options: { name, checkStatus } }: Tool) => {
+            if (status[name]) {
+              if (!checkStatus) {
+                status[name] = false;
+              } else {
+                status[name] = checkStatus(node, start, end);
+              }
             }
-          }
-        });
-      });
+          });
+        },
+      );
     }
     this.tools.forEach(({ elem, options: { name } }: Tool) => {
       if (status[name]) {
@@ -256,6 +262,9 @@ export default class Toolbar {
   private hide(): void {
     this.elem.css({
       display: 'none',
+    });
+    this.tools.forEach((tool: Tool) => {
+      tool.elem.removeClass('textarena-toolbar__item_show-hint');
     });
     this.showed = false;
   }

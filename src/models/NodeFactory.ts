@@ -1,21 +1,69 @@
-import Arena from '../interfaces/Arena';
-import ArenaNodeAncestor from '../interfaces/ArenaNodeAncestor';
-import ArenaNodeScion from '../interfaces/ArenaNodeScion';
 import MediatorNode from './MediatorNode';
-import RichNode from './RichNode';
+import TextNode from './TextNode';
+import RootNode from './RootNode';
 import SingleNode from './SingleNode';
+import {
+  ArenaInlineInterface, ArenaRootInterface, ChildArena,
+} from '../interfaces/Arena';
+import {
+  ArenaNodeInline, ArenaNodeRoot, ChildArenaNode,
+} from '../interfaces/ArenaNode';
+import InlineNode from './InlineNode';
+import NodeRegistry from '../helpers/NodeRegistry';
+import ArenaAttributes from '../interfaces/ArenaAttributes';
 
 export default class NodeFactory {
-  static createNode(arena: Arena, parent: ArenaNodeAncestor): ArenaNodeScion {
-    if ('allowText' in arena) {
-      return new RichNode(arena, parent);
+  static createRootNode(arena: ArenaRootInterface): ArenaNodeRoot {
+    return new RootNode(arena);
+  }
+
+  static createChildNode(
+    arena: ChildArena,
+    registry: NodeRegistry,
+    isNew = false,
+    content?: string,
+  ): ChildArenaNode {
+    if (arena.hasChildren) {
+      let children = [];
+      if (arena.protected) {
+        children = arena.protectedChildren.map((item) => {
+          let childArena;
+          let attributes: ArenaAttributes = {};
+          let childContent: string | undefined;
+          if (Array.isArray(item)) {
+            [childArena, attributes, childContent] = item;
+          } else {
+            childArena = item;
+          }
+          const node = this.createChildNode(childArena, registry, isNew, childContent);
+          node.setAttributes(attributes);
+          return node;
+        });
+      } else if (isNew && content && arena.arenaForText) {
+        const node = this.createChildNode(arena.arenaForText, registry, isNew, content);
+        children.push(node);
+      }
+      const id = registry.generateId();
+      const node = new MediatorNode(arena, id, children);
+      registry.set(id, node);
+      return node;
     }
-    if ('single' in arena) {
-      return new SingleNode(arena, parent);
+    if (arena.hasText) {
+      const id = registry.generateId();
+      const node = new TextNode(arena, id, {}, isNew ? content : undefined);
+      registry.set(id, node);
+      return node;
     }
-    if ('hasChildren' in arena) {
-      return new MediatorNode(arena, parent);
+    if (arena.single) {
+      const id = registry.generateId();
+      const node = new SingleNode(arena, id);
+      registry.set(id, node);
+      return node;
     }
     throw new Error('Cant create Node');
+  }
+
+  static createInlineNode(arena: ArenaInlineInterface): ArenaNodeInline {
+    return new InlineNode(arena);
   }
 }

@@ -4,11 +4,13 @@ import ElementHelper from '../helpers/ElementHelper';
 import CreatorBarOptions from '../interfaces/CreatorBarOptions';
 import CreatorOptions from '../interfaces/CreatorOptions';
 import ArenaServiceManager from './ArenaServiceManager';
+import { ArenaNodeText } from '../interfaces/ArenaNode';
 
 type Creator = {
   elem: ElementHelper;
   options: CreatorOptions;
-  modifiers: number;
+  modifiers?: number;
+  show: boolean;
 };
 
 export default class CreatorBar {
@@ -17,6 +19,8 @@ export default class CreatorBar {
   elem: ElementHelper;
 
   list: ElementHelper;
+
+  buttonWrapper: ElementHelper;
 
   availableCreators: {
     [key: string]: CreatorOptions,
@@ -37,9 +41,11 @@ export default class CreatorBar {
   constructor(
     private asm: ArenaServiceManager,
   ) {
-    this.elem = new ElementHelper('DIV', 'textarena-creator');
+    this.elem = new ElementHelper('ARENA-CREATOR', 'textarena-creator');
+    this.elem.setContentEditable(false);
     this.elem.onClick(() => {
       this.closeList();
+      this.asm.textarena.getEditorElement().focus();
     });
     this.list = new ElementHelper('DIV', 'textarena-creator__list');
     this.hide();
@@ -48,6 +54,7 @@ export default class CreatorBar {
       e.stopPropagation();
       if (this.active) {
         this.closeList();
+        this.asm.textarena.getEditorElement().focus();
       } else {
         this.openList();
       }
@@ -62,7 +69,9 @@ export default class CreatorBar {
       'textarena-creator__placeholder',
       // `Введите текст или ${altKey}-Q`,
     );
-    this.elem.appendChild(createButton);
+    this.buttonWrapper = new ElementHelper('DIV', 'textarena-creator__create-button-wrapper');
+    this.buttonWrapper.appendChild(createButton);
+    this.elem.appendChild(this.buttonWrapper);
     this.elem.appendChild(this.list);
     this.elem.appendChild(placeholder);
     this.asm.textarena.getContainerElement().appendChild(this.getElem());
@@ -100,24 +109,33 @@ export default class CreatorBar {
         }
         const options = this.availableCreators[name];
         const elem = new ElementHelper('BUTTON', 'textarena-creator__item');
-        const [modifiers] = this.asm.commandManager.parseShortcut(options.shortcut);
+        const creator: Creator = {
+          elem,
+          options,
+          show: true,
+        };
+        if (options.shortcut) {
+          const [modifiers] = this.asm.commandManager.parseShortcut(options.shortcut);
+          creator.modifiers = modifiers;
+        }
         elem.onClick((e) => {
           e.preventDefault();
           this.executeTool(options);
         });
-        if (options.icon) {
-          elem.setInnerHTML(options.icon);
+        if (options.icon || options.title) {
+          const icon = new ElementHelper(
+            'DIV',
+            'textarena-creator__item-icon',
+            options.icon || options.title,
+          );
+          elem.appendChild(icon);
         }
         if (options.hint) {
           const keyElem = new ElementHelper('DIV', 'textarena-creator__hint', options.hint);
           elem.appendChild(keyElem);
         }
         this.list.append(elem);
-        this.creators.push({
-          elem,
-          options,
-          modifiers,
-        });
+        this.creators.push(creator);
       });
     }
     this.enabled = !!creatorBarOptions.enabled;
@@ -150,7 +168,8 @@ export default class CreatorBar {
       && selection.startNode.getTextLength() === 0) {
       const target = this.asm.view.findElementById(selection.startNode.getGlobalIndex());
       if (target) {
-        this.show(target as HTMLElement);
+        const { node } = selection.getCursor();
+        this.show(node, target as HTMLElement);
         return;
       }
     }
@@ -164,7 +183,49 @@ export default class CreatorBar {
 
   private keyDownListener(e: KeyboardEvent): void {
     const modifiersSum = this.asm.browser.getModifiersSum(e);
-    this.showHints(modifiersSum);
+    if (this.showed && this.active) {
+      if (modifiersSum === 0 && e.code === 'ArrowRight') {
+        this.activeCreator();
+      }
+      if (modifiersSum === 0 && e.code === 'ArrowLeft') {
+        this.activeCreator(false);
+      }
+      if (modifiersSum === 0 && e.code === 'Escape') {
+        this.closeList();
+        this.asm.textarena.getEditorElement().focus();
+      }
+      if (this.asm.browser.isModificationEvent(e)) {
+        e.preventDefault();
+        this.showHints(modifiersSum);
+      } else if (modifiersSum !== 0 && e.code) {
+        this.asm.browser.keyDownListener(e);
+        this.asm.textarena.getEditorElement().focus();
+      }
+    }
+  }
+
+  private activeCreator(right = true) {
+    const activeCreator = this.creators.find(
+      (some) => some.elem.getElem() === document.activeElement,
+    );
+    const creators = this.creators.filter((creator) => creator.show);
+    const len = creators.length;
+    if (activeCreator) {
+      const index = creators.indexOf(activeCreator);
+      if (right) {
+        if (index === len - 1) {
+          creators[0].elem.focus();
+        } else {
+          creators[index + 1].elem.focus();
+        }
+      } else if (index === 0) {
+        creators[len - 1].elem.focus();
+      } else {
+        creators[index - 1].elem.focus();
+      }
+    } else if (len > 0) {
+      creators[0].elem.focus();
+    }
   }
 
   private executeTool(options: CreatorOptions): void {
@@ -173,16 +234,45 @@ export default class CreatorBar {
     this.hide();
   }
 
+  private canShow(node: ArenaNodeText): boolean {
+    let result = false;
+    this.creators.forEach((creator) => {
+      const { elem, options: { canShow } } = creator;
+      const show = canShow ? canShow(node) : true;
+      // eslint-disable-next-line no-param-reassign
+      creator.show = show;
+      if (show) {
+        result = true;
+        elem.css({
+          display: 'block',
+        });
+      } else {
+        elem.css({
+          display: 'none',
+        });
+      }
+    });
+    return result;
+  }
+
   getElem(): HTMLElement {
     return this.elem.getElem();
   }
 
-  show(target: HTMLElement): void {
-    this.showed = true;
-    this.elem.css({
-      display: 'flex',
-      top: `${target.offsetTop}px`,
-    });
+  show(node: ArenaNodeText, target: HTMLElement): void {
+    if (this.canShow(node)) {
+      // target.appendChild(this.elem.getElem());
+      this.showed = true;
+      this.buttonWrapper.css({
+        height: `${target.offsetHeight}px`,
+      });
+      this.elem.css({
+        display: 'flex',
+        top: `${target.offsetTop}px`,
+      });
+    } else if (this.showed) {
+      this.hide();
+    }
     this.closeList();
   }
 
@@ -207,6 +297,9 @@ export default class CreatorBar {
   closeList(): void {
     this.active = false;
     this.elem.removeClass('textarena-creator_active');
-    this.asm.textarena.getEditorElement().focus();
+    this.creators.forEach((tool: Creator) => {
+      tool.elem.removeClass('textarena-creator__item_show-hint');
+    });
+    // this.asm.textarena.getEditorElement().focus();
   }
 }

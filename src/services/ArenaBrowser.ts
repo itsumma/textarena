@@ -5,7 +5,7 @@ import BrowserCommandEvent from '../events/BrowserCommandEvent';
 import CommandEvent from '../events/CommandEvent';
 import CopyEvent from '../events/CopyEvent';
 import CutEvent from '../events/CutEvent';
-import InputEvent from '../events/InputEvent';
+import ArenaInputEvent from '../events/ArenaInputEvent';
 import ModifiersEvent from '../events/ModifiersEvent';
 import PasteEvent from '../events/PasteEvent';
 import RemoveEvent from '../events/RemoveEvent';
@@ -15,6 +15,24 @@ import ElementHelper from '../helpers/ElementHelper';
 
 import { keyboardKeys, Modifiers } from './ArenaCommandManager';
 import ArenaServiceManager from './ArenaServiceManager';
+import ArenaSelection from '../helpers/ArenaSelection';
+import ArenaAttributes from '../interfaces/ArenaAttributes';
+
+function isMac(): boolean {
+  return window.navigator.platform.includes('Mac');
+}
+
+type ArenaChangeAttribute = CustomEvent<{
+  attrs: ArenaAttributes,
+  target: HTMLElement,
+}>;
+
+declare global {
+  interface GlobalEventHandlersEventMap {
+    'arena-change-attribute': ArenaChangeAttribute;
+    'beforeinput': InputEvent;
+  }
+}
 
 const modifiersKeys = {
   Shift: 16,
@@ -106,7 +124,7 @@ function isDescendant(
 export default class ArenaBrowser {
   protected inputListenerInstance: ((e: Event) => void);
 
-  // protected beforeinputListenerInstance: ((e: Event) => void);
+  protected beforeinputListenerInstance: ((e: InputEvent) => void);
 
   protected mouseUpListenerInstance: ((e: MouseEvent) => void);
 
@@ -118,7 +136,13 @@ export default class ArenaBrowser {
 
   protected selectListenerInstance: ((e: Event) => void);
 
+  protected copyListenerInstance: ((event: ClipboardEvent) => void);
+
   protected pasteListenerInstance: ((event: ClipboardEvent) => void);
+
+  protected focusListenerInstance: ((event: FocusEvent) => void);
+
+  protected changeAttributeListenerInstance: ((event: ArenaChangeAttribute) => void);
 
   protected lastSelectionStatus = false;
 
@@ -131,19 +155,27 @@ export default class ArenaBrowser {
   ) {
     this.editor = this.asm.textarena.getEditorElement();
     this.inputListenerInstance = this.inputListener.bind(this);
+    this.beforeinputListenerInstance = this.beforeinputListener.bind(this);
     this.mouseUpListenerInstance = this.mouseUpListener.bind(this);
     this.keyUpListenerInstance = this.keyUpListener.bind(this);
     this.keyPressListenerInstance = this.keyPressListener.bind(this);
     this.keyDownListenerInstance = this.keyDownListener.bind(this);
     this.selectListenerInstance = this.selectListener.bind(this);
+    this.copyListenerInstance = this.copyListener.bind(this);
     this.pasteListenerInstance = this.pasteListener.bind(this);
+    this.focusListenerInstance = this.focusListener.bind(this);
+    this.changeAttributeListenerInstance = this.changeAttributeListener.bind(this);
     this.asm.eventManager.subscribe('turnOn', () => {
       this.editor.addEventListener('input', this.inputListenerInstance, false);
+      this.editor.addEventListener('beforeinput', this.beforeinputListenerInstance, false);
       this.editor.addEventListener('mouseup', this.mouseUpListenerInstance, false);
       this.editor.addEventListener('keyup', this.keyUpListenerInstance, false);
       this.editor.addEventListener('keypress', this.keyPressListenerInstance, false);
       this.editor.addEventListener('keydown', this.keyDownListenerInstance, false);
+      this.editor.addEventListener('copy', this.copyListenerInstance, false);
       this.editor.addEventListener('paste', this.pasteListenerInstance, false);
+      this.editor.addEventListener('focus', this.focusListenerInstance, false);
+      this.editor.addEventListener('arena-change-attribute', this.changeAttributeListenerInstance, false);
       document.addEventListener('selectionchange', this.selectListenerInstance, false);
     });
     this.asm.eventManager.subscribe('turnOff', () => {
@@ -152,7 +184,10 @@ export default class ArenaBrowser {
       this.editor.removeEventListener('keyup', this.keyUpListenerInstance);
       this.editor.removeEventListener('keypress', this.keyPressListenerInstance);
       this.editor.removeEventListener('keydown', this.keyDownListenerInstance);
+      this.editor.removeEventListener('copy', this.copyListenerInstance);
       this.editor.removeEventListener('paste', this.pasteListenerInstance);
+      this.editor.removeEventListener('focus', this.focusListenerInstance);
+      this.editor.removeEventListener('arena-change-attribute', this.changeAttributeListenerInstance);
       document.removeEventListener('selectionchange', this.selectListenerInstance);
     });
   }
@@ -164,19 +199,24 @@ export default class ArenaBrowser {
       altKey,
       metaKey,
     } = e;
+    const MACOS = isMac();
     const modifiers = {
       Shift: shiftKey,
-      Ctrl: ctrlKey,
+      Ctrl: MACOS ? metaKey : ctrlKey,
       Alt: altKey,
-      Meta: metaKey,
+      Meta: MACOS ? ctrlKey : metaKey,
     };
     return this.asm.commandManager.getModifiersSum(modifiers);
+  }
+
+  public isModificationEvent(e: KeyboardEvent): boolean {
+    return !!modifiersCodes[e.keyCode];
   }
 
   protected checkSelection(): void {
     this.asm.view.resetCurrentSelection();
     const s = window.getSelection();
-    if (!s) {
+    if (!s || !s.rangeCount) {
       return;
     }
     if (!s.anchorNode || !isDescendant(this.editor, s.anchorNode)) {
@@ -216,20 +256,20 @@ export default class ArenaBrowser {
     } = e;
     const modifiersSum = this.getModifiersSum(e);
     const character = e.key;
-    if (modifiersCodes[keyCode]) {
+    if (this.isModificationEvent(e)) {
       return new ModifiersEvent(e, modifiersSum);
     }
     if (reservedCodes[keyCode]) {
       return new BrowserCommandEvent(e);
     }
-    if (code === 'KeyD' && modifiersSum === Modifiers.Ctrl) {
-      return new BrowserCommandEvent(e);
-    }
+    // if (code === 'KeyD' && modifiersSum === Modifiers.Ctrl) {
+    //   return new BrowserCommandEvent(e);
+    // }
     if (code === 'KeyF' && modifiersSum === Modifiers.Ctrl) {
       return new BrowserCommandEvent(e);
     }
-    if (code === 'KeyG'
-      && (modifiersSum ^ (Modifiers.Ctrl | Modifiers.Shift) & modifiersSum) === 0) {
+    if (code === 'KeyG' && (modifiersSum === Modifiers.Ctrl
+      || modifiersSum === (Modifiers.Ctrl | Modifiers.Shift))) {
       return new BrowserCommandEvent(e);
     }
     if (code === 'KeyH' && modifiersSum === Modifiers.Ctrl) {
@@ -250,20 +290,23 @@ export default class ArenaBrowser {
     if (code === 'KeyE' && modifiersSum === Modifiers.Ctrl) {
       return new BrowserCommandEvent(e);
     }
-    if (code === 'KeyK' && modifiersSum === Modifiers.Ctrl) {
-      return new BrowserCommandEvent(e);
-    }
+    // if (code === 'KeyK' && modifiersSum === Modifiers.Ctrl) {
+    //   return new BrowserCommandEvent(e);
+    // }
     if (code === 'Delete' && modifiersSum === (Modifiers.Ctrl | Modifiers.Shift)) {
       return new BrowserCommandEvent(e);
     }
-    if (code === 'KeyF' && modifiersSum === Modifiers.Alt) {
+    // if (code === 'KeyF' && modifiersSum === Modifiers.Alt) {
+    //   return new BrowserCommandEvent(e);
+    // }
+    if (code === 'ContextMenu') {
       return new BrowserCommandEvent(e);
     }
     if (/^Digit\d$/.test(code) && modifiersSum === Modifiers.Ctrl) {
       return new BrowserCommandEvent(e);
     }
 
-    if (selectionCodes[keyCode] && !(modifiersSum & Modifiers.Alt)) {
+    if (selectionCodes[keyCode]) {
       return new SelectionEvent(e);
     }
     if (code === 'KeyA' && modifiersSum === Modifiers.Ctrl) {
@@ -275,10 +318,19 @@ export default class ArenaBrowser {
     if (code === 'KeyV' && modifiersSum === Modifiers.Ctrl) {
       return new PasteEvent(e);
     }
+    if (code === 'KeyV' && modifiersSum === (Modifiers.Ctrl | Modifiers.Shift)) {
+      return new PasteEvent(e);
+    }
     if (code === 'KeyX' && modifiersSum === Modifiers.Ctrl) {
       return new CutEvent(e);
     }
-    if (removeCodes[keyCode]) {
+    if (code === 'ArrowLeft' && modifiersSum === Modifiers.Alt) {
+      return new SelectionEvent(e);
+    }
+    if (code === 'ArrowRight' && modifiersSum === Modifiers.Alt) {
+      return new SelectionEvent(e);
+    }
+    if (removeCodes[keyCode] && modifiersSum === 0) {
       return new RemoveEvent(
         e,
         removeCodes[keyCode] === 'delete' ? 'forward' : 'backward',
@@ -291,10 +343,31 @@ export default class ArenaBrowser {
       }
       return undefined;
     }
-    if (character) {
-      return new InputEvent(e, character);
+    if (character && code) {
+      return new ArenaInputEvent(e, character);
     }
     return undefined;
+  }
+
+  protected beforeinputListener(e: InputEvent): void {
+    this.asm.logger.log('Beforeinput event', e);
+    if (e?.inputType === 'deleteByDrag') {
+      const targetSelection = this.asm.view.detectArenaSelection();
+      if (targetSelection) {
+        this.asm.model.removeSelection(targetSelection, targetSelection.direction);
+      }
+      e.preventDefault();
+    }
+    if (e?.inputType === 'insertFromDrop') {
+      const data = (e as unknown as { dataTransfer : DataTransfer | null }).dataTransfer;
+      if (data) {
+        const targetSelection = this.asm.view.detectArenaSelection();
+        if (targetSelection) {
+          this.insertData(data, targetSelection);
+        }
+      }
+      e.preventDefault();
+    }
   }
 
   protected inputListener(e: Event): void {
@@ -303,6 +376,41 @@ export default class ArenaBrowser {
 
   protected mouseUpListener(e: MouseEvent): void {
     this.asm.logger.log('MouseUp event', e);
+    const event = e as unknown as { path: ChildNode[] };
+    if (e.button === 0 && Array.isArray(event.path)) {
+      const { path } = event;
+      for (let i = 0; i < path.length; i += 1) {
+        const elem = path[i];
+        if (elem.nodeType === Node.ELEMENT_NODE
+        && (elem as HTMLElement).tagName === 'TEXTARENA-REMOVE') {
+          const id = (elem as HTMLElement).getAttribute('node-id');
+          if (id) {
+            e.preventDefault();
+            let sel;
+            const cursor = this.asm.model.removeNodeById(id);
+            if (cursor) {
+              const textCursor = this.asm.model.getTextCursor(cursor.node, cursor.offset);
+              sel = new ArenaSelection(
+                textCursor.node,
+                textCursor.offset,
+                textCursor.node,
+                textCursor.offset,
+                'forward',
+              );
+            }
+            if (!sel) {
+              sel = this.asm.view.getCurrentSelection();
+            }
+            if (sel) {
+              this.asm.history.save(sel);
+            }
+            this.asm.eventManager.fire('modelChanged', sel);
+          }
+          break;
+        }
+      }
+    }
+    this.asm.history.resetTyped();
     // this.checkSelection();
   }
 
@@ -310,14 +418,14 @@ export default class ArenaBrowser {
     this.asm.logger.log('KeyUp event', e);
     const modifiersSum = this.getModifiersSum(e);
     this.asm.eventManager.fire('moveCursor');
-    this.asm.eventManager.fire({ name: 'keyUp', data: modifiersSum });
+    this.asm.eventManager.fire('keyUp', modifiersSum);
   }
 
   protected keyPressListener(e: KeyboardEvent): void {
     this.asm.logger.log('KeyPress event', e);
   }
 
-  protected keyDownListener(e: KeyboardEvent): void {
+  public keyDownListener(e: KeyboardEvent): void {
     const event = this.checkKeyboardEvent('keyDown', e);
     this.asm.logger.log('KeyDown event', event, e);
     if (event instanceof BrowserCommandEvent
@@ -327,6 +435,7 @@ export default class ArenaBrowser {
       return;
     }
     if (event instanceof SelectionEvent) {
+      this.asm.history.resetTyped();
       this.asm.view.resetCurrentSelection();
       return;
     }
@@ -338,14 +447,16 @@ export default class ArenaBrowser {
       return;
     }
     if (event instanceof ModifiersEvent) {
-      this.asm.eventManager.fire({ name: 'keyDown', data: event.sum });
+      this.asm.eventManager.fire('keyDown', event.sum);
+      return;
     }
     if (event instanceof CutEvent) {
       document.execCommand('copy');
       const selection = this.asm.view.getCurrentSelection();
       if (selection) {
         const newSelection = this.asm.model.removeSelection(selection, selection.direction);
-        this.asm.eventManager.fire({ name: 'modelChanged', data: newSelection });
+        this.asm.history.save(newSelection);
+        this.asm.eventManager.fire('modelChanged', newSelection);
       }
     }
     if (event instanceof CommandEvent) {
@@ -355,20 +466,48 @@ export default class ArenaBrowser {
         this.asm.commandManager.execShortcut(selection, modifiersSum, command);
       }
     }
-    if (event instanceof InputEvent) {
+    if (event instanceof ArenaInputEvent) {
       const selection = this.asm.view.getCurrentSelection();
       if (selection) {
-        this.asm.model.insertTextToModel(selection, event.character, true);
-        this.asm.eventManager.fire({ name: 'modelChanged' });
+        const newSelection = this.asm.model.insertTextToModel(selection, event.character, true);
+        this.asm.history.save(newSelection, /[a-zа-яА-Я0-9]/i.test(event.character));
+        const [result, cursor] = this.asm.model.applyMiddlewares(
+          newSelection.getCursor(),
+          event.character,
+        );
+        newSelection.setCursor(cursor);
+        if (result) {
+          this.asm.history.save(newSelection);
+        }
+        this.asm.eventManager.fire('modelChanged', newSelection);
       }
     }
     if (event instanceof RemoveEvent) {
       const selection = this.asm.view.getCurrentSelection();
       if (selection) {
         const newSelection = this.asm.model.removeSelection(selection, event.direction);
-        this.asm.eventManager.fire({ name: 'modelChanged', data: newSelection });
+        this.asm.history.save(newSelection);
+        this.asm.eventManager.fire('modelChanged', newSelection);
       }
     }
+  }
+
+  protected copyListener(e: ClipboardEvent): void {
+    this.asm.logger.log('Copy event', e);
+    const { clipboardData } = e;
+    if (!clipboardData) {
+      return;
+    }
+    const selection = this.asm.view.getCurrentSelection();
+    if (!selection) {
+      e.preventDefault();
+      return;
+    }
+    const resultHtml = this.asm.model.getOutputHtmlOfSelection(selection);
+    const resultText = this.asm.model.getPlainTextOfSelection(selection);
+    clipboardData.setData('text/html', resultHtml);
+    clipboardData.setData('text/plain', resultText);
+    e.preventDefault();
   }
 
   protected pasteListener(e: ClipboardEvent): void {
@@ -378,44 +517,82 @@ export default class ArenaBrowser {
     if (!clipboardData) {
       return;
     }
-    const types: string[] = [...clipboardData.types || []];
+    const selection = this.asm.view.getCurrentSelection();
+    if (!selection) {
+      return;
+    }
+    this.insertData(clipboardData, selection);
+  }
+
+  protected focusListener(e: FocusEvent): void {
+    this.asm.logger.log('Focus event', e);
+    this.asm.creatorBar.closeList();
+  }
+
+  protected insertData(data: DataTransfer, selection: ArenaSelection): void {
+    const types: string[] = [...data.types || []];
     if (types.includes('text/html')) {
-      let html = clipboardData.getData('text/html');
+      let html = data.getData('text/html');
       if (!html) {
-        return;
-      }
-      const selection = this.asm.view.getCurrentSelection();
-      if (!selection) {
         return;
       }
       const matchStart = /<!--StartFragment-->/.exec(html);
       if (matchStart) {
         html = html.slice(matchStart.index + matchStart[0].length);
+        html = html.trimLeft();
       }
       const matchEnd = /<!--EndFragment-->/.exec(html);
       if (matchEnd) {
         html = html.slice(0, matchEnd.index);
+        html = html.trimRight();
       }
+      // html = html.replace(/\u00A0/, ' ');
       this.asm.logger.log(`Insert html: «${html}»`);
       const newSelection = this.asm.model.insertHtml(selection, html);
-      this.asm.eventManager.fire({ name: 'modelChanged', data: newSelection });
+      this.asm.history.save(newSelection);
+      this.asm.eventManager.fire('modelChanged', newSelection);
     } else if (types.includes('text/plain')) {
-      const text = clipboardData.getData('text/plain');
+      const text = data.getData('text/plain');
       if (!text) {
         return;
       }
-      const selection = this.asm.view.getCurrentSelection();
-      if (!selection) {
-        return;
-      }
       this.asm.logger.log(`Insert text: «${text}»`);
+      // TODO middleware
       const newSelection = this.asm.model.insertTextToModel(selection, text);
-      this.asm.eventManager.fire({ name: 'modelChanged', data: newSelection });
+      this.asm.history.save(newSelection);
+      this.asm.eventManager.fire('modelChanged', newSelection);
     }
   }
 
   protected selectListener(e: Event): void {
     this.asm.logger.log('Select event', e);
     this.checkSelection();
+  }
+
+  protected getIdOfTarget(target: HTMLElement): string | undefined {
+    const id = target.getAttribute('arena-id');
+    if (id) {
+      return id;
+    }
+    if (target.parentElement) {
+      return this.getIdOfTarget(target.parentElement);
+    }
+    return undefined;
+  }
+
+  protected changeAttributeListener(e: ArenaChangeAttribute): void {
+    const { attrs, target } = e.detail;
+    const id = this.getIdOfTarget(target);
+    if (id) {
+      const node = this.asm.model.getNodeById(id);
+      if (node) {
+        node.setAttributes(attrs);
+        const sel = this.asm.view.getCurrentSelection();
+        if (sel) {
+          this.asm.history.save(sel);
+        }
+        this.asm.eventManager.fire('modelChanged', sel);
+      }
+    }
   }
 }

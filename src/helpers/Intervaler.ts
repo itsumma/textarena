@@ -4,13 +4,17 @@ type Interval = {
 };
 
 export default class Intervaler {
-  private intervals: Interval[] = [];
+  private intervals: Interval[];
+
+  constructor(intervals?: Interval[]) {
+    this.intervals = intervals || [];
+  }
 
   getIntervals(): Interval[] {
     return this.intervals;
   }
 
-  shift(offset: number, step: number, keep = false): void {
+  shiftOld(offset: number, step: number, keep = false): void {
     this.intervals = this.intervals.map((interval) => {
       if (keep ? interval.end < offset : interval.end <= offset) {
         return interval;
@@ -21,6 +25,32 @@ export default class Intervaler {
         end: interval.end + step,
       };
     });
+  }
+
+  shift(offset: number, step: number): void {
+    const intervals: Interval[] = [];
+    this.intervals.forEach((interval) => {
+      if (interval.end <= offset) {
+        intervals.push(interval);
+        return;
+      }
+      if (interval.start >= offset) {
+        intervals.push({
+          start: interval.start + step,
+          end: interval.end + step,
+        });
+        return;
+      }
+      intervals.push({
+        start: interval.start,
+        end: offset,
+      });
+      intervals.push({
+        start: offset + step,
+        end: interval.end + step,
+      });
+    });
+    this.intervals = this.checkIntersection(intervals);
   }
 
   cut(start: number, end?: number): Intervaler {
@@ -192,23 +222,19 @@ export default class Intervaler {
     const intervals: Interval[] = [];
     this.intervals.forEach((interval) => {
       // I - current interval
-      // C - current cut
-      // C includes I && C > I
-      if (interval.start > start && interval.end < end) {
+      // C - cut
+      // C includes I && C >= I
+      if (interval.start >= start && interval.end <= end) {
         return;
       }
       // I doesn't includes C
-      if (interval.start > end) {
+      if (interval.start >= end) {
         intervals.push({ start: interval.start, end: interval.end });
         return;
       }
       // I doesn't includes C
-      if (interval.end < start) {
+      if (interval.end <= start) {
         intervals.push({ start: interval.start, end: interval.end });
-        return;
-      }
-      // I includes C && I === C
-      if (interval.start === start && interval.end === end) {
         return;
       }
       // I includes C
@@ -218,12 +244,12 @@ export default class Intervaler {
         return;
       }
       // I includes C (left)
-      if (interval.start >= start && interval.start <= end) {
+      if (interval.start >= start && interval.end > end) {
         intervals.push({ start: end, end: interval.end });
         return;
       }
       // I includes C (right)
-      if (interval.end >= start && interval.end <= end) {
+      if (interval.end >= start && interval.start < start) {
         intervals.push({ start: interval.start, end: start });
       }
     });
@@ -241,5 +267,11 @@ export default class Intervaler {
       }
     }
     return false;
+  }
+
+  clone(): Intervaler {
+    return new Intervaler(
+      this.intervals.map((interval) => ({ ...interval })),
+    );
   }
 }

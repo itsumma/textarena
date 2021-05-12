@@ -1,10 +1,10 @@
 /* eslint-disable no-lonely-if */
-import { ArenaFormatings } from '../interfaces/ArenaFormating';
-import ArenaInline from '../interfaces/ArenaInline';
-import ArenaNodeInline from '../interfaces/ArenaNodeInline';
-import InlineNode from '../models/InlineNode';
+import ArenaFormating, { ArenaFormatings } from '../interfaces/ArenaFormating';
 import Intervaler from './Intervaler';
 import InlineIntervaler from './InlineIntervaler';
+import { ArenaInlineInterface } from '../interfaces/Arena';
+import { ArenaNodeInline } from '../interfaces/ArenaNode';
+import NodeFactory from '../models/NodeFactory';
 
 export type Formatings = {
   [name: string]: Intervaler
@@ -99,6 +99,12 @@ export default class RichTextManager {
     return this.text;
   }
 
+  public setText(text: string): void {
+    if (text.length === this.text.length) {
+      this.text = text;
+    }
+  }
+
   public getTextLength(): number {
     return this.text.length;
   }
@@ -107,12 +113,18 @@ export default class RichTextManager {
     return this.formatings;
   }
 
-  public getHtml(frms: ArenaFormatings): string {
+  public getHtml(
+    frms: ArenaFormatings,
+    start?: number,
+    end?: number,
+  ): string {
     const { text } = this;
     if (text === '') {
       return '<br/>';
     }
-    const tree = this.getHtmlTree(frms);
+    const globalStart = start ?? 0;
+    const globalEnd = end ?? this.text.length;
+    const tree = this.getHtmlTree(frms, globalStart, globalEnd);
     const [html] = this.getHtmlFromTree(tree);
     return html;
   }
@@ -123,16 +135,27 @@ export default class RichTextManager {
     keepFormatings = false,
   ): number {
     const text = typeof rtm === 'string' ? rtm : rtm.getText();
+    const endOffset = offset + text.length;
     this.text = this.text.slice(0, offset) + text + this.text.slice(offset);
-    this.shiftFormatings(offset, text.length, keepFormatings);
+    const formationsForApply = keepFormatings ? this.getFormationgsForApply(offset) : [];
+    this.shiftFormatings(offset, text.length);
     if (rtm instanceof RichTextManager) {
       this.merge(rtm, offset);
+    } else {
+      formationsForApply.forEach((name) => this.insertFormating(name, offset, endOffset));
     }
-    return offset + text.length;
+    return endOffset;
   }
 
   public removeText(start: number, end?: number): void {
     this.cutText(start, end);
+  }
+
+  public clearText(): void {
+    this.text = '';
+    this.formatings = {};
+    this.promises = {};
+    this.inlines = new InlineIntervaler();
   }
 
   public cutText(start: number, end?: number): RichTextManager {
@@ -144,8 +167,9 @@ export default class RichTextManager {
       text = this.text.slice(start, end);
       this.text = this.text.slice(0, start) + this.text.slice(end);
     }
+    const inlines = this.inlines.cut(start, end);
     const formatings = this.cutFormatings(start, end);
-    return new RichTextManager(text, formatings);
+    return new RichTextManager(text, formatings, inlines);
   }
 
   public insertFormating(name: string, start: number, end: number): void {
@@ -153,6 +177,26 @@ export default class RichTextManager {
       this.formatings[name] = new Intervaler();
     }
     this.formatings[name].addInterval(start, end);
+  }
+
+  public togglePromiseFormating(formating: ArenaFormating, offset: number): void {
+    const { name } = formating;
+    let type: 'add' | 'remove' = 'add';
+    if (this.promises[name] && this.promises[name].offset === offset) {
+      if (this.promises[name].type === 'add') {
+        type = 'remove';
+      }
+    } else if (this.hasFormating(name, offset, offset)) {
+      type = 'remove';
+    }
+    this.promises[name] = {
+      offset,
+      type,
+    };
+  }
+
+  public clearPromises(): void {
+    this.promises = {};
   }
 
   public toggleFormating(name: string, start: number, end: number): void {
@@ -166,6 +210,12 @@ export default class RichTextManager {
         this.formatings[name].addInterval(start, end);
       }
     }
+  }
+
+  public clearFormatings(start: number, end: number): void {
+    Object.entries(this.formatings).forEach(([, intervaler]) => {
+      intervaler.removeInterval(start, end);
+    });
   }
 
   public hasFormating(name: string, start?: number, end?: number): boolean {
@@ -205,25 +255,22 @@ export default class RichTextManager {
   }
 
   public addInlineNode(
-    arena: ArenaInline,
+    arena: ArenaInlineInterface,
     start: number,
     end: number,
   ): ArenaNodeInline | undefined {
-    const node = new InlineNode(arena);
-    if (node instanceof InlineNode) {
-      this.inlines.addInterval(start, end, node);
-      return node;
-    }
-    return undefined;
+    const node = NodeFactory.createInlineNode(arena);
+    this.inlines.addInterval(start, end, node);
+    return node;
   }
 
   public getInlineNode(
-    arena: ArenaInline,
+    arena: ArenaInlineInterface,
     start: number,
     end: number,
   ): ArenaNodeInline | undefined {
     const node = this.inlines.getNode(start, end);
-    if (node instanceof InlineNode && node.arena === arena) {
+    if (node && node.arena === arena) {
       return node;
     }
     return undefined;
@@ -237,11 +284,34 @@ export default class RichTextManager {
     this.inlines.updateNode(node, start, end);
   }
 
+  clone(): RichTextManager {
+    const entries: [string, Intervaler][] = Object
+      .entries(this.formatings)
+      .map(([name, intervaler]) => [name, intervaler.clone()]);
+    const formatings: Formatings = [...entries].reduce<Formatings>((obj, [key, val]) => {
+      // eslint-disable-next-line no-param-reassign
+      obj[key] = val;
+      return obj;
+    }, {});
+    return new RichTextManager(
+      this.text,
+      formatings,
+      this.inlines.clone(),
+    );
+  }
+
   protected inlines: InlineIntervaler;
 
   protected formatings: Formatings;
 
   protected text: string;
+
+  protected promises: {
+    [name: string]: {
+      offset: number,
+      type: 'add' | 'remove',
+    }
+  } = {};
 
   protected cutFormatings(start: number, end?: number): Formatings {
     const formatings: Formatings = {};
@@ -259,7 +329,8 @@ export default class RichTextManager {
       .replace(/>/g, '&gt;')
       .replace(/"/g, '&quot;')
       .replace(/'/g, '&#039;')
-      .replace(/\s\s/g, ' &nbsp;');
+      .replace(/\s\s/g, ' &nbsp;')
+      .replace(/\u00A0/, '&nbsp;');
     if (first) {
       result = result.replace(/^\s/, '&nbsp;');
     }
@@ -293,10 +364,10 @@ export default class RichTextManager {
     return insertions.sort((a, b) => a.offset - b.offset);
   }
 
-  protected shiftFormatings(offset: number, step: number, keepFormatings = false): void {
-    this.inlines.shift(offset, step, keepFormatings);
+  protected shiftFormatings(offset: number, step: number): void {
+    this.inlines.shift(offset, step, false);
     Object.values(this.formatings)
-      .forEach((intervaler) => intervaler.shift(offset, step, keepFormatings));
+      .forEach((intervaler) => intervaler.shift(offset, step));
   }
 
   protected merge(formatings: RichTextManager, offset: number): void {
@@ -309,11 +380,15 @@ export default class RichTextManager {
     });
   }
 
-  protected getHtmlTree(frms: ArenaFormatings): FNode[] {
+  protected getHtmlTree(
+    frms: ArenaFormatings,
+    globalStart: number,
+    globalEnd: number,
+  ): FNode[] {
     const rootNodes: FNode[] = [{
       name: '',
-      start: 0,
-      end: this.text.length,
+      start: globalStart,
+      end: globalEnd,
       children: [],
     }];
 
@@ -379,5 +454,29 @@ export default class RichTextManager {
       }
     }
     return [text, lastSpace];
+  }
+
+  protected getFormationgsForApply(offset: number): string[] {
+    const result: string[] = [];
+    Object.entries(this.formatings).forEach(([name, intervaler]) => {
+      if (intervaler.hasInterval(offset, offset)) {
+        result.push(name);
+      }
+    });
+    Object.entries(this.promises).forEach(([name, promise]) => {
+      if (promise.offset === offset) {
+        if (promise.type === 'add') {
+          if (!result.includes(name)) {
+            result.push(name);
+          }
+        } else {
+          const index = result.indexOf(name);
+          if (index > -1) {
+            result.splice(index, 1);
+          }
+        }
+      }
+    });
+    return result;
   }
 }

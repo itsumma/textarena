@@ -1,14 +1,14 @@
 import {
-  LitElement, html, css, customElement, property, TemplateResult,
+  LitElement, html, css, property, TemplateResult,
 } from 'lit-element';
 import Textarena from '../Textarena';
 import ArenaSelection from '../helpers/ArenaSelection';
 import ArenaPlugin from '../interfaces/ArenaPlugin';
-import ArenaAncestor from '../interfaces/ArenaAncestor';
-import ArenaWithText from '../interfaces/ArenaWithText';
+import { ArenaMediatorInterface, ArenaTextInterface } from '../interfaces/Arena';
+import { ArenaNodeText } from '../interfaces/ArenaNode';
 
 // This decorator defines the element.
-@customElement('arena-callout')
+
 export class Callout extends LitElement {
   // This decorator creates a property accessor that triggers rendering and
   // an observed attribute.
@@ -54,22 +54,49 @@ export class Callout extends LitElement {
   }
 }
 
-const defaultOptions = {
+type MarkOptions = {
+  tag: string,
+  attributes: string[];
+};
+
+export type CalloutOptions = {
+  name: string,
+  tag: string,
+  attributes: string[],
+  title: string,
+  icon?: string,
+  shortcut: string,
+  hint: string,
+  command: string,
+  component: string,
+  marks: MarkOptions[],
+};
+
+const defaultOptions: CalloutOptions = {
   name: 'callout',
-  icon: '<b>NB</b>',
   title: 'Callout',
   tag: 'ARENA-CALLOUT',
   attributes: [],
   shortcut: 'Alt + KeyC',
   hint: 'c',
   command: 'add-callout',
+  component: 'arena-callout',
+  marks: [
+    {
+      tag: 'ARENA-CALLOUT',
+      attributes: [],
+    },
+  ],
 };
 
-const calloutPlugin = (opts?: typeof defaultOptions): ArenaPlugin => ({
+const calloutPlugin = (opts?: CalloutOptions): ArenaPlugin => ({
   register(textarena: Textarena): void {
     const {
-      name, icon, title, tag, attributes, shortcut, hint, command,
+      name, icon, title, tag, attributes, shortcut, hint, command, component, marks,
     } = { ...defaultOptions, ...(opts || {}) };
+    if (!customElements.get(component)) {
+      customElements.define(component, Callout);
+    }
     const paragraph = textarena.getDefaultTextArena();
     if (!paragraph) {
       throw new Error('Default Arena for text not found');
@@ -84,7 +111,7 @@ const calloutPlugin = (opts?: typeof defaultOptions): ArenaPlugin => ({
         ],
         hasChildren: true,
         allowedArenas,
-        arenaForText: paragraph as ArenaWithText,
+        arenaForText: paragraph as ArenaTextInterface,
       },
       [
         {
@@ -95,7 +122,7 @@ const calloutPlugin = (opts?: typeof defaultOptions): ArenaPlugin => ({
         },
       ],
       [],
-    );
+    ) as ArenaMediatorInterface;
     const calloutTitleParagraph = textarena.registerArena(
       {
         name: 'callout-title-paragraph',
@@ -103,9 +130,8 @@ const calloutPlugin = (opts?: typeof defaultOptions): ArenaPlugin => ({
         attributes: [
           'slot=title',
         ],
-        allowText: true,
-        allowFormating: true,
-        nextArena: calloutBodyContainer as ArenaAncestor,
+        hasText: true,
+        nextArena: paragraph,
       },
       [
         {
@@ -116,35 +142,25 @@ const calloutPlugin = (opts?: typeof defaultOptions): ArenaPlugin => ({
         },
       ],
       [],
-    );
+    ) as ArenaTextInterface;
     const arena = textarena.registerArena(
       {
         name,
         tag,
         attributes,
-        hasChildren: true,
         protectedChildren: [
           calloutTitleParagraph,
           calloutBodyContainer,
         ],
-        arenaForText: calloutBodyContainer as ArenaWithText,
-        allowedArenas: [
-          calloutTitleParagraph,
-          calloutBodyContainer,
-        ],
+        arenaForText: calloutBodyContainer,
       },
-      [
-        {
-          tag,
-          attributes: [],
-        },
-      ],
+      marks,
       [textarena.getRootArenaName()],
-    );
+    ) as ArenaMediatorInterface;
     textarena.registerCommand(
       command,
       (ta: Textarena, selection: ArenaSelection) => {
-        const sel = ta.transformModel(selection, arena);
+        const sel = ta.applyArenaToSelection(selection, arena);
         return sel;
       },
     );
@@ -160,6 +176,8 @@ const calloutPlugin = (opts?: typeof defaultOptions): ArenaPlugin => ({
       shortcut,
       hint,
       command,
+      canShow: (node: ArenaNodeText) =>
+        node.parent.isAllowedNode(arena),
     });
   },
 });

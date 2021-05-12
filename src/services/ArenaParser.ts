@@ -1,11 +1,11 @@
-import Arena from '../interfaces/Arena';
 import ArenaFormating from '../interfaces/ArenaFormating';
-import ArenaNode from '../interfaces/ArenaNode';
-import ArenaNodeText from '../interfaces/ArenaNodeText';
 
 import RichTextManager from '../helpers/RichTextManager';
 
 import ArenaServiceManager from './ArenaServiceManager';
+import { AnyArenaNode, ArenaNodeText } from '../interfaces/ArenaNode';
+import { AnyArena } from '../interfaces/Arena';
+import ArenaSelection from '../helpers/ArenaSelection';
 
 export default class ArenaParser {
   constructor(protected asm: ArenaServiceManager) {
@@ -13,21 +13,31 @@ export default class ArenaParser {
 
   public insertHtmlToRoot(
     htmlString: string,
-  ): void {
+  ): ArenaSelection | undefined {
     this.asm.logger.log(htmlString);
     this.insertHtmlToModel(
       htmlString,
       this.asm.model.model,
       0,
     );
-    this.asm.model.model.getTextCursor(0);
+    const cursor = this.asm.model.getOrCreateNodeForText(this.asm.model.model);
+    if (cursor) {
+      return new ArenaSelection(
+        cursor.node,
+        cursor.offset,
+        cursor.node,
+        cursor.offset,
+        'backward',
+      );
+    }
+    return undefined;
   }
 
   public insertHtmlToModel(
     htmlString: string,
-    arenaNode: ArenaNode,
+    arenaNode: AnyArenaNode,
     offset: number,
-  ): [ArenaNode, number] {
+  ): [AnyArenaNode, number] {
     const node = document.createElement('DIV');
     node.innerHTML = htmlString;
     return this.insertChildren(node, arenaNode, offset);
@@ -35,94 +45,193 @@ export default class ArenaParser {
 
   private insertChildren(
     node: HTMLElement,
-    arenaNode: ArenaNode,
+    arenaNode: AnyArenaNode,
     offset: number,
-  ): [ArenaNode, number] {
+  ): [AnyArenaNode, number] {
     let currentNode = arenaNode;
     let currentOffset = offset;
-    let firstTextNode = true;
+    let successful;
+    let firstNode = true;
     node.childNodes.forEach((childNode) => {
-      const result = this.insertChild(
+      [currentNode, currentOffset, successful] = this.insertChild(
         childNode,
         currentNode,
         currentOffset,
-        firstTextNode,
-        // i === 0,
-        // i === node.childNodes.length - 1,
+        firstNode,
       );
 
-      if (result) {
-        [currentNode, currentOffset] = result;
-        if (result[2] && firstTextNode) {
-          firstTextNode = false;
-        }
+      if (successful && firstNode) {
+        firstNode = false;
       }
     });
     return [currentNode, currentOffset];
   }
 
+  /**
+   * Insert html node into some arena node.
+   * @param htmlNode ChildNode from DOM
+   * @param arenaNode AnyArenaNode. Current Node in the tree
+   * @param offset number. Current offset in the arenaNode
+   * @param firstNode boolean. If true, it was not inserted any node into arenaNode.
+   * @returns [AnyArenaNode, number, boolean]. Current node, offset
+   * and whether it was successfully inserted arena node.
+   */
   private insertChild(
-    node: ChildNode,
-    arenaNode: ArenaNode,
+    htmlNode: ChildNode,
+    arenaNode: AnyArenaNode,
     offset: number,
-    firstTextNode: boolean,
-    // first: boolean,
-    // last: boolean,
-  ): [ArenaNode, number, boolean] {
-    // console.log('isert', node, arenaNode);
-    if (node.nodeType === Node.TEXT_NODE) {
+    firstNode: boolean,
+  ): [AnyArenaNode, number, boolean] {
+    if (htmlNode.nodeType === Node.TEXT_NODE) {
+      if (arenaNode.hasChildren && arenaNode.protected) {
+        // dont insert any text in the protected node
+        return [arenaNode, offset, false];
+      }
+      // if curent node has not text, ignore impty ctring
+      const ignoreEmpty = !(arenaNode.hasText);
       const text = this.clearText(
-        node.textContent,
-        // first,
-        // last,
-        !('hasText' in arenaNode),
+        htmlNode.textContent,
+        ignoreEmpty,
       );
       if (text.length === 0) {
         return [arenaNode, offset, false];
       }
-      const result = arenaNode.insertText(text, offset);
-      return [result.node, result.offset, true];
+      const cursor = this.asm.model.getOrCreateNodeForText(arenaNode, offset);
+
+      if (cursor) {
+        // TODO do not insert but replace
+        const result = cursor.node.insertText(text, cursor.offset);
+        return [result.node, result.offset, true];
+      }
+      return [arenaNode, offset, false];
     }
-    if (node.nodeType === Node.ELEMENT_NODE) {
-      const elementNode = node as HTMLElement;
+    if (htmlNode.nodeType === Node.ELEMENT_NODE) {
+      const elementNode = htmlNode as HTMLElement;
       const arena = this.checkArenaMark(elementNode);
-      if (arena) {
-        // TODO check if arena for text
-        if ('hasText' in arenaNode && firstTextNode) {
-          const result = this.insertChildren(elementNode, arenaNode, offset);
-          return [...result, true];
+      if (arena && arena.inline) {
+        const text = this.getText(elementNode);
+        if (!text) {
+          return [...this.insertChildren(elementNode, arenaNode, offset), true];
         }
-        const newArenaNode = arenaNode.createAndInsertNode(arena, offset);
-        if (newArenaNode) {
-          if ('hasText' in newArenaNode) {
-            const formatings = this.getText(elementNode);
-            this.asm.logger.log('this is arena for text', formatings);
-            newArenaNode.insertText(formatings, 0);
-            this.clearTextNode(newArenaNode);
-          } else {
-            this.insertChildren(elementNode, newArenaNode, 0);
+        const inlineNode = text.addInlineNode(arena, 0, text.getTextLength());
+        if (!inlineNode) {
+          return [...this.insertChildren(elementNode, arenaNode, offset), true];
+        }
+        elementNode.getAttributeNames().forEach((attr) => {
+          inlineNode.setAttribute(attr, elementNode.getAttribute(attr) || '');
+        });
+        const cursor = this.asm.model.getOrCreateNodeForText(arenaNode, offset);
+
+        if (cursor) {
+          const result = cursor.node.insertText(text, cursor.offset);
+          return [result.node, result.offset, true];
+        }
+        return [arenaNode, offset, false];
+      }
+      if (arena && !arena.inline) {
+        if (firstNode && arena.hasText && arenaNode.hasText) {
+          if (arenaNode.isEmpty()) {
+            const cursot = arenaNode.remove();
+            return this.insertChild(
+              htmlNode,
+              cursot.node,
+              cursot.offset,
+              firstNode,
+            );
           }
+          return [...this.insertChildren(elementNode, arenaNode, offset), true];
+        }
+        const newArenaNode = this.asm.model.createAndInsertNode(arena, arenaNode, offset);
+        if (!newArenaNode) {
+          return [...this.insertChildren(elementNode, arenaNode, offset), true];
+        }
+        // const newArenaNode = this.asm.model.createChildNode(arena);
+        this.setAttributes(newArenaNode, elementNode);
+        if (newArenaNode.hasText) {
+          const text = this.getText(elementNode);
+          if (!text) {
+            //
+            return [...this.insertChildren(elementNode, newArenaNode, 0), true];
+          }
+          newArenaNode.insertText(text, newArenaNode.getTextLength());
+          this.clearTextNode(newArenaNode);
           return [newArenaNode.parent, newArenaNode.getIndex() + 1, true];
         }
-        this.asm.logger.log('this is arena');
-        const res = this.insertChildren(elementNode, arenaNode, offset);
-        return [...res, true];
+        if (newArenaNode.single) {
+          return [newArenaNode.parent, newArenaNode.getIndex() + 1, true];
+        }
+        if (newArenaNode.hasChildren) {
+          const [cursorNode, cursorOffset] = this.insertChildren(elementNode, newArenaNode, 0);
+          if (cursorNode.hasParent) {
+            return [cursorNode.parent, cursorNode.getIndex() + 1, true];
+          }
+          return [cursorNode, cursorOffset, true];
+          // this.insertChildren(elementNode, newArenaNode, 0);
+          // return [newArenaNode.parent, newArenaNode.getIndex() + 1, true];
+        }
+
+        // if (arenaNode.hasChildren && arenaNode.protected && !arenaNode.isAllowedNode(arena)) {
+        //   return [arenaNode, offset, false];
+        // }
+        // if ('hasText' in arenaNode && firstTextNode) {
+        //   const result = this.insertChildren(elementNode, arenaNode, offset);
+        //   return [...result, true];
+        // }
+        // const newArenaNode = arenaNode.createAndInsertNode(arena, offset);
+        // let newArenaNode: ChildArenaNode | undefined;
+        // if (firstNode && arenaNode.hasText && arenaNode.isEmpty()) {
+        //   // remove current node
+        //   const cursor = arenaNode.remove();
+        //   if (cursor.node.isAllowedNode(arena)) {
+        //     newArenaNode = this.asm.model.createChildNode(arena);
+        //     newArenaNode = cursor.node.insertNode(newArenaNode, cursor.offset);
+        //     // arenaNode.createAndInsertNode(arena, offset);
+        //   }
+        //   // newArenaNode = cursor.node.createAndInsertNode(arena, cursor.offset);
+        // } else if (arenaNode.hasChildren && arenaNode.isAllowedNode(arena)) {
+        //   newArenaNode = this.asm.model.createChildNode(arena);
+        //   newArenaNode = arenaNode.insertNode(newArenaNode, offset);
+        //   // arenaNode.createAndInsertNode(arena, offset);
+        //   // newArenaNode = arenaNode.createAndInsertNode(arena, offset);
+        // } else if (arenaNode.hasParent && !(arenaNode.hasChildren && arenaNode.protected)) {
+        //   newArenaNode = this.asm.model.createAndInsertNode(
+        //     arena,
+        //     arenaNode.parent,
+        //     arenaNode.getIndex() + 1,
+        //   );
+        // }
+        // if (newArenaNode) {
+        //   this.setAttributes(newArenaNode, elementNode);
+        //   if (newArenaNode.hasText) {
+        //     const formatings = this.getText(elementNode);
+        //     newArenaNode.insertText(formatings, newArenaNode.getTextLength());
+        //     this.clearTextNode(newArenaNode);
+        //   } else if (newArenaNode.single) {
+        //     return [newArenaNode.parent, newArenaNode.getIndex() + 1, true];
+        //   } else {
+        //     this.insertChildren(elementNode, newArenaNode, 0);
+        //   }
+        //   return [newArenaNode.parent, newArenaNode.getIndex() + 1, true];
+        // }
+        // const res = this.insertChildren(elementNode, arenaNode, offset);
+        // return [...res, true];
       }
       const formating = this.checkFormatingMark(elementNode);
       if (formating) {
-        const formatings = this.getText(elementNode);
-        formatings.insertFormating(formating.name, 0, formatings.getTextLength());
-        this.asm.logger.log('this is formating', formatings);
-        const res = arenaNode.insertText(formatings, offset);
-        return [res.node, res.offset, true];
+        const text = this.getText(elementNode);
+        if (text) {
+          text.insertFormating(formating.name, 0, text.getTextLength());
+          // TODO dont insert text in node, but in model service.
+          const res = arenaNode.insertText(text, offset);
+          return [res.node, res.offset, true];
+        }
       }
-      const res = this.insertChildren(elementNode, arenaNode, offset);
-      return [...res, true];
+      return [...this.insertChildren(elementNode, arenaNode, offset), true];
     }
     return [arenaNode, offset, false];
   }
 
-  private checkArenaMark(node: HTMLElement): Arena | undefined {
+  private checkArenaMark(node: HTMLElement): AnyArena | undefined {
     const marks = this.asm.model.getArenaMarks(node.tagName);
     if (marks) {
       for (let i = 0; i < marks.length; i += 1) {
@@ -169,24 +278,30 @@ export default class ArenaParser {
     return true;
   }
 
-  private getText(node: HTMLElement): RichTextManager {
+  private getText(node: HTMLElement): RichTextManager | undefined {
     const formatings = new RichTextManager();
     let offset = 0;
-    node.childNodes.forEach((childNode) => {
+    for (let i = 0; i < node.childNodes.length; i += 1) {
+      const childNode = node.childNodes[i];
       if (childNode.nodeType === Node.TEXT_NODE) {
         const text = this.clearText(childNode.textContent);
         offset = formatings.insertText(text, offset);
       } else if (childNode.nodeType === Node.ELEMENT_NODE) {
         const elementNode = childNode as HTMLElement;
         const newFormatings = this.getText(elementNode);
+        if (!newFormatings) {
+          return undefined;
+        }
         const arena = this.checkArenaMark(elementNode);
-        if (arena && 'inline' in arena) {
+        if (arena?.inline) {
           const inlineNode = newFormatings.addInlineNode(arena, 0, newFormatings.getTextLength());
           if (inlineNode) {
             elementNode.getAttributeNames().forEach((attr) => {
               inlineNode.setAttribute(attr, elementNode.getAttribute(attr) || '');
             });
           }
+        } else if (arena) {
+          return undefined;
         }
         const formating = this.checkFormatingMark(elementNode);
         if (formating) {
@@ -194,17 +309,15 @@ export default class ArenaParser {
         }
         offset = formatings.insertText(newFormatings, offset);
       } else {
-        this.asm.logger.error('unaccepted node type, remove', childNode);
+        // this.asm.logger.error('unaccepted node type, remove', childNode);
       }
       // [currentNode, currentOffset] = this.parseNode(childNode, currentNode, currentOffset);
-    });
+    }
     return formatings;
   }
 
-  clearText(
+  protected clearText(
     text: string | null,
-    // first = false,
-    // last = false,
     ignoreEmpty = false,
   ): string {
     let result = text || '';
@@ -218,8 +331,9 @@ export default class ArenaParser {
       // console.log('\tDont insert');
       return '';
     }
-    result = result.replace(/\n/g, ' ');
-    result = result.replace(/\s{2,}/g, ' ');
+    result = result.replace(/\n/g, ' ')
+      .replace(/ {2,}/g, ' ')
+      .replace(/\u00A0/, ' ');
     // if (first) {
     //   result = result.replace(/^[\s\n]+/, '');
     // }
@@ -229,9 +343,17 @@ export default class ArenaParser {
     return result;
   }
 
-  clearTextNode(newArenaNode: ArenaNodeText): void {
-    newArenaNode.ltrim();
-    newArenaNode.rtrim();
-    newArenaNode.clearSpaces();
+  protected clearTextNode(textNode: ArenaNodeText): void {
+    textNode.ltrim();
+    textNode.rtrim();
+    textNode.clearSpaces();
+  }
+
+  protected setAttributes(node: AnyArenaNode, element: HTMLElement): void {
+    element.getAttributeNames().forEach((attr) => {
+      if (node.arena.allowedAttributes.includes(attr)) {
+        node.setAttribute(attr, element.getAttribute(attr) || true);
+      }
+    });
   }
 }

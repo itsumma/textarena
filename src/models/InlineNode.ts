@@ -1,22 +1,29 @@
 import { TemplateResult } from 'lit-html';
-import { ArenaFormatings } from '../interfaces/ArenaFormating';
-import ArenaNodeInline from '../interfaces/ArenaNodeInline';
-import ArenaInline from '../interfaces/ArenaInline';
+import { ArenaInlineInterface } from '../interfaces/Arena';
+import ArenaAttributes from '../interfaces/ArenaAttributes';
+import { ArenaNodeInline } from '../interfaces/ArenaNode';
 
-export default class InlineNode implements ArenaNodeInline {
-  readonly hasParent: true = true;
+export default class InlineNode
+implements ArenaNodeInline {
+  readonly hasParent: false = false;
+
+  readonly hasChildren: false = false;
+
+  readonly hasText: false = false;
 
   readonly inline: true = true;
 
-  protected attributes: { [key: string] :string } = {};
+  readonly single: false = false;
+
+  protected attributes: ArenaAttributes = {};
 
   constructor(
-    public arena: ArenaInline,
+    public arena: ArenaInlineInterface,
   ) {
   }
 
   public getHtml(): TemplateResult | string {
-    return this.arena.getTemplate(undefined, '');
+    return this.arena.getTemplate(undefined, '', this.attributes);
   }
 
   protected getAttributesString(): string {
@@ -25,12 +32,19 @@ export default class InlineNode implements ArenaNodeInline {
       str += ` ${attr}`;
     });
     Object.entries(this.attributes).forEach(([name, value]) => {
-      const escapedValue = value.replace(/&/g, '&amp;')
-        .replace(/'/g, '&apos;')
-        .replace(/"/g, '&quot;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;');
-      str += ` ${name}="${escapedValue}"`;
+      if (typeof value === 'boolean') {
+        if (value) {
+          str += ` ${name}`;
+        }
+      } else if (typeof value === 'string') {
+        const escapedValue = value.toString()
+          .replace(/&/g, '&amp;')
+          .replace(/'/g, '&apos;')
+          .replace(/"/g, '&quot;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;');
+        str += ` ${name}="${escapedValue}"`;
+      }
     });
     return str;
   }
@@ -41,15 +55,15 @@ export default class InlineNode implements ArenaNodeInline {
     return [`<${tag.toLowerCase()}${attrs}>`, `</${tag.toLowerCase()}>`];
   }
 
-  public getOutputHtml(_frms: ArenaFormatings, deep = 0): string {
-    return this.arena.getOutputTemplate('', deep);
+  public getOutputHtml(): string {
+    return this.arena.getOutputTemplate('', this.attributes);
   }
 
-  public setAttribute(name: string, value: string): void {
+  public setAttribute(name: string, value: string | boolean | number): void {
     this.attributes[name] = value;
   }
 
-  public getAttribute(name: string): string {
+  public getAttribute(name: string): string | boolean | number {
     return this.attributes[name] || '';
   }
 
