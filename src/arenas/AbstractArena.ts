@@ -117,13 +117,17 @@ export default abstract class AbstractArena {
           str += ` ${name}`;
         }
       } else {
-        const escapedValue = value.toString()
-          .replace(/&/g, '&amp;')
-          .replace(/'/g, '&apos;')
-          .replace(/"/g, '&quot;')
-          .replace(/</g, '&lt;')
-          .replace(/>/g, '&gt;');
-        str += ` ${name}="${escapedValue}"`;
+        if (value !== null && value !== undefined) {
+          const escapedValue = value.toString()
+            .replace(/&/g, '&amp;')
+            .replace(/'/g, '&apos;')
+            .replace(/"/g, '&quot;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;');
+          str += ` ${name}="${escapedValue}"`;
+        } else {
+          str += ` ${name}=""`
+        }
       }
     });
     return str;
