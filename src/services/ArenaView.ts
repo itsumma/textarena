@@ -1,6 +1,6 @@
 import { render } from 'lit-html';
 import ArenaSelection from '../helpers/ArenaSelection';
-import { ArenaNodeText } from '../interfaces/ArenaNode';
+import { AnyArenaNode } from '../interfaces/ArenaNode';
 import ArenaServiceManager from './ArenaServiceManager';
 
 export default class ArenaView {
@@ -73,8 +73,8 @@ export default class ArenaView {
       const startId = this.getNodeIdAndOffset(range.startContainer, range.startOffset);
       const endId = this.getNodeIdAndOffset(range.endContainer, range.endOffset);
       if (startId && endId) {
-        const startNode = this.asm.model.getTextNodeById(startId[0]);
-        const endNode = this.asm.model.getTextNodeById(endId[0]);
+        const startNode = this.asm.model.getNodeById(startId[0]);
+        const endNode = this.asm.model.getNodeById(endId[0]);
         if (startNode && endNode) {
           const direction = s.focusNode === range.endContainer ? 'forward' : 'backward';
           return new ArenaSelection(startNode, startId[1], endNode, endId[1], direction);
@@ -90,14 +90,23 @@ export default class ArenaView {
   ): [string, number] | undefined {
     if (node.nodeType === Node.ELEMENT_NODE) {
       const elementNode = node as HTMLElement;
-      const id = elementNode.getAttribute('arena-id');
-      if (id) {
+      const arenaId = elementNode.getAttribute('arena-id');
+      if (arenaId) {
         if (!node.textContent
           || (!/\u00A0/.test(node.textContent) && /^[\s\n]*$/g.test(node.textContent))
         ) {
-          return [id, 0];
+          return [arenaId, 0];
         }
-        return [id, offset];
+        return [arenaId, offset];
+      }
+      const cursorId = elementNode.getAttribute('cursor-id');
+      if (cursorId) {
+        const ids = cursorId.split('.');
+        if (ids.length > 1) {
+          const parentOffset = ids.pop();
+          const parentId = ids.join('.');
+          return [parentId, parentOffset ? parseInt(parentOffset, 10) : 0];
+        }
       }
     }
     if (node.parentElement) {
@@ -165,10 +174,10 @@ export default class ArenaView {
   }
 
   protected getElementAndOffset(
-    node: ArenaNodeText,
+    node: AnyArenaNode,
     offset: number,
   ): [ChildNode, number] | undefined {
-    const element = this.findElementById(node.getGlobalIndex());
+    const element = this.findElementByNodeAndOffset(node, offset);
     if (!element) {
       return undefined;
     }
@@ -182,8 +191,17 @@ export default class ArenaView {
     return result;
   }
 
-  public findElementById(id: string): Element | null {
-    return document.querySelector(`[arena-id="${id}"]`);
+  public findElementByNodeAndOffset(
+    node: AnyArenaNode,
+    offset: number,
+  ): Element | null {
+    if (node.hasText) {
+      return document.querySelector(`[arena-id="${node.getGlobalIndex()}"]`);
+    }
+    if (node.hasChildren) {
+      return document.querySelector(`[cursor-id="${node.getGlobalIndex()}.${offset}"]`);
+    }
+    return null;
   }
 
   protected reachOffset(element: Element, offset: number): [ChildNode, number] | number {

@@ -3,7 +3,8 @@ import ToolOptions from '../interfaces/ToolOptions';
 import ElementHelper from '../helpers/ElementHelper';
 import { MediaEvent } from './EventManager';
 import ArenaServiceManager from './ArenaServiceManager';
-import { ChildArenaNode } from '../interfaces/ArenaNode';
+import { AnyArenaNode } from '../interfaces/ArenaNode';
+import utils from '../utils';
 
 function getFocusElement(): HTMLElement | undefined {
   const s = window.getSelection();
@@ -146,9 +147,9 @@ export default class Toolbar {
       status[name] = !!checkStatus;
     });
     if (sel) {
-      this.asm.model.runNodesOfSelection(
+      utils.modelTree.runThroughSelection(
         sel,
-        (node: ChildArenaNode, start?: number, end?: number) => {
+        (node: AnyArenaNode, start?: number, end?: number) => {
           this.tools.forEach(({ options: { name, checkStatus } }: Tool) => {
             if (status[name]) {
               if (!checkStatus) {

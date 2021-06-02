@@ -1,4 +1,4 @@
-import { ChildArenaNode } from './ArenaNode';
+import { AnyArenaNode } from './ArenaNode';
 
 export default interface ToolOptions {
   name: string;
@@ -7,5 +7,5 @@ export default interface ToolOptions {
   command: string;
   hint?: string;
   shortcut?: string;
-  checkStatus?: (node: ChildArenaNode, start?: number, end?: number) => boolean;
+  checkStatus?: (node: AnyArenaNode, start?: number, end?: number) => boolean;
 }

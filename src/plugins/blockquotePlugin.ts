@@ -2,7 +2,7 @@ import Textarena from '../Textarena';
 import ArenaPlugin from '../interfaces/ArenaPlugin';
 import ArenaSelection from '../helpers/ArenaSelection';
 import { ArenaMediatorInterface, ArenaTextInterface } from '../interfaces/Arena';
-import { ArenaNodeText, ChildArenaNode } from '../interfaces/ArenaNode';
+import { AnyArenaNode } from '../interfaces/ArenaNode';
 
 type MarkOptions = {
   tag: string,
@@ -90,7 +90,7 @@ const blockquotePlugin = (opts?: BlockquoteOptions): ArenaPlugin => ({
       shortcut,
       hint,
       command,
-      checkStatus: (node: ChildArenaNode):
+      checkStatus: (node: AnyArenaNode):
         boolean => node.arena === arena,
     });
     textarena.registerCreator({
@@ -100,8 +100,8 @@ const blockquotePlugin = (opts?: BlockquoteOptions): ArenaPlugin => ({
       shortcut,
       hint,
       command,
-      canShow: (node: ArenaNodeText) =>
-        node.parent.isAllowedNode(arena),
+      canShow: (node: AnyArenaNode) =>
+        textarena.isAllowedNode(node, arena),
     });
   },
 });

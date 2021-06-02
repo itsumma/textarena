@@ -1,5 +1,4 @@
 import { TemplateResult } from 'lit-html';
-import RichTextManager from '../../helpers/RichTextManager';
 import ArenaCursorText from '../ArenaCursorText';
 import { ArenaFormatings } from '../ArenaFormating';
 import ArenaAttributes from '../ArenaAttributes';
@@ -12,12 +11,6 @@ export default interface ArenaNodeCorePart<T> {
   readonly hasText: boolean;
   readonly inline: boolean;
   readonly single: boolean;
-
-  insertText(
-    text: string | RichTextManager,
-    offset: number,
-    keepFormatings?: boolean,
-  ): ArenaCursorText;
 
   getGlobalIndex(): string;
 

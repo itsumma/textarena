@@ -3,6 +3,7 @@ import ArenaServiceManager from './ArenaServiceManager';
 import ElementHelper from '../helpers/ElementHelper';
 import { AnyArenaNode } from '../interfaces/ArenaNode';
 import helpTextRu from '../helpTextRu';
+import utils from '../utils';
 
 function debounce<T extends Array<unknown>>(
   func: (...args: T) => void,
@@ -62,7 +63,7 @@ export default class SymbolCounter {
   private update(): void {
     let symbols = 0;
     let words = 0;
-    this.asm.model.runOfChildren(this.asm.model.model, (n: AnyArenaNode) => {
+    utils.modelTree.runOfChildren(this.asm.model.model, (n: AnyArenaNode) => {
       if (n.hasText) {
         symbols += n.getTextLength();
         words += n.getRawText().split(/\s/).filter((w) => w !== '').length;
@@ -76,7 +77,7 @@ export default class SymbolCounter {
 
   public typograf(): void {
     const tp = new Typograf({ locale: ['ru', 'en-US'] });
-    this.asm.model.runOfChildren(this.asm.model.model, (n: AnyArenaNode) => {
+    utils.modelTree.runOfChildren(this.asm.model.model, (n: AnyArenaNode) => {
       if (n.hasText) {
         n.clearSpaces();
         n.setRawText(tp.execute(n.getRawText()));

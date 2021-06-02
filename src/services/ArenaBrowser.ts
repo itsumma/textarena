@@ -17,6 +17,7 @@ import { keyboardKeys, Modifiers } from './ArenaCommandManager';
 import ArenaServiceManager from './ArenaServiceManager';
 import ArenaSelection from '../helpers/ArenaSelection';
 import ArenaAttributes from '../interfaces/ArenaAttributes';
+import ArenaCursorText from '../interfaces/ArenaCursorText';
 
 function isMac(): boolean {
   return window.navigator.platform.includes('Mac');
@@ -471,13 +472,15 @@ export default class ArenaBrowser {
       if (selection) {
         const newSelection = this.asm.model.insertTextToModel(selection, event.character, true);
         this.asm.history.save(newSelection, /[a-zа-яА-Я0-9]/i.test(event.character));
-        const [result, cursor] = this.asm.model.applyMiddlewares(
-          newSelection.getCursor(),
-          event.character,
-        );
-        newSelection.setCursor(cursor);
-        if (result) {
-          this.asm.history.save(newSelection);
+        if (newSelection.startNode.hasText) {
+          const [result, cursor] = this.asm.model.applyMiddlewares(
+            newSelection.getCursor() as ArenaCursorText,
+            event.character,
+          );
+          newSelection.setCursor(cursor);
+          if (result) {
+            this.asm.history.save(newSelection);
+          }
         }
         this.asm.eventManager.fire('modelChanged', newSelection);
       }

@@ -125,6 +125,10 @@ class ElementHelper {
       this.observer = undefined;
     }
   }
+
+  remove(): void {
+    this.elem.remove();
+  }
 }
 
 export default ElementHelper;

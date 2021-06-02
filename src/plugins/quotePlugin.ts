@@ -3,7 +3,7 @@ import {
 } from 'lit-element';
 import ArenaSelection from '../helpers/ArenaSelection';
 import { ArenaMediatorInterface, ArenaTextInterface } from '../interfaces/Arena';
-import { ArenaNodeText } from '../interfaces/ArenaNode';
+import { AnyArenaNode } from '../interfaces/ArenaNode';
 import ArenaPlugin from '../interfaces/ArenaPlugin';
 import Textarena from '../Textarena';
 
@@ -183,7 +183,8 @@ const quotePlugin = (opts?: Options): ArenaPlugin => ({
       shortcut,
       hint,
       command,
-      canShow: (node: ArenaNodeText) => node.parent.isAllowedNode(arena),
+      canShow: (node: AnyArenaNode) =>
+        textarena.isAllowedNode(node, arena),
     });
   },
 });

@@ -1,7 +1,7 @@
 import Textarena from '../Textarena';
 import ArenaPlugin from '../interfaces/ArenaPlugin';
 import { ArenaTextInterface } from '../interfaces/Arena';
-import { ChildArenaNode } from '../interfaces/ArenaNode';
+import { AnyArenaNode } from '../interfaces/ArenaNode';
 import ArenaSelection from '../helpers/ArenaSelection';
 
 type MarkOptions = {
@@ -63,7 +63,7 @@ const paragraphPlugin = (opts?: ParagraphOptions): ArenaPlugin => ({
       shortcut: 'Alt + Digit0',
       hint: '0',
       command: 'convert-to-paragraph',
-      checkStatus: (node: ChildArenaNode):
+      checkStatus: (node: AnyArenaNode):
         boolean => node.arena === arena,
     });
     textarena.addSimpleArenas(arena);

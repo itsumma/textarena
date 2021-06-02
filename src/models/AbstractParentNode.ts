@@ -5,8 +5,8 @@ import ArenaCursorText from '../interfaces/ArenaCursorText';
 import ArenaCursorAncestor from '../interfaces/ArenaCursorAncestor';
 import { ArenaFormatings } from '../interfaces/ArenaFormating';
 import { ChildArenaNode, ParentArenaNode } from '../interfaces/ArenaNode';
-import AbstractNode from './AbstractNode';
 import ArenaAttributes from '../interfaces/ArenaAttributes';
+import AbstractNode from './AbstractNode';
 
 export default abstract class AbstractParentNode<
   TArena extends ParentArena
@@ -68,9 +68,21 @@ export default abstract class AbstractParentNode<
       this.cache = '';
     } else {
       const id = this.getGlobalIndex();
+      const result: Array<[string, TemplateResult | string]> = [];
+      let noText = true;
+      this.children.forEach((child, index) => {
+        if (!this.protected && noText && !child.hasText) {
+          result.push(this.getPseudoCursor(index));
+        }
+        noText = !child.hasText;
+        result.push([child.getId(), child.getTemplate(frms)]);
+      });
+      if (!this.protected && noText) {
+        result.push(this.getPseudoCursor(this.children.length));
+      }
       const content = this.arena.getTemplate(
         html`
-          ${repeat(this.children, (c) => c.getId(), (child) => child.getTemplate(frms))}
+          ${repeat(result, (c) => c[0], (c) => c[1])}
         `,
         id,
         this.attributes,
@@ -160,11 +172,6 @@ export default abstract class AbstractParentNode<
       }
     }
     return undefined;
-  }
-
-  public insertText(
-  ): ArenaCursorText {
-    throw new Error('Arena for text not found');
   }
 
   public isAllowedNode(arena: ChildArena): boolean {
@@ -305,4 +312,11 @@ export default abstract class AbstractParentNode<
   }
 
   protected cache: TemplateResult | string | undefined;
+
+  protected getPseudoCursor(index: number): [string, TemplateResult] {
+    return [
+      `b${index}`,
+      html`<div cursor-id="${`${this.getGlobalIndex()}.${index}`}" class="pseudo-cursor"><br/></div>`,
+    ];
+  }
 }

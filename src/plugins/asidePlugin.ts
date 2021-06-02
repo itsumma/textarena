@@ -2,7 +2,7 @@ import Textarena from '../Textarena';
 import ArenaPlugin, { DefaulPlugintOptions } from '../interfaces/ArenaPlugin';
 import ArenaSelection from '../helpers/ArenaSelection';
 import { ArenaMediatorInterface, ArenaTextInterface } from '../interfaces/Arena';
-import { ArenaNodeText, ChildArenaNode } from '../interfaces/ArenaNode';
+import { AnyArenaNode } from '../interfaces/ArenaNode';
 
 const defaultOptions: DefaulPlugintOptions = {
   name: 'aside',
@@ -73,7 +73,7 @@ const asidePlugin = (opts?: Partial<DefaulPlugintOptions>): ArenaPlugin => ({
         shortcut,
         hint,
         command,
-        checkStatus: (node: ChildArenaNode):
+        checkStatus: (node: AnyArenaNode):
           boolean => node.arena === arena,
       });
     }
@@ -84,8 +84,8 @@ const asidePlugin = (opts?: Partial<DefaulPlugintOptions>): ArenaPlugin => ({
       shortcut,
       hint,
       command,
-      canShow: (node: ArenaNodeText) =>
-        node.parent.isAllowedNode(arena),
+      canShow: (node: AnyArenaNode) =>
+        textarena.isAllowedNode(node, arena),
     });
   },
 });

@@ -19,8 +19,8 @@ const commonPlugin: () => ArenaPlugin = () => ({
     textarena.registerCommand(
       'deleteWordBack',
       (ta: Textarena, selection: ArenaSelection) => {
-        if (selection.isCollapsed()) {
-          const { node, offset } = selection.getCursor();
+        const { node, offset } = selection.getCursor();
+        if (selection.isCollapsed() && node.hasText) {
           const wholeText = node.getRawText();
           const text = wholeText.slice(0, offset);
           const match = text.match(/([^\s]+\s*)$/g);
@@ -45,8 +45,8 @@ const commonPlugin: () => ArenaPlugin = () => ({
     textarena.registerCommand(
       'deleteWordForward',
       (ta: Textarena, selection: ArenaSelection) => {
-        if (selection.isCollapsed()) {
-          const { node, offset } = selection.getCursor();
+        const { node, offset } = selection.getCursor();
+        if (selection.isCollapsed() && node.hasText) {
           const wholeText = node.getRawText();
           const text = wholeText.slice(offset);
           const match = text.match(/^(\s*[^\s]+)/g);

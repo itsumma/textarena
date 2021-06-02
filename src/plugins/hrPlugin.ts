@@ -2,7 +2,7 @@ import Textarena from '../Textarena';
 import ArenaPlugin from '../interfaces/ArenaPlugin';
 import ArenaSelection from '../helpers/ArenaSelection';
 import { ArenaSingleInterface } from '../interfaces/Arena';
-import { ArenaNodeText } from '../interfaces/ArenaNode';
+import { AnyArenaNode } from '../interfaces/ArenaNode';
 
 const defaultOptions = {
   name: 'hr',
@@ -54,8 +54,8 @@ const hrPlugin = (opts?: typeof defaultOptions): ArenaPlugin => ({
       shortcut,
       hint,
       command,
-      canShow: (node: ArenaNodeText) =>
-        node.parent.isAllowedNode(arena),
+      canShow: (node: AnyArenaNode) =>
+        textarena.isAllowedNode(node, arena),
     });
     textarena.addSimpleArenas(arena);
   },

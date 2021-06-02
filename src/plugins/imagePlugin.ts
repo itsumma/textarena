@@ -5,7 +5,7 @@ import Textarena from '../Textarena';
 import ArenaSelection from '../helpers/ArenaSelection';
 import ArenaPlugin, { DefaulPlugintOptions } from '../interfaces/ArenaPlugin';
 import { ArenaSingleInterface } from '../interfaces/Arena';
-import { AnyArenaNode, ArenaNodeText } from '../interfaces/ArenaNode';
+import { AnyArenaNode } from '../interfaces/ArenaNode';
 import WebComponent from '../helpers/WebComponent';
 
 type ImgSize = {
@@ -270,8 +270,8 @@ const imagePlugin = (opts?: ImagePluginOptions): ArenaPlugin => ({
       shortcut,
       hint,
       command,
-      canShow: (node: ArenaNodeText) =>
-        node.parent.isAllowedNode(arena),
+      canShow: (node: AnyArenaNode) =>
+        textarena.isAllowedNode(node, arena),
     });
   },
 });

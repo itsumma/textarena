@@ -222,8 +222,11 @@ export default class ArenaParser {
         if (text) {
           text.insertFormating(formating.name, 0, text.getTextLength());
           // TODO dont insert text in node, but in model service.
-          const res = arenaNode.insertText(text, offset);
-          return [res.node, res.offset, true];
+          const cursor = this.asm.model.getOrCreateNodeForText(arenaNode, offset);
+          if (cursor) {
+            const res = cursor.node.insertText(text, cursor.offset);
+            return [res.node, res.offset, true];
+          }
         }
       }
       return [...this.insertChildren(elementNode, arenaNode, offset), true];
@@ -297,7 +300,9 @@ export default class ArenaParser {
           const inlineNode = newFormatings.addInlineNode(arena, 0, newFormatings.getTextLength());
           if (inlineNode) {
             elementNode.getAttributeNames().forEach((attr) => {
-              inlineNode.setAttribute(attr, elementNode.getAttribute(attr) || '');
+              if (arena.allowedAttributes.includes(attr)) {
+                inlineNode.setAttribute(attr, elementNode.getAttribute(attr) || '');
+              }
             });
           }
         } else if (arena) {

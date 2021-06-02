@@ -125,7 +125,7 @@ const typoSugarPlugin = (): ArenaPlugin => ({
       textarena.registerCommand(
         command,
         (ta: Textarena, selection: ArenaSelection) => {
-          if (selection.isCollapsed()) {
+          if (selection.isCollapsed() && selection.startNode.hasText) {
             const cursor = selection.startNode.insertText(text, selection.startOffset);
             selection.setCursor(cursor);
           }

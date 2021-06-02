@@ -4,7 +4,7 @@ import ElementHelper from '../helpers/ElementHelper';
 import CreatorBarOptions from '../interfaces/CreatorBarOptions';
 import CreatorOptions from '../interfaces/CreatorOptions';
 import ArenaServiceManager from './ArenaServiceManager';
-import { ArenaNodeText } from '../interfaces/ArenaNode';
+import { AnyArenaNode } from '../interfaces/ArenaNode';
 
 type Creator = {
   elem: ElementHelper;
@@ -163,12 +163,12 @@ export default class CreatorBar {
       return;
     }
     const selection = this.asm.view.getCurrentSelection();
+
     if (selection
-      && selection.isCollapsed()
-      && selection.startNode.getTextLength() === 0) {
-      const target = this.asm.view.findElementById(selection.startNode.getGlobalIndex());
+      && selection.isCollapsed()) {
+      const { node, offset } = selection.getCursor();
+      const target = this.asm.view.findElementByNodeAndOffset(node, offset);
       if (target) {
-        const { node } = selection.getCursor();
         this.show(node, target as HTMLElement);
         return;
       }
@@ -234,7 +234,7 @@ export default class CreatorBar {
     this.hide();
   }
 
-  private canShow(node: ArenaNodeText): boolean {
+  private canShow(node: AnyArenaNode): boolean {
     let result = false;
     this.creators.forEach((creator) => {
       const { elem, options: { canShow } } = creator;
@@ -259,7 +259,7 @@ export default class CreatorBar {
     return this.elem.getElem();
   }
 
-  show(node: ArenaNodeText, target: HTMLElement): void {
+  show(node: AnyArenaNode, target: HTMLElement): void {
     if (this.canShow(node)) {
       // target.appendChild(this.elem.getElem());
       this.showed = true;

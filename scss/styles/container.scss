@@ -54,7 +54,8 @@
   h6 {
     line-height: 1.2em;
     min-height: 1.2em;
-    margin: 1em 0 0.5em;
+    padding: 1em 0 0.5em;
+    margin: 0;
 
     &:first-child {
       margin-top: 0;
@@ -63,7 +64,8 @@
 
   .paragraph {
     font-size: 1rem;
-    margin: 0 0 1em;
+    margin: 0;
+    padding: 0 0 1em;
     min-height: 1.6em;
 
     &:last-child {
@@ -114,16 +116,19 @@
   }
 
   .pseudo-cursor {
-    height: 0.5rem;
     position: relative;
+    height: 1em;
+    margin-top: -1em;
+    font-size: 1em;
+    line-height: 1em;
 
     &:hover {
       background: #ececec;
     }
 
-    &[focus] {
-      height: auto;
-    }
+    // &[focus] {
+    //   height: auto;
+    // }
   }
 
   arena-embed {

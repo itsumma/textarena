@@ -1,13 +1,13 @@
-import ArenaCursorText from '../interfaces/ArenaCursorText';
-import { ArenaNodeText } from '../interfaces/ArenaNode';
+import ArenaCursor from '../interfaces/ArenaCursor';
+import { AnyArenaNode } from '../interfaces/ArenaNode';
 
 export type ArenaSelectionDiection = 'forward' | 'backward';
 
 export default class ArenaSelection {
   constructor(
-    public startNode: ArenaNodeText,
+    public startNode: AnyArenaNode,
     public startOffset: number,
-    public endNode: ArenaNodeText,
+    public endNode: AnyArenaNode,
     public endOffset: number,
     public direction: ArenaSelectionDiection,
   ) {
@@ -24,7 +24,7 @@ export default class ArenaSelection {
   }
 
   setStartNode(
-    startNode: ArenaNodeText,
+    startNode: AnyArenaNode,
     startOffset: number,
   ): ArenaSelection {
     this.startNode = startNode;
@@ -33,7 +33,7 @@ export default class ArenaSelection {
   }
 
   setEndNode(
-    endNode: ArenaNodeText,
+    endNode: AnyArenaNode,
     endOffset: number,
   ): ArenaSelection {
     this.endNode = endNode;
@@ -42,21 +42,35 @@ export default class ArenaSelection {
   }
 
   setBoth(
-    node: ArenaNodeText,
+    node: AnyArenaNode,
     offset: number,
   ): ArenaSelection {
     return this.setStartNode(node, offset).setEndNode(node, offset);
   }
 
-  getCursor(): ArenaCursorText {
+  getCursor(): ArenaCursor {
     return {
       node: this.direction === 'forward' ? this.endNode : this.startNode,
       offset: this.direction === 'forward' ? this.endOffset : this.startOffset,
     };
   }
 
-  setCursor(cursor: ArenaCursorText): ArenaSelection {
+  setCursor(cursor: ArenaCursor): ArenaSelection {
     return this.setBoth(cursor.node, cursor.offset);
+  }
+
+  getStartCursor(): ArenaCursor {
+    return {
+      node: this.startNode,
+      offset: this.startOffset,
+    };
+  }
+
+  getEndCursor(): ArenaCursor {
+    return {
+      node: this.endNode,
+      offset: this.endOffset,
+    };
   }
 
   isCollapsed(): boolean {
@@ -67,13 +81,13 @@ export default class ArenaSelection {
     return this.startNode === this.endNode;
   }
 
-  isSelectionOnBegin(): boolean {
-    return this.startOffset === 0;
-  }
+  // isSelectionOnBegin(): boolean {
+  //   return this.startOffset === 0;
+  // }
 
-  isSelectionOnEnd(): boolean {
-    return this.endNode.getTextLength() === this.endOffset;
-  }
+  // isSelectionOnEnd(): boolean {
+  //   return this.endNode.hasText && this.endNode.getTextLength() === this.endOffset;
+  // }
 
   collapse(): ArenaSelection {
     if (this.startNode === this.endNode) {
@@ -101,24 +115,28 @@ export default class ArenaSelection {
     if (this.isCollapsed()) {
       return this;
     }
-    const textA = this.startNode.getRawText().slice(this.startOffset);
-    const matchA = textA.match(/^( +)/g);
-    if (matchA) {
-      const len = matchA[0].length;
-      if (this.startNode !== this.endNode) {
-        this.startOffset += len;
-      } else {
-        this.startOffset = Math.min(this.startOffset + len, this.endOffset);
+    if (this.startNode.hasText) {
+      const textA = this.startNode.getRawText().slice(this.startOffset);
+      const matchA = textA.match(/^( +)/g);
+      if (matchA) {
+        const len = matchA[0].length;
+        if (this.startNode !== this.endNode) {
+          this.startOffset += len;
+        } else {
+          this.startOffset = Math.min(this.startOffset + len, this.endOffset);
+        }
       }
     }
-    const textB = this.endNode.getRawText().slice(0, this.endOffset);
-    const matchB = textB.match(/( +)$/g);
-    if (matchB) {
-      const len = matchB[0].length;
-      if (this.startNode !== this.endNode) {
-        this.endOffset -= len;
-      } else {
-        this.endOffset = Math.max(this.endOffset - len, this.startOffset);
+    if (this.endNode.hasText) {
+      const textB = this.endNode.getRawText().slice(0, this.endOffset);
+      const matchB = textB.match(/( +)$/g);
+      if (matchB) {
+        const len = matchB[0].length;
+        if (this.startNode !== this.endNode) {
+          this.endOffset -= len;
+        } else {
+          this.endOffset = Math.max(this.endOffset - len, this.startOffset);
+        }
       }
     }
     return this;

@@ -3,7 +3,7 @@ import ArenaSelection from '../helpers/ArenaSelection';
 import ArenaPlugin from '../interfaces/ArenaPlugin';
 import ArenaCursorText from '../interfaces/ArenaCursorText';
 import { ArenaMediatorInterface, ArenaTextInterface } from '../interfaces/Arena';
-import { ArenaNodeText, ChildArenaNode } from '../interfaces/ArenaNode';
+import { ArenaNodeText, AnyArenaNode } from '../interfaces/ArenaNode';
 
 // Icons https://freeicons.io/icon-list/material-icons-editor-2
 
@@ -169,8 +169,8 @@ const listsPlugin = (opts?: ListsOptions): ArenaPlugin => ({
         shortcut,
         command,
         hint,
-        checkStatus: (node: ChildArenaNode):
-          boolean => 'parent' in node && node.parent.arena === listArena,
+        checkStatus: (node: AnyArenaNode):
+          boolean => node.hasParent && node.parent.arena === listArena,
       });
       textarena.registerCreator({
         name,
@@ -179,8 +179,8 @@ const listsPlugin = (opts?: ListsOptions): ArenaPlugin => ({
         shortcut,
         command,
         hint,
-        canShow: (node: ArenaNodeText) =>
-          node.parent.isAllowedNode(listArena),
+        canShow: (node: AnyArenaNode) =>
+          textarena.isAllowedNode(node, listArena),
       });
       if (paragraph.hasText) {
         paragraph.registerMiddleware((ta: Textarena, cursor: ArenaCursorText, text: string) => {
@@ -195,7 +195,7 @@ const listsPlugin = (opts?: ListsOptions): ArenaPlugin => ({
                 'forward',
               );
               const newSel = ta.applyArenaToSelection(sel, listArena);
-              const cursor2 = newSel.getCursor();
+              const cursor2 = newSel.getCursor() as ArenaCursorText;
               cursor2.node.cutText(0, match[1].length);
               cursor2.offset = 0;
               return [true, cursor2];

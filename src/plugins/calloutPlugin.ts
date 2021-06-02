@@ -5,7 +5,7 @@ import Textarena from '../Textarena';
 import ArenaSelection from '../helpers/ArenaSelection';
 import ArenaPlugin from '../interfaces/ArenaPlugin';
 import { ArenaMediatorInterface, ArenaTextInterface } from '../interfaces/Arena';
-import { ArenaNodeText } from '../interfaces/ArenaNode';
+import { AnyArenaNode } from '../interfaces/ArenaNode';
 
 // This decorator defines the element.
 
@@ -176,8 +176,8 @@ const calloutPlugin = (opts?: CalloutOptions): ArenaPlugin => ({
       shortcut,
       hint,
       command,
-      canShow: (node: ArenaNodeText) =>
-        node.parent.isAllowedNode(arena),
+      canShow: (node: AnyArenaNode) =>
+        textarena.isAllowedNode(node, arena),
     });
   },
 });

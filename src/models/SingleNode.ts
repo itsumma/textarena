@@ -1,6 +1,5 @@
 import { html, TemplateResult } from 'lit-html';
 import ArenaCursorText from '../interfaces/ArenaCursorText';
-import RichTextManager from '../helpers/RichTextManager';
 import { ArenaFormatings } from '../interfaces/ArenaFormating';
 import AbstractNode from './AbstractNode';
 import { ArenaSingleInterface } from '../interfaces/Arena';
@@ -51,12 +50,6 @@ export default class SingleNode
 
   public getPlainText(): string {
     return '';
-  }
-
-  public insertText(
-    text: string | RichTextManager,
-  ): ArenaCursorText {
-    return this.parent.insertText(text, this.getIndex() + 1);
   }
 
   public getTextCursor(): ArenaCursorText | undefined {

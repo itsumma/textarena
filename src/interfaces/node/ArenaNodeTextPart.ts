@@ -23,7 +23,7 @@ export default interface ArenaNodeTextPart {
     text: string | RichTextManager,
     offset: number,
     keepFormatings?: boolean,
-  ): ArenaCursorText;
+  ): ArenaCursorText; // TODO return new offset
 
   removeText(start: number, end?: number): void;
 

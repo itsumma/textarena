@@ -6,7 +6,7 @@ import Textarena from '../Textarena';
 import ArenaSelection from '../helpers/ArenaSelection';
 import ArenaPlugin from '../interfaces/ArenaPlugin';
 import { ArenaMediatorInterface, ArenaTextInterface } from '../interfaces/Arena';
-import { AnyArenaNode, ArenaNodeMediator, ArenaNodeText } from '../interfaces/ArenaNode';
+import { AnyArenaNode, ArenaNodeMediator } from '../interfaces/ArenaNode';
 import WebComponent from '../helpers/WebComponent';
 import ArenaAttributes from '../interfaces/ArenaAttributes';
 import { ArenaFormatings } from '../interfaces/ArenaFormating';
@@ -218,8 +218,8 @@ const imageWithCaptionPlugin = (opts?: Partial<ImagePluginOptions>): ArenaPlugin
       icon,
       title,
       command,
-      canShow: (node: ArenaNodeText) =>
-        node.parent.isAllowedNode(arena),
+      canShow: (node: AnyArenaNode) =>
+        textarena.isAllowedNode(node, arena),
     });
   },
 });

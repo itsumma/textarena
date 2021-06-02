@@ -1,4 +1,4 @@
-import { ArenaNodeText } from './ArenaNode';
+import { AnyArenaNode } from './ArenaNode';
 
 export default interface CreatorOptions {
   name: string;
@@ -7,5 +7,5 @@ export default interface CreatorOptions {
   command: string;
   hint?: string;
   shortcut?: string;
-  canShow?: (node: ArenaNodeText) => boolean;
+  canShow: (node: AnyArenaNode) => boolean;
 }

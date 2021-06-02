@@ -6,7 +6,7 @@ import Textarena from '../Textarena';
 import ArenaPlugin from '../interfaces/ArenaPlugin';
 import ArenaSelection from '../helpers/ArenaSelection';
 import { ArenaMediatorInterface, ArenaTextInterface } from '../interfaces/Arena';
-import { ArenaNodeText } from '../interfaces/ArenaNode';
+import { AnyArenaNode } from '../interfaces/ArenaNode';
 
 // This decorator defines the element.
 export class Collapse extends LitElement {
@@ -192,8 +192,8 @@ const collapsePlugin = (opts?: CollapseOptions): ArenaPlugin => ({
       shortcut,
       hint,
       command,
-      canShow: (node: ArenaNodeText) =>
-        node.parent.isAllowedNode(arena),
+      canShow: (node: AnyArenaNode) =>
+        textarena.isAllowedNode(node, arena),
     });
   },
 });

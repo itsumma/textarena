@@ -7,7 +7,9 @@ import {
   AnyArena,
   ArenaInlineInterface, ArenaMediatorInterface, ArenaTextInterface, ChildArena,
 } from './interfaces/Arena';
-import { ArenaNodeInline, ChildArenaNode, ParentArenaNode } from './interfaces/ArenaNode';
+import {
+  AnyArenaNode, ArenaNodeInline, ChildArenaNode, ParentArenaNode,
+} from './interfaces/ArenaNode';
 import ArenaFormating, { TagAndAttributes } from './interfaces/ArenaFormating';
 import ArenaOptionsChild from './interfaces/ArenaOptions';
 import ArenaPlugin from './interfaces/ArenaPlugin';
@@ -408,6 +410,10 @@ class Textarena {
 
   public subscribe(event: string, handler: ArenaHandler): void {
     this.asm.eventManager.subscribe(event, handler);
+  }
+
+  public isAllowedNode(node: AnyArenaNode, arena: ChildArena): boolean {
+    return this.asm.model.isAllowedNode(node, arena);
   }
 
   protected debug = false;

@@ -4,7 +4,7 @@ import {
 import Textarena from '../Textarena';
 import ArenaPlugin from '../interfaces/ArenaPlugin';
 import ArenaSelection from '../helpers/ArenaSelection';
-import { ArenaNodeText } from '../interfaces/ArenaNode';
+import { AnyArenaNode } from '../interfaces/ArenaNode';
 import { ArenaSingleInterface } from '../interfaces/Arena';
 import WebComponent from '../helpers/WebComponent';
 
@@ -194,8 +194,8 @@ const examplePlugin = (opts?: ExampleOptions): ArenaPlugin => ({
       shortcut,
       hint,
       command,
-      canShow: (node: ArenaNodeText) =>
-        node.parent.isAllowedNode(arena),
+      canShow: (node: AnyArenaNode) =>
+        ta.isAllowedNode(node, arena),
     });
   },
 });
