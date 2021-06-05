@@ -95,6 +95,7 @@ const defaultOptions: TextarenaOptions = {
       'header2',
       'header3',
       'header4',
+      'aside',
       'blockquote',
       'clearFormatings',
     ],

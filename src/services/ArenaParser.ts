@@ -266,7 +266,9 @@ export default class ArenaParser {
     }
     for (let i = 0; i < attributes.length; i += 1) {
       const attribute = attributes[i];
-      const [name, value] = attribute.split('=');
+      let [name, value] = attribute.split('=');
+      name = name.trim();
+      value = value.trim().replace(/^"(.*)"$/, '$1');
       if (name === 'style') {
         const [styleName, styleValue] = value.split(':');
         if (!(styleName in node.style)
@@ -274,6 +276,14 @@ export default class ArenaParser {
           || node.style[styleName as any] !== styleValue.trim().toLowerCase()) {
           return false;
         }
+      } else if (name === 'class') {
+        const values = value.split(' ').filter((v) => v.trim()).filter((v) => v.length > 0);
+        for (let j = 0; j < values.length; j += 1) {
+          if (!node.classList.contains(values[j])) {
+            return false;
+          }
+        }
+        return true;
       } else if (node.getAttribute(name) !== value) {
         return false;
       }
