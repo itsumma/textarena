@@ -107,6 +107,7 @@ const defaultOptions: TextarenaOptions = {
       'header2',
       'header3',
       'header4',
+      'hr',
       'image-with-caption',
       'blockquote',
       'embed',

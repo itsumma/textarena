@@ -36,7 +36,7 @@ export default class SingleNode
     </svg>
     </textarena-remove>`;
     return html`
-      <textarena-node arena-id="${id}">${removeButton}${content}</textarena-node>
+      <textarena-node contenteditable="false" arena-id="${id}">${removeButton}${content}</textarena-node>
     `;
   }
 

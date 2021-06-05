@@ -167,10 +167,12 @@ export default class CreatorBar {
     if (selection
       && selection.isCollapsed()) {
       const { node, offset } = selection.getCursor();
-      const target = this.asm.view.findElementByNodeAndOffset(node, offset);
-      if (target) {
-        this.show(node, target as HTMLElement);
-        return;
+      if (!node.hasText || node.getTextLength() === 0) {
+        const target = this.asm.view.findElementByNodeAndOffset(node, offset);
+        if (target) {
+          this.show(node, target as HTMLElement);
+          return;
+        }
       }
     }
     this.hide();

@@ -86,13 +86,14 @@
   }
 
   hr {
-    display: inline-block;
+    display: block;
+    user-select: none;
     width: 100%;
-    // height: 0.5rem;
     margin: 0.4em 0 0.4em;
     padding: 0;
-    // border: none;
-    // border-bottom: 1px solid black;
+    background: #ccc;
+    border: 0;
+    height: 1px;
   }
 
   blockquote {
