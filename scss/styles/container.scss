@@ -1,7 +1,6 @@
 .textarena-container {
   position: relative;
   border: none;
-  line-height: 1.6;
   width: 100%;
   max-width: 100%;
 
@@ -15,107 +14,6 @@
     border: none;
   }
 
-  h1 {
-    font-size: 3rem;
-    font-weight: bold;
-  }
-
-  h2 {
-    font-size: 2rem;
-    font-weight: bold;
-  }
-
-  h3 {
-    font-size: 1.5rem;
-    font-weight: bold;
-  }
-
-  h4 {
-    font-size: 1rem;
-    font-weight: bold;
-  }
-
-  h5 {
-    font-size: 1rem;
-    font-weight: normal;
-  }
-
-  h6 {
-    font-style: italic;
-    font-size: 1rem;
-    font-weight: normal;
-  }
-
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
-    line-height: 1.2em;
-    min-height: 1.2em;
-    padding: 1em 0 0.5em;
-    margin: 0;
-
-    &:first-child {
-      margin-top: 0;
-    }
-  }
-
-  .paragraph {
-    font-size: 1rem;
-    margin: 0;
-    padding: 0 0 1em;
-    min-height: 1.6em;
-
-    &:last-child {
-      margin-bottom: 0;
-    }
-  }
-
-  ul,
-  ol {
-    font-size: 1rem;
-    padding-left: 2rem;
-    margin: 0;
-  }
-
-  li {
-    margin: 0 0 1em;
-    padding-left: 0.1em;
-  }
-
-  hr {
-    display: block;
-    user-select: none;
-    width: 100%;
-    margin: 0.4em 0 0.4em;
-    padding: 0;
-    background: #ccc;
-    border: 0;
-    height: 1px;
-  }
-
-  blockquote {
-    padding-left: 1em;
-    margin: 0 0 1em;
-    min-height: 1.6em;
-    border-left: 0.2em solid gray;
-
-    &:last-child {
-      margin-bottom: 0;
-    }
-  }
-
-  aside {
-    display: block;
-    background: white;
-    border: 1px solid #ccc;
-    border-radius: 1rem;
-    padding: 1rem;
-    margin: 0 0 1em;
-  }
-
   .pseudo-cursor {
     position: relative;
     height: 1em;
@@ -126,10 +24,6 @@
     &:hover {
       background: #ececec;
     }
-
-    // &[focus] {
-    //   height: auto;
-    // }
   }
 
   arena-embed {
@@ -168,51 +62,5 @@
   .twitter-tweet-rendered {
     position: relative;
     margin: 0 !important;
-  }
-
-  .textarena-quote {
-    display: block;
-    background: white;
-    border: 1px solid #ccc;
-    border-radius: 1rem;
-    padding: 1rem;
-    margin: 0 0 1em;
-
-    &__author {
-      display: block;
-      // font-size: 0.8em;
-      // line-height: 1em;
-      font-style: normal;
-      font-weight: 600;
-      letter-spacing: 0;
-      text-align: left;
-      width: 100%;
-    }
-
-    &__role {
-      display: block;
-      font-size: 0.8em;
-      // line-height: 0.8em;
-      font-style: normal;
-      // font-weight: 400;
-      text-align: left;
-      width: 100%;
-    }
-
-    quote {
-      display: block;
-      font-size: 1.3em;
-      font-style: italic;
-      // font-weight: 00;
-      // line-height: 32px;
-      text-align: center;
-      width: 100%;
-      margin: 0;
-    }
-  }
-
-  arena-image {
-    height: 100%;
-    width: 100%;
   }
 }

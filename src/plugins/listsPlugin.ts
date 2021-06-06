@@ -1,24 +1,17 @@
 import Textarena from '../Textarena';
 import ArenaSelection from '../helpers/ArenaSelection';
-import ArenaPlugin from '../interfaces/ArenaPlugin';
+import ArenaPlugin, { DefaulPluginOptions } from '../interfaces/ArenaPlugin';
 import ArenaCursorText from '../interfaces/ArenaCursorText';
 import { ArenaMediatorInterface, ArenaTextInterface } from '../interfaces/Arena';
 import { ArenaNodeText, AnyArenaNode } from '../interfaces/ArenaNode';
+import ArenaAttributes from '../interfaces/ArenaAttributes';
 
 // Icons https://freeicons.io/icon-list/material-icons-editor-2
 
 type PrefixProcessor = (node: ArenaNodeText) => string;
 
-type ListOptions = {
+type ListOptions = DefaulPluginOptions & {
   prefix: PrefixProcessor,
-  name: string,
-  tag: string,
-  attributes: string[],
-  title: string,
-  icon: string;
-  shortcut: string,
-  command: string,
-  hint: string,
   pattern: RegExp,
 };
 
@@ -26,7 +19,7 @@ type ListsOptions = {
   item: {
     name: string,
     tag: string,
-    attributes: string[],
+    attributes: ArenaAttributes,
   },
   lists: ListOptions[],
 };
@@ -35,14 +28,14 @@ const defaultOptions: ListsOptions = {
   item: {
     name: 'li',
     tag: 'LI',
-    attributes: [],
+    attributes: {},
   },
   lists: [
     {
       prefix: () => '  — ',
       name: 'unordered-list',
       tag: 'UL',
-      attributes: [],
+      attributes: {},
       title: 'List',
       icon: `<svg width="19px" height="16px" viewBox="0 0 19 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
       <g id="Icons" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
@@ -62,12 +55,18 @@ const defaultOptions: ListsOptions = {
       command: 'convert-to-unordered-list',
       hint: 'l',
       pattern: /^(-\s+).*$/,
+      marks: [
+        {
+          tag: 'UL',
+          attributes: [],
+        },
+      ],
     },
     {
       prefix: (node: ArenaNodeText) => `  ${node.getIndex() + 1}. `,
       name: 'ordered-list',
       tag: 'OL',
-      attributes: [],
+      attributes: {},
       title: 'Ordered list',
       icon: `<svg width="19px" height="16px" viewBox="0 0 19 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
       <g id="Icons" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
@@ -87,6 +86,12 @@ const defaultOptions: ListsOptions = {
       command: 'convert-to-ordered-list',
       hint: 'o',
       pattern: /^(\d+(?:\.|\))\s+).*$/,
+      marks: [
+        {
+          tag: 'OL',
+          attributes: [],
+        },
+      ],
     },
   ],
 };
@@ -118,7 +123,7 @@ const listsPlugin = (opts?: ListsOptions): ArenaPlugin => ({
       [
         {
           tag: item.tag,
-          attributes: item.attributes,
+          attributes: [],
         },
       ],
     ) as ArenaTextInterface;
@@ -132,6 +137,7 @@ const listsPlugin = (opts?: ListsOptions): ArenaPlugin => ({
       shortcut,
       command,
       hint,
+      marks,
       pattern,
     }) => {
       prefixes[name] = prefix;
@@ -145,43 +151,44 @@ const listsPlugin = (opts?: ListsOptions): ArenaPlugin => ({
           automerge: true,
           group: true,
         },
-        [
-          {
-            tag,
-            attributes,
-          },
-        ],
+        marks,
         [textarena.getRootArenaName()],
       ) as ArenaMediatorInterface;
-      textarena.registerCommand(
-        command,
-        (ta: Textarena, selection: ArenaSelection) =>
-          ta.applyArenaToSelection(selection, listArena),
-      );
-      textarena.registerShortcut(
-        shortcut,
-        command,
-      );
-      textarena.registerTool({
-        name,
-        title,
-        icon,
-        shortcut,
-        command,
-        hint,
-        checkStatus: (node: AnyArenaNode):
-          boolean => node.hasParent && node.parent.arena === listArena,
-      });
-      textarena.registerCreator({
-        name,
-        title,
-        icon,
-        shortcut,
-        command,
-        hint,
-        canShow: (node: AnyArenaNode) =>
-          textarena.isAllowedNode(node, listArena),
-      });
+      if (command) {
+        textarena.registerCommand(
+          command,
+          (ta: Textarena, selection: ArenaSelection) =>
+            ta.applyArenaToSelection(selection, listArena),
+        );
+        if (shortcut) {
+          textarena.registerShortcut(
+            shortcut,
+            command,
+          );
+        }
+        if (icon) {
+          textarena.registerTool({
+            name,
+            title,
+            icon,
+            shortcut,
+            command,
+            hint,
+            checkStatus: (node: AnyArenaNode):
+              boolean => node.hasParent && node.parent.arena === listArena,
+          });
+        }
+        textarena.registerCreator({
+          name,
+          title,
+          icon,
+          shortcut,
+          command,
+          hint,
+          canShow: (node: AnyArenaNode) =>
+            textarena.isAllowedNode(node, listArena),
+        });
+      }
       if (paragraph.hasText) {
         paragraph.registerMiddleware((ta: Textarena, cursor: ArenaCursorText, text: string) => {
           if (text === ' ') {

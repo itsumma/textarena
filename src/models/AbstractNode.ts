@@ -1,7 +1,8 @@
 import { TreeArena } from '../interfaces/Arena';
-import ArenaAttributes from '../interfaces/ArenaAttributes';
+import NodeAttributes from '../interfaces/NodeAttributes';
 import ArenaCursorAncestor from '../interfaces/ArenaCursorAncestor';
 import { ChildArenaNode, ParentArenaNode } from '../interfaces/ArenaNode';
+import ArenaAttribute from '../interfaces/ArenaAttribute';
 
 export default abstract class AbstractNode<
   TArena extends TreeArena
@@ -28,7 +29,7 @@ export default abstract class AbstractNode<
   constructor(
     readonly arena: TArena,
     readonly id: string,
-    attributes?: ArenaAttributes,
+    attributes?: NodeAttributes,
   ) {
     this.attributes = attributes || {};
   }
@@ -97,17 +98,17 @@ export default abstract class AbstractNode<
 
   // Attributes methods
 
-  public setAttribute(name: string, value: string | boolean | number): void {
+  public setAttribute(name: string, value: ArenaAttribute): void {
     this.attributes[name] = value;
   }
 
-  public setAttributes(attrs: ArenaAttributes): void {
+  public setAttributes(attrs: NodeAttributes): void {
     Object.entries(attrs).forEach(([name, value]) => this.setAttribute(name, value));
   }
 
-  public getAttribute(name: string): string | boolean | number {
+  public getAttribute(name: string): ArenaAttribute {
     return this.attributes[name] || '';
   }
 
-  protected attributes: ArenaAttributes = {};
+  protected attributes: NodeAttributes = {};
 }

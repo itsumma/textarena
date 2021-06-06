@@ -71,12 +71,13 @@ context('Actions', () => {
 
     cy.get('@root')
       .children()
-      .eq(1)
+      .eq(2)
       .contains('p', 'Simple paragraph');
 
     cy.get('@root')
       .focus()
       .type('{movetostart}')
+      .type('{rightArrow}')
       .type('First line.')
       .type('{enter}');
 
@@ -93,6 +94,7 @@ context('Actions', () => {
     cy.get('@root')
       .focus()
       .type('{movetostart}')
+      .type('{rightArrow}')
       .type('{end}')
       .type('{enter}')
       .type('{enter}');
@@ -103,21 +105,13 @@ context('Actions', () => {
       .contains('p', 'First line.');
 
     cy.get('@root')
-      .children()
-      .eq(1)
-      .should(($div) => {
-        // access the native DOM element
-        expect($div.get(0).textContent).to.eq('');
-      });
-
-    cy.get('@root')
       .children('blockquote')
       .eq(1)
       .contains('p', 'Blockqoute content');
 
     cy.get('@root')
       .children()
-      .eq(3)
+      .eq(4)
       .contains('p', 'Simple paragraph');
   });
 

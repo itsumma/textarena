@@ -24,13 +24,13 @@ import ToolbarOptions from './interfaces/ToolbarOptions';
 import ToolOptions from './interfaces/ToolOptions';
 
 import blockquotePlugin from './plugins/blockquotePlugin';
-import calloutPlugin from './plugins/calloutPlugin';
+import calloutPlugin from './plugins/callout/calloutPlugin';
 import commonPlugin from './plugins/commonPlugin';
 import embedPlugin from './plugins/embedPlugin';
 import formatingsPlugin from './plugins/formatingsPlugin';
 import headersPlugin from './plugins/headersPlugin';
 import hrPlugin from './plugins/hrPlugin';
-import imagePlugin from './plugins/imagePlugin';
+import imagePlugin from './plugins/image/imagePlugin';
 import linkPlugin from './plugins/linkPlugin';
 import listsPlugin from './plugins/listsPlugin';
 import paragraphPlugin from './plugins/paragraphPlugin';
@@ -39,44 +39,9 @@ import ArenaCommandManager from './services/ArenaCommandManager';
 import ArenaServiceManager from './services/ArenaServiceManager';
 import { ArenaHandler } from './services/EventManager';
 import asidePlugin from './plugins/asidePlugin';
-import quotePlugin from './plugins/quotePlugin';
-import imageWithCaptionPlugin from './plugins/imageWithCaptionPlugin';
+import quotePlugin from './plugins/quoteBlock/quoteBlockPlugin';
+import figurePlugin from './plugins/figure/figurePlugin';
 import typoSugarPlugin from './plugins/typoSugarPlugin';
-
-const imgOpts = {
-  srcset: [
-    {
-      media: '(max-width: 320px)',
-      rations: [
-        {
-          ratio: 1,
-          width: 100,
-          height: 100,
-        },
-        {
-          ratio: 2,
-          width: 200,
-          height: 200,
-        },
-      ],
-    },
-    {
-      media: '',
-      rations: [
-        {
-          ratio: 1,
-          width: 200,
-          height: 200,
-        },
-        {
-          ratio: 2,
-          width: 400,
-          height: 400,
-        },
-      ],
-    },
-  ],
-};
 
 const defaultOptions: TextarenaOptions = {
   editable: true,
@@ -109,11 +74,12 @@ const defaultOptions: TextarenaOptions = {
       'header3',
       'header4',
       'hr',
-      'image-with-caption',
+      'fugire',
       'blockquote',
       'embed',
       'aside',
-      'quote',
+      'quote-block',
+      'callout',
     ],
   },
   plugins: [
@@ -126,7 +92,7 @@ const defaultOptions: TextarenaOptions = {
     blockquotePlugin(),
     calloutPlugin(),
     imagePlugin(),
-    imageWithCaptionPlugin(imgOpts),
+    figurePlugin(),
     embedPlugin(),
     linkPlugin(),
     asidePlugin(),
@@ -192,27 +158,33 @@ class Textarena {
     }
   }
 
-  public getData(): TextarenaData {
-    return {
-      html: this.getPublicHtml(),
+  public getData(types?: string[]): TextarenaData {
+    const result: TextarenaData = {
+      html: this.getOutput('html'),
       dataHtml: this.getDataHtml(),
       json: this.getJson(),
     };
+    types?.forEach((type) => {
+      if (!result[type]) {
+        result[type] = this.getOutput(type);
+      }
+    });
+    return result;
   }
 
   public getDataHtml(): string {
     return this.asm.model.getDataHtml();
   }
 
-  public getPublicHtml(): string {
-    return this.asm.model.getPublicHtml();
+  public getOutput(type: string): string {
+    return this.asm.model.getOutput(type);
   }
 
   public getJson(): string {
     return this.asm.model.getJson();
   }
 
-  public setData(data: TextarenaData | undefined): void {
+  public setData(data: Partial<TextarenaData> | undefined): void {
     const html = data && typeof data.dataHtml === 'string' ? data.dataHtml : '';
     const sel = this.asm.parser.insertHtmlToRoot(html);
     this.asm.history.reset(sel);

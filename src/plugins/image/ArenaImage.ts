@@ -1,65 +1,11 @@
 import {
   html, css, property, TemplateResult, CSSResult,
 } from 'lit-element';
-import Textarena from '../Textarena';
-import ArenaSelection from '../helpers/ArenaSelection';
-import ArenaPlugin, { DefaulPlugintOptions } from '../interfaces/ArenaPlugin';
-import { ArenaSingleInterface } from '../interfaces/Arena';
-import { AnyArenaNode } from '../interfaces/ArenaNode';
-import WebComponent from '../helpers/WebComponent';
+import WebComponent from '../../helpers/WebComponent';
+import { AnyArena } from '../../interfaces/Arena';
+import { ScrProcessor } from './types';
 
-type ImgSize = {
-  width: number;
-  height: number;
-};
-
-export type Srcset = Array<{
-  media: string;
-  rations: Array<ImgSize & { ratio: number }>
-}>;
-
-export type ImagePluginOptions = DefaulPlugintOptions & {
-  srcset?: Srcset,
-};
-
-export const prepareImageSrc = (src: string, width?: number, height?: number): string => {
-  if (!width || !height) {
-    return src;
-  }
-  const arr = src.split('.');
-  if (arr.length < 2) {
-    return src;
-  }
-  arr[arr.length - 2] += `_${width}_${height}`;
-  return arr.join('.');
-};
-
-// TODO webp
-const getPublic = (srcset: Srcset | undefined) =>
-  (node: AnyArenaNode): string => {
-    const src = node.getAttribute('src') as string;
-    const alt = node.getAttribute('alt') as string;
-    const width = node.getAttribute('width') as number;
-    const height = node.getAttribute('height') as number;
-    const slot = node.getAttribute('slot') as string;
-    const className = node.getAttribute('class') as string;
-    if (!src) {
-      return '';
-    }
-    const img = `<img src="${prepareImageSrc(src, width, height)}" alt="${alt}" slot="${slot}" class="${className}">`;
-    if (srcset) {
-      const sources = srcset.map((item) => `<source media="${item.media}"
-      srcset="${item.rations.map((r) => `${prepareImageSrc(src, r.width, r.height)} ${r.ratio}x`).join(', ')}"/>`).join('\n');
-      return `
-      <picture>
-        ${sources}
-        ${img}
-      </picture>`;
-    }
-    return img;
-  };
-
-export class Image extends WebComponent {
+export default class ArenaImage extends WebComponent {
   @property({
     type: String,
   })
@@ -74,6 +20,11 @@ export class Image extends WebComponent {
     type: Number,
   })
   height: number | undefined;
+
+  @property({
+    type: Object,
+  })
+  arena: AnyArena | undefined;
 
   loading = false;
 
@@ -131,7 +82,7 @@ export class Image extends WebComponent {
       preview = html`<div class="empty">Грузится…</div>`;
     } else if (this.src) {
       preview = html`<label for="input">
-        <img class="img" src="${prepareImageSrc(this.src, this.width, this.height)}" />
+        <img class="img" src="${this.getScr(this.src, this.width, this.height)}" />
       </label>`;
     } else {
       preview = html`<label for="input" class="empty">
@@ -142,6 +93,18 @@ export class Image extends WebComponent {
       ${preview}
       <input class="input" id=input type="file" @change=${this.onChange}/>
     `;
+  }
+
+  protected getScr(src: string, width?: number, height?: number): string {
+    if (this.arena) {
+      const prepareSrc = this.arena.getAttribute('prepareSrc') as ScrProcessor;
+      try {
+        return prepareSrc(src, width, height);
+      } catch (e) {
+        //
+      }
+    }
+    return '';
   }
 
   protected onChange(): void {
@@ -186,94 +149,3 @@ export class Image extends WebComponent {
     });
   }
 }
-
-const defaultOptions: ImagePluginOptions = {
-  name: 'image',
-  icon: `<svg width="18px" height="18px" viewBox="0 0 18 18" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <g id="Icons" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-        <g id="Rounded" transform="translate(-851.000000, -2061.000000)">
-            <g id="Editor" transform="translate(100.000000, 1960.000000)">
-                <g id="-Round-/-Editor-/-nsert_photo" transform="translate(748.000000, 98.000000)">
-                    <g>
-                        <polygon id="Path" points="0 0 24 0 24 24 0 24"></polygon>
-                        <path d="M21,19 L21,5 C21,3.9 20.1,3 19,3 L5,3 C3.9,3 3,3.9 3,5 L3,19 C3,20.1 3.9,21 5,21 L19,21 C20.1,21 21,20.1 21,19 Z M8.9,13.98 L11,16.51 L14.1,12.52 C14.3,12.26 14.7,12.26 14.9,12.53 L18.41,17.21 C18.66,17.54 18.42,18.01 18.01,18.01 L6.02,18.01 C5.6,18.01 5.37,17.53 5.63,17.2 L8.12,14 C8.31,13.74 8.69,13.73 8.9,13.98 Z" id="🔹-Icon-Color" fill="currentColor"></path>
-                    </g>
-                </g>
-            </g>
-        </g>
-    </g>
-</svg>`,
-  title: 'Image',
-  tag: 'ARENA-IMAGE',
-  attributes: [],
-  allowedAttributes: ['src', 'width', 'height'],
-  shortcut: 'Alt + KeyI',
-  hint: 'i',
-  command: 'add-image',
-  marks: [
-    {
-      tag: 'ARENA-IMAGE',
-      attributes: [],
-    },
-    {
-      tag: 'IMG',
-      attributes: [],
-    },
-  ],
-  component: 'arena-image',
-};
-
-const imagePlugin = (opts?: ImagePluginOptions): ArenaPlugin => ({
-  register(textarena: Textarena): void {
-    const {
-      name, icon, title, tag, attributes, allowedAttributes,
-      shortcut, hint, command, marks, component, srcset,
-    } = { ...defaultOptions, ...(opts || {}) };
-    if (component) {
-      if (!customElements.get(component)) {
-        customElements.define(component, Image);
-      }
-    }
-    const paragraph = textarena.getDefaultTextArena();
-    if (!paragraph) {
-      throw new Error('Default Arena for text not found');
-    }
-    const arena = textarena.registerArena(
-      {
-        name,
-        tag,
-        attributes,
-        allowedAttributes,
-        single: true,
-        getPublic: getPublic(srcset),
-      },
-      marks,
-      [textarena.getRootArenaName()],
-    ) as ArenaSingleInterface;
-    textarena.registerCommand(
-      command,
-      (ta: Textarena, selection: ArenaSelection) => {
-        const sel = ta.insertBeforeSelected(selection, arena);
-        return sel;
-      },
-    );
-    if (shortcut) {
-      textarena.registerShortcut(
-        shortcut,
-        command,
-      );
-    }
-    textarena.registerCreator({
-      name,
-      icon,
-      title,
-      shortcut,
-      hint,
-      command,
-      canShow: (node: AnyArenaNode) =>
-        textarena.isAllowedNode(node, arena),
-    });
-  },
-});
-
-export default imagePlugin;

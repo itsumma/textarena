@@ -1,12 +1,14 @@
 import { TemplateResult } from 'lit-html';
-import ArenaAttributes from '../ArenaAttributes';
+import NodeAttributes from '../NodeAttributes';
 import { ArenaFormatings } from '../ArenaFormating';
 import { AnyArenaNode } from '../ArenaNode';
+import ArenaAttributes from '../ArenaAttributes';
+import ArenaAttribute from '../ArenaAttribute';
 
 interface ArenaCore {
   readonly name: string;
   readonly tag: string;
-  readonly attributes: string[];
+  readonly attributes: ArenaAttributes;
   readonly allowedAttributes: string[];
 
   readonly hasParent: boolean;
@@ -18,27 +20,30 @@ interface ArenaCore {
   getTemplate(
     children: TemplateResult | string | undefined,
     id: string,
-    attributes: ArenaAttributes,
+    attributes: NodeAttributes,
   ): TemplateResult | string;
 
-  getOutputTemplate(
+  getDataHtml(
     children: string | undefined,
-    attributes: ArenaAttributes,
+    attributes: NodeAttributes,
     single?: boolean,
   ): string;
 
-  getPublicHtml(
+  getOutput(
+    type: string,
     children: string[] | string | undefined,
-    attributes: ArenaAttributes,
+    attributes: NodeAttributes,
     node: AnyArenaNode,
     frms: ArenaFormatings,
   ): string;
 
   getOpenTag(
-    attributes: ArenaAttributes,
+    attributes: NodeAttributes,
   ): string;
 
   getCloseTag(): string
+
+  getAttribute(name: string): ArenaAttribute;
 }
 
 export default ArenaCore;

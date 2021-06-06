@@ -2,7 +2,7 @@ import { TemplateResult, html } from 'lit-html';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html';
 import RichTextManager from '../helpers/RichTextManager';
 import { ArenaInlineInterface, ArenaTextInterface } from '../interfaces/Arena';
-import ArenaAttributes from '../interfaces/ArenaAttributes';
+import NodeAttributes from '../interfaces/NodeAttributes';
 import ArenaCursorText from '../interfaces/ArenaCursorText';
 import ArenaFormating, { ArenaFormatings } from '../interfaces/ArenaFormating';
 import {
@@ -28,7 +28,7 @@ export default class TextNode
   constructor(
     arena: ArenaTextInterface,
     id: string,
-    attributes?: ArenaAttributes,
+    attributes?: NodeAttributes,
     text?: string | RichTextManager,
   ) {
     super(arena, id, attributes);
@@ -48,15 +48,15 @@ export default class TextNode
     );
   }
 
-  public getPublicHtml(frms: ArenaFormatings): string {
+  public getOutput(type: string, frms: ArenaFormatings): string {
     if (this.isEmpty()) {
       return '';
     }
-    const text = this.richTextManager.getHtml(frms);
-    return this.arena.getPublicHtml(text, this.attributes, this, frms);
+    const text = type === 'text' ? this.richTextManager.getText() : this.richTextManager.getHtml(frms);
+    return this.arena.getOutput(type, text, this.attributes, this, frms);
   }
 
-  public getOutputHtml(
+  public getDataHtml(
     frms: ArenaFormatings,
     start?: number,
     end?: number,
@@ -65,7 +65,7 @@ export default class TextNode
       return '';
     }
     const text = this.richTextManager.getHtml(frms, start, end);
-    return this.arena.getOutputTemplate(text, this.attributes, true);
+    return this.arena.getDataHtml(text, this.attributes, true);
   }
 
   public getPlainText(

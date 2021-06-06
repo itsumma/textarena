@@ -1,7 +1,9 @@
 import { TemplateResult } from 'lit-html';
 import { ArenaInlineInterface } from '../interfaces/Arena';
-import ArenaAttributes from '../interfaces/ArenaAttributes';
+import NodeAttributes from '../interfaces/NodeAttributes';
 import { ArenaNodeInline } from '../interfaces/ArenaNode';
+import utils from '../utils';
+import ArenaAttribute from '../interfaces/ArenaAttribute';
 
 export default class InlineNode
 implements ArenaNodeInline {
@@ -15,38 +17,21 @@ implements ArenaNodeInline {
 
   readonly single: false = false;
 
-  protected attributes: ArenaAttributes = {};
+  protected attributes: NodeAttributes = {};
 
   constructor(
     public arena: ArenaInlineInterface,
   ) {
   }
 
-  public getHtml(): TemplateResult | string {
+  public getTemplate(): TemplateResult | string {
     return this.arena.getTemplate(undefined, '', this.attributes);
   }
 
   protected getAttributesString(): string {
-    let str = '';
-    this.arena.attributes.forEach((attr) => {
-      str += ` ${attr}`;
-    });
-    Object.entries(this.attributes).forEach(([name, value]) => {
-      if (typeof value === 'boolean') {
-        if (value) {
-          str += ` ${name}`;
-        }
-      } else if (typeof value === 'string') {
-        const escapedValue = value.toString()
-          .replace(/&/g, '&amp;')
-          .replace(/'/g, '&apos;')
-          .replace(/"/g, '&quot;')
-          .replace(/</g, '&lt;')
-          .replace(/>/g, '&gt;');
-        str += ` ${name}="${escapedValue}"`;
-      }
-    });
-    return str;
+    let result = utils.attr.getStringsFromAttributes(this.attributes);
+    result = result.concat(utils.attr.getStringsFromAttributes(this.arena.attributes));
+    return result.join(' ');
   }
 
   public getTags(): [string, string] {
@@ -55,15 +40,15 @@ implements ArenaNodeInline {
     return [`<${tag.toLowerCase()}${attrs}>`, `</${tag.toLowerCase()}>`];
   }
 
-  public getOutputHtml(): string {
-    return this.arena.getOutputTemplate('', this.attributes);
+  public getDataHtml(): string {
+    return this.arena.getDataHtml('', this.attributes);
   }
 
-  public setAttribute(name: string, value: string | boolean | number): void {
+  public setAttribute(name: string, value: ArenaAttribute): void {
     this.attributes[name] = value;
   }
 
-  public getAttribute(name: string): string | boolean | number {
+  public getAttribute(name: string): ArenaAttribute {
     return this.attributes[name] || '';
   }
 

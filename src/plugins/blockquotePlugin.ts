@@ -1,30 +1,13 @@
 import Textarena from '../Textarena';
-import ArenaPlugin from '../interfaces/ArenaPlugin';
+import ArenaPlugin, { DefaulPluginOptions } from '../interfaces/ArenaPlugin';
 import ArenaSelection from '../helpers/ArenaSelection';
 import { ArenaMediatorInterface, ArenaTextInterface } from '../interfaces/Arena';
 import { AnyArenaNode } from '../interfaces/ArenaNode';
 
-type MarkOptions = {
-  tag: string,
-  attributes: string[];
-};
-
-type BlockquoteOptions = {
-  name: string,
-  tag: string,
-  attributes: string[],
-  title: string,
-  icon: string,
-  shortcut: string,
-  hint: string,
-  command: string,
-  marks: MarkOptions[],
-};
-
-const defaultOptions: BlockquoteOptions = {
+const defaultOptions: DefaulPluginOptions = {
   name: 'blockquote',
   tag: 'BLOCKQUOTE',
-  attributes: [],
+  attributes: {},
   title: 'Blockquote',
   icon: `<svg width="16px" height="10px" viewBox="0 0 16 10" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
   <g id="Icons" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
@@ -51,7 +34,7 @@ const defaultOptions: BlockquoteOptions = {
   ],
 };
 
-const blockquotePlugin = (opts?: BlockquoteOptions): ArenaPlugin => ({
+const blockquotePlugin = (opts?: Partial<DefaulPluginOptions>): ArenaPlugin => ({
   register(textarena: Textarena): void {
     const {
       name, tag, attributes, title, icon, shortcut, hint, command, marks,
@@ -74,35 +57,41 @@ const blockquotePlugin = (opts?: BlockquoteOptions): ArenaPlugin => ({
       marks,
       [textarena.getRootArenaName()],
     ) as ArenaMediatorInterface;
-    textarena.registerCommand(
-      command,
-      (ta: Textarena, selection: ArenaSelection) =>
-        ta.applyArenaToSelection(selection, arena),
-    );
-    textarena.registerShortcut(
-      shortcut,
-      command,
-    );
-    textarena.registerTool({
-      name,
-      title,
-      icon,
-      shortcut,
-      hint,
-      command,
-      checkStatus: (node: AnyArenaNode):
-        boolean => node.arena === arena,
-    });
-    textarena.registerCreator({
-      name,
-      title,
-      icon,
-      shortcut,
-      hint,
-      command,
-      canShow: (node: AnyArenaNode) =>
-        textarena.isAllowedNode(node, arena),
-    });
+    if (command) {
+      textarena.registerCommand(
+        command,
+        (ta: Textarena, selection: ArenaSelection) =>
+          ta.applyArenaToSelection(selection, arena),
+      );
+      if (shortcut) {
+        textarena.registerShortcut(
+          shortcut,
+          command,
+        );
+      }
+      if (icon) {
+        textarena.registerTool({
+          name,
+          title,
+          icon,
+          shortcut,
+          hint,
+          command,
+          checkStatus: (node: AnyArenaNode):
+            boolean => node.arena === arena,
+        });
+      }
+      textarena.registerCreator({
+        name,
+        title,
+        icon,
+        shortcut,
+        hint,
+        command,
+        canShow: (node: AnyArenaNode) =>
+          textarena.isAllowedNode(node, arena),
+      });
+    }
   },
 });
 

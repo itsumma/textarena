@@ -1,25 +1,18 @@
 import Textarena from '../Textarena';
-import ArenaPlugin from '../interfaces/ArenaPlugin';
+import ArenaPlugin, { DefaulPluginOptions } from '../interfaces/ArenaPlugin';
 import { ArenaTextInterface } from '../interfaces/Arena';
 import { AnyArenaNode } from '../interfaces/ArenaNode';
 import ArenaSelection from '../helpers/ArenaSelection';
 
-type MarkOptions = {
-  tag: string,
-  attributes: string[];
-};
-
-type ParagraphOptions = {
-  name: string,
-  tag: string,
-  attributes: string[],
-  marks: MarkOptions[],
-};
-
-const defaultOptions: ParagraphOptions = {
+const defaultOptions: DefaulPluginOptions = {
   name: 'paragraph',
+  title: 'Paragraph',
   tag: 'P',
-  attributes: ['class="paragraph"'],
+  attributes: { class: 'paragraph' },
+  icon: '<b>¶</b>',
+  shortcut: 'Alt + Digit0',
+  hint: '0',
+  command: 'convert-to-paragraph',
   marks: [
     {
       tag: 'P',
@@ -32,10 +25,10 @@ const defaultOptions: ParagraphOptions = {
   ],
 };
 
-const paragraphPlugin = (opts?: ParagraphOptions): ArenaPlugin => ({
+const paragraphPlugin = (opts?: Partial<DefaulPluginOptions>): ArenaPlugin => ({
   register(textarena: Textarena): void {
     const {
-      name, tag, attributes, marks,
+      name, title, tag, attributes, icon, shortcut, hint, command, marks,
     } = { ...defaultOptions, ...(opts || {}) };
     const arena = textarena.registerArena(
       {
@@ -47,26 +40,33 @@ const paragraphPlugin = (opts?: ParagraphOptions): ArenaPlugin => ({
       marks,
     ) as ArenaTextInterface;
     textarena.setDefaultTextArena(arena as ArenaTextInterface);
-    textarena.registerCommand(
-      'convert-to-paragraph',
-      (ta: Textarena, selection: ArenaSelection) =>
-        ta.applyArenaToSelection(selection, arena),
-    );
-    textarena.registerShortcut(
-      'Alt + Digit0',
-      'convert-to-paragraph',
-    );
-    textarena.registerTool({
-      name: 'paragraph',
-      title: 'Paragraph',
-      icon: '<b>¶</b>',
-      shortcut: 'Alt + Digit0',
-      hint: '0',
-      command: 'convert-to-paragraph',
-      checkStatus: (node: AnyArenaNode):
-        boolean => node.arena === arena,
-    });
     textarena.addSimpleArenas(arena);
+
+    if (command) {
+      textarena.registerCommand(
+        command,
+        (ta: Textarena, selection: ArenaSelection) =>
+          ta.applyArenaToSelection(selection, arena),
+      );
+      if (shortcut) {
+        textarena.registerShortcut(
+          shortcut,
+          command,
+        );
+      }
+      if (icon) {
+        textarena.registerTool({
+          name,
+          title,
+          icon,
+          shortcut,
+          hint,
+          command,
+          checkStatus: (node: AnyArenaNode):
+            boolean => node.arena === arena,
+        });
+      }
+    }
   },
 });
 

@@ -40,12 +40,12 @@ export default class SingleNode
     `;
   }
 
-  public getPublicHtml(frms: ArenaFormatings): string {
-    return this.arena.getPublicHtml(undefined, this.attributes, this, frms);
+  public getOutput(type: string, frms: ArenaFormatings): string {
+    return this.arena.getOutput(type, undefined, this.attributes, this, frms);
   }
 
-  public getOutputHtml(): string {
-    return this.arena.getOutputTemplate('', this.attributes);
+  public getDataHtml(): string {
+    return this.arena.getDataHtml('', this.attributes);
   }
 
   public getPlainText(): string {

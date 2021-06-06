@@ -1,21 +1,23 @@
 import {
   ArenaMediatorInterface, ArenaTextInterface, ChildArena, ProtectedArenas,
 } from './Arena';
+import ArenaAttributes from './ArenaAttributes';
 import { ArenaFormatings } from './ArenaFormating';
 import { AnyArenaNode, ArenaNodeText } from './ArenaNode';
 
 export type TextProcessor = (text: string, node: ArenaNodeText) => string;
 
-export type HtmlProcessor = (
+export type OutputProcessor = (
+  type: string,
   node: AnyArenaNode,
   frms: ArenaFormatings,
-  arenaAttrs: string[],
+  arenaAttrs: ArenaAttributes,
 ) => string;
 
 export type ArenaOptionsCore = {
   name: string,
   tag: string,
-  attributes: string[],
+  attributes: ArenaAttributes,
   allowedAttributes?: string[],
   hasParent?: boolean,
   hasChildren?: boolean,
@@ -23,7 +25,7 @@ export type ArenaOptionsCore = {
   inline?: boolean,
   single?: boolean,
   root?: boolean;
-  getPublic?: HtmlProcessor;
+  output?: OutputProcessor;
 };
 
 export type ArenaOptionsAncestor = ArenaOptionsCore & {

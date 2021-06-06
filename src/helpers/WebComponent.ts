@@ -1,7 +1,7 @@
 import {
   LitElement,
 } from 'lit-element';
-import ArenaAttributes from '../interfaces/ArenaAttributes';
+import NodeAttributes from '../interfaces/NodeAttributes';
 
 export default class WebComponent extends LitElement {
   constructor() {
@@ -32,7 +32,7 @@ export default class WebComponent extends LitElement {
     event.stopPropagation();
   }
 
-  protected fireChangeAttribute(attrs: ArenaAttributes): void {
+  protected fireChangeAttribute(attrs: NodeAttributes): void {
     const event = new CustomEvent('arena-change-attribute', {
       bubbles: true,
       detail: {

@@ -1,3 +1,5 @@
-type ArenaAttributes = { [key: string] :string | boolean | number };
+import ArenaAttribute from './ArenaAttribute';
+
+type ArenaAttributes = { [key: string]: ArenaAttribute };
 
 export default ArenaAttributes;

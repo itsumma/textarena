@@ -14,12 +14,12 @@ const textArena = ArenaFactory.createChild({
   name: 'text',
   hasText: true,
   tag: '',
-  attributes: [],
+  attributes: {},
 }) as ArenaText;
 const blockArena = ArenaFactory.createChild({
   name: 'block',
   tag: '',
-  attributes: [],
+  attributes: {},
   allowedArenas: [textArena],
   arenaForText: textArena,
 }) as ParentArena;
@@ -28,7 +28,7 @@ const rootArena = ArenaFactory.createRoot({
   name: 'root',
   root: true,
   tag: '',
-  attributes: [],
+  attributes: {},
   allowedArenas: [textArena, blockArena],
   arenaForText: textArena,
 });

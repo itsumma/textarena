@@ -36,7 +36,7 @@ const headersPlugin = (opts?: ListsOptions): ArenaPlugin => ({
           {
             name,
             tag,
-            attributes: [],
+            attributes: {},
             hasText: true,
             nextArena: paragraph,
           },

@@ -1,5 +1,5 @@
 import Textarena from '../Textarena';
-import ArenaPlugin from '../interfaces/ArenaPlugin';
+import ArenaPlugin, { DefaulPluginOptions } from '../interfaces/ArenaPlugin';
 import ArenaSelection from '../helpers/ArenaSelection';
 import { ArenaInlineInterface } from '../interfaces/Arena';
 
@@ -52,25 +52,7 @@ import { ArenaInlineInterface } from '../interfaces/Arena';
 //   }
 // }
 
-type MarkOptions = {
-  tag: string,
-  attributes: string[],
-};
-
-type LinkOptions = {
-  name: string,
-  icon: string,
-  title: string,
-  tag: string,
-  attributes: string[];
-  allowedAttributes: string[];
-  shortcut: string,
-  hint: string,
-  command: string,
-  marks: MarkOptions[],
-};
-
-const defaultOptions: LinkOptions = {
+const defaultOptions: DefaulPluginOptions = {
   name: 'link',
   icon: `<svg width="20px" height="10px" viewBox="0 0 20 10" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
   <g id="Icons" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
@@ -89,7 +71,7 @@ const defaultOptions: LinkOptions = {
   title: 'Link',
   // tag: 'ARENA-LINK',
   tag: 'A',
-  attributes: [],
+  attributes: {},
   allowedAttributes: ['href'],
   shortcut: 'Ctrl + KeyK',
   hint: 'k',
@@ -106,7 +88,7 @@ const defaultOptions: LinkOptions = {
   ],
 };
 
-const linkPlugin = (opts?: typeof defaultOptions): ArenaPlugin => ({
+const linkPlugin = (opts?: Partial<DefaulPluginOptions>): ArenaPlugin => ({
   register(textarena: Textarena): void {
     const {
       name, icon, title, tag, attributes, allowedAttributes, shortcut, hint, command, marks,
@@ -121,50 +103,57 @@ const linkPlugin = (opts?: typeof defaultOptions): ArenaPlugin => ({
       },
       marks,
     ) as ArenaInlineInterface;
-    textarena.registerCommand(
-      command,
-      (ta: Textarena, selection: ArenaSelection) => {
-        // eslint-disable-next-line no-alert
-        const oldNode = ta.getInlineNode(selection, arena);
-        let link = '';
-        if (oldNode) {
-          link = oldNode.getAttribute('href').toString();
-        }
-        // eslint-disable-next-line no-alert
-        const input = prompt('You link', link);
-        if (input === null) {
-          return selection;
-        }
-        link = input;
-        if (link) {
-          selection.trim();
+    if (command) {
+      textarena.registerCommand(
+        command,
+        (ta: Textarena, selection: ArenaSelection) => {
+          // eslint-disable-next-line no-alert
+          const oldNode = ta.getInlineNode(selection, arena);
+          let link = '';
           if (oldNode) {
-            ta.updateInlineNode(selection, oldNode);
-            oldNode.setAttribute('href', link);
-          } else {
-            const node = ta.addInlineNode(selection, arena);
-            if (node) {
-              node.setAttribute('href', link);
-            }
+            const oldLink = oldNode.getAttribute('href');
+            link = typeof oldLink === 'string' ? oldLink : '';
           }
-        } else if (oldNode) {
-          ta.removeInlineNode(selection, oldNode);
-        }
-        return selection;
-      },
-    );
-    textarena.registerShortcut(
-      shortcut,
-      command,
-    );
-    textarena.registerTool({
-      name,
-      icon,
-      title,
-      command,
-      hint,
-      shortcut,
-    });
+          // eslint-disable-next-line no-alert
+          const input = prompt('You link', link);
+          if (input === null) {
+            return selection;
+          }
+          link = input;
+          if (link) {
+            selection.trim();
+            if (oldNode) {
+              ta.updateInlineNode(selection, oldNode);
+              oldNode.setAttribute('href', link);
+            } else {
+              const node = ta.addInlineNode(selection, arena);
+              if (node) {
+                node.setAttribute('href', link);
+              }
+            }
+          } else if (oldNode) {
+            ta.removeInlineNode(selection, oldNode);
+          }
+          return selection;
+        },
+      );
+      if (shortcut) {
+        textarena.registerShortcut(
+          shortcut,
+          command,
+        );
+      }
+      if (icon) {
+        textarena.registerTool({
+          name,
+          icon,
+          title,
+          command,
+          hint,
+          shortcut,
+        });
+      }
+    }
   },
 });
 

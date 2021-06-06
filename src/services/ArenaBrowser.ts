@@ -16,7 +16,7 @@ import ElementHelper from '../helpers/ElementHelper';
 import { keyboardKeys, Modifiers } from './ArenaCommandManager';
 import ArenaServiceManager from './ArenaServiceManager';
 import ArenaSelection from '../helpers/ArenaSelection';
-import ArenaAttributes from '../interfaces/ArenaAttributes';
+import NodeAttributes from '../interfaces/NodeAttributes';
 import ArenaCursorText from '../interfaces/ArenaCursorText';
 
 function isMac(): boolean {
@@ -24,7 +24,7 @@ function isMac(): boolean {
 }
 
 type ArenaChangeAttribute = CustomEvent<{
-  attrs: ArenaAttributes,
+  attrs: NodeAttributes,
   target: HTMLElement,
 }>;
 
@@ -506,7 +506,7 @@ export default class ArenaBrowser {
       e.preventDefault();
       return;
     }
-    const resultHtml = this.asm.model.getOutputHtmlOfSelection(selection);
+    const resultHtml = this.asm.model.getDataHtmlOfSelection(selection);
     const resultText = this.asm.model.getPlainTextOfSelection(selection);
     clipboardData.setData('text/html', resultHtml);
     clipboardData.setData('text/plain', resultText);

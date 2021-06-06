@@ -13,16 +13,6 @@
     outline: none;
   }
 
-  & figure {
-    overflow: auto;
-    resize: both;
-    border: 1px solid black;
-
-    & img {
-      max-width: 100%;
-    }
-  }
-
   textarena-node {
     display: block;
     position: relative;
@@ -53,6 +43,8 @@
     }
 
     &:hover {
+      background: #00000012;
+
       textarena-remove {
         display: block;
       }

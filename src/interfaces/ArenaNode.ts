@@ -1,4 +1,3 @@
-import { TemplateResult } from 'lit-html';
 import ArenaNodeAncestorPart from './node/ArenaNodeAncestorPart';
 import ArenaNodeCorePart from './node/ArenaNodeCorePart';
 import ArenaNodeScionPart from './node/ArenaNodeScionPart';
@@ -6,7 +5,7 @@ import ArenaNodeTextPart from './node/ArenaNodeTextPart';
 import {
   ArenaInlineInterface, ArenaMediatorInterface, ArenaRootInterface, ArenaSingleInterface,
 } from './Arena';
-import { ArenaFormatings } from './ArenaFormating';
+import ArenaAttribute from './ArenaAttribute';
 
 export type ArenaNodeRoot = ArenaNodeCorePart<ArenaNodeRoot>
   & ArenaNodeAncestorPart
@@ -51,15 +50,17 @@ export interface ArenaNodeInline {
   readonly inline: true;
   readonly single: false;
 
-  getHtml(model: ArenaFormatings): TemplateResult | string;
+  // getTemplate(model: ArenaFormatings): TemplateResult | string;
 
-  getOutputHtml(model: ArenaFormatings): string;
+  // getDataHtml(model: ArenaFormatings): string;
+
+  // getOutput(type: string, model: ArenaFormatings): string;
 
   getTags(): [string, string];
 
-  getAttribute(name: string): string | boolean | number;
+  getAttribute(name: string): ArenaAttribute;
 
-  setAttribute(name: string, value: string | boolean | number): void;
+  setAttribute(name: string, value: ArenaAttribute): void;
 
   clone(): ArenaNodeInline;
 }

@@ -1,7 +1,8 @@
 import { TemplateResult } from 'lit-html';
+import ArenaAttribute from '../ArenaAttribute';
 import ArenaCursorText from '../ArenaCursorText';
 import { ArenaFormatings } from '../ArenaFormating';
-import ArenaAttributes from '../ArenaAttributes';
+import NodeAttributes from '../NodeAttributes';
 
 export default interface ArenaNodeCorePart<T> {
   readonly id: string;
@@ -18,9 +19,9 @@ export default interface ArenaNodeCorePart<T> {
 
   getTemplate(frms: ArenaFormatings): TemplateResult | string;
 
-  getPublicHtml(frms: ArenaFormatings): string;
+  getOutput(type: string, frms: ArenaFormatings): string;
 
-  getOutputHtml(frms: ArenaFormatings, start?: number, end?: number): string;
+  getDataHtml(frms: ArenaFormatings, start?: number, end?: number): string;
 
   getPlainText(start?: number, end?: number): string;
 
@@ -30,11 +31,11 @@ export default interface ArenaNodeCorePart<T> {
 
   getTextCursor(index?: number): ArenaCursorText | undefined;
 
-  setAttribute(name: string, value: string | boolean | number): void;
+  setAttribute(name: string, value: ArenaAttribute): void;
 
-  setAttributes(attrs: ArenaAttributes): void;
+  setAttributes(attrs: NodeAttributes): void;
 
-  getAttribute(name: string): string | boolean | number;
+  getAttribute(name: string): ArenaAttribute;
 
   clone(): T;
 }

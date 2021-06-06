@@ -1,0 +1,195 @@
+h1 {
+  font-size: 3rem;
+  font-weight: bold;
+}
+
+h2 {
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+h3 {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+h4 {
+  font-size: 1rem;
+  font-weight: bold;
+}
+
+h5 {
+  font-size: 1rem;
+  font-weight: normal;
+}
+
+h6 {
+  font-style: italic;
+  font-size: 1rem;
+  font-weight: normal;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  line-height: 1.2em;
+  min-height: 1.2em;
+  margin: 1em 0 0.5em;
+  padding: 0;
+}
+
+h1:first-child {
+  margin-top: 0;
+}
+
+h2:first-child {
+  margin-top: 0;
+}
+
+h3:first-child {
+  margin-top: 0;
+}
+
+h4:first-child {
+  margin-top: 0;
+}
+
+.paragraph {
+  font-size: 1rem;
+  margin: 0 0 1em;
+  padding: 0;
+  min-height: 1.6em;
+}
+
+.paragraph:last-child {
+  margin-bottom: 0;
+}
+
+ul,
+ol {
+  font-size: 1rem;
+  padding-left: 2rem;
+  margin: 0;
+}
+
+li {
+  margin: 0 0 1em;
+  padding-left: 0.1em;
+}
+
+hr {
+  display: block;
+  user-select: none;
+  width: 100%;
+  margin: 0.4em 0 0.4em;
+  padding: 0;
+  background: #ccc;
+  border: 0;
+  height: 1px;
+}
+
+blockquote {
+  padding-left: 1em;
+  margin: 0 0 1em;
+  min-height: 1.6em;
+  border-left: 0.2em solid gray;
+}
+
+blockquote:last-child {
+  margin-bottom: 0;
+}
+
+.aside {
+  display: block;
+  background: white;
+  border: 1px solid black;
+  border-radius: 1rem;
+  padding: 1rem;
+  margin: 0 0 1em;
+}
+.aside:last-child {
+  margin-bottom: 0;
+}
+
+.aside-gray {
+  border: 1px solid #ccc;
+}
+
+.quote-block {
+  display: block;
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 1rem;
+  padding: 1rem;
+  margin: 0 0 1em;
+}
+.quote-block__line {
+  display: flex;
+  align-items: center;
+  margin: 0.3rem 0.3rem 0.5rem ;
+}
+.quote-block__author-block {
+  flex: 1;
+  margin-right: 1rem;
+}
+.quote-block__image {
+  width: 100px;
+  height: 100px;
+}
+.quote-block__author {
+  display: block;
+  font-style: normal;
+  font-weight: 600;
+  letter-spacing: 0;
+  text-align: left;
+  width: 100%;
+}
+.quote-block__role {
+  display: block;
+  font-size: 0.8em;
+  font-style: normal;
+  text-align: left;
+  width: 100%;
+}
+.quote-block__body {
+  display: block;
+  font-size: 1.3em;
+  font-style: italic;
+  text-align: center;
+  width: 100%;
+  margin: 0;
+}
+@media screen and (max-width: 600px) {
+  .quote-block__line {
+    flex-direction: column-reverse;
+  }
+  .quote-block__image {
+    width: 200px;
+    height: 200px;
+  }
+}
+
+img {
+  display: block;
+  width: 100%;
+}
+
+figure {
+  margin: 0 0 1em;
+  padding: 0;
+}
+
+figure img, picture {
+  display: block;
+  width: 100%;
+  border: 1px solid #ccc;
+  border-radius: 1rem;
+  overflow: hidden;
+}
+
+figcaption {
+  color: rgb(124, 124, 124);
+  font-size: 0.8em;
+  text-align: center;
+}

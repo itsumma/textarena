@@ -1,19 +1,22 @@
 import { TemplateResult, defaultTemplateProcessor } from 'lit-html';
-import ArenaAttributes from '../interfaces/ArenaAttributes';
+import NodeAttributes from '../interfaces/NodeAttributes';
 import { ArenaFormatings } from '../interfaces/ArenaFormating';
 import { AnyArenaNode } from '../interfaces/ArenaNode';
-import ArenaOptions, { HtmlProcessor } from '../interfaces/ArenaOptions';
+import ArenaOptions, { OutputProcessor } from '../interfaces/ArenaOptions';
+import ArenaAttributes from '../interfaces/ArenaAttributes';
+import utils from '../utils';
+import ArenaAttribute from '../interfaces/ArenaAttribute';
 
 export default abstract class AbstractArena {
   readonly name: string;
 
   readonly tag: string;
 
-  readonly attributes: string[];
+  readonly attributes: ArenaAttributes;
 
   readonly allowedAttributes: string[] = [];
 
-  protected getPublicProcessor: HtmlProcessor | undefined;
+  protected getOutputProcessor: OutputProcessor | undefined;
 
   constructor(options: ArenaOptions) {
     this.name = options.name;
@@ -22,35 +25,45 @@ export default abstract class AbstractArena {
     if (options.allowedAttributes) {
       this.allowedAttributes = options.allowedAttributes;
     }
-    this.getPublicProcessor = options.getPublic;
+    this.getOutputProcessor = options.output;
   }
 
   public getTemplate(
     children: TemplateResult | string,
     id: string,
-    attributes: ArenaAttributes,
+    attributes: NodeAttributes,
   ): TemplateResult | string {
     if (!this.tag) {
       return children;
     }
-    const openTag = this.getOpenTag({ ...attributes, 'arena-id': id });
-    const closeTag = this.getCloseTag();
-    const stringArray = [
-      openTag,
-      closeTag,
+    const strings = [
     ];
+    const values = [
+    ];
+    if (this.tag) {
+      const attrs = this.getAttributesString(id, attributes);
+      const tag = this.tag.toLowerCase();
+      strings.push(`<${tag} ${attrs} .arena="`);
+      strings.push('">');
+      strings.push(`</${tag}>`);
+      values.push(this);
+    } else {
+      strings.push('');
+      strings.push('');
+    }
+    values.push(children);
     // FIXME
     return new TemplateResult(
-      (stringArray as unknown as TemplateStringsArray),
-      [children],
+      (strings as unknown as TemplateStringsArray),
+      values,
       'html',
       defaultTemplateProcessor,
     );
   }
 
-  public getOutputTemplate(
+  public getDataHtml(
     children: string | undefined,
-    attributes: ArenaAttributes,
+    attributes: NodeAttributes,
     sigle = false,
   ): string {
     if (!this.tag) {
@@ -65,14 +78,15 @@ export default abstract class AbstractArena {
     return `${openTag}${content}${closeTag}`;
   }
 
-  public getPublicHtml(
+  public getOutput(
+    type: string,
     children: string[] | string | undefined,
-    attributes: ArenaAttributes,
+    attributes: NodeAttributes,
     node: AnyArenaNode,
     frms: ArenaFormatings,
   ): string {
-    if (this.getPublicProcessor) {
-      return this.getPublicProcessor(node, frms, this.attributes);
+    if (this.getOutputProcessor) {
+      return this.getOutputProcessor(type, node, frms, this.attributes);
     }
     const openTag = this.getOpenTag(attributes);
     const closeTag = this.getCloseTag();
@@ -84,14 +98,14 @@ export default abstract class AbstractArena {
   }
 
   public getOpenTag(
-    attributes: ArenaAttributes,
+    attributes: NodeAttributes,
   ): string {
     if (!this.tag) {
       return '';
     }
     const attrs = this.getAttributesString('', attributes);
     const tag = this.tag.toLowerCase();
-    return `<${tag.toLowerCase()}${attrs}>`;
+    return `<${tag}${attrs.length > 0 ? ` ${attrs}` : ''}>`;
   }
 
   public getCloseTag(
@@ -100,34 +114,20 @@ export default abstract class AbstractArena {
       return '';
     }
     const tag = this.tag.toLowerCase();
-    return `</${tag.toLowerCase()}>`;
+    return `</${tag}>`;
   }
 
-  protected getAttributesString(id: string, attributes: ArenaAttributes): string {
-    let str = '';
+  public getAttribute(name: string): ArenaAttribute {
+    return this.attributes[name] || '';
+  }
+
+  protected getAttributesString(id: string, attributes: NodeAttributes): string {
+    let result: string[] = [];
     if (id) {
-      str += ` arena-id="${id}"`;
+      result.push(`arena-id="${id}"`);
     }
-    this.attributes.forEach((attr) => {
-      str += ` ${attr}`;
-    });
-    Object.entries(attributes).forEach(([name, value]) => {
-      if (typeof value === 'boolean') {
-        if (value) {
-          str += ` ${name}`;
-        }
-      } else if (value !== null && value !== undefined) {
-        const escapedValue = value.toString()
-          .replace(/&/g, '&amp;')
-          .replace(/'/g, '&apos;')
-          .replace(/"/g, '&quot;')
-          .replace(/</g, '&lt;')
-          .replace(/>/g, '&gt;');
-        str += ` ${name}="${escapedValue}"`;
-      } else {
-        str += ` ${name}=""`;
-      }
-    });
-    return str;
+    result = result.concat(utils.attr.getStringsFromAttributes(this.attributes));
+    result = result.concat(utils.attr.getStringsFromAttributes(attributes));
+    return result.join(' ');
   }
 }

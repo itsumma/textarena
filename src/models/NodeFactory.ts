@@ -10,7 +10,7 @@ import {
 } from '../interfaces/ArenaNode';
 import InlineNode from './InlineNode';
 import NodeRegistry from '../helpers/NodeRegistry';
-import ArenaAttributes from '../interfaces/ArenaAttributes';
+import NodeAttributes from '../interfaces/NodeAttributes';
 
 export default class NodeFactory {
   static createRootNode(arena: ArenaRootInterface): ArenaNodeRoot {
@@ -28,7 +28,7 @@ export default class NodeFactory {
       if (arena.protected) {
         children = arena.protectedChildren.map((item) => {
           let childArena;
-          let attributes: ArenaAttributes = {};
+          let attributes: NodeAttributes = {};
           let childContent: string | undefined;
           if (Array.isArray(item)) {
             [childArena, attributes, childContent] = item;

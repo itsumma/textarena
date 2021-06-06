@@ -4,12 +4,12 @@ import {
 } from 'lit-element';
 import { classMap } from 'lit-html/directives/class-map';
 import Textarena from '../Textarena';
-import ArenaPlugin from '../interfaces/ArenaPlugin';
+import ArenaPlugin, { DefaulPluginOptions } from '../interfaces/ArenaPlugin';
 import ArenaSelection from '../helpers/ArenaSelection';
 import { AnyArenaNode } from '../interfaces/ArenaNode';
 import { ArenaSingleInterface } from '../interfaces/Arena';
 import WebComponent from '../helpers/WebComponent';
-import ArenaAttributes from '../interfaces/ArenaAttributes';
+import NodeAttributes from '../interfaces/NodeAttributes';
 
 const HOSTS = {
   twitter: ['twitter.com'],
@@ -115,11 +115,11 @@ class Embed extends LitElement {
     });
   }
 
-  handleForm({ detail }: { detail: ArenaAttributes }): void {
+  handleForm({ detail }: { detail: NodeAttributes }): void {
     this.fireChangeAttribute(detail);
   }
 
-  fireChangeAttribute(attrs: ArenaAttributes): void {
+  fireChangeAttribute(attrs: NodeAttributes): void {
     const event = new CustomEvent('arena-change-attribute', {
       bubbles: true,
       detail: {
@@ -409,7 +409,7 @@ export type ExampleOptions = {
   marks: MarkOptions[],
 };
 
-const defaultOptions: ExampleOptions = {
+const defaultOptions: DefaulPluginOptions = {
   name: 'embed',
   title: 'Embed',
   icon: `<svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
@@ -436,9 +436,9 @@ const defaultOptions: ExampleOptions = {
     </g>
   </svg>`,
   tag: 'ARENA-EMBED',
-  attributes: [
-    'contenteditable="false"',
-  ],
+  attributes: {
+    contenteditable: 'false',
+  },
   allowedAttributes: ['href', 'type', 'postid', 'border'],
   shortcut: 'Alt + KeyE',
   hint: 'e',
@@ -454,13 +454,13 @@ const defaultOptions: ExampleOptions = {
   ],
 };
 
-const embedPlugin = (opts?: ExampleOptions): ArenaPlugin => ({
+const embedPlugin = (opts?: Partial<DefaulPluginOptions>): ArenaPlugin => ({
   register: (ta: Textarena) => {
     const {
       name, icon, title, tag, attributes,
       allowedAttributes, shortcut, hint, command, component, marks,
     } = { ...defaultOptions, ...(opts || {}) };
-    if (!customElements.get(component)) {
+    if (component && !customElements.get(component)) {
       customElements.define(component, Embed);
     }
     if (!customElements.get('arena-embed-simple')) {
@@ -483,35 +483,39 @@ const embedPlugin = (opts?: ExampleOptions): ArenaPlugin => ({
       marks,
       [ta.getRootArenaName()],
     ) as ArenaSingleInterface;
-    ta.registerCommand(
-      command,
-      (someTa: Textarena, selection: ArenaSelection) => {
-        const sel = someTa.insertBeforeSelected(selection, arena);
-        return sel;
-      },
-    );
-    ta.registerShortcut(
-      shortcut,
-      command,
-    );
-    ta.registerCreator({
-      name,
-      icon,
-      title,
-      shortcut,
-      hint,
-      command,
-      canShow: (node: AnyArenaNode) =>
-        ta.isAllowedNode(node, arena),
-    });
+    if (command) {
+      ta.registerCommand(
+        command,
+        (someTa: Textarena, selection: ArenaSelection) => {
+          const sel = someTa.insertBeforeSelected(selection, arena);
+          return sel;
+        },
+      );
+      if (shortcut) {
+        ta.registerShortcut(
+          shortcut,
+          command,
+        );
+      }
+      ta.registerCreator({
+        name,
+        icon,
+        title,
+        shortcut,
+        hint,
+        command,
+        canShow: (node: AnyArenaNode) =>
+          ta.isAllowedNode(node, arena),
+      });
+    }
 
     ta.registerArena(
       {
         name: 'simple-embed',
         tag: 'ARENA-EMBED-SIMPLE',
-        attributes: [
-          'contenteditable="false"',
-        ],
+        attributes: {
+          contenteditable: 'false',
+        },
         allowedAttributes,
         single: true,
       },

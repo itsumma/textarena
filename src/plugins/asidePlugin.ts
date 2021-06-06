@@ -1,13 +1,13 @@
 import Textarena from '../Textarena';
-import ArenaPlugin, { DefaulPlugintOptions } from '../interfaces/ArenaPlugin';
+import ArenaPlugin, { DefaulPluginOptions } from '../interfaces/ArenaPlugin';
 import ArenaSelection from '../helpers/ArenaSelection';
 import { ArenaMediatorInterface, ArenaTextInterface } from '../interfaces/Arena';
 import { AnyArenaNode } from '../interfaces/ArenaNode';
 
-const defaultOptions: DefaulPlugintOptions = {
+const defaultOptions: DefaulPluginOptions = {
   name: 'aside',
   tag: 'ASIDE',
-  attributes: ['class="aside aside-gray"'],
+  attributes: { class: 'aside aside-gray' },
   title: 'Блок с рамочкой',
   icon: `<svg id="_x31_"viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><g>
     <path d="m21.5 22h-19c-1.378 0-2.5-1.121-2.5-2.5v-15c0-1.379 1.122-2.5 2.5-2.5h19c1.378
@@ -31,7 +31,7 @@ const defaultOptions: DefaulPlugintOptions = {
   ],
 };
 
-const asidePlugin = (opts?: Partial<DefaulPlugintOptions>): ArenaPlugin => ({
+const asidePlugin = (opts?: Partial<DefaulPluginOptions>): ArenaPlugin => ({
   register(textarena: Textarena): void {
     const {
       name, tag, attributes, title, icon, shortcut, hint, command, marks,
@@ -54,39 +54,41 @@ const asidePlugin = (opts?: Partial<DefaulPlugintOptions>): ArenaPlugin => ({
       marks,
       [textarena.getRootArenaName()],
     ) as ArenaMediatorInterface;
-    textarena.registerCommand(
-      command,
-      (ta: Textarena, selection: ArenaSelection) =>
-        ta.applyArenaToSelection(selection, arena),
-    );
-    if (shortcut) {
-      textarena.registerShortcut(
-        shortcut,
+    if (command) {
+      textarena.registerCommand(
         command,
+        (ta: Textarena, selection: ArenaSelection) =>
+          ta.applyArenaToSelection(selection, arena),
       );
-    }
-    if (icon) {
-      textarena.registerTool({
+      if (shortcut) {
+        textarena.registerShortcut(
+          shortcut,
+          command,
+        );
+      }
+      if (icon) {
+        textarena.registerTool({
+          name,
+          title,
+          icon,
+          shortcut,
+          hint,
+          command,
+          checkStatus: (node: AnyArenaNode):
+            boolean => node.arena === arena,
+        });
+      }
+      textarena.registerCreator({
         name,
         title,
         icon,
         shortcut,
         hint,
         command,
-        checkStatus: (node: AnyArenaNode):
-          boolean => node.arena === arena,
+        canShow: (node: AnyArenaNode) =>
+          textarena.isAllowedNode(node, arena),
       });
     }
-    textarena.registerCreator({
-      name,
-      title,
-      icon,
-      shortcut,
-      hint,
-      command,
-      canShow: (node: AnyArenaNode) =>
-        textarena.isAllowedNode(node, arena),
-    });
   },
 });
 

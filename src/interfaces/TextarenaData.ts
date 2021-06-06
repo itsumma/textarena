@@ -1,5 +1,6 @@
 export default interface TextarenaData {
-  html?: string;
-  dataHtml?: string;
-  json?: string;
+  html: string;
+  dataHtml: string;
+  json: string;
+  [key: string]: string;
 }

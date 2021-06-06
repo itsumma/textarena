@@ -66,7 +66,7 @@ export default class ArenaModel {
       root: true,
       name: this.rootArenaName,
       tag: '',
-      attributes: [],
+      attributes: {},
       allowedArenas: [arena],
       arenaForText: arena,
     });
@@ -166,16 +166,19 @@ export default class ArenaModel {
 
   // #region Exporting
 
+  /** Data for stotring */
   public getDataHtml(): string {
-    return this.model.getOutputHtml(this.getFormatings());
+    return this.model.getDataHtml(this.getFormatings());
   }
 
+  /** Tempate for rendering in the editor */
   public getTemplate(): TemplateResult | string {
     return this.model.getTemplate(this.getFormatings());
   }
 
-  public getPublicHtml(): string {
-    return this.model.getPublicHtml(this.getFormatings());
+  /** Output string for external */
+  public getOutput(type: string): string {
+    return this.model.getOutput(type, this.getFormatings());
   }
 
   public getPlainTextOfSelection(selection: ArenaSelection): string {
@@ -192,7 +195,7 @@ export default class ArenaModel {
     return result.join('\n');
   }
 
-  public getOutputHtmlOfSelection(selection: ArenaSelection): string {
+  public getDataHtmlOfSelection(selection: ArenaSelection): string {
     if (selection.isCollapsed()) {
       return '';
     }
@@ -202,7 +205,7 @@ export default class ArenaModel {
     utils.modelTree.runThroughSelection(
       selection,
       (node: AnyArenaNode, start?: number, end?: number) => {
-        let nodeContent = node.getOutputHtml(frms, start, end);
+        let nodeContent = node.getDataHtml(frms, start, end);
         if (node.hasParent && node.parent.group && !oneNode) {
           if (start !== undefined || node.isFirstChild()) {
             nodeContent = node.parent.getOpenTag() + nodeContent;

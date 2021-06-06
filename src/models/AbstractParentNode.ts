@@ -5,7 +5,7 @@ import ArenaCursorText from '../interfaces/ArenaCursorText';
 import ArenaCursorAncestor from '../interfaces/ArenaCursorAncestor';
 import { ArenaFormatings } from '../interfaces/ArenaFormating';
 import { ChildArenaNode, ParentArenaNode } from '../interfaces/ArenaNode';
-import ArenaAttributes from '../interfaces/ArenaAttributes';
+import NodeAttributes from '../interfaces/NodeAttributes';
 import AbstractNode from './AbstractNode';
 
 export default abstract class AbstractParentNode<
@@ -40,7 +40,7 @@ export default abstract class AbstractParentNode<
     arena: TArena,
     id: string,
     children?: ChildArenaNode[],
-    attributes?: ArenaAttributes,
+    attributes?: NodeAttributes,
   ) {
     super(arena, id, attributes);
     if (children) {
@@ -50,20 +50,6 @@ export default abstract class AbstractParentNode<
   }
 
   public getTemplate(frms: ArenaFormatings): TemplateResult | string {
-    // TODO pseudoCursor
-    // let pseudoCursorBefore: TemplateResult | string = '';
-    // let pseudoCursorAfter: TemplateResult | string = '';
-    // if (this.children.length > 0) {
-    //   if (!this.children[0].hasText) {
-    //     pseudoCursorBefore = html`<div class="pseudo-cursor"><br/></div>`;
-    //   }
-    //   if (!this.children[this.children.length - 1].hasText) {
-    //     pseudoCursorAfter = html`<div class="pseudo-cursor"><br/></div>`;
-    //   }
-    // }
-    // if (this.cache) {
-    //   return this.cache;
-    // }
     if (this.children.length === 0) {
       this.cache = '';
     } else {
@@ -109,15 +95,16 @@ export default abstract class AbstractParentNode<
     return this.cache;
   }
 
-  public getPublicHtml(frms: ArenaFormatings): string {
+  public getOutput(type: string, frms: ArenaFormatings): string {
     if (this.children.length === 0) {
       return '';
     }
     const content = [];
     for (let i = 0; i < this.children.length; i += 1) {
-      content.push(this.children[i].getPublicHtml(frms));
+      content.push(this.children[i].getOutput(type, frms));
     }
-    return this.arena.getPublicHtml(
+    return this.arena.getOutput(
+      type,
       content,
       this.attributes,
       this as unknown as ParentArenaNode,
@@ -125,16 +112,16 @@ export default abstract class AbstractParentNode<
     );
   }
 
-  public getOutputHtml(
+  public getDataHtml(
     frms: ArenaFormatings,
     start?: number,
     end?: number,
   ): string {
     const content = [];
     for (let i = start || 0; i < (end || this.children.length); i += 1) {
-      content.push(this.children[i].getOutputHtml(frms));
+      content.push(this.children[i].getDataHtml(frms));
     }
-    return this.arena.getOutputTemplate(
+    return this.arena.getDataHtml(
       content.join('\n'),
       this.attributes,
     );
