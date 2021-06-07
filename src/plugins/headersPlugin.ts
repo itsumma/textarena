@@ -1,82 +1,122 @@
 import Textarena from '../Textarena';
 import ArenaSelection from '../helpers/ArenaSelection';
-import ArenaPlugin from '../interfaces/ArenaPlugin';
+import ArenaPlugin, { DefaulPluginOptions } from '../interfaces/ArenaPlugin';
 import { ArenaTextInterface } from '../interfaces/Arena';
 import { AnyArenaNode } from '../interfaces/ArenaNode';
 
-const posibleTags = ['h1', 'h2', 'h3', 'h4'];
+type HeaderOptions = { [key: string]: DefaulPluginOptions };
+type PartialHeaderOptions = { [key: string]: Partial<DefaulPluginOptions> };
 
-type ListTag = typeof posibleTags[number];
-
-type ListsOptions = {
-  tags: ListTag[],
+const defaultOptions: HeaderOptions = {
+  h2: {
+    name: 'header2',
+    tag: 'H2',
+    attributes: {},
+    title: 'Header 2',
+    icon: '<b>H2</b>',
+    command: 'convert-to-header2',
+    shortcut: 'Alt + Digit2',
+    hint: '2',
+    marks: [
+      {
+        tag: 'H2',
+        attributes: [],
+      },
+    ],
+  },
+  h3: {
+    name: 'header3',
+    tag: 'H3',
+    attributes: {},
+    title: 'Header 3',
+    icon: '<b>H3</b>',
+    command: 'convert-to-header3',
+    shortcut: 'Alt + Digit3',
+    hint: '3',
+    marks: [
+      {
+        tag: 'H3',
+        attributes: [],
+      },
+    ],
+  },
+  h4: {
+    name: 'header4',
+    tag: 'H4',
+    attributes: {},
+    title: 'Header 4',
+    icon: '<b>H4</b>',
+    command: 'convert-to-header4',
+    shortcut: 'Alt + Digit4',
+    hint: '4',
+    marks: [
+      {
+        tag: 'H4',
+        attributes: [],
+      },
+    ],
+  },
 };
 
-const defaultOptions: ListsOptions = {
-  tags: ['h2', 'h3', 'h4'],
-};
-
-const headersPlugin = (opts?: ListsOptions): ArenaPlugin => ({
+const headersPlugin = (opts?: PartialHeaderOptions): ArenaPlugin => ({
   register(textarena: Textarena): void {
-    const options = { ...defaultOptions, ...(opts || {}) };
-    options.tags.forEach((type: string) => {
-      if (posibleTags.includes(type)) {
-        const number = parseInt(type[1], 10);
-        const command = `convert-to-header${number}`;
-        const name = `header${number}`;
-        const tag = `H${number}`;
-        const title = `Header ${number}`;
-        const icon = `<b>H${number}</b>`;
-        const shortcut = `Alt + Digit${number}`;
-        const paragraph = textarena.getDefaultTextArena();
-        if (!paragraph) {
-          throw new Error('Default Arena for text not found');
-        }
+    const paragraph = textarena.getDefaultTextArena();
+    if (!paragraph) {
+      throw new Error('Default Arena for text not found');
+    }
+    Object.entries(opts || defaultOptions).forEach(([type, options]) => {
+      const {
+        name, tag, attributes, title, icon, shortcut, hint, command, marks,
+      } = defaultOptions[type] ? { ...defaultOptions[type], ...options } : options;
+      if (name && tag && attributes) {
         const arena = textarena.registerArena(
           {
             name,
             tag,
-            attributes: {},
+            attributes,
             hasText: true,
             nextArena: paragraph,
           },
-          [
-            {
-              tag,
-              attributes: [],
-            },
-          ],
+          marks,
           [textarena.getRootArenaName()],
         ) as ArenaTextInterface;
-        textarena.registerCommand(
-          command,
-          (ta: Textarena, selection: ArenaSelection) =>
-            ta.applyArenaToSelection(selection, arena),
-        );
-        textarena.registerShortcut(
-          shortcut,
-          command,
-        );
-        textarena.registerTool({
-          name,
-          title,
-          icon,
-          shortcut,
-          hint: number.toString(),
-          command,
-          checkStatus: (node: AnyArenaNode): boolean =>
-            node.arena === arena,
-        });
-        textarena.registerCreator({
-          name,
-          title,
-          icon,
-          shortcut,
-          hint: number.toString(),
-          command,
-          canShow: (node: AnyArenaNode) =>
-            textarena.isAllowedNode(node, arena),
-        });
+        if (command) {
+          textarena.registerCommand(
+            command,
+            (ta: Textarena, selection: ArenaSelection) =>
+              ta.applyArenaToSelection(selection, arena),
+          );
+          if (shortcut) {
+            textarena.registerShortcut(
+              shortcut,
+              command,
+            );
+          }
+          if (title && icon) {
+            textarena.registerTool({
+              name,
+              title,
+              icon,
+              shortcut,
+              hint,
+              command,
+              checkStatus: (node: AnyArenaNode): boolean =>
+                node.arena === arena,
+            });
+          }
+          if (title) {
+            textarena.registerCreator({
+              name,
+              title,
+              icon,
+              shortcut,
+              hint,
+              command,
+              canShow: (node: AnyArenaNode) =>
+                textarena.isAllowedNode(node, arena),
+            });
+          }
+        }
       }
     });
   },
