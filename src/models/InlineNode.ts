@@ -37,7 +37,7 @@ implements ArenaNodeInline {
   public getTags(): [string, string] {
     const attrs = this.getAttributesString();
     const tag = this.arena.tag.toLowerCase();
-    return [`<${tag.toLowerCase()}${attrs}>`, `</${tag.toLowerCase()}>`];
+    return [`<${tag}${attrs.length > 0 ? ` ${attrs}` : ''}>`, `</${tag}>`];
   }
 
   public getDataHtml(): string {

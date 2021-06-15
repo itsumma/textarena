@@ -156,6 +156,9 @@ class Textarena {
       this.debug = options.debug;
       this.asm.logger.setDebug(options.debug);
     }
+    if (options.outputTypes !== undefined) {
+      this.outputTypes = options.outputTypes;
+    }
   }
 
   public getData(types?: string[]): TextarenaData {
@@ -402,13 +405,15 @@ class Textarena {
 
   protected asm: ArenaServiceManager;
 
+  protected outputTypes: string[] = ['html'];
+
   protected start(): void {
     this.asm.eventManager.subscribe('modelChanged', (e) => {
       if (typeof e === 'object') {
         this.asm.view.render(e.detail instanceof ArenaSelection ? e.detail : undefined);
       }
       if (this.options.onChange) {
-        this.options.onChange(this.getData());
+        this.options.onChange(this.getData(this.outputTypes));
       }
     });
     this.asm.eventManager.subscribe('*', (e) => {

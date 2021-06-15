@@ -62,6 +62,10 @@
           <arena-image slot="image" src="https://storage.yandexcloud.net/itsizo.app/ee907a4a-9ff2-40fb-ae3f-1e4f91a02800.png"></arena-image>
           <figcaption slot="image-caption">Скриншот панели</figcaption>
         </arena-figure>
+        <arena-figure>
+          <arena-image slot="image" src="https://storage.yandexcloud.net/itsizo.app/ee907a4a-9ff2-40fb-ae3f-1e4f91a02800.png"></arena-image>
+          <figcaption slot="image-caption">Скриншот панели</figcaption>
+        </arena-figure>
 
         <p>Ctrl (⌘) + I — выделенный текст станет <em>италиком</em>. Повторное нажатие уберёт италик.</p>
 
@@ -159,6 +163,7 @@
         onEvent,
         onReady: onChange,
         initData,
+        outputTypes: ['html', 'amp', 'rss'],
       },
     );
   }

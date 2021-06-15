@@ -41,6 +41,7 @@ const defaultOptions: FigurePluginOptions = {
     },
   ],
   component: 'arena-figure',
+  componentConstructor: ArenaFigure,
   placeholder: 'Подпись к рисунку',
 };
 
@@ -48,12 +49,10 @@ const figurePlugin = (opts?: Partial<ImagePluginOptions>): ArenaPlugin => ({
   register(textarena: Textarena): void {
     const {
       name, icon, title, tag, attributes, allowedAttributes,
-      command, marks, component, srcset, placeholder,
+      command, marks, component, componentConstructor, srcset, placeholder,
     } = { ...defaultOptions, ...(opts || {}) };
-    if (component) {
-      if (!customElements.get(component)) {
-        customElements.define(component, ArenaFigure);
-      }
+    if (component && componentConstructor && !customElements.get(component)) {
+      customElements.define(component, componentConstructor);
     }
     const paragraph = textarena.getDefaultTextArena();
     if (!paragraph) {

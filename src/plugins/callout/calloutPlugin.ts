@@ -15,6 +15,7 @@ const defaultOptions: DefaulPluginOptions = {
   hint: 'c',
   command: 'add-callout',
   component: 'arena-callout',
+  componentConstructor: ArenaCallout,
   marks: [
     {
       tag: 'ARENA-CALLOUT',
@@ -27,10 +28,11 @@ const defaultOptions: DefaulPluginOptions = {
 const calloutPlugin = (opts?: Partial<DefaulPluginOptions>): ArenaPlugin => ({
   register(textarena: Textarena): void {
     const {
-      name, icon, title, tag, attributes, shortcut, hint, command, component, marks, output,
+      name, icon, title, tag, attributes, shortcut, hint, command,
+      component, componentConstructor, marks, output,
     } = { ...defaultOptions, ...(opts || {}) };
-    if (component && !customElements.get(component)) {
-      customElements.define(component, ArenaCallout);
+    if (component && componentConstructor && !customElements.get(component)) {
+      customElements.define(component, componentConstructor);
     }
     const paragraph = textarena.getDefaultTextArena();
     if (!paragraph) {

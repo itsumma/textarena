@@ -256,7 +256,7 @@ export default class ArenaBrowser {
       code,
     } = e;
     const modifiersSum = this.getModifiersSum(e);
-    const character = e.key;
+    const character = e.key && e.key.length === 1 ? e.key : undefined;
     if (this.isModificationEvent(e)) {
       return new ModifiersEvent(e, modifiersSum);
     }
@@ -331,7 +331,7 @@ export default class ArenaBrowser {
     if (code === 'ArrowRight' && modifiersSum === Modifiers.Alt) {
       return new SelectionEvent(e);
     }
-    if (removeCodes[keyCode] && modifiersSum === 0) {
+    if (removeCodes[keyCode] && modifiersSum <= Modifiers.Shift) {
       return new RemoveEvent(
         e,
         removeCodes[keyCode] === 'delete' ? 'forward' : 'backward',

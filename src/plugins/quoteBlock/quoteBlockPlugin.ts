@@ -16,6 +16,7 @@ const defaultOptions: DefaulPluginOptions = {
   hint: 'q',
   command: 'add-quote-block',
   component: 'arena-quote-block',
+  componentConstructor: ArenaQuoteBlock,
   marks: [
     {
       tag: 'ARENA-QUOTE-BLOCK',
@@ -70,15 +71,14 @@ const srcset = [
 const quotePlugin = (opts?: Partial<DefaulPluginOptions>): ArenaPlugin => ({
   register(textarena: Textarena): void {
     const {
-      name, icon, title, tag, attributes, shortcut, hint, command, component, marks, output,
+      name, icon, title, tag, attributes, shortcut, hint, command,
+      component, componentConstructor, marks, output,
     } = {
       ...defaultOptions,
       ...(opts || {}),
     };
-    if (component) {
-      if (!customElements.get(component)) {
-        customElements.define(component, ArenaQuoteBlock);
-      }
+    if (component && componentConstructor && !customElements.get(component)) {
+      customElements.define(component, componentConstructor);
     }
     const paragraph = textarena.getDefaultTextArena() as ArenaTextInterface;
     const image = textarena.getArena('image') as ArenaMediatorInterface;

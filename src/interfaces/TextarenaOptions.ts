@@ -12,10 +12,11 @@ type TextarenaOptions = {
   onChange?: ChangeDataListener,
   onReady?: ReadyDataListener,
   onEvent?: ArenaHandler,
-  initData?: TextarenaData,
+  initData?: Partial<TextarenaData>,
   plugins?: ArenaPlugin[],
   toolbar?: ToolbarOptions,
   creatorBar?: CreatorBarOptions,
+  outputTypes?: string[],
 };
 
 export default TextarenaOptions;

@@ -22,6 +22,7 @@ export type DefaulPluginOptions = {
   hint?: string,
   command?: string,
   component?: string,
+  componentConstructor?: CustomElementConstructor,
   marks: ArenaMarkOptions[],
   output?: OutputProcessor
 };

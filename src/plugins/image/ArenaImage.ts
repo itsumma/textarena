@@ -3,7 +3,7 @@ import {
 } from 'lit-element';
 import WebComponent from '../../helpers/WebComponent';
 import { AnyArena } from '../../interfaces/Arena';
-import { ScrProcessor } from './types';
+import { ScrProcessor, UploadProcessor } from './types';
 
 export default class ArenaImage extends WebComponent {
   @property({
@@ -116,6 +116,30 @@ export default class ArenaImage extends WebComponent {
   protected upload(file: File): void {
     this.loading = true;
     this.requestUpdate();
+    if (this.arena) {
+      const upload = this.arena.getAttribute('upload') as UploadProcessor;
+      if (upload) {
+        try {
+          upload(file).then(({ src }) => {
+            if (src) {
+              setTimeout(() => {
+                const event = new CustomEvent('change', {
+                  detail: src,
+                });
+                this.dispatchEvent(event);
+                this.fireChangeAttribute({ src });
+              }, 2000);
+            }
+            this.loading = false;
+            this.requestUpdate();
+          });
+        } catch (e) {
+          //
+        }
+        return;
+      }
+    }
+
     const data = new FormData();
     data.append('file', file);
     fetch('https://izo.itsumma.ru', {

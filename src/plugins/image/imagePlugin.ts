@@ -53,19 +53,20 @@ const defaultOptions: ImagePluginOptions = {
     },
   ],
   component: 'arena-image',
+  componentConstructor: ArenaImage,
   prepareSrc: prepareImageSrc,
+  output: outputImage,
 };
 
 const imagePlugin = (opts?: ImagePluginOptions): ArenaPlugin => ({
   register(textarena: Textarena): void {
     const {
       name, icon, title, tag, attributes, allowedAttributes,
-      shortcut, hint, command, marks, component, srcset, prepareSrc,
+      shortcut, hint, command, marks, component, componentConstructor,
+      srcset, prepareSrc, output, upload,
     } = { ...defaultOptions, ...(opts || {}) };
-    if (component) {
-      if (!customElements.get(component)) {
-        customElements.define(component, ArenaImage);
-      }
+    if (component && componentConstructor && !customElements.get(component)) {
+      customElements.define(component, componentConstructor);
     }
     const paragraph = textarena.getDefaultTextArena();
     if (!paragraph) {
@@ -75,10 +76,12 @@ const imagePlugin = (opts?: ImagePluginOptions): ArenaPlugin => ({
       {
         name,
         tag,
-        attributes: { ...attributes, srcset, prepareSrc },
+        attributes: {
+          ...attributes, srcset, prepareSrc, upload,
+        },
         allowedAttributes,
         single: true,
-        output: outputImage,
+        output,
       },
       marks,
       [textarena.getRootArenaName()],

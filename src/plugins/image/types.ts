@@ -12,7 +12,7 @@ export type Srcset = Array<{
 
 export type ScrProcessor = (src: string, width?: number, height?: number) => string;
 
-export type UploadProcessor = (file: File) => void;
+export type UploadProcessor = (file: File) => Promise<{ src: string, [key: string]: unknown }>;
 
 export type ImagePluginOptions = DefaulPluginOptions & {
   srcset?: Srcset,

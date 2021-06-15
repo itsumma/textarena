@@ -1369,6 +1369,21 @@ export default class ArenaModel {
           }
         }
       });
+    } else if (selection.isCollapsed()) {
+      const { node, offset } = selection.getCursor();
+      if (node.hasChildren && node.isAllowedNode(arena)) {
+        const newNode = this.createAndInsertNode(
+          arena,
+          node,
+          offset,
+        ) as ArenaNodeMediator;
+        if (newNode) {
+          const cursor2 = this.getTextCursor(newNode, 0);
+          if (cursor2) {
+            newSelection.setCursor(cursor2);
+          }
+        }
+      }
     }
     return newSelection;
   }
