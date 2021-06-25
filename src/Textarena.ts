@@ -26,7 +26,7 @@ import ToolOptions from './interfaces/ToolOptions';
 import blockquotePlugin from './plugins/blockquotePlugin';
 import calloutPlugin from './plugins/callout/calloutPlugin';
 import commonPlugin from './plugins/commonPlugin';
-import embedPlugin from './plugins/embedPlugin';
+import embedPlugin from './plugins/embed/embedPlugin';
 import formatingsPlugin from './plugins/formatingsPlugin';
 import headersPlugin from './plugins/headersPlugin';
 import hrPlugin from './plugins/hrPlugin';
@@ -53,6 +53,8 @@ const defaultOptions: TextarenaOptions = {
       'emphasized',
       'underline',
       'strikethrough',
+      'subscript',
+      'superscript',
       'link',
       'paragraph',
       'unordered-list',

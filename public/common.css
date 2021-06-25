@@ -193,3 +193,9 @@ figcaption {
   font-size: 0.8em;
   text-align: center;
 }
+
+.embed > blockquote {
+  padding: 0;
+  margin: 0;
+  border: none;
+}

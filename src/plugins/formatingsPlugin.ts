@@ -12,8 +12,8 @@ type FormatingOptions = {
   name: string,
   tag: string,
   attributes: string[];
-  shortcut: string,
-  hint: string,
+  shortcut?: string,
+  hint?: string,
   command: string,
   marks: MarkOptions[],
   tool?: {
@@ -125,6 +125,10 @@ const defaultOptions: FormatingsOptions = {
           attributes: [],
         },
         {
+          tag: 'DEL',
+          attributes: [],
+        },
+        {
           tag: 'SPAN',
           attributes: [
             'style=textDecoration:line-through;',
@@ -134,6 +138,50 @@ const defaultOptions: FormatingsOptions = {
       tool: {
         title: 'Strikethrough',
         icon: '<s>S</s>',
+      },
+    },
+    {
+      name: 'subscript',
+      tag: 'SUB',
+      attributes: [],
+      command: 'format-subscript',
+      marks: [
+        {
+          tag: 'SUB',
+          attributes: [],
+        },
+        {
+          tag: 'SPAN',
+          attributes: [
+            'style=verticalAlign:sub;',
+          ],
+        },
+      ],
+      tool: {
+        title: 'Subscript',
+        icon: '<sub>sub</sub>',
+      },
+    },
+    {
+      name: 'superscript',
+      tag: 'SUP',
+      attributes: [],
+      command: 'format-superscript',
+      marks: [
+        {
+          tag: 'SUP',
+          attributes: [],
+        },
+        {
+          tag: 'SPAN',
+          attributes: [
+            'style=verticalAlign:sup;',
+          ],
+        },
+      ],
+      tool: {
+        title: 'Superscript',
+        icon: '<sup>sup</sip>',
       },
     },
   ],
@@ -167,10 +215,12 @@ const formatingsPlugin = (opts?: FormatingsOptions): ArenaPlugin => ({
           return ta.applyFormationToSelection(selection, formating);
         },
       );
-      textarena.registerShortcut(
-        shortcut,
-        command,
-      );
+      if (shortcut) {
+        textarena.registerShortcut(
+          shortcut,
+          command,
+        );
+      }
       if (tool) {
         textarena.registerTool({
           ...tool,
