@@ -43,7 +43,7 @@ import quotePlugin from './plugins/quoteBlock/quoteBlockPlugin';
 import figurePlugin from './plugins/figure/figurePlugin';
 import typoSugarPlugin from './plugins/typoSugarPlugin';
 
-const defaultOptions: TextarenaOptions = {
+export const defaultOptions: TextarenaOptions = {
   editable: true,
   debug: false,
   toolbar: {
