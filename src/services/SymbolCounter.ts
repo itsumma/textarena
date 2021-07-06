@@ -66,7 +66,7 @@ export default class SymbolCounter {
     utils.modelTree.runOfChildren(this.asm.model.model, (n: AnyArenaNode) => {
       if (n.hasText) {
         symbols += n.getTextLength();
-        words += n.getRawText().split(/\s/).filter((w) => w !== '').length;
+        words += n.getRawText().replace(/[^a-zA-Zа-яА-Я]/, '').split(/\s/).filter((w) => w !== '').length;
         // TODO считать количество картинок
       }
     });
