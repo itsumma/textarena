@@ -43,7 +43,9 @@
     "no-underscore-dangle": "off",
     "implicit-arrow-linebreak": [0],
     "semi": "off",
-    "@typescript-eslint/semi": ["error"]
+    "@typescript-eslint/semi": ["error"],
+    "no-shadow": "off",
+    "@typescript-eslint/no-shadow": ["error"]
   },
   "settings": {
     "import/resolver": {
