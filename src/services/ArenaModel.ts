@@ -243,6 +243,12 @@ export default class ArenaModel {
   }
 
   /** */
+  public createInlineNode(arena: ArenaInlineInterface): ArenaNodeInline {
+    const node = NodeFactory.createInlineNode(arena, this.registry);
+    return node;
+  }
+
+  /** */
   public getTextCursor(
     node: AnyArenaNode,
     offset: number,
@@ -943,7 +949,8 @@ export default class ArenaModel {
   ): ArenaNodeInline | undefined {
     const { startNode, startOffset, endOffset } = selection;
     if (selection.isSameNode() && !selection.isCollapsed() && startNode.hasText) {
-      return startNode.addInlineNode(arena, startOffset, endOffset);
+      const node = this.createInlineNode(arena);
+      return startNode.addInlineNode(node, startOffset, endOffset);
     }
     return undefined;
   }

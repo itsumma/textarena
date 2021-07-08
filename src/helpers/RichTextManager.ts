@@ -4,7 +4,6 @@ import Intervaler from './Intervaler';
 import InlineIntervaler from './InlineIntervaler';
 import { ArenaInlineInterface } from '../interfaces/Arena';
 import { ArenaNodeInline } from '../interfaces/ArenaNode';
-import NodeFactory from '../models/NodeFactory';
 
 export type Formatings = {
   [name: string]: Intervaler
@@ -255,11 +254,10 @@ export default class RichTextManager {
   }
 
   public addInlineNode(
-    arena: ArenaInlineInterface,
+    node: ArenaNodeInline,
     start: number,
     end: number,
   ): ArenaNodeInline | undefined {
-    const node = NodeFactory.createInlineNode(arena);
     this.inlines.addInterval(start, end, node);
     return node;
   }

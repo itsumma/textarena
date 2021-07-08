@@ -1,4 +1,4 @@
-import { AnyArenaNode } from '../interfaces/ArenaNode';
+import { AnyArenaNode, ArenaNodeInline } from '../interfaces/ArenaNode';
 
 const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-';
 const charactersLength = characters.length;
@@ -25,15 +25,15 @@ export default class NodeRegistry {
     return id;
   }
 
-  set(id: string, node: AnyArenaNode): void {
+  set(id: string, node: AnyArenaNode | ArenaNodeInline): void {
     this.registry[id] = node;
   }
 
-  get(id: string): AnyArenaNode | undefined {
+  get(id: string): AnyArenaNode | ArenaNodeInline | undefined {
     return this.registry[id];
   }
 
   protected idLength = 4;
 
-  protected registry: { [key: string]: AnyArenaNode } = {};
+  protected registry: { [key: string]: AnyArenaNode | ArenaNodeInline } = {};
 }

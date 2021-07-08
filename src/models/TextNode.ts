@@ -165,11 +165,11 @@ export default class TextNode
   }
 
   public addInlineNode(
-    arena: ArenaInlineInterface,
+    node: ArenaNodeInline,
     start: number,
     end: number,
   ): ArenaNodeInline | undefined {
-    return this.richTextManager.addInlineNode(arena, start, end);
+    return this.richTextManager.addInlineNode(node, start, end);
   }
 
   public getInlineNode(

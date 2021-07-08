@@ -50,7 +50,7 @@ export default interface ArenaNodeTextPart {
   clearSpaces(): void;
 
   addInlineNode(
-    arena: ArenaInlineInterface,
+    node: ArenaNodeInline,
     start: number,
     end: number,
   ): ArenaNodeInline | undefined;

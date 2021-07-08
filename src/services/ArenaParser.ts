@@ -113,7 +113,8 @@ export default class ArenaParser {
         if (!text) {
           return [...this.insertChildren(elementNode, arenaNode, offset), true];
         }
-        const inlineNode = text.addInlineNode(arena, 0, text.getTextLength());
+        const inlineNode = this.asm.model.createInlineNode(arena);
+        text.addInlineNode(inlineNode, 0, text.getTextLength());
         if (!inlineNode) {
           return [...this.insertChildren(elementNode, arenaNode, offset), true];
         }
@@ -307,7 +308,8 @@ export default class ArenaParser {
         }
         const arena = this.checkArenaMark(elementNode);
         if (arena?.inline) {
-          const inlineNode = newFormatings.addInlineNode(arena, 0, newFormatings.getTextLength());
+          const inlineNode = this.asm.model.createInlineNode(arena);
+          newFormatings.addInlineNode(inlineNode, 0, newFormatings.getTextLength());
           if (inlineNode) {
             elementNode.getAttributeNames().forEach((attr) => {
               if (arena.allowedAttributes.includes(attr)) {

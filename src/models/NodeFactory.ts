@@ -63,7 +63,13 @@ export default class NodeFactory {
     throw new Error('Cant create Node');
   }
 
-  static createInlineNode(arena: ArenaInlineInterface): ArenaNodeInline {
-    return new InlineNode(arena);
+  static createInlineNode(
+    arena: ArenaInlineInterface,
+    registry: NodeRegistry,
+  ): ArenaNodeInline {
+    const id = registry.generateId();
+    const node = new InlineNode(arena, id);
+    registry.set(id, node);
+    return node;
   }
 }
