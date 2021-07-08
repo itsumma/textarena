@@ -70,7 +70,7 @@ export default abstract class AbstractParentNode<
         html`
           ${repeat(result, (c) => c[0], (c) => c[1])}
         `,
-        id,
+        '',
         this.attributes,
       );
       if (this.protected && !this.parent.protected) {
@@ -86,7 +86,7 @@ export default abstract class AbstractParentNode<
         </svg>
         </textarena-remove>`;
         this.cache = html`
-          <textarena-node>${removeButton}${content}</textarena-node>
+          <textarena-node contenteditable="false" arena-id="${id}">${removeButton}${content}</textarena-node>
         `;
       } else {
         this.cache = content;
