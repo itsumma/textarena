@@ -264,7 +264,7 @@ export default abstract class AbstractParentNode<
           continue;
         }
         this.children.splice(i, 1);
-        if (i >= newIndex) {
+        if (i <= newIndex) {
           newIndex -= 1;
         }
         i -= 1;
