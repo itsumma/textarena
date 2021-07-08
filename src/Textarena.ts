@@ -8,7 +8,7 @@ import {
   ArenaInlineInterface, ArenaMediatorInterface, ArenaTextInterface, ChildArena,
 } from './interfaces/Arena';
 import {
-  AnyArenaNode, ArenaNodeInline, ChildArenaNode, ParentArenaNode,
+  AnyArenaNode, ArenaNodeInline, ArenaNodeText, ChildArenaNode, ParentArenaNode,
 } from './interfaces/ArenaNode';
 import ArenaFormating, { TagAndAttributes } from './interfaces/ArenaFormating';
 import ArenaOptionsChild from './interfaces/ArenaOptions';
@@ -31,7 +31,7 @@ import formatingsPlugin from './plugins/formatingsPlugin';
 import headersPlugin from './plugins/headersPlugin';
 import hrPlugin from './plugins/hrPlugin';
 import imagePlugin from './plugins/image/imagePlugin';
-import linkPlugin from './plugins/linkPlugin';
+import linkPlugin from './plugins/link/linkPlugin';
 import listsPlugin from './plugins/listsPlugin';
 import paragraphPlugin from './plugins/paragraphPlugin';
 
@@ -369,7 +369,7 @@ class Textarena {
   public getInlineNode(
     selection: ArenaSelection,
     arena: ArenaInlineInterface,
-  ): ArenaNodeInline | undefined {
+  ): [ArenaNodeText, ArenaNodeInline] | undefined {
     return this.asm.model.getInlineNode(selection, arena);
   }
 
@@ -391,8 +391,16 @@ class Textarena {
     this.asm.eventManager.subscribe(event, handler);
   }
 
+  public fire(name: string, detail?: unknown): void {
+    this.asm.eventManager.fire(name, detail);
+  }
+
   public isAllowedNode(node: AnyArenaNode, arena: ChildArena): boolean {
     return this.asm.model.isAllowedNode(node, arena);
+  }
+
+  public getCurrentSelection(): ArenaSelection | undefined {
+    return this.asm.view.getCurrentSelection();
   }
 
   protected debug = false;

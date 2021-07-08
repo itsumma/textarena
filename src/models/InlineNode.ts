@@ -21,12 +21,7 @@ implements ArenaNodeInline {
 
   constructor(
     public arena: ArenaInlineInterface,
-    readonly id: string,
   ) {
-  }
-
-  public getId(): string {
-    return this.id;
   }
 
   public getTemplate(): TemplateResult | string {
@@ -34,9 +29,7 @@ implements ArenaNodeInline {
   }
 
   protected getAttributesString(): string {
-    let result = [];
-    result.push(`node-id="${this.getId()}"`);
-    result = result.concat(utils.attr.getStringsFromAttributes(this.attributes));
+    let result = utils.attr.getStringsFromAttributes(this.attributes);
     result = result.concat(utils.attr.getStringsFromAttributes(this.arena.attributes));
     return result.join(' ');
   }

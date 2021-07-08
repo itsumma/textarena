@@ -244,7 +244,7 @@ export default class ArenaModel {
 
   /** */
   public createInlineNode(arena: ArenaInlineInterface): ArenaNodeInline {
-    const node = NodeFactory.createInlineNode(arena, this.registry);
+    const node = NodeFactory.createInlineNode(arena);
     return node;
   }
 
@@ -958,10 +958,13 @@ export default class ArenaModel {
   public getInlineNode(
     selection: ArenaSelection,
     arena: ArenaInlineInterface,
-  ): ArenaNodeInline | undefined {
+  ): [ArenaNodeText, ArenaNodeInline] | undefined {
     const { startNode, startOffset, endOffset } = selection;
     if (selection.isSameNode() && startNode.hasText) {
-      return startNode.getInlineNode(arena, startOffset, endOffset);
+      const inlineNode = startNode.getInlineNode(arena, startOffset, endOffset);
+      if (inlineNode) {
+        return [startNode, inlineNode];
+      }
     }
     return undefined;
   }

@@ -65,11 +65,7 @@ export default class NodeFactory {
 
   static createInlineNode(
     arena: ArenaInlineInterface,
-    registry: NodeRegistry,
   ): ArenaNodeInline {
-    const id = registry.generateId();
-    const node = new InlineNode(arena, id);
-    registry.set(id, node);
-    return node;
+    return new InlineNode(arena);
   }
 }
