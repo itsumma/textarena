@@ -8,12 +8,6 @@
     box-sizing: border-box;
   }
 
-  &:hover,
-  &:active,
-  &:focus {
-    border: none;
-  }
-
   .pseudo-cursor {
     position: relative;
     height: 1em;
