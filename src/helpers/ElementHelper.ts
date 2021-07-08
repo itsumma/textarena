@@ -1,7 +1,8 @@
 type CSSStyles = Partial<Omit<CSSStyleDeclaration, 'length'|'parentRule'|'getPropertyPriority'|'getPropertyValue'|'item'|'removeProperty'|'setProperty'>>;
 
+type ExtendedHTMLElement = HTMLElement & { [key: string]: unknown };
 class ElementHelper {
-  private elem: HTMLElement;
+  private elem: ExtendedHTMLElement;
 
   private classes: string[] = [];
 
@@ -9,9 +10,9 @@ class ElementHelper {
 
   constructor(tagName: string | HTMLElement, className = '', innerHtml = '') {
     if (typeof tagName === 'string') {
-      this.elem = document.createElement(tagName);
+      this.elem = document.createElement(tagName) as ExtendedHTMLElement;
     } else {
-      this.elem = tagName;
+      this.elem = tagName as ExtendedHTMLElement;
     }
     if (className) {
       this.setClass(className);
@@ -79,6 +80,26 @@ class ElementHelper {
   setContentEditable(enable: boolean): ElementHelper {
     this.elem.contentEditable = enable ? 'true' : 'false';
     return this;
+  }
+
+  setAttribute(qualifiedName: string, value: string): void {
+    this.elem.setAttribute(qualifiedName, value);
+  }
+
+  setProperty(propertyName: string, propertyValue: unknown): void {
+    this.elem[propertyName] = propertyValue;
+  }
+
+  getAttribute(qualifiedName: string): string | null {
+    return this.elem.getAttribute(qualifiedName);
+  }
+
+  hasAttribute(qualifiedName: string): boolean {
+    return this.elem.hasAttribute(qualifiedName);
+  }
+
+  removeAttribute(qualifiedName: string): void {
+    this.elem.removeAttribute(qualifiedName);
   }
 
   onClick(handler: ((this: GlobalEventHandlers, ev: MouseEvent) => void) | null): ElementHelper {
