@@ -52,7 +52,9 @@ export default class CreatorBar {
     this.list = new ElementHelper('DIV', 'textarena-creator__list');
     this.hide();
     const createButton = new ElementHelper('BUTTON', 'textarena-creator__create-button');
+    createButton.setAttribute('type', 'button');
     createButton.onClick((e: MouseEvent) => {
+      e.preventDefault();
       e.stopPropagation();
       if (this.active) {
         this.closeList();
@@ -114,6 +116,7 @@ export default class CreatorBar {
         }
         const options = this.availableCreators[name];
         const elem = new ElementHelper('BUTTON', 'textarena-creator__item');
+        elem.setAttribute('type', 'button');
         const creator: Creator = {
           elem,
           options,
@@ -125,6 +128,7 @@ export default class CreatorBar {
         }
         elem.onClick((e) => {
           e.preventDefault();
+          e.stopPropagation();
           this.executeTool(options);
         });
         if (options.icon || options.title) {

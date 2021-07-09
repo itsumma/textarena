@@ -124,6 +124,10 @@ export default class TextNode
     this.richTextManager.clearSpaces();
   }
 
+  public delBeforeDot(): void {
+    this.richTextManager.delBeforeDot();
+  }
+
   public toggleFormating(name: string, start: number, end: number): void {
     this.richTextManager.toggleFormating(name, start, end);
   }

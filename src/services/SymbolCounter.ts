@@ -44,11 +44,17 @@ export default class SymbolCounter {
     this.elem = new ElementHelper('ARENA-COUNTER', 'textarena-counter');
     this.content = new ElementHelper('DIV', 'textarena-counter__content');
     const typoButton = new ElementHelper('BUTTON', 'textarena-typograf', 'Типограф <sup>beta</sup>');
-    typoButton.onClick(() => {
+    typoButton.setAttribute('type', 'button');
+    typoButton.onClick((e: MouseEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
       this.typograf();
     });
     const helpButton = new ElementHelper('BUTTON', 'textarena-help', '?');
-    helpButton.onClick(() => {
+    helpButton.setAttribute('type', 'button');
+    helpButton.onClick((e: MouseEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
       this.openHelp();
     });
     this.elem.appendChild(this.content);
@@ -80,6 +86,7 @@ export default class SymbolCounter {
     utils.modelTree.runOfChildren(this.asm.model.model, (n: AnyArenaNode) => {
       if (n.hasText) {
         n.clearSpaces();
+        n.delBeforeDot();
         n.setRawText(tp.execute(n.getRawText()));
       }
     });
@@ -104,7 +111,10 @@ export default class SymbolCounter {
         c10.524,10.524,27.587,10.523,38.11,0c10.523-10.524,10.523-27.586,0-38.109L294.111,256.001z" fill="currentColor"/>
     </g>
     </svg>`);
-    close.onClick(() => {
+    close.setAttribute('type', 'button');
+    close.onClick((e: MouseEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
       this.closeHelp();
     });
     const help = new ElementHelper('DIV', 'textarena-help-popup', helpTextRu);

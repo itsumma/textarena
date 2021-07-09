@@ -253,6 +253,16 @@ export default class RichTextManager {
     }
   }
 
+  public delBeforeDot(): void {
+    let match;
+    // eslint-disable-next-line no-cond-assign
+    while (match = /(^|[^!?:;,.…])( +)(\.|\.\.\.)(\s|$)/.exec(this.text)) {
+      const start = match.index + match[1].length;
+      const end = start + match[2].length;
+      this.cutText(start, end);
+    }
+  }
+
   public addInlineNode(
     node: ArenaNodeInline,
     start: number,

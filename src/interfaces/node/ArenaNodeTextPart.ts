@@ -49,6 +49,8 @@ export default interface ArenaNodeTextPart {
 
   clearSpaces(): void;
 
+  delBeforeDot(): void;
+
   addInlineNode(
     node: ArenaNodeInline,
     start: number,
