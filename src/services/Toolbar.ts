@@ -1,10 +1,10 @@
 import ToolbarOptions from '../interfaces/ToolbarOptions';
 import ToolOptions from '../interfaces/ToolOptions';
 import ElementHelper from '../helpers/ElementHelper';
-import { MediaEvent } from './EventManager';
 import ArenaServiceManager from './ArenaServiceManager';
 import { AnyArenaNode } from '../interfaces/ArenaNode';
 import utils from '../utils';
+import ArenaEvent from '../helpers/ArenaEvent';
 
 function getFocusElement(): HTMLElement | undefined {
   const s = window.getSelection();
@@ -120,13 +120,13 @@ export default class Toolbar {
     this.availableTools[opts.name] = opts;
   }
 
-  private keyListener(event?: string | MediaEvent): void {
+  private keyListener(event: ArenaEvent): void {
     if (!this.enabled) {
       return;
     }
-    if (typeof event === 'object' && typeof event.data === 'number') {
+    if (typeof event === 'object' && typeof event.detail === 'number') {
       this.tools.forEach((tool: Tool) => {
-        if (tool.modifiers && tool.modifiers === event.data) {
+        if (tool.modifiers && tool.modifiers === event.detail) {
           tool.elem.addClass('textarena-toolbar__item_show-hint');
         } else {
           tool.elem.removeClass('textarena-toolbar__item_show-hint');

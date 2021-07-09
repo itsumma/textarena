@@ -1,12 +1,6 @@
 import ArenaServiceManager from './ArenaServiceManager';
 import ArenaEvent from '../helpers/ArenaEvent';
 
-export type MediaEvent = {
-  name: string,
-  target?: HTMLElement,
-  data?: unknown,
-};
-
 export type ArenaHandler = (event: ArenaEvent) => void;
 
 type Handlers = {
