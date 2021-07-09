@@ -23,6 +23,7 @@ export default class ArenaLinkbar extends LitElement {
       background-color: #333;
       pointer-events: all;
       user-select: none;
+      max-width: 100%;
     }
     .link {
       display: flex;
@@ -37,6 +38,8 @@ export default class ArenaLinkbar extends LitElement {
     a:visited {
       color: inherit;
       text-decoration: underline;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
     a:hover {
       color: white;

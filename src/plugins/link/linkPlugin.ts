@@ -6,6 +6,10 @@ import ArenaLinkbar from './ArenaLinkbar';
 import linkManage from './linkManage';
 import { LinkPluginOptions } from './types';
 import linkCommand from './linkCommand';
+import ArenaSelection from '../../helpers/ArenaSelection';
+
+const urlPattern = /^https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&/=;]*)$/;
+const htmlUrlPattern = /^<a[ _-a-zA-Z0-9="\\]* href="(https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_+.~#?&/=;]*))"(?: [ _-a-zA-Z0-9="\\]*)?>.*< ?\/a>$/;
 
 const defaultOptions: LinkPluginOptions = {
   name: 'link',
@@ -91,6 +95,38 @@ const linkPlugin = (opts?: Partial<LinkPluginOptions>): ArenaPlugin => ({
           shortcut,
         });
       }
+    }
+    // TODO register middleware for all text arenas after init all plugins
+    const paragraph = textarena.getDefaultTextArena();
+    if (!paragraph) {
+      throw new Error('Default Arena for text not found');
+    }
+    if (paragraph.hasText) {
+      paragraph.registerMiddleware((ta: Textarena, sel: ArenaSelection, text: string) => {
+        if (sel.isSameNode() && !sel.isCollapsed()) {
+          const trimmed = text.trim();
+          let href = '';
+          if (urlPattern.test(trimmed)) {
+            href = trimmed;
+          }
+          const match = trimmed.match(htmlUrlPattern);
+          if (match) {
+            [, href] = match;
+          }
+          if (href) {
+            const newSel = sel.clone();
+            newSel.trim();
+            const node = ta.addInlineNode(newSel, arena);
+            if (node) {
+              node.setAttribute('href', href);
+              node.setAttribute('target', '_blank');
+              newSel.collapse();
+              return [true, newSel];
+            }
+          }
+        }
+        return [false, sel];
+      });
     }
   },
 });

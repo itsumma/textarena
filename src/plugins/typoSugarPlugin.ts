@@ -1,6 +1,5 @@
 import Textarena from '../Textarena';
 import ArenaPlugin from '../interfaces/ArenaPlugin';
-import ArenaCursorText from '../interfaces/ArenaCursorText';
 import ArenaSelection from '../helpers/ArenaSelection';
 
 const typings = [
@@ -107,16 +106,18 @@ const typoSugarPlugin = (): ArenaPlugin => ({
     const arenas = textarena.getArenas();
     arenas.forEach((arena) => {
       if (arena.hasText) {
-        arena.registerMiddleware((ta: Textarena, cursor: ArenaCursorText, text: string) => {
-          if (text === '-') {
-            const { node, offset } = cursor;
-            if (node.getRawText().slice(offset - 2, offset) === '--') {
+        arena.registerMiddleware((ta: Textarena, sel: ArenaSelection, text: string) => {
+          if (sel.isCollapsed() && text === '-') {
+            const { node, offset } = sel.getCursor();
+            if (node.hasText && node.getRawText().slice(offset - 2, offset) === '--') {
+              const newSel = sel.clone();
               node.cutText(offset - 2, offset);
               node.insertText('—', offset - 2);
-              return [true, { node, offset: offset - 1 }];
+              newSel.setBoth(node, offset - 1);
+              return [true, newSel];
             }
           }
-          return [false, cursor];
+          return [false, sel];
         });
       }
     });

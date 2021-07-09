@@ -1,7 +1,6 @@
 import Textarena from '../Textarena';
 import ArenaSelection from '../helpers/ArenaSelection';
 import ArenaPlugin, { DefaulPluginOptions } from '../interfaces/ArenaPlugin';
-import ArenaCursorText from '../interfaces/ArenaCursorText';
 import { ArenaMediatorInterface, ArenaTextInterface } from '../interfaces/Arena';
 import { ArenaNodeText, AnyArenaNode } from '../interfaces/ArenaNode';
 import ArenaAttributes from '../interfaces/ArenaAttributes';
@@ -190,25 +189,23 @@ const listsPlugin = (opts?: ListsOptions): ArenaPlugin => ({
         });
       }
       if (paragraph.hasText) {
-        paragraph.registerMiddleware((ta: Textarena, cursor: ArenaCursorText, text: string) => {
-          if (text === ' ') {
-            const match = cursor.node.getRawText().match(pattern);
-            if (match) {
-              const sel = new ArenaSelection(
-                cursor.node,
-                cursor.offset,
-                cursor.node,
-                cursor.offset,
-                'forward',
-              );
-              const newSel = ta.applyArenaToSelection(sel, listArena);
-              const cursor2 = newSel.getCursor() as ArenaCursorText;
-              cursor2.node.cutText(0, match[1].length);
-              cursor2.offset = 0;
-              return [true, cursor2];
+        paragraph.registerMiddleware((ta: Textarena, sel: ArenaSelection, text: string) => {
+          if (sel.isCollapsed() && text === ' ') {
+            const { node, offset } = sel.getCursor();
+            if (node.hasText) {
+              const match = node.getRawText().match(pattern);
+              if (match && match[1].length === offset) {
+                const newSel = ta.applyArenaToSelection(sel, listArena);
+                const newNode = newSel.startNode;
+                if (newNode.hasText) {
+                  newNode.cutText(0, match[1].length);
+                  newSel.setBoth(newNode, 0);
+                }
+                return [true, newSel];
+              }
             }
           }
-          return [false, cursor];
+          return [false, sel];
         });
       }
       textarena.addSimpleArenas(listArena);

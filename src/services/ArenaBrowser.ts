@@ -17,7 +17,6 @@ import { keyboardKeys, Modifiers } from './ArenaCommandManager';
 import ArenaServiceManager from './ArenaServiceManager';
 import ArenaSelection from '../helpers/ArenaSelection';
 import NodeAttributes from '../interfaces/NodeAttributes';
-import ArenaCursorText from '../interfaces/ArenaCursorText';
 
 function isMac(): boolean {
   return window.navigator.platform.includes('Mac');
@@ -481,17 +480,14 @@ export default class ArenaBrowser {
       if (selection) {
         const newSelection = this.asm.model.insertTextToModel(selection, event.character, true);
         this.asm.history.save(newSelection, /[a-zа-яА-Я0-9]/i.test(event.character));
-        if (newSelection.startNode.hasText) {
-          const [result, cursor] = this.asm.model.applyMiddlewares(
-            newSelection.getCursor() as ArenaCursorText,
-            event.character,
-          );
-          newSelection.setCursor(cursor);
-          if (result) {
-            this.asm.history.save(newSelection);
-          }
+        const [result, newSel] = this.asm.model.applyMiddlewares(
+          newSelection,
+          event.character,
+        );
+        if (result) {
+          this.asm.history.save(newSel);
         }
-        this.asm.eventManager.fire('modelChanged', newSelection);
+        this.asm.eventManager.fire('modelChanged', newSel);
       }
     }
     if (event instanceof RemoveEvent) {
@@ -569,8 +565,11 @@ export default class ArenaBrowser {
         return;
       }
       this.asm.logger.log(`Insert text: «${text}»`);
-      // TODO middleware
-      const newSelection = this.asm.model.insertTextToModel(selection, text);
+      const [result, newSel] = this.asm.model.applyMiddlewares(
+        selection,
+        text,
+      );
+      const newSelection = result ? newSel : this.asm.model.insertTextToModel(selection, text);
       this.asm.history.save(newSelection);
       this.asm.eventManager.fire('modelChanged', newSelection);
     }

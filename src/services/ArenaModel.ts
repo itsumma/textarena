@@ -148,19 +148,20 @@ export default class ArenaModel {
   }
 
   /** */
-  public applyMiddlewares(cursor: ArenaCursorText, text: string): [boolean, ArenaCursorText] {
+  public applyMiddlewares(sel: ArenaSelection, text: string): [boolean, ArenaSelection] {
     let success = false;
     let result = false;
-    let cur = cursor;
+    let newSel = sel;
+    const node = sel.startNode;
 
-    if (cursor.node.arena.hasText) {
-      const { middlewares } = cursor.node.arena;
+    if (sel.isSameNode() && node.arena.hasText) {
+      const { middlewares } = node.arena;
       for (let i = 0; i < middlewares.length; i += 1) {
-        [success, cur] = middlewares[i](this.asm.textarena, cur, text);
+        [success, newSel] = middlewares[i](this.asm.textarena, newSel, text);
         result = success || result;
       }
     }
-    return [result, cur];
+    return [result, newSel];
   }
   // #endregion
 
@@ -457,21 +458,25 @@ export default class ArenaModel {
   }
 
   public insertHtml(selection: ArenaSelection, html: string): ArenaSelection {
-    let newSelection = selection;
-    if (!selection.isCollapsed()) {
-      newSelection = this.removeSelection(selection, 'backward');
-    }
-    const result = this.asm.parser.insertHtmlToModel(
+    const [result, newSelection] = this.asm.model.applyMiddlewares(
+      selection,
       html,
-      newSelection.startNode,
-      newSelection.startOffset,
     );
     if (result) {
-      const cursor = this.getTextCursor(result[0], result[1]);
-      newSelection.setCursor(cursor);
-      // newSelection.setBoth(result[0] as ArenaNodeText, result[1]);
+      return newSelection;
     }
-    return newSelection;
+    let newSelection2 = newSelection;
+    if (!selection.isCollapsed()) {
+      newSelection2 = this.removeSelection(selection, 'backward');
+    }
+    const [node, offset] = this.asm.parser.insertHtmlToModel(
+      html,
+      newSelection2.startNode,
+      newSelection2.startOffset,
+    );
+    const cursor = this.getTextCursor(node, offset);
+    newSelection2.setCursor(cursor);
+    return newSelection2;
   }
 
   public insertTextToModel(

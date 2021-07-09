@@ -1,10 +1,10 @@
 import Textarena from '../Textarena';
-import ArenaCursorText from './ArenaCursorText';
+import ArenaSelection from '../helpers/ArenaSelection';
 
 type ArenaMiddleware = (
   ta: Textarena,
-  cursor: ArenaCursorText,
+  selection: ArenaSelection,
   text: string,
-) => [boolean, ArenaCursorText];
+) => [boolean, ArenaSelection];
 
 export default ArenaMiddleware;

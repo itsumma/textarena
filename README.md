@@ -83,4 +83,7 @@ Add paddings arround the editor:
 
 This will make it easier to select text with the mouse.
 
+## Icons
+
+Icons: https://fonts.google.com/icons?selected=Material+Icons
 
