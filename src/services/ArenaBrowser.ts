@@ -178,6 +178,14 @@ export default class ArenaBrowser {
       this.editor.addEventListener('focus', this.focusListenerInstance, false);
       this.editor.addEventListener('arena-change-attribute', this.changeAttributeListenerInstance, false);
       document.addEventListener('selectionchange', this.selectListenerInstance, false);
+      this.editor.startObserve(
+        () => this.asm.eventManager.fire('editorChanged'),
+        {
+          attributes: true,
+          childList: true,
+          subtree: true,
+        },
+      );
     });
     this.asm.eventManager.subscribe('turnOff', () => {
       this.editor.removeEventListener('input', this.inputListenerInstance);
@@ -190,6 +198,7 @@ export default class ArenaBrowser {
       this.editor.removeEventListener('focus', this.focusListenerInstance);
       this.editor.removeEventListener('arena-change-attribute', this.changeAttributeListenerInstance);
       document.removeEventListener('selectionchange', this.selectListenerInstance);
+      this.editor.stopObserve();
     });
   }
 

@@ -30,6 +30,8 @@ export default class CreatorBar {
 
   showed = false;
 
+  lastTarget: HTMLElement | undefined;
+
   active = false;
 
   currentFocusElement: HTMLElement | undefined;
@@ -77,6 +79,9 @@ export default class CreatorBar {
     this.asm.textarena.getContainerElement().appendChild(this.getElem());
     this.asm.eventManager.subscribe('moveCursor', () => {
       this.handleChangeSelection();
+    });
+    this.asm.eventManager.subscribe('editorChanged', () => {
+      this.reposition();
     });
     this.asm.commandManager.registerCommand(
       'open-creator-list',
@@ -265,17 +270,28 @@ export default class CreatorBar {
     if (this.canShow(node)) {
       // target.appendChild(this.elem.getElem());
       this.showed = true;
-      this.buttonWrapper.css({
-        height: `${target.offsetHeight}px`,
-      });
-      this.elem.css({
-        display: 'flex',
-        top: `${target.offsetTop}px`,
-      });
+      this.lastTarget = target;
+      this.setPosition(target);
     } else if (this.showed) {
       this.hide();
     }
     this.closeList();
+  }
+
+  setPosition(target: HTMLElement): void {
+    this.buttonWrapper.css({
+      height: `${target.offsetHeight}px`,
+    });
+    this.elem.css({
+      display: 'flex',
+      top: `${target.offsetTop}px`,
+    });
+  }
+
+  reposition(): void {
+    if (this.showed && this.lastTarget) {
+      this.setPosition(this.lastTarget);
+    }
   }
 
   hide(): void {
