@@ -1,0 +1,50 @@
+name: website
+
+on:
+  push:
+    branches: [actions]
+  pull_request:
+    branches: [actions]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v2
+      -
+        name: Use Node.js 14.17.1
+        uses: actions/setup-node@v2
+        with:
+          node-version: 14.17.1
+          cache: 'npm'
+      -
+        name: Build
+        run: yarn build
+      -
+        name: Run linter
+        run: yarn lint
+      -
+        name: Run tests
+        run: yarn test:jest
+      -
+        name: Run tests
+        run: yarn test:cypress
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Check GitHub Pages status
+        uses: crazy-max/ghaction-github-status@v2
+        with:
+          pages_threshold: major_outage
+      -
+        name: Deploy to GitHub Pages
+        if: success()
+        uses: crazy-max/ghaction-github-pages@v2
+        with:
+          target_branch: gh-pages
+          build_dir: public
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
