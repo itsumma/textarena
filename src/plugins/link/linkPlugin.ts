@@ -64,8 +64,10 @@ const linkPlugin = (opts?: Partial<LinkPluginOptions>): ArenaPlugin => ({
       },
       marks,
     ) as ArenaInlineInterface;
-    if (component && componentConstructor && !customElements.get(component)) {
-      customElements.define(component, componentConstructor);
+    if (component && componentConstructor) {
+      if (!customElements.get(component)) {
+        customElements.define(component, componentConstructor);
+      }
       const linkbar = new ElementHelper(component);
       linkbar.setProperty('textarena', textarena);
       const container = textarena.getContainerElement();

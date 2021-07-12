@@ -79,8 +79,43 @@ export default class ArenaLinkbar extends LitElement {
   @property({ type: Object })
   parent: ArenaNodeText | undefined;
 
+  @property({ type: Number })
+  centerposition: number | undefined;
+
   @property({ type: Object })
   textarena: Textarena | undefined;
+
+  observer: MutationObserver;
+
+  constructor() {
+    super();
+    this.observer = new MutationObserver(() => {
+      const preview = this.shadowRoot?.children[0] as HTMLElement;
+      if (preview && this.centerposition) {
+        const previewLeft = Math.max(
+          0,
+          Math.min(
+            this.offsetWidth - preview.offsetWidth,
+            this.centerposition - preview.offsetWidth / 2,
+          ),
+        );
+        preview.style.marginLeft = `${previewLeft}px`;
+      }
+    });
+    if (this.shadowRoot) {
+      this.observer.observe(this.shadowRoot, {
+        attributes: false,
+        childList: true,
+        subtree: true,
+        characterData: true,
+      });
+    }
+  }
+
+  disconnectedCallback(): void {
+    super.disconnectedCallback();
+    this.observer.disconnect();
+  }
 
   render(): TemplateResult | undefined {
     if (this.node && this.show) {
