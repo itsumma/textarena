@@ -36,9 +36,6 @@ jobs:
         uses: cypress-io/github-action@v2
         with:
           start: yarn start
-  publish:
-    runs-on: ubuntu-latest
-    steps:
       -
         name: Check GitHub Pages status
         uses: crazy-max/ghaction-github-status@v2
