@@ -1,10 +1,10 @@
-name: website
+name: Publish textarena
 
 on:
   push:
-    branches: [actions]
+    branches: [master]
   pull_request:
-    branches: [actions]
+    branches: [master]
 
 jobs:
   build:
