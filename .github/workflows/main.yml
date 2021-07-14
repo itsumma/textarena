@@ -32,8 +32,10 @@ jobs:
         name: Run tests
         run: yarn test:jest
       -
-        name: Run tests
-        run: yarn test:cypress
+        name: Run Cypress
+        uses: cypress-io/github-action@v2
+        with:
+          start: yarn start
   publish:
     runs-on: ubuntu-latest
     steps:
