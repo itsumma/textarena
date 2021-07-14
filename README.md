@@ -3,7 +3,7 @@
 
 Textarena is a simple WYSIWYG editor
 
-[Demo](https://devopsprodigy.github.io/textarena/)
+[Demo](https://itsumma.github.io/textarena/)
 
 ## Table of Contents
 
