@@ -25,6 +25,7 @@ function isMac(): boolean {
 type ArenaChangeAttribute = CustomEvent<{
   attrs: NodeAttributes,
   target: HTMLElement,
+  stopRender?: boolean,
 }>;
 
 declare global {
@@ -413,7 +414,7 @@ export default class ArenaBrowser {
             if (sel) {
               this.asm.history.save(sel);
             }
-            this.asm.eventManager.fire('modelChanged', sel);
+            this.asm.eventManager.fire('modelChanged', { selection: sel });
           }
           break;
         }
@@ -465,7 +466,7 @@ export default class ArenaBrowser {
       if (selection) {
         const newSelection = this.asm.model.removeSelection(selection, selection.direction);
         this.asm.history.save(newSelection);
-        this.asm.eventManager.fire('modelChanged', newSelection);
+        this.asm.eventManager.fire('modelChanged', { selection: newSelection });
       }
     }
     if (event instanceof CommandEvent) {
@@ -487,7 +488,7 @@ export default class ArenaBrowser {
         if (result) {
           this.asm.history.save(newSel);
         }
-        this.asm.eventManager.fire('modelChanged', newSel);
+        this.asm.eventManager.fire('modelChanged', { selection: newSel });
       }
     }
     if (event instanceof RemoveEvent) {
@@ -495,7 +496,7 @@ export default class ArenaBrowser {
       if (selection) {
         const newSelection = this.asm.model.removeSelection(selection, event.direction);
         this.asm.history.save(newSelection);
-        this.asm.eventManager.fire('modelChanged', newSelection);
+        this.asm.eventManager.fire('modelChanged', { selection: newSelection });
       }
     }
   }
@@ -558,7 +559,7 @@ export default class ArenaBrowser {
       this.asm.logger.log(`Insert html: «${html}»`);
       const newSelection = this.asm.model.insertHtml(selection, html);
       this.asm.history.save(newSelection);
-      this.asm.eventManager.fire('modelChanged', newSelection);
+      this.asm.eventManager.fire('modelChanged', { selection: newSelection });
     } else if (types.includes('text/plain')) {
       const text = data.getData('text/plain');
       if (!text) {
@@ -571,7 +572,7 @@ export default class ArenaBrowser {
       );
       const newSelection = result ? newSel : this.asm.model.insertTextToModel(selection, text);
       this.asm.history.save(newSelection);
-      this.asm.eventManager.fire('modelChanged', newSelection);
+      this.asm.eventManager.fire('modelChanged', { selection: newSelection });
     }
   }
 
@@ -592,7 +593,7 @@ export default class ArenaBrowser {
   }
 
   protected changeAttributeListener(e: ArenaChangeAttribute): void {
-    const { attrs, target } = e.detail;
+    const { attrs, target, stopRender } = e.detail;
     const id = this.getIdOfTarget(target);
     if (id) {
       const node = this.asm.model.getNodeById(id);
@@ -602,7 +603,10 @@ export default class ArenaBrowser {
         if (sel) {
           this.asm.history.save(sel);
         }
-        this.asm.eventManager.fire('modelChanged', sel);
+        this.asm.eventManager.fire('modelChanged', {
+          selection: sel,
+          stopRender: !!stopRender,
+        });
       }
     }
   }

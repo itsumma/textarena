@@ -97,7 +97,7 @@ export default class ArenaCommandManager {
         if (saveToHistory) {
           this.asm.history.save(newSelection);
         }
-        this.asm.eventManager.fire('modelChanged', newSelection);
+        this.asm.eventManager.fire('modelChanged', { selection: newSelection });
       }
     }
   }

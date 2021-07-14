@@ -38,7 +38,7 @@ const defaultOptions: ImagePluginOptions = {
   title: 'Image',
   tag: 'ARENA-IMAGE',
   attributes: {},
-  allowedAttributes: ['src', 'width', 'height'],
+  allowedAttributes: ['src', 'width', 'height', 'alt'],
   shortcut: 'Alt + KeyI',
   hint: 'i',
   command: 'add-image',

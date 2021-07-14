@@ -94,7 +94,7 @@ export default class SymbolCounter {
     if (sel) {
       this.asm.history.save(sel);
     }
-    this.asm.eventManager.fire('modelChanged', sel);
+    this.asm.eventManager.fire('modelChanged', { selection: sel });
   }
 
   public openHelp(): void {

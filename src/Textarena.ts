@@ -419,8 +419,14 @@ class Textarena {
 
   protected start(): void {
     this.asm.eventManager.subscribe('modelChanged', (e) => {
-      if (typeof e === 'object') {
-        this.asm.view.render(e.detail instanceof ArenaSelection ? e.detail : undefined);
+      if (typeof e.detail === 'object') {
+        const { selection, stopRender } = e.detail as {
+          selection: ArenaSelection,
+          stopRender?: boolean,
+        };
+        if (!stopRender) {
+          this.asm.view.render(selection instanceof ArenaSelection ? selection : undefined);
+        }
       }
       if (this.options.onChange) {
         this.options.onChange(this.getData(this.outputTypes));

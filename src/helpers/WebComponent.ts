@@ -13,6 +13,7 @@ export default class WebComponent extends LitElement {
     this.addEventListener('keypress', this.handleEvent);
     this.addEventListener('keydown', this.handleEvent);
     this.addEventListener('paste', this.handleEvent);
+    this.addEventListener('copy', this.handleEvent);
     this.addEventListener('selectionchange', this.handleEvent);
   }
 
@@ -24,20 +25,31 @@ export default class WebComponent extends LitElement {
     this.removeEventListener('keypress', this.handleEvent);
     this.removeEventListener('keydown', this.handleEvent);
     this.removeEventListener('paste', this.handleEvent);
+    this.removeEventListener('copy', this.handleEvent);
     this.removeEventListener('selectionchange', this.handleEvent);
   }
 
   protected handleEvent(event: Event): void {
-    // Prevent event from ArenaBrowser
-    event.stopPropagation();
+    console.log('stop', event);
+    const e = event as unknown as { path: Node[] };
+    let elem: Node | null = e.path[0];
+    while (elem) {
+      if (elem === this.shadowRoot) {
+        // Prevent event from ArenaBrowser
+        event.stopPropagation();
+        return;
+      }
+      elem = elem.parentNode;
+    }
   }
 
-  protected fireChangeAttribute(attrs: NodeAttributes): void {
+  protected fireChangeAttribute(attrs: NodeAttributes, stopRender = false): void {
     const event = new CustomEvent('arena-change-attribute', {
       bubbles: true,
       detail: {
         attrs,
         target: this,
+        stopRender,
       },
     });
     this.dispatchEvent(event);

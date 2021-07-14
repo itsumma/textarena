@@ -26,7 +26,25 @@ export default class ArenaImage extends WebComponent {
   })
   arena: AnyArena | undefined;
 
+  @property({
+    type: String,
+  })
+  set alt(value: string | undefined) {
+    this._alt = value || '';
+    if (!this.inputAlt) {
+      this.inputAlt = this._alt;
+    }
+  }
+
+  get alt(): string | undefined {
+    return this._alt;
+  }
+
   loading = false;
+
+  _alt = '';
+
+  inputAlt = '';
 
   get input(): HTMLInputElement | undefined {
     const input = this.renderRoot.querySelector('#input');
@@ -40,6 +58,7 @@ export default class ArenaImage extends WebComponent {
           display: block;
           margin: 0;
           user-select: none;
+          position: relative;
         }
         .empty {
           display: flex;
@@ -71,6 +90,63 @@ export default class ArenaImage extends WebComponent {
         label {
           cursor: pointer;
         }
+
+        .alt-row {
+          display: flex;
+          flex-flow: row-reverse nowrap;
+          position: absolute;
+          bottom: 0.1em;
+          right: 0.1em;
+          left: 0.1em;
+        }
+        .alt-row:hover {
+          opacity: 1;
+        }
+        .alt-title {
+          padding: 0 0.5em;
+          background: white;
+          opacity: 0;
+          font-size: 0.8em;
+          border-radius: 1em;
+          border-top-left-radius: 1em;
+          border-top-right-radius: 0;
+          border-bottom-right-radius: 0;
+          border-bottom-left-radius: 1em;
+          overflow: hidden;
+          border: 1px solid #ccc;
+          border-right: none;
+        }
+        .alt-input {
+          flex: 1;
+          opacity: 0;
+          border: 0;
+          border-bottom: 1px solid #ccc;
+          font-size: 0.8em;
+          border-radius: 1em;
+          border-top-left-radius: 0;
+          border-top-right-radius: 1em;
+          border-bottom-right-radius: 1em;
+          border-bottom-left-radius: 0;
+          overflow: hidden;
+          border: 1px solid #ccc;
+          border-left: none;
+        }
+        .alt-input:hover,
+        .alt-input:focus {
+          outline: none;
+        }
+        .alt-input:focus {
+          opacity: 1;
+        }
+        .alt-input:focus + .alt-title {
+          opacity: 1;
+        }
+        :host(:hover) .alt-input {
+          opacity: 1;
+        }
+        :host(:hover) .alt-title {
+          opacity: 1;
+        }
       `,
     ];
   }
@@ -83,6 +159,10 @@ export default class ArenaImage extends WebComponent {
     } else if (this.src) {
       preview = html`<label for="input">
         <img class="img" src="${this.getScr(this.src, this.width, this.height)}" />
+      </label>
+      <label for="alt-input" class="alt-row">
+        <input class="alt-input" id="alt-input" type="text" @input="${this.handleInput}" value="${this.inputAlt}" class="form__input" />
+        <span class="alt-title">Alt:&nbsp;</span>
       </label>`;
     } else {
       preview = html`<label for="input" class="empty">
@@ -93,6 +173,17 @@ export default class ArenaImage extends WebComponent {
       ${preview}
       <input class="input" id=input type="file" @change=${this.onChange}/>
     `;
+  }
+
+  protected handleInput(e: InputEvent): void {
+    if (!e.currentTarget) {
+      return;
+    }
+    const { value } = e.currentTarget as HTMLInputElement;
+    this.inputAlt = value;
+    this.fireChangeAttribute({
+      alt: this.inputAlt,
+    }, true);
   }
 
   protected getScr(src: string, width?: number, height?: number): string {
