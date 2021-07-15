@@ -79,7 +79,7 @@ export default function linkManage(
   linkbar: ElementHelper,
 ): void {
   const selection = ta.getCurrentSelection();
-  if (!selection) {
+  if (!selection || !selection.isCollapsed()) {
     hideLinkbar(linkbar);
     return;
   }

@@ -3,6 +3,7 @@ import ArenaSelection from '../helpers/ArenaSelection';
 import ArenaPlugin, { DefaulPluginOptions } from '../interfaces/ArenaPlugin';
 import { ArenaTextInterface } from '../interfaces/Arena';
 import { AnyArenaNode } from '../interfaces/ArenaNode';
+import utils from '../utils';
 
 type HeaderOptions = { [key: string]: DefaulPluginOptions };
 type PartialHeaderOptions = { [key: string]: Partial<DefaulPluginOptions> };
@@ -83,8 +84,16 @@ const headersPlugin = (opts?: PartialHeaderOptions): ArenaPlugin => ({
         if (command) {
           textarena.registerCommand(
             command,
-            (ta: Textarena, selection: ArenaSelection) =>
-              ta.applyArenaToSelection(selection, arena),
+            (ta: Textarena, selection: ArenaSelection) => {
+              let isApplied = true;
+              utils.modelTree.runThroughSelection(
+                selection,
+                (node: AnyArenaNode) => {
+                  isApplied = isApplied && node.arena === arena;
+                },
+              );
+              return ta.applyArenaToSelection(selection, isApplied ? paragraph : arena);
+            },
           );
           if (shortcut) {
             textarena.registerShortcut(
