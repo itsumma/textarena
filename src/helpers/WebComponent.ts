@@ -54,4 +54,12 @@ export default class WebComponent extends LitElement {
     });
     this.dispatchEvent(event);
   }
+
+  protected fireCustomEvent(e: unknown): void {
+    const event = new CustomEvent('arena-custom-event', {
+      bubbles: true,
+      detail: e,
+    });
+    this.dispatchEvent(event);
+  }
 }

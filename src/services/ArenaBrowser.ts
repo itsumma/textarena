@@ -28,9 +28,12 @@ type ArenaChangeAttribute = CustomEvent<{
   stopRender?: boolean,
 }>;
 
+type ArenaCustomEvent = CustomEvent<unknown>;
+
 declare global {
   interface GlobalEventHandlersEventMap {
     'arena-change-attribute': ArenaChangeAttribute;
+    'arena-custom-event': ArenaCustomEvent;
     'beforeinput': InputEvent;
   }
 }
@@ -145,6 +148,8 @@ export default class ArenaBrowser {
 
   protected changeAttributeListenerInstance: ((event: ArenaChangeAttribute) => void);
 
+  protected arenaCustomEventListenerInstance: ((event: ArenaCustomEvent) => void);
+
   protected lastSelectionStatus = false;
 
   protected lastSelectionRange: Range | undefined;
@@ -166,6 +171,7 @@ export default class ArenaBrowser {
     this.pasteListenerInstance = this.pasteListener.bind(this);
     this.focusListenerInstance = this.focusListener.bind(this);
     this.changeAttributeListenerInstance = this.changeAttributeListener.bind(this);
+    this.arenaCustomEventListenerInstance = this.arenaCustomEventListener.bind(this);
     this.asm.eventManager.subscribe('turnOn', () => {
       this.editor.addEventListener('input', this.inputListenerInstance, false);
       this.editor.addEventListener('beforeinput', this.beforeinputListenerInstance, false);
@@ -177,6 +183,7 @@ export default class ArenaBrowser {
       this.editor.addEventListener('paste', this.pasteListenerInstance, false);
       this.editor.addEventListener('focus', this.focusListenerInstance, false);
       this.editor.addEventListener('arena-change-attribute', this.changeAttributeListenerInstance, false);
+      this.editor.addEventListener('arena-custom-event', this.arenaCustomEventListenerInstance, false);
       document.addEventListener('selectionchange', this.selectListenerInstance, false);
       this.editor.startObserve(
         () => this.asm.eventManager.fire('editorChanged'),
@@ -197,6 +204,7 @@ export default class ArenaBrowser {
       this.editor.removeEventListener('paste', this.pasteListenerInstance);
       this.editor.removeEventListener('focus', this.focusListenerInstance);
       this.editor.removeEventListener('arena-change-attribute', this.changeAttributeListenerInstance);
+      this.editor.removeEventListener('arena-custom-event', this.arenaCustomEventListenerInstance);
       document.removeEventListener('selectionchange', this.selectListenerInstance);
       this.editor.stopObserve();
     });
@@ -609,5 +617,9 @@ export default class ArenaBrowser {
         });
       }
     }
+  }
+
+  protected arenaCustomEventListener(e: ArenaCustomEvent): void {
+    this.asm.eventManager.fire('customEvent', e.detail);
   }
 }

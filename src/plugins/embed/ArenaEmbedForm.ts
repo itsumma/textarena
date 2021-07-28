@@ -138,6 +138,9 @@ export default class ArenaEmbedForm extends WebComponent {
     if (this.inputValue) {
       const result = createElemEmbed(this.inputValue);
       if (result) {
+        this.fireCustomEvent({
+          name: 'embed submit',
+        });
         const event = new CustomEvent('change', {
           detail: result,
         });

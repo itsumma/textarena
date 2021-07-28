@@ -152,7 +152,11 @@
         renderElem.innerHTML = data.html;
       }
     }, 500);
-    const onEvent = (e) => console.log(e);
+    const onEvent = (e) => {
+      if (e.name === 'customEvent') {
+        console.log(e);
+      }
+    }
 
     const textarena = new Textarena(
       elem,
