@@ -158,7 +158,7 @@ export default class ArenaImage extends WebComponent {
       preview = html`<div class="empty">Грузится…</div>`;
     } else if (this.src) {
       preview = html`<label for="input">
-        <img class="img" src="${this.getScr(this.src, this.width, this.height)}" />
+        <img class="img" src="${this.getScr(this.src, this.width, this.height)}" @load="${this.onLoad}" />
       </label>
       <label for="alt-input" class="alt-row">
         <input class="alt-input" id="alt-input" type="text" @input="${this.handleInput}" value="${this.inputAlt}" class="form__input" />
@@ -196,6 +196,10 @@ export default class ArenaImage extends WebComponent {
       }
     }
     return '';
+  }
+
+  protected onLoad(): void {
+    this.fireCustomEvent('imageLoaded');
   }
 
   protected onChange(): void {

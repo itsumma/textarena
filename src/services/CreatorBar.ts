@@ -85,6 +85,11 @@ export default class CreatorBar {
     this.asm.eventManager.subscribe('editorChanged', () => {
       this.reposition();
     });
+    this.asm.eventManager.subscribe('customEvent', (e) => {
+      if (e.detail === 'imageLoaded') {
+        this.reposition();
+      }
+    });
     this.asm.commandManager.registerCommand(
       'open-creator-list',
       (_t: Textarena, selection: ArenaSelection) => {
