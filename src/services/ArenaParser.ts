@@ -6,6 +6,7 @@ import ArenaServiceManager from './ArenaServiceManager';
 import { AnyArenaNode, ArenaNodeText } from '../interfaces/ArenaNode';
 import { AnyArena } from '../interfaces/Arena';
 import ArenaSelection from '../helpers/ArenaSelection';
+import { ArenaMark, FormatingMark } from './ArenaModel';
 
 export default class ArenaParser {
   constructor(protected asm: ArenaServiceManager) {
@@ -119,7 +120,9 @@ export default class ArenaParser {
           return [...this.insertChildren(elementNode, arenaNode, offset), true];
         }
         elementNode.getAttributeNames().forEach((attr) => {
-          inlineNode.setAttribute(attr, elementNode.getAttribute(attr) || '');
+          if (arena.allowedAttributes.includes(attr)) {
+            inlineNode.setAttribute(attr, elementNode.getAttribute(attr) || '');
+          }
         });
         const cursor = this.asm.model.getOrCreateNodeForText(arenaNode, offset);
 
@@ -240,7 +243,7 @@ export default class ArenaParser {
     if (marks) {
       for (let i = 0; i < marks.length; i += 1) {
         const mark = marks[i];
-        if (this.checkAttributes(node, mark.attributes)) {
+        if (this.checkAttributes(node, mark)) {
           return mark.arena;
         }
       }
@@ -253,7 +256,7 @@ export default class ArenaParser {
     if (marks) {
       for (let i = 0; i < marks.length; i += 1) {
         const mark = marks[i];
-        if (this.checkAttributes(node, mark.attributes)) {
+        if (this.checkAttributes(node, mark)) {
           return mark.formating;
         }
       }
@@ -261,7 +264,33 @@ export default class ArenaParser {
     return undefined;
   }
 
-  private checkAttributes(node: HTMLElement, attributes: string[]): boolean {
+  private checkAttributes(node: HTMLElement, mark: ArenaMark | FormatingMark): boolean {
+    const { attributes, excludeAttributes } = mark;
+    if (excludeAttributes) {
+      for (let i = 0; i < excludeAttributes.length; i += 1) {
+        const attribute: string = excludeAttributes[i];
+        let [name, value] = attribute.split('=');
+        name = name.trim();
+        value = value.trim().replace(/^"(.*)"$/, '$1');
+        if (name === 'style') {
+          const [styleName, styleValue] = value.split(':');
+          if (styleName in node.style
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            && node.style[styleName as any] === styleValue.trim().toLowerCase()) {
+            return false;
+          }
+        } else if (name === 'class') {
+          const values = value.split(' ').filter((v) => v.trim()).filter((v) => v.length > 0);
+          for (let j = 0; j < values.length; j += 1) {
+            if (node.classList.contains(values[j])) {
+              return false;
+            }
+          }
+        } else if (node.getAttribute(name) === value) {
+          return false;
+        }
+      }
+    }
     if (attributes.length === 0) {
       return true;
     }

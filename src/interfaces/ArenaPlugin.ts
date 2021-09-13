@@ -1,15 +1,11 @@
 import Textarena from '../Textarena';
 import ArenaAttributes from './ArenaAttributes';
+import { TagAndAttributes } from './ArenaFormating';
 import { OutputProcessor } from './ArenaOptions';
 
 export default interface ArenaPlugin {
   register: (textarena: Textarena) => void;
 }
-
-export type ArenaMarkOptions = {
-  tag: string,
-  attributes: string[];
-};
 
 export type DefaulPluginOptions = {
   name: string,
@@ -23,6 +19,6 @@ export type DefaulPluginOptions = {
   command?: string,
   component?: string,
   componentConstructor?: CustomElementConstructor,
-  marks: ArenaMarkOptions[],
+  marks: TagAndAttributes[],
   output?: OutputProcessor
 };

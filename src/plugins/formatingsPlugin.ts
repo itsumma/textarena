@@ -2,11 +2,7 @@ import Textarena from '../Textarena';
 import ArenaPlugin from '../interfaces/ArenaPlugin';
 import ArenaSelection from '../helpers/ArenaSelection';
 import { AnyArenaNode } from '../interfaces/ArenaNode';
-
-type MarkOptions = {
-  tag: string,
-  attributes: string[];
-};
+import { TagAndAttributes } from '../interfaces/ArenaFormating';
 
 type FormatingOptions = {
   name: string,
@@ -15,7 +11,7 @@ type FormatingOptions = {
   shortcut?: string,
   hint?: string,
   command: string,
-  marks: MarkOptions[],
+  marks: TagAndAttributes[],
   tool?: {
     icon: string;
     title: string;
@@ -39,6 +35,9 @@ const defaultOptions: FormatingsOptions = {
         {
           tag: 'B',
           attributes: [],
+          excludeAttributes: [
+            'style=fontWeight:normal',
+          ],
         },
         {
           tag: 'STRONG',
@@ -48,9 +47,29 @@ const defaultOptions: FormatingsOptions = {
           tag: 'SPAN',
           attributes: [
             'style=fontWeight:bold',
+          ],
+        },
+        {
+          tag: 'SPAN',
+          attributes: [
             'style=fontWeight:900',
+          ],
+        },
+        {
+          tag: 'SPAN',
+          attributes: [
             'style=fontWeight:800',
+          ],
+        },
+        {
+          tag: 'SPAN',
+          attributes: [
             'style=fontWeight:700',
+          ],
+        },
+        {
+          tag: 'SPAN',
+          attributes: [
             'style=fontWeight:600',
           ],
         },
@@ -129,6 +148,10 @@ const defaultOptions: FormatingsOptions = {
           attributes: [],
         },
         {
+          tag: 'STRIKE',
+          attributes: [],
+        },
+        {
           tag: 'SPAN',
           attributes: [
             'style=textDecoration:line-through;',
@@ -181,7 +204,49 @@ const defaultOptions: FormatingsOptions = {
       ],
       tool: {
         title: 'Superscript',
-        icon: '<sup>sup</sip>',
+        icon: '<sup>sup</sup>',
+      },
+    },
+    {
+      name: 'colored',
+      tag: 'FONT',
+      attributes: [
+        'color="#545454"',
+      ],
+      command: 'format-colored',
+      marks: [
+        {
+          tag: 'FONT',
+          attributes: [
+            'color="#545454"',
+          ],
+        },
+        {
+          tag: 'SPAN',
+          attributes: [
+            'style="color:#545454"',
+          ],
+        },
+      ],
+      tool: {
+        title: 'Colored',
+        icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="5 0 38 34" fill="currentColor"><path d="M33.12 17.88L15.24 0l-2.83 2.83 4.76 4.76L6.88 17.88c-1.17 1.17-1.17 3.07 0 4.24l11 11c.58.59 1.35.88 2.12.88s1.54-.29 2.12-.88l11-11c1.17-1.17 1.17-3.07 0-4.24zM10.41 20L20 10.42 29.59 20H10.41zM38 23s-4 4.33-4 7c0 2.21 1.79 4 4 4s4-1.79 4-4c0-2.67-4-7-4-7z"/></svg>',
+      },
+    },
+    {
+      name: 'mark',
+      tag: 'MARK',
+      attributes: [],
+      command: 'format-mark',
+      marks: [
+        {
+          tag: 'MARK',
+          attributes: [],
+        },
+      ],
+      tool: {
+        title: 'Mark',
+        icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 14.6 13" fill="currentColor"><path d="M6,5 L2,9 L3,10 L0,13 L4,13 L5,12 L5,12 L6,13 L10,9 L6,5 L6,5 Z M10.2937851,0.706214905 C10.6838168,0.316183183 11.3138733,0.313873291 11.7059121,0.705912054 L14.2940879,3.29408795 C14.6839524,3.68395241 14.6796852,4.32031476 14.2937851,4.7062149 L11,8 L7,4 L10.2937851,0.706214905 Z"/></svg>',
       },
     },
   ],

@@ -11,6 +11,7 @@ export type ArenaFormatings = {
 export type TagAndAttributes = {
   tag: string,
   attributes: string[],
+  excludeAttributes?: string[],
 };
 
 export default ArenaFormating;

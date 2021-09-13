@@ -22,13 +22,15 @@ import ArenaServiceManager from './ArenaServiceManager';
 import NodeRegistry from '../helpers/NodeRegistry';
 import utils from '../utils';
 
-type ArenaMark = {
+export type ArenaMark = {
   attributes: string[],
+  excludeAttributes?: string[],
   arena: AnyArena,
 };
 
-type FormatingMark = {
+export type FormatingMark = {
   attributes: string[],
+  excludeAttributes?: string[],
   formating: ArenaFormating
 };
 
@@ -102,14 +104,14 @@ export default class ArenaModel {
     }
     if (markers) {
       markers.forEach(({ tag, attributes }) => {
-        if (!this.areanMarks[tag]) {
-          this.areanMarks[tag] = [];
+        if (!this.arenaMarks[tag]) {
+          this.arenaMarks[tag] = [];
         }
-        this.areanMarks[tag].push({
+        this.arenaMarks[tag].push({
           attributes,
           arena,
         });
-        this.areanMarks[tag].sort((a, b) => b.attributes.length - a.attributes.length);
+        this.arenaMarks[tag].sort((a, b) => b.attributes.length - a.attributes.length);
       });
     }
     return arena;
@@ -121,12 +123,12 @@ export default class ArenaModel {
   ): ArenaFormating {
     this.formatings.push(formating);
     this.formatingsByName[formating.name] = formating;
-    markers.forEach(({ tag, attributes }) => {
+    markers.forEach(({ tag, ...formatingMark }) => {
       if (!this.formatingMarks[tag]) {
         this.formatingMarks[tag] = [];
       }
       this.formatingMarks[tag].push({
-        attributes,
+        ...formatingMark,
         formating,
       });
     });
@@ -146,7 +148,7 @@ export default class ArenaModel {
   }
 
   public getArenaMarks(tagName: string): ArenaMark[] | undefined {
-    return this.areanMarks[tagName];
+    return this.arenaMarks[tagName];
   }
 
   public getFormatingMarks(tagName: string): FormatingMark[] | undefined {
@@ -173,7 +175,7 @@ export default class ArenaModel {
 
   // #region Exporting
 
-  /** Data for stotring */
+  /** Data for storing */
   public getDataHtml(): string {
     return this.model.getDataHtml(this.getFormatings());
   }
@@ -1016,7 +1018,7 @@ export default class ArenaModel {
 
   protected formatingsByName: ArenaFormatings = {};
 
-  protected areanMarks: { [tag: string]: ArenaMark[] } = { };
+  protected arenaMarks: { [tag: string]: ArenaMark[] } = { };
 
   protected formatingMarks: { [tag: string]: FormatingMark[] } = { };
 

@@ -42,6 +42,7 @@ import asidePlugin from './plugins/asidePlugin';
 import quotePlugin from './plugins/quoteBlock/quoteBlockPlugin';
 import figurePlugin from './plugins/figure/figurePlugin';
 import typoSugarPlugin from './plugins/typoSugarPlugin';
+import codePlugin from './plugins/codePlugin';
 
 export const defaultOptions: TextarenaOptions = {
   editable: true,
@@ -81,7 +82,6 @@ export const defaultOptions: TextarenaOptions = {
       'blockquote',
       'embed',
       'aside',
-      'quote-block',
       'callout',
     ],
   },
@@ -93,13 +93,12 @@ export const defaultOptions: TextarenaOptions = {
     hrPlugin(),
     listsPlugin(),
     blockquotePlugin(),
-    calloutPlugin(),
     imagePlugin(),
     figurePlugin(),
     embedPlugin(),
     linkPlugin(),
     asidePlugin(),
-    quotePlugin(),
+    codePlugin(),
     typoSugarPlugin(),
   ],
 };
@@ -502,5 +501,24 @@ declare global {
     };
   }
 }
+
+Textarena.constructor.prototype.getPlugins = () => ({
+  commonPlugin,
+  paragraphPlugin,
+  formatingsPlugin,
+  headersPlugin,
+  hrPlugin,
+  listsPlugin,
+  blockquotePlugin,
+  calloutPlugin,
+  imagePlugin,
+  figurePlugin,
+  embedPlugin,
+  linkPlugin,
+  asidePlugin,
+  codePlugin,
+  quotePlugin,
+  typoSugarPlugin,
+});
 
 export default Textarena;
