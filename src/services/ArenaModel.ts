@@ -71,7 +71,13 @@ export default class ArenaModel {
       arenaForText: arena,
     });
     this.arenasByName[this.rootArena.name] = this.rootArena;
-    this.rootNode = NodeFactory.createRootNode(this.rootArena);
+    this.createNewRoot();
+  }
+
+  public createNewRoot(): void {
+    if (this.rootArena) {
+      this.rootNode = NodeFactory.createRootNode(this.rootArena);
+    }
   }
 
   public registerArena(

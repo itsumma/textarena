@@ -7,7 +7,7 @@ export function getStringFromAttribute(name: string, value: ArenaAttribute): str
       return name;
     }
   } else if (typeof value === 'number') {
-    return `${name}=${value.toString()}`;
+    return `${name}="${value.toString()}"`;
   } else if (typeof value === 'string') {
     const escapedValue = value.toString()
       .replace(/&/g, '&amp;')

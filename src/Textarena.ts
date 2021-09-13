@@ -46,6 +46,7 @@ import typoSugarPlugin from './plugins/typoSugarPlugin';
 export const defaultOptions: TextarenaOptions = {
   editable: true,
   debug: false,
+  placeholder: 'Enter text or press Alt + Q',
   toolbar: {
     enabled: true,
     tools: [
@@ -108,7 +109,9 @@ class Textarena {
     // DOM Elements
     this.container = new ElementHelper(container, 'textarena-container', '');
     this.editor = new ElementHelper('DIV', 'textarena-editor');
-    this.container.appendChild(this.editor.getElem());
+    this.placeholder = new ElementHelper('DIV', 'textarena-placeholder');
+    this.container.appendChild(this.editor);
+    this.container.appendChild(this.placeholder);
 
     // Services
     this.asm = new ArenaServiceManager(this);
@@ -154,6 +157,9 @@ class Textarena {
     if (options.editable !== undefined) {
       this.setEditable(options.editable);
     }
+    if (options.placeholder !== undefined) {
+      this.placeholder.setInnerHTML(options.placeholder);
+    }
     if (options.debug !== undefined) {
       this.debug = options.debug;
       this.asm.logger.setDebug(options.debug);
@@ -191,9 +197,11 @@ class Textarena {
 
   public setData(data: Partial<TextarenaData> | undefined): void {
     const html = data && typeof data.dataHtml === 'string' ? data.dataHtml : '';
+    this.asm.model.createNewRoot();
     const sel = this.asm.parser.insertHtmlToRoot(html);
     this.asm.history.reset(sel);
     this.asm.view.render();
+    this.checkPlaceholder();
   }
 
   public setEditable(editable: boolean): void {
@@ -409,6 +417,10 @@ class Textarena {
 
   protected editor: ElementHelper;
 
+  protected placeholder: ElementHelper;
+
+  protected placeholderShowed = true;
+
   protected options: TextarenaOptions = {};
 
   protected meta: MetaData = {};
@@ -431,6 +443,7 @@ class Textarena {
       if (this.options.onChange) {
         this.options.onChange(this.getData(this.outputTypes));
       }
+      this.checkPlaceholder();
     });
     this.asm.eventManager.subscribe('*', (e) => {
       if (this.options.onEvent) {
@@ -443,6 +456,30 @@ class Textarena {
     }
     if (this.debug) {
       window.asm = this.asm;
+    }
+  }
+
+  protected checkPlaceholder(): void {
+    let isEmpty = true;
+    const { children } = this.asm.model.model;
+    for (let i = 0; i < children.length; i += 1) {
+      const child = children[i];
+      if (!child.hasText || child.getTextLength() > 0) {
+        isEmpty = false;
+        break;
+      }
+    }
+    if (isEmpty && !this.placeholderShowed) {
+      this.placeholderShowed = true;
+      this.placeholder.css({
+        display: 'block',
+      });
+    }
+    if (!isEmpty && this.placeholderShowed) {
+      this.placeholderShowed = false;
+      this.placeholder.css({
+        display: 'none',
+      });
     }
   }
 }

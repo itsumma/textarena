@@ -22,12 +22,12 @@
     try {
       if (storedData) {
         data = JSON.parse(storedData);
-        if (data && data.dataHtml && data.time && data.time > (+ new Date() - 1000*60*60*24)) {
+        if (data && data.time && data.time > (+ new Date() - 1000*60*60*24)) {
           dataHtml = data.dataHtml;
         }
       }
     } catch {}
-    if (!dataHtml) {
+    if (dataHtml === undefined) {
       // dataHtml = `<p>Чтобы выйти из него, можно в конце строки два раза нажать Enter.</p>`;
       // dataHtml = `
       // <arena-image src="https://storage.yandexcloud.net/itsizo.app/ee907a4a-9ff2-40fb-ae3f-1e4f91a02800.png"></arena-image>

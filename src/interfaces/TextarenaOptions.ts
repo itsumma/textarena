@@ -13,6 +13,7 @@ type TextarenaOptions = {
   onReady?: ReadyDataListener,
   onEvent?: ArenaHandler,
   initData?: Partial<TextarenaData>,
+  placeholder?: string,
   plugins?: ArenaPlugin[],
   toolbar?: ToolbarOptions,
   creatorBar?: CreatorBarOptions,
