@@ -1,5 +1,5 @@
 # Textarena
-[![Build](https://travis-ci.com/devopsprodigy/textarena.svg?branch=master)](https://travis-ci.com/github/devopsprodigy/textarena)
+[![Build](https://github.com/itsumma/textarena/actions/workflows/main.yml/badge.svg)](https://github.com/itsumma/textarena/actions)
 
 Textarena is a simple WYSIWYG editor
 
@@ -17,7 +17,7 @@ Textarena is a simple WYSIWYG editor
 const elem = document.getElementById('textarena-container');
 const initData = {
   // Initial html content of Textarena container
-  content: '<h1>Hello, Textarena!</h1>',
+  dataHtml: '<h1>Hello, Textarena!</h1>',
 };
 const textarena = new Textarena(
   elem,
@@ -26,7 +26,7 @@ const textarena = new Textarena(
     // set false to disable editing capabilities
     editable: true,
     // callback which receives TextarenaData object which contains html content of the Textarena container
-    onChange: (data) => console.log(`New html: ${data.content}`),
+    onChange: (data) => console.log(`New html: ${data.dataHtml}`),
     // Initial Textarena content and metadata
     initData,
   }

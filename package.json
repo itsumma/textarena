@@ -9,9 +9,9 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/devopsprodigy/textarena.git"
+    "url": "https://github.com/itsumma/textarena.git"
   },
-  "homepage": "https://github.com/devopsprodigy/textarena",
+  "homepage": "https://github.com/itsumma/textarena",
   "dependencies": {
     "lit-element": "^2.4.0",
     "lit-html": "^1.3.0",

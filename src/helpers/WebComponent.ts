@@ -30,7 +30,6 @@ export default class WebComponent extends LitElement {
   }
 
   protected handleEvent(event: Event): void {
-    console.log('stop', event);
     const e = event as unknown as { path: Node[] };
     let elem: Node | null = e.path[0];
     while (elem) {
