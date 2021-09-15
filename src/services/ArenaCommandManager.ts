@@ -30,7 +30,30 @@ export const keyboardKeys = [
   'ArrowLeft', 'ArrowDown', 'ArrowRight',
 ];
 
+const keyboardReplases: Record<string, string> = {
+  backquote: '`',
+  minus: '−',
+  equal: '=',
+  bracketleft: '[',
+  bracketright: ']',
+  backslash: '\\',
+  semicolon: ':',
+  quote: '\'',
+  comma: ',',
+  period: '.',
+  slash: '/',
+  arrowup: '↑',
+  arrowdown: '↓',
+  arrowleft: '←',
+  arrowright: '→',
+};
+
 export type KeyboardKey = typeof keyboardKeys[number];
+
+export type ShortcutsHelp = Array<{
+  shortcut: string,
+  description: string,
+}>;
 
 export const Modifiers = {
   Shift: 1,
@@ -60,6 +83,8 @@ export default class ArenaCommandManager {
     [key: string]: string,
   } = {};
 
+  help: ShortcutsHelp = [];
+
   constructor(protected asm: ArenaServiceManager) {
   }
 
@@ -78,10 +103,17 @@ export default class ArenaCommandManager {
   registerShortcut(
     shortcut: string,
     command: string,
+    description?: string,
   ): ArenaCommandManager {
     const [modifiersSum, key] = this.parseShortcut(shortcut);
     const s = `${modifiersSum}+${key}`;
     this.shortcuts[s] = command;
+    if (description) {
+      this.help.push({
+        shortcut: this.getHumanShortcut(shortcut),
+        description,
+      });
+    }
     return this;
   }
 
@@ -141,5 +173,27 @@ export default class ArenaCommandManager {
       return [sum, lastKey];
     }
     throw new Error(`Can not parse shortcut ${shortcut}`);
+  }
+
+  getHumanShortcut(shortcut: string): string {
+    const keys = shortcut.split('+');
+    const result: string[] = [];
+    keys.forEach((key) => {
+      const lowerKey = key.toLowerCase().trim();
+      if (lowerKey in keyboardReplases) {
+        result.push(keyboardReplases[lowerKey]);
+      } else if (lowerKey.substr(0, 3) === 'key') {
+        result.push(lowerKey.substr(3, 1).toUpperCase());
+      } else if (lowerKey.substr(0, 5) === 'digit') {
+        result.push(lowerKey.substr(5, 1).toUpperCase());
+      } else {
+        result.push(key.trim());
+      }
+    });
+    return result.join(' + ');
+  }
+
+  getHelp(): ShortcutsHelp {
+    return this.help;
   }
 }

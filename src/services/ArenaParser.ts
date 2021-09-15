@@ -145,6 +145,13 @@ export default class ArenaParser {
           }
           return [...this.insertChildren(elementNode, arenaNode, offset), true];
         }
+        if (arenaNode.hasChildren
+          && arenaNode.protected
+          && !arenaNode.arena.allowedArenas.includes(arena)
+        ) {
+          // dont insert not allowed nodes in the protected node
+          return [arenaNode, offset, false];
+        }
         const newArenaNode = this.asm.model.createAndInsertNode(arena, arenaNode, offset);
         if (!newArenaNode) {
           return [...this.insertChildren(elementNode, arenaNode, offset), true];
@@ -173,52 +180,6 @@ export default class ArenaParser {
           // this.insertChildren(elementNode, newArenaNode, 0);
           // return [newArenaNode.parent, newArenaNode.getIndex() + 1, true];
         }
-
-        // if (arenaNode.hasChildren && arenaNode.protected && !arenaNode.isAllowedNode(arena)) {
-        //   return [arenaNode, offset, false];
-        // }
-        // if ('hasText' in arenaNode && firstTextNode) {
-        //   const result = this.insertChildren(elementNode, arenaNode, offset);
-        //   return [...result, true];
-        // }
-        // const newArenaNode = arenaNode.createAndInsertNode(arena, offset);
-        // let newArenaNode: ChildArenaNode | undefined;
-        // if (firstNode && arenaNode.hasText && arenaNode.isEmpty()) {
-        //   // remove current node
-        //   const cursor = arenaNode.remove();
-        //   if (cursor.node.isAllowedNode(arena)) {
-        //     newArenaNode = this.asm.model.createChildNode(arena);
-        //     newArenaNode = cursor.node.insertNode(newArenaNode, cursor.offset);
-        //     // arenaNode.createAndInsertNode(arena, offset);
-        //   }
-        //   // newArenaNode = cursor.node.createAndInsertNode(arena, cursor.offset);
-        // } else if (arenaNode.hasChildren && arenaNode.isAllowedNode(arena)) {
-        //   newArenaNode = this.asm.model.createChildNode(arena);
-        //   newArenaNode = arenaNode.insertNode(newArenaNode, offset);
-        //   // arenaNode.createAndInsertNode(arena, offset);
-        //   // newArenaNode = arenaNode.createAndInsertNode(arena, offset);
-        // } else if (arenaNode.hasParent && !(arenaNode.hasChildren && arenaNode.protected)) {
-        //   newArenaNode = this.asm.model.createAndInsertNode(
-        //     arena,
-        //     arenaNode.parent,
-        //     arenaNode.getIndex() + 1,
-        //   );
-        // }
-        // if (newArenaNode) {
-        //   this.setAttributes(newArenaNode, elementNode);
-        //   if (newArenaNode.hasText) {
-        //     const formatings = this.getText(elementNode);
-        //     newArenaNode.insertText(formatings, newArenaNode.getTextLength());
-        //     this.clearTextNode(newArenaNode);
-        //   } else if (newArenaNode.single) {
-        //     return [newArenaNode.parent, newArenaNode.getIndex() + 1, true];
-        //   } else {
-        //     this.insertChildren(elementNode, newArenaNode, 0);
-        //   }
-        //   return [newArenaNode.parent, newArenaNode.getIndex() + 1, true];
-        // }
-        // const res = this.insertChildren(elementNode, arenaNode, offset);
-        // return [...res, true];
       }
       const formating = this.checkFormatingMark(elementNode);
       if (formating) {

@@ -302,8 +302,9 @@ class Textarena {
   public registerShortcut(
     shortcut: string,
     command: string,
+    description?: string,
   ): ArenaCommandManager {
-    return this.asm.commandManager.registerShortcut(shortcut, command);
+    return this.asm.commandManager.registerShortcut(shortcut, command, description);
   }
 
   public registerTool(opts: ToolOptions): void {

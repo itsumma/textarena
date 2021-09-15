@@ -15,6 +15,7 @@ export type DefaulPluginOptions = {
   title: string,
   icon?: string,
   shortcut?: string,
+  description?: string,
   hint?: string,
   command?: string,
   component?: string,

@@ -111,7 +111,7 @@
     .textarena-container {
       /* border: 1px solid rgb(182, 182, 182);
       border-radius: 2px; */
-      /* max-width: 800px; */
+      /* max-width: 721px; */
       /* margin: 0 auto; */
     }
     @media screen and (max-width: 600px) {
@@ -126,13 +126,13 @@
 
 
     .textarena-editor {
-      padding: 1rem calc((100% - 800px) / 2) 10rem;
+      padding: 1rem calc((100% - 721px) / 2) 10rem;
     }
     .textarena-placeholder {
-      padding: 1rem calc((100% - 800px) / 2) 0;
+      padding: 1rem calc((100% - 721px) / 2) 0;
     }
     .textarena-creator {
-      padding: 0 calc((100% - 800px) / 2 - 2rem);
+      padding: 0 calc((100% - 721px) / 2 - 2rem);
     }
     @media screen and (max-width: 900px) {
       .textarena-editor {
@@ -152,7 +152,7 @@
     }
 
     .render-preview {
-      max-width: calc(800px + 2rem);
+      max-width: calc(721px + 2rem);
       margin: 0 auto;
       padding: 1rem;
     }
@@ -214,7 +214,6 @@
 
   <script>
     document.querySelectorAll("[data-tab]").forEach((elem) => elem.addEventListener('click', function(event) {
-      console.log(event.currentTarget);
       document.querySelectorAll("[data-tab]").forEach((other) => other.removeAttribute('pressed'));
       event.currentTarget.setAttribute('pressed', true);
       const tab = event.currentTarget.getAttribute('data-tab');

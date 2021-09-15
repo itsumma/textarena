@@ -117,7 +117,9 @@ export default class SymbolCounter {
       e.stopPropagation();
       this.closeHelp();
     });
-    const help = new ElementHelper('DIV', 'textarena-help-popup', helpTextRu);
+    const shortcutsHelp = this.asm.commandManager.getHelp()
+      .map((item) => `<tr><td>${item.shortcut}</td><td>${item.description}</td></tr>`).join('\n');
+    const help = new ElementHelper('DIV', 'textarena-help-popup', `${helpTextRu}<table>${shortcutsHelp}</table>`);
     help.appendChild(close);
     wrap.appendChild(help);
     this.lastDocumentOverflow = document.body.style.overflow;

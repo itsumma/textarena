@@ -71,16 +71,18 @@ const commonPlugin: () => ArenaPlugin = () => ({
       (ta: Textarena, selection: ArenaSelection) => ta.moveChild(selection, 'up'),
     );
     textarena.registerShortcut(
-      'Alt + ArrowUp',
+      'Alt + Shift + ArrowUp',
       'moveChildUp',
+      'Сдвинуть блок вверх',
     );
     textarena.registerCommand(
       'moveChildDown',
       (ta: Textarena, selection: ArenaSelection) => ta.moveChild(selection, 'down'),
     );
     textarena.registerShortcut(
-      'Alt + ArrowDown',
+      'Alt + Shift + ArrowDown',
       'moveChildDown',
+      'Сдвинуть блок вниз',
     );
   },
 });

@@ -28,7 +28,7 @@ const defaultOptions: FigurePluginOptions = {
   title: 'Image with caption',
   tag: 'ARENA-FIGURE',
   attributes: {},
-  allowedAttributes: ['src', 'width', 'height'],
+  allowedAttributes: ['src', 'width', 'height', 'class'],
   command: 'add-figure',
   marks: [
     {
@@ -48,7 +48,7 @@ const defaultOptions: FigurePluginOptions = {
 const figurePlugin = (opts?: Partial<ImagePluginOptions>): ArenaPlugin => ({
   register(textarena: Textarena): void {
     const {
-      name, icon, title, tag, attributes, allowedAttributes,
+      name, icon, title, tag, attributes, allowedAttributes, classes,
       command, marks, component, componentConstructor, srcset, placeholder,
     } = { ...defaultOptions, ...(opts || {}) };
     if (component && componentConstructor && !customElements.get(component)) {
@@ -85,7 +85,7 @@ const figurePlugin = (opts?: Partial<ImagePluginOptions>): ArenaPlugin => ({
       {
         name,
         tag,
-        attributes,
+        attributes: { ...attributes, classes },
         allowedAttributes,
         hasChildren: true,
         protectedChildren: [

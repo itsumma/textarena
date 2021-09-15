@@ -8,7 +8,7 @@ import { ImagePluginOptions } from './types';
 import ArenaImage from './ArenaImage';
 
 export const prepareImageSrc = (src: string, width?: number, height?: number): string => {
-  if (!width || !height) {
+  if (!width && !height) {
     return src;
   }
   const arr = src.split('.');

@@ -72,6 +72,7 @@ export default abstract class AbstractParentNode<
         `,
         '',
         this.attributes,
+        this as unknown as ParentArenaNode,
       );
       if (this.protected && !this.parent.protected) {
         const removeButton = html`<textarena-remove node-id="${id}">

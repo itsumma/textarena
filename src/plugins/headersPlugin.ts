@@ -17,6 +17,7 @@ const defaultOptions: HeaderOptions = {
     icon: '<b>H2</b>',
     command: 'convert-to-header2',
     shortcut: 'Alt + Digit2',
+    description: 'Заголовок второго уровня',
     hint: '2',
     marks: [
       {
@@ -33,6 +34,7 @@ const defaultOptions: HeaderOptions = {
     icon: '<b>H3</b>',
     command: 'convert-to-header3',
     shortcut: 'Alt + Digit3',
+    description: 'Заголовок третьего уровня',
     hint: '3',
     marks: [
       {
@@ -49,6 +51,7 @@ const defaultOptions: HeaderOptions = {
     icon: '<b>H4</b>',
     command: 'convert-to-header4',
     shortcut: 'Alt + Digit4',
+    description: 'Заголовок четвёртого уровня',
     hint: '4',
     marks: [
       {
@@ -67,7 +70,7 @@ const headersPlugin = (opts?: PartialHeaderOptions): ArenaPlugin => ({
     }
     Object.entries(opts || defaultOptions).forEach(([type, options]) => {
       const {
-        name, tag, attributes, title, icon, shortcut, hint, command, marks,
+        name, tag, attributes, title, icon, shortcut, hint, command, marks, description,
       } = defaultOptions[type] ? { ...defaultOptions[type], ...options } : options;
       if (name && tag && attributes) {
         const arena = textarena.registerArena(
@@ -99,6 +102,7 @@ const headersPlugin = (opts?: PartialHeaderOptions): ArenaPlugin => ({
             textarena.registerShortcut(
               shortcut,
               command,
+              description,
             );
           }
           if (title && icon) {

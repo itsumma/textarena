@@ -9,6 +9,7 @@ type FormatingOptions = {
   tag: string,
   attributes: string[];
   shortcut?: string,
+  description?: string,
   hint?: string,
   command: string,
   marks: TagAndAttributes[],
@@ -29,6 +30,7 @@ const defaultOptions: FormatingsOptions = {
       tag: 'STRONG',
       attributes: [],
       shortcut: 'Ctrl + KeyB',
+      description: 'Полужирное начертание',
       hint: 'b',
       command: 'format-strong',
       marks: [
@@ -85,6 +87,7 @@ const defaultOptions: FormatingsOptions = {
       attributes: [],
       command: 'format-emphasized',
       shortcut: 'Ctrl + KeyI',
+      description: 'Курсивное начертание',
       hint: 'i',
       marks: [
         {
@@ -112,6 +115,7 @@ const defaultOptions: FormatingsOptions = {
       tag: 'U',
       attributes: [],
       shortcut: 'Ctrl + KeyU',
+      description: 'Подчеркнутый текст',
       hint: 'u',
       command: 'format-underline',
       marks: [
@@ -136,6 +140,7 @@ const defaultOptions: FormatingsOptions = {
       tag: 'S',
       attributes: [],
       shortcut: 'Ctrl + KeyD',
+      description: 'Зачеркнутый текст',
       hint: 'd',
       command: 'format-strikethrough',
       marks: [
@@ -167,6 +172,8 @@ const defaultOptions: FormatingsOptions = {
       name: 'subscript',
       tag: 'SUB',
       attributes: [],
+      shortcut: 'Ctrl + Comma',
+      hint: ',',
       command: 'format-subscript',
       marks: [
         {
@@ -189,6 +196,8 @@ const defaultOptions: FormatingsOptions = {
       name: 'superscript',
       tag: 'SUP',
       attributes: [],
+      shortcut: 'Ctrl + Period',
+      hint: '.',
       command: 'format-superscript',
       marks: [
         {
@@ -260,6 +269,7 @@ const formatingsPlugin = (opts?: FormatingsOptions): ArenaPlugin => ({
       tag,
       attributes,
       shortcut,
+      description,
       hint,
       command,
       marks,
@@ -284,6 +294,7 @@ const formatingsPlugin = (opts?: FormatingsOptions): ArenaPlugin => ({
         textarena.registerShortcut(
           shortcut,
           command,
+          description,
         );
       }
       if (tool) {

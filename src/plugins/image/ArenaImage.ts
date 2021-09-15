@@ -55,10 +55,7 @@ export default class ArenaImage extends WebComponent {
     return [
       css`
         :host {
-          display: block;
-          margin: 0;
-          user-select: none;
-          position: relative;
+          display: contents;
         }
         .empty {
           display: flex;
@@ -78,8 +75,17 @@ export default class ArenaImage extends WebComponent {
         }
         .img {
           display: block;
-          max-width: 100%;
-          margin: auto;
+          background: inherit;
+          object-fit: inherit;
+          width: inherit;
+          height: inherit;
+          position: inherit;
+          inset: inherit;
+          margin: inherit;
+          transform: inherit;
+          border-radius: inherit;
+          overflow: inherit;
+          min-width: inherit;
         }
         .svg {
           width: 3rem;
@@ -147,6 +153,26 @@ export default class ArenaImage extends WebComponent {
         :host(:hover) .alt-title {
           opacity: 1;
         }
+        .edit {
+          position: absolute;
+          right: 50%;
+          transform: translateX(0.7em);
+          top: 0.2em;
+          color: rgb(136, 136, 136);
+          background: white;
+          padding: 0.3em;
+          border-radius: 0.8em;
+          width: 1.4em;
+          height: 1.4em;
+          box-sizing: border-box;
+          display: none;
+        }
+        .edit svg {
+          display: block;
+        }
+        :host(:hover) .edit {
+          display: block;
+        }
       `,
     ];
   }
@@ -157,8 +183,10 @@ export default class ArenaImage extends WebComponent {
     if (this.loading) {
       preview = html`<div class="empty">Грузится…</div>`;
     } else if (this.src) {
-      preview = html`<label for="input">
-        <img class="img" src="${this.getScr(this.src, this.width, this.height)}" @load="${this.onLoad}" />
+      preview = html`
+      <img class="img" src="${this.getScr(this.src, this.width, this.height)}" @load="${this.onLoad}" />
+      <label for="input" class="edit">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M0 0h24v24H0z" fill="none"/><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
       </label>
       <label for="alt-input" class="alt-row">
         <input class="alt-input" id="alt-input" type="text" @input="${this.handleInput}" value="${this.inputAlt}" class="form__input" />

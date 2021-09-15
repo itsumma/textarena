@@ -807,21 +807,31 @@ export default class ArenaModel {
   public moveChild(selection: ArenaSelection, direction: 'up' | 'down'): ArenaSelection {
     const node = selection.startNode;
     if (selection.isSameNode() && node.hasText) {
-      const index = node.getIndex();
-      if (direction === 'up' && index === 0) {
-        return selection;
-      }
-      if (direction === 'down' && node.isLastChild()) {
-        return selection;
-      }
-      const children = node.parent.cutChildren(index, 1);
-      if (direction === 'up') {
-        node.parent.insertChildren(children, index - 1);
-      } else {
-        node.parent.insertChildren(children, index + 1);
-      }
+      this.moveNode(node, direction);
     }
     return selection;
+  }
+
+  protected moveNode(node: AnyArenaNode, direction: 'up' | 'down'): void {
+    if (!node.hasParent) {
+      return;
+    }
+    if (node.parent.protected) {
+      this.moveNode(node.parent, direction);
+      return;
+    }
+    const index = node.getIndex();
+    if ((direction === 'up' && index === 0)
+     || (direction === 'down' && node.isLastChild())) {
+      this.moveNode(node.parent, direction);
+      return;
+    }
+    const children = node.parent.cutChildren(index, 1);
+    if (direction === 'up') {
+      node.parent.insertChildren(children, index - 1);
+    } else {
+      node.parent.insertChildren(children, index + 1);
+    }
   }
 
   /** */

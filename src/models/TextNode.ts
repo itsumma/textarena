@@ -45,6 +45,7 @@ export default class TextNode
       html`${unsafeHTML(content)}`,
       this.getGlobalIndex(),
       this.attributes,
+      this,
     );
   }
 

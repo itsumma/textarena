@@ -66,6 +66,7 @@ const defaultOptions: ListsOptions = {
       name: 'ordered-list',
       tag: 'OL',
       attributes: {},
+      allowedAttributes: ['start'],
       title: 'Ordered list',
       icon: `<svg width="19px" height="16px" viewBox="0 0 19 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
       <g id="Icons" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
@@ -131,6 +132,7 @@ const listsPlugin = (opts?: ListsOptions): ArenaPlugin => ({
       name,
       tag,
       attributes,
+      allowedAttributes,
       title,
       icon,
       shortcut,
@@ -145,6 +147,7 @@ const listsPlugin = (opts?: ListsOptions): ArenaPlugin => ({
           name,
           tag,
           attributes,
+          allowedAttributes,
           allowedArenas: [li],
           arenaForText: li,
           automerge: true,
@@ -199,6 +202,7 @@ const listsPlugin = (opts?: ListsOptions): ArenaPlugin => ({
                 const newNode = newSel.startNode;
                 if (newNode.hasText) {
                   newNode.cutText(0, match[1].length);
+                  newNode.parent.setAttribute('start', parseInt(match[1], 10));
                   newSel.setBoth(newNode, 0);
                 }
                 return [true, newSel];

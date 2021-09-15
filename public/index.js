@@ -18,7 +18,7 @@
 
   if (elem && (typeof Textarena !== 'undefined')) {
     let dataHtml;
-    // const storedData = localStorage.getItem('dataHtml');
+    const storedData = localStorage.getItem('dataHtml');
     try {
       if (storedData) {
         data = JSON.parse(storedData);
@@ -49,11 +49,7 @@
       //     <quote slot=quote_body class=body>…вы можете превратить старика в молодого человека, если разрежете его и бросите в кипящий котёл.</quote>
       //   </arena-quote>
       //   `;
-      dataHtml = `
-      <p>Текст <i>Италик </i><b>Жирный </b><i>Жирный италик </i><strike>Зачеркнуто</strike>&nbsp;<font color="#545454">Покрашено</font></p><p><a href="http://ссфлка" target="_blank">Текст</a></p><p><mark>Текст с фоном<br></mark> без фона.</p><pre>Моноширный текст.</pre><h2>Заголовок 2</h2><h3>Заголовок 3</h3><h4>Заголовок 4</h4><div class="separator mode-black" contenteditable="false"><div></div></div><ol><li>Список 1&nbsp;</li><li>Список 2</li><li>
-
-      Список 3&nbsp; &nbsp;</li></ol><p>Текст</p><ul><li>Список 1</li><li>Список 2</li><li>Список 3</li></ul><div class="contentGroup contentGroup-grey"><p>Текст на сером фоне</p></div><div class="contentGroup contentGroup-purple"><p>Текст на виолет</p></div><div class="contentGroup contentGroup-orange"><p>Текст на морковном</p></div><div class="contentGroup contentGroup-quote"><p>Цитата</p></div><p>Текст</p>
-      `;
+      dataHtml = "<p class=\"paragraph\">Текст <em>Италик </em><strong>Жирный </strong><em>Жирный италик </em><s>Зачеркнуто</s>&nbsp;</p>\n<p class=\"paragraph\"><font color=\"#545454\">Покрашено </font>Не покрашено</p>\n<p class=\"paragraph\"><a href=\"http://reminder.media/\" target=\"_blank\">Ссылка</a></p>\n<p class=\"paragraph\"><mark>Текст с фоном</mark> без фона.</p>\n<pre>\n<p class=\"paragraph\">Моноширный текст.</p>\n</pre>\n<h2>Заголовок 2</h2>\n<h3>Заголовок 3</h3>\n<h4>Заголовок 4</h4>\n<hr></hr>\n<ol>\n<li>Список 1</li>\n<li>Список 2</li>\n<li>Список 3</li>\n</ol>\n<p class=\"paragraph\">Текст</p>\n<ul>\n<li>Список 1</li>\n<li>Список 2</li>\n<li>Список 3</li>\n</ul>\n<aside class=\"aside-fill aside-fill-grey\">\n<p class=\"paragraph\">Текст на сером фоне</p>\n</aside>\n<aside class=\"aside-fill aside-fill-purple\">\n<p class=\"paragraph\">Текст на фиолетовом фоне</p>\n</aside>\n<aside class=\"aside-fill aside-fill-orange\">\n<p class=\"paragraph\">Текст на морковном фоне.</p>\n<p class=\"paragraph\">В несколько строк</p>\n</aside>\n<blockquote>\n<p class=\"paragraph\">Цитата</p>\n</blockquote>\n<p class=\"paragraph\">Текст</p>\n<arena-figure class=\"image place-wide\">\n<arena-image slot=\"image\" src=\"https://d3qc8znfr3ejm3.cloudfront.net/images/e19a2301-e099-46f7-bc89-12bfded9b455.jpg\"></arena-image>\n<figcaption slot=\"image-caption\">Подпись к рисунку</figcaption>\n</arena-figure>\n\n<arena-figure class=\"image place-center\">\n<arena-image slot=\"image\" src=\"https://d3qc8znfr3ejm3.cloudfront.net/images/c4061779-d99e-45c9-91a2-66d9142c04b6.png\"></arena-image>\n<figcaption slot=\"image-caption\">Подпись к рисунку</figcaption>\n</arena-figure>\n<arena-figure class=\"image place-fill\">\n<arena-image slot=\"image\" src=\"https://d3qc8znfr3ejm3.cloudfront.net/images/8690b897-c596-4ffa-b8f0-448978bbef5f.jpg\"></arena-image>\n<figcaption slot=\"image-caption\">Подпись к рисунку</figcaption>\n</arena-figure>";
       // dataHtml = `<h2><s>Простой</s> Крутой текстовый редактор</h2><arena-image src="https://storage.yandexcloud.net/itsizo.app/ee907a4a-9ff2-40fb-ae3f-1e4f91a02800.png"></arena-image><p>Выделите текст, появится панель для форматирования.</p>`;
     }
     const initData = {
@@ -113,8 +109,8 @@
         outputTypes: ['html', 'amp', 'rss'],
         plugins: [
           commonPlugin(),
-          paragraphPlugin(),
           formatingsPlugin(),
+          paragraphPlugin(),
           headersPlugin(),
           hrPlugin({
             marks: [
@@ -145,7 +141,94 @@
           }),
           calloutPlugin(),
           imagePlugin(),
-          figurePlugin(),
+          figurePlugin({
+            classes: [
+              {
+                className: 'image place-center',
+                ratio: 1.84,
+                icon: `<svg viewBox="0 0 20 20" fill="currentColor"><path d="M4,16.4v-0.7c0-0.1,0-0.2,0.1-0.2c0.1-0.1,0.2-0.1,0.2-0.1H15c0.1,0,0.2,0,0.3,0.1c0.1,0.1,0.1,0.2,0.1,0.2v0.7
+                  c0,0.1,0,0.2-0.1,0.3c-0.1,0.1-0.2,0.1-0.3,0.1H4.3c-0.1,0-0.2,0-0.2-0.1C4,16.6,4,16.5,4,16.4L4,16.4z M7.2,13.6V7.2
+                  c0-0.1,0-0.2,0-0.2c0-0.1,0.1-0.1,0.1-0.1h4.7c0,0,0.1,0,0.1,0.1c0,0.1,0,0.2,0,0.2v6.4c0,0.1,0,0.2,0,0.3c0,0.1-0.1,0.1-0.1,0.1
+                  H7.3c0,0-0.1,0-0.1-0.1C7.2,13.8,7.2,13.7,7.2,13.6z M4,5.1V4.4c0-0.1,0-0.2,0.1-0.3C4.2,4,4.2,4,4.3,4H15c0.1,0,0.2,0,0.3,0.1
+                  c0.1,0.1,0.1,0.2,0.1,0.3v0.7c0,0.1,0,0.2-0.1,0.2c-0.1,0.1-0.2,0.1-0.3,0.1H4.3c-0.1,0-0.2,0-0.2-0.1C4,5.3,4,5.2,4,5.1L4,5.1z"></path></svg>`,
+                srcset: [
+                  {
+                    media: '',
+                    rations: [
+                      {
+                        ratio: 1,
+                        width: 0,
+                        height: 392,
+                      },
+                      {
+                        ratio: 2,
+                        width: 0,
+                        height: 784,
+                      },
+                    ],
+                  },
+                ],
+              },
+              {
+                className: 'image place-fill',
+                icon: `<svg viewBox="0 0 25 25" fill="currentColor"><path d="M5 20.558v-.9c0-.122.04-.226.122-.312a.404.404 0 0 1 .305-.13h13.347a.45.45 0 0 1 .32.13c.092.086.138.19.138.312v.9a.412.412 0 0 1-.138.313.435.435 0 0 1-.32.13H5.427a.39.39 0 0 1-.305-.13.432.432 0 0 1-.122-.31zm0-3.554V9.01c0-.12.04-.225.122-.31a.4.4 0 0 1 .305-.13h13.347c.122 0 .23.043.32.13.092.085.138.19.138.31v7.994a.462.462 0 0 1-.138.328.424.424 0 0 1-.32.145H5.427a.382.382 0 0 1-.305-.145.501.501 0 0 1-.122-.328zM5 6.342v-.87c0-.12.04-.23.122-.327A.382.382 0 0 1 5.427 5h13.347c.122 0 .23.048.32.145a.462.462 0 0 1 .138.328v.87c0 .12-.046.225-.138.31a.447.447 0 0 1-.32.13H5.427a.4.4 0 0 1-.305-.13.44.44 0 0 1-.122-.31z"></path></svg>`,
+                srcset: [
+                  {
+                    media: '',
+                    rations: [
+                      {
+                        ratio: 1,
+                        width: 721,
+                        height: 0,
+                      },
+                      {
+                        ratio: 2,
+                        width: 1442,
+                        height: 0,
+                      },
+                    ],
+                  },
+                ],
+              },
+              {
+                className: 'image place-wide',
+                ratio: 1.84,
+                icon: `<svg viewBox="0 0 25 25" fill="currentColor"><path d="M3 17.004V9.01a.4.4 0 0 1 .145-.31.476.476 0 0 1 .328-.13h17.74c.12 0 .23.043.327.13a.4.4 0 0 1 .145.31v7.994a.404.404 0 0 1-.145.313.48.48 0 0 1-.328.13H3.472a.483.483 0 0 1-.327-.13.402.402 0 0 1-.145-.313zm2.212 3.554v-.87c0-.13.05-.243.145-.334a.472.472 0 0 1 .328-.137H19c.124 0 .23.045.322.137a.457.457 0 0 1 .138.335v.86c0 .12-.046.22-.138.31a.478.478 0 0 1-.32.13H5.684a.514.514 0 0 1-.328-.13.415.415 0 0 1-.145-.32zm0-14.246v-.84c0-.132.05-.243.145-.334A.477.477 0 0 1 5.685 5H19a.44.44 0 0 1 .322.138.455.455 0 0 1 .138.335v.84a.451.451 0 0 1-.138.334.446.446 0 0 1-.32.138H5.684a.466.466 0 0 1-.328-.138.447.447 0 0 1-.145-.335z"></path></svg>`,
+                srcset: [
+                  {
+                    media: '(max-width: 1441px)',
+                    rations: [
+                      {
+                        ratio: 1,
+                        width: 721,
+                        height: 392,
+                      },
+                      {
+                        ratio: 2,
+                        width: 1442,
+                        height: 784,
+                      },
+                    ],
+                  },
+                  {
+                    media: '',
+                    rations: [
+                      {
+                        ratio: 1,
+                        width: 1161,
+                        height: 631,
+                      },
+                      {
+                        ratio: 2,
+                        width: 2322,
+                        height: 1262,
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+          }),
           embedPlugin(),
           linkPlugin(),
           asidePlugin({
@@ -157,6 +240,8 @@
               height="24px" viewBox="0 0 24 24" width="24px" fill="currentColor"><path d="M0 0h24v24H0z" fill="none"/>
               <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
               </svg>`,
+            shortcut: 'Alt + Digit7',
+            hint: '7',
             command: 'convert-to-aside-colored-grey',
             marks: [
               {
@@ -178,6 +263,8 @@
               height="24px" viewBox="0 0 24 24" width="24px" fill="#b460ff"><path d="M0 0h24v24H0z" fill="none"/>
               <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
               </svg>`,
+            shortcut: 'Alt + Digit8',
+            hint: '8',
             command: 'convert-to-aside-colored-purple',
             marks: [
               {
@@ -199,6 +286,8 @@
               height="24px" viewBox="0 0 24 24" width="24px" fill="#ffb09a"><path d="M0 0h24v24H0z" fill="none"/>
               <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
               </svg>`,
+            shortcut: 'Alt + Digit9',
+            hint: '9',
             command: 'convert-to-aside-colored-orange',
             marks: [
               {
@@ -227,12 +316,12 @@
             'colored',
             'mark',
             'link',
-            'paragraph',
-            'unordered-list',
-            'ordered-list',
             'header2',
             'header3',
             'header4',
+            'code',
+            'unordered-list',
+            'ordered-list',
             'asideColoredGrey',
             'asideColoredPurple',
             'asideColoredOrange',
@@ -243,11 +332,11 @@
         creatorBar: {
           enabled: true,
           creators: [
-            'unordered-list',
-            'ordered-list',
             'header2',
             'header3',
             'header4',
+            'unordered-list',
+            'ordered-list',
             'hr',
             'fugire',
             'blockquote',

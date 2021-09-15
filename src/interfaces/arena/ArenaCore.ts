@@ -21,6 +21,7 @@ interface ArenaCore {
     children: TemplateResult | string | undefined,
     id: string,
     attributes: NodeAttributes,
+    node?: AnyArenaNode,
   ): TemplateResult | string;
 
   getDataHtml(

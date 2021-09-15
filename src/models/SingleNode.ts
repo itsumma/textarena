@@ -23,7 +23,7 @@ export default class SingleNode
     if (this.parent.protected) {
       return this.arena.getTemplate(undefined, id, this.attributes);
     }
-    const content = this.arena.getTemplate(undefined, '', this.attributes);
+    const content = this.arena.getTemplate(undefined, '', this.attributes, this);
     const removeButton = html`<textarena-remove node-id="${id}">
     <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
     viewBox="0 0 512.001 512.001" xml:space="preserve">

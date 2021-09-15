@@ -32,6 +32,7 @@ export default abstract class AbstractArena {
     children: TemplateResult | string,
     id: string,
     attributes: NodeAttributes,
+    node?: AnyArenaNode,
   ): TemplateResult | string {
     if (!this.tag) {
       return children;
@@ -44,9 +45,11 @@ export default abstract class AbstractArena {
       const attrs = this.getAttributesString(id, attributes);
       const tag = this.tag.toLowerCase();
       strings.push(`<${tag} ${attrs} .arena="`);
+      strings.push('" .node="');
       strings.push('">');
       strings.push(`</${tag}>`);
       values.push(this);
+      values.push(node);
     } else {
       strings.push('');
       strings.push('');

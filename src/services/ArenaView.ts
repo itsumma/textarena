@@ -53,10 +53,10 @@ export default class ArenaView {
         s.setBaseAndExtent(anchorNode, anchorOffset, focusNode, focusOffset);
         setTimeout(() => {
           try {
-            (focusNode as HTMLElement)?.scrollIntoView({
-              block: 'nearest',
-              behavior: 'smooth',
-            });
+            // (focusNode as HTMLElement)?.scrollIntoView({
+            //   block: 'nearest',
+            //   behavior: 'smooth',
+            // });
           } catch (e) {
             //
           }
