@@ -380,3 +380,41 @@ pre {
   background-color: #ffe3db;
 }
 
+arena-embed {
+  user-select: none;
+}
+
+arena-embed-simple {
+  display: block;
+  position: relative;
+  margin: 0 0 1em;
+  min-height: 1.6em;
+  min-height: 10em;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+arena-embed-simple blockquote {
+  padding: 0;
+  margin: 0;
+  border: none;
+}
+
+.embed__content {
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 1re;
+  padding: 1re;
+  margin: 0 0 1em;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  max-width: 550px;
+}
+
+.twitter-tweet-rendered {
+  position: relative;
+  margin: 0 !important;
+}

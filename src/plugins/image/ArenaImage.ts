@@ -255,44 +255,15 @@ export default class ArenaImage extends WebComponent {
             }
             this.loading = false;
             this.requestUpdate();
+          }).catch(() => {
+            this.loading = false;
+            this.requestUpdate();
           });
         } catch (e) {
-          //
-        }
-        return;
-      }
-    }
-
-    const data = new FormData();
-    data.append('file', file);
-    fetch('https://izo.itsumma.ru', {
-      method: 'POST',
-      body: data,
-      headers: {
-        Authorization: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiY2xpZW50IiwidG9rZW5JZCI6ImQyNzRhOTAzLTAyYWMtNGE2MS1hNmNiLTdiOTlkZGQ0YmIyNiIsInVzZXJuYW1lIjoidGVzdCIsImlhdCI6MTYxNDIzMzY4NywiZXhwIjoxNjQ1NzY5Njg3fQ.fEzuI8L9P7z9tcZ7PiocLQrf_gW9CF_JxrpQLxYHDRk',
-      },
-    }).then((response) => {
-      if (response.ok) {
-        response.json().then((src) => {
-          if (src) {
-            setTimeout(() => {
-              const event = new CustomEvent('change', {
-                detail: { src },
-              });
-              this.loading = false;
-              this.dispatchEvent(event);
-              this.fireChangeAttribute({ src });
-              this.requestUpdate();
-            }, 2000);
-          }
-        }).catch(() => {
           this.loading = false;
           this.requestUpdate();
-        });
+        }
       }
-    }).catch(() => {
-      this.loading = false;
-      this.requestUpdate();
-    });
+    }
   }
 }

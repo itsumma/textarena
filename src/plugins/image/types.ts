@@ -14,8 +14,14 @@ export type ScrProcessor = (src: string, width?: number, height?: number) => str
 
 export type UploadProcessor = (file: File) => Promise<{ src: string, [key: string]: unknown }>;
 
+export type IzoConfig = {
+  url: string,
+  token: string,
+};
+
 export type ImagePluginOptions = DefaulPluginOptions & {
   srcset?: Srcset,
   prepareSrc?: ScrProcessor,
   upload?: UploadProcessor,
+  izoConfig?: IzoConfig,
 };

@@ -6,6 +6,7 @@ import { AnyArenaNode } from '../../interfaces/ArenaNode';
 import outputImage from './outputImage';
 import { ImagePluginOptions } from './types';
 import ArenaImage from './ArenaImage';
+import { izoUpload } from './izoUpload';
 
 export const prepareImageSrc = (src: string, width?: number, height?: number): string => {
   if (!width && !height) {
@@ -63,7 +64,7 @@ const imagePlugin = (opts?: ImagePluginOptions): ArenaPlugin => ({
     const {
       name, icon, title, tag, attributes, allowedAttributes,
       shortcut, hint, command, marks, component, componentConstructor,
-      srcset, prepareSrc, output, upload,
+      srcset, prepareSrc, output, upload, izoConfig,
     } = { ...defaultOptions, ...(opts || {}) };
     if (component && componentConstructor && !customElements.get(component)) {
       customElements.define(component, componentConstructor);
@@ -72,12 +73,16 @@ const imagePlugin = (opts?: ImagePluginOptions): ArenaPlugin => ({
     if (!paragraph) {
       throw new Error('Default Arena for text not found');
     }
+    let uploadFunc = upload;
+    if (izoConfig) {
+      uploadFunc = izoUpload(izoConfig);
+    }
     const arena = textarena.registerArena(
       {
         name,
         tag,
         attributes: {
-          ...attributes, srcset, prepareSrc, upload,
+          ...attributes, srcset, prepareSrc, upload: uploadFunc,
         },
         allowedAttributes,
         single: true,
