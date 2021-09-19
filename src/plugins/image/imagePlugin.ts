@@ -40,8 +40,6 @@ const defaultOptions: ImagePluginOptions = {
   tag: 'ARENA-IMAGE',
   attributes: {},
   allowedAttributes: ['src', 'width', 'height', 'alt'],
-  shortcut: 'Alt + KeyI',
-  hint: 'i',
   command: 'add-image',
   marks: [
     {
@@ -59,7 +57,7 @@ const defaultOptions: ImagePluginOptions = {
   output: outputImage,
 };
 
-const imagePlugin = (opts?: ImagePluginOptions): ArenaPlugin => ({
+const imagePlugin = (opts?: Partial<ImagePluginOptions>): ArenaPlugin => ({
   register(textarena: Textarena): void {
     const {
       name, icon, title, tag, attributes, allowedAttributes,

@@ -29,6 +29,8 @@ const defaultOptions: FigurePluginOptions = {
   tag: 'ARENA-FIGURE',
   attributes: {},
   allowedAttributes: ['src', 'width', 'height', 'class'],
+  shortcut: 'Alt + KeyI',
+  hint: 'i',
   command: 'add-figure',
   marks: [
     {
@@ -42,7 +44,7 @@ const defaultOptions: FigurePluginOptions = {
   ],
   component: 'arena-figure',
   componentConstructor: ArenaFigure,
-  placeholder: 'Подпись к рисунку',
+  placeholder: '',
 };
 
 const figurePlugin = (opts?: Partial<ImagePluginOptions>): ArenaPlugin => ({

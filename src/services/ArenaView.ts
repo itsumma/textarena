@@ -70,8 +70,8 @@ export default class ArenaView {
     const s = window.getSelection();
     const range = s && s.rangeCount > 0 ? s.getRangeAt(0) : undefined;
     if (s && range) {
-      const startId = this.getNodeIdAndOffset(range.startContainer, range.startOffset);
-      const endId = this.getNodeIdAndOffset(range.endContainer, range.endOffset);
+      const startId = this.getNodeIdAndOffset(range.startContainer, range.startOffset, true);
+      const endId = this.getNodeIdAndOffset(range.endContainer, range.endOffset, true);
       if (startId && endId) {
         const startNode = this.asm.model.getNodeById(startId[0]);
         const endNode = this.asm.model.getNodeById(endId[0]);
@@ -87,6 +87,7 @@ export default class ArenaView {
   protected getNodeIdAndOffset(
     node: Node | HTMLElement,
     offset: number,
+    first = false,
   ): [string, number] | undefined {
     if (node.nodeType === Node.ELEMENT_NODE) {
       const elementNode = node as HTMLElement;
@@ -97,7 +98,17 @@ export default class ArenaView {
         ) {
           return [arenaId, 0];
         }
-        return [arenaId, offset];
+        if (!first || (offset > 0 && elementNode.childNodes.length === 0)) {
+          return [arenaId, offset];
+        }
+        let newOffset = 0;
+        for (let i = 0; i < offset; i += 1) {
+          if (elementNode.childNodes[i]) {
+            const sibling = elementNode.childNodes[i];
+            newOffset += this.getTextLength(sibling);
+          }
+        }
+        return [arenaId, newOffset];
       }
       const cursorId = elementNode.getAttribute('cursor-id');
       if (cursorId) {

@@ -1160,9 +1160,13 @@ export default class ArenaModel {
     }
     utils.modelTree.runThroughSelection(
       selection,
-      (node: AnyArenaNode) => {
+      (node: AnyArenaNode, start, end) => {
         if (node.arena !== arena) {
-          toTransform.push(node);
+          if (toTransform.length && end === 0) {
+            // skip last node if it not selected
+          } else {
+            toTransform.push(node);
+          }
         }
       },
     );

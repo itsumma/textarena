@@ -94,21 +94,21 @@ export default class ArenaEmbedForm extends WebComponent {
     .wrapper {
       background: white;
       border: 1px solid #ccc;
-      border-radius: 1rem;
-      padding: 1rem 2rem;
+      border-radius: 1em;
+      padding: 1rem 2em;
       margin: 0 0 1em;
     }
     .form {
       display: flex;
     }
     .form__label {
-      margin-right: 1rem;
+      margin-right: 1em;
     }
     .form__input {
       border: 0;
       border-bottom: 1px solid #ccc;
       border-radius: 0;
-      margin-right: 1rem;
+      margin-right: 1em;
       font-size: 1em;
       flex: 1;
     }
@@ -121,7 +121,7 @@ export default class ArenaEmbedForm extends WebComponent {
     .form__btn {
       background: white;
       border: 1px solid #ccc;
-      border-radius: 1rem;
+      border-radius: 1em;
       font-size: 1em;
       padding: 0.1em 1em;
     }

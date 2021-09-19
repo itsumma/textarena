@@ -30,7 +30,7 @@ export default class ArenaEmbedYoutube extends WebComponent {
     }
     .embed-youtube_border {
       border: 1px solid #ccc;
-      border-radius: 0.5rem;
+      border-radius: 0.5em;
     }
     .embed-youtube-iframe {
       width: 100%;
@@ -55,10 +55,10 @@ export default class ArenaEmbedYoutube extends WebComponent {
       z-index: 1;
       background: white;
       border: 1px solid #ccc;
-      border-radius: 1rem;
-      padding: 0.2rem 1rem;
-      left: 1rem;
-      top: 1rem;
+      border-radius: 1em;
+      padding: 0.2rem 1em;
+      left: 1em;
+      top: 1em;
     }
   `;
 

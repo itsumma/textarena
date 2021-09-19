@@ -1,11 +1,11 @@
 import {
-  html, css, property, TemplateResult, CSSResult,
+  html, css, property, TemplateResult, CSSResult, queryAssignedNodes,
 } from 'lit-element';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html';
 import { styleMap } from 'lit-html/directives/style-map.js';
 import WebComponent from '../../helpers/WebComponent';
 import { AnyArena } from '../../interfaces/Arena';
-import { ArenaNodeInline } from '../../interfaces/ArenaNode';
+import { ArenaNodeMediator } from '../../interfaces/ArenaNode';
 import { FigureClass } from './types';
 
 export default class ArenaFigure extends WebComponent {
@@ -35,7 +35,10 @@ export default class ArenaFigure extends WebComponent {
   arena: AnyArena | undefined;
 
   @property({ type: Object })
-  node: ArenaNodeInline | undefined;
+  node: ArenaNodeMediator | undefined;
+
+  @queryAssignedNodes('image-caption', true)
+  captionNodes: HTMLElement[] | undefined;
 
   // loading = false;
 
@@ -52,23 +55,6 @@ export default class ArenaFigure extends WebComponent {
           margin: 0;
           user-select: none;
           position: relative;
-        }
-        .caption {
-          display: flex;
-          position: relative;
-          color: #7c7c7c;
-          font-size: 0.8em;
-        }
-        .caption slot {
-          margin-left: 1em;
-          /* color: #2c2c2c; */
-          flex: 1;
-          min-height: 100%;
-          display: block;
-        }
-        .caption-placeholder {
-          pointer-events: none;
-          font-style: italic;
         }
         .panel {
           position: absolute;
@@ -111,6 +97,13 @@ export default class ArenaFigure extends WebComponent {
         .image-wrap {
           position: relative;
         }
+        .caption-wrap {
+          display: flex;
+        }
+        .placeholder {
+          font-size: 0.8em;
+          color: #ccc;
+        }
       `,
     ];
   }
@@ -141,8 +134,21 @@ export default class ArenaFigure extends WebComponent {
           <slot name="image"></slot>
         </div>
       </div>
-      <slot name="image-caption"></slot>
+      <div class="caption-wrap">
+        <div @click=${this.onPlaceholderClick} class="placeholder">Подпись:&nbsp;</div>
+        <slot name="image-caption"></slot>
+      </div>
     `;
+  }
+
+  onPlaceholderClick(): void {
+    if (this.captionNodes?.length) {
+      const node = this.captionNodes[0];
+      const s = window.getSelection();
+      if (s) {
+        s.selectAllChildren(node);
+      }
+    }
   }
 
   changeClass(figureClass: FigureClass) {

@@ -11,10 +11,10 @@ export default class ArenaCallout extends LitElement {
   static styles = css`
     :host {
       display: block;
-      padding: 1rem;
+      padding: 1em;
       overflow: hidden;
       border: 1px solid #ec2ba4;
-      border-radius: 1rem;
+      border-radius: 1em;
     }
     [name="title"] {
       font-weight: 900;

@@ -67,7 +67,9 @@ const outputFigure = (
   const captionNode = (node as ArenaNodeMediator).getChild(1);
   const className = node.getAttribute('class') as string;
   const classes = node.arena.getAttribute('classes') as FigureClass[];
-  const figureClass = classes?.find((someFigureClass) => someFigureClass.className === className);
+  const figureClass = classes
+    ? classes.find((someFigureClass) => someFigureClass.className === className)
+    : undefined;
   const srcset = (figureClass?.srcset || imageNode?.arena.getAttribute('srcset') || node.getAttribute('srcset')) as Srcset | undefined;
   return `
     <figure class="${className}">

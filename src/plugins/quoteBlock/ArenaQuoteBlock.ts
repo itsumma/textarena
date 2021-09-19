@@ -18,11 +18,11 @@ export default class ArenaQuoteBlock extends LitElement {
     }
     .quote-block__author-block {
       flex: 1;
-      margin-right: 1rem;
+      margin-right: 1em;
     }
     /* .quote-block__image {
-      width: 2.6rem;
-      height: 2.6rem;
+      width: 2.6em;
+      height: 2.6em;
     } */
   `;
 

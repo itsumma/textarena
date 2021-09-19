@@ -9,7 +9,6 @@
   box-sizing: border-box;
   align-items: start;
   transition: 0.3s;
-  font-size: 1rem;
   width: 100%;
   pointer-events: none;
   // overflow-x: hidden;
@@ -130,7 +129,7 @@
 
     svg {
       // width: 60%;
-      height: 1rem;
+      height: 1em;
     }
   }
 

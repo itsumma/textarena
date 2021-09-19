@@ -64,7 +64,7 @@ export default class ArenaImage extends WebComponent {
           align-items: center;
           background: #e6e6e6;
           /* padding-top: 56.25%; */
-          padding: .2rem;
+          padding: .2em;
           border: 3px solid #d0d0d0;
           color: #ccc;
           height: 100%;
@@ -88,7 +88,7 @@ export default class ArenaImage extends WebComponent {
           min-width: inherit;
         }
         .svg {
-          width: 3rem;
+          width: 3em;
           max-width: 80%;
           max-height: 80%;
           height: auto;
