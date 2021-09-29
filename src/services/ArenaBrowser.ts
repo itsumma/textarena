@@ -17,10 +17,7 @@ import { keyboardKeys, Modifiers } from './ArenaCommandManager';
 import ArenaServiceManager from './ArenaServiceManager';
 import ArenaSelection from '../helpers/ArenaSelection';
 import NodeAttributes from '../interfaces/NodeAttributes';
-
-function isMac(): boolean {
-  return window.navigator.platform.includes('Mac');
-}
+import { isMac } from '../utils/navigator';
 
 type ArenaChangeAttribute = CustomEvent<{
   attrs: NodeAttributes,
@@ -324,7 +321,10 @@ export default class ArenaBrowser {
       return new BrowserCommandEvent(e);
     }
 
-    if (selectionCodes[keyCode] && modifiersSum !== (Modifiers.Alt | Modifiers.Shift)) {
+    if (
+      selectionCodes[keyCode]
+      && modifiersSum !== ((isMac() ? Modifiers.Meta : Modifiers.Alt) | Modifiers.Shift)
+    ) {
       return new SelectionEvent(e);
     }
     if (code === 'KeyA' && modifiersSum === Modifiers.Ctrl) {

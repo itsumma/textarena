@@ -1,6 +1,7 @@
 import Textarena from '../Textarena';
 import ArenaPlugin from '../interfaces/ArenaPlugin';
 import ArenaSelection from '../helpers/ArenaSelection';
+import { isMac } from '../utils/navigator';
 
 const commonPlugin: () => ArenaPlugin = () => ({
   register(textarena: Textarena): void {
@@ -71,7 +72,7 @@ const commonPlugin: () => ArenaPlugin = () => ({
       (ta: Textarena, selection: ArenaSelection) => ta.moveChild(selection, 'up'),
     );
     textarena.registerShortcut(
-      'Alt + Shift + ArrowUp',
+      `${isMac() ? 'Meta' : 'Alt'} + Shift + ArrowUp`,
       'moveChildUp',
       'Сдвинуть блок вверх',
     );
@@ -80,7 +81,7 @@ const commonPlugin: () => ArenaPlugin = () => ({
       (ta: Textarena, selection: ArenaSelection) => ta.moveChild(selection, 'down'),
     );
     textarena.registerShortcut(
-      'Alt + Shift + ArrowDown',
+      `${isMac() ? 'Meta' : 'Alt'} + Shift + ArrowDown`,
       'moveChildDown',
       'Сдвинуть блок вниз',
     );
