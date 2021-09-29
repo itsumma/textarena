@@ -43,7 +43,7 @@ jobs:
           pages_threshold: major_outage
       -
         name: Deploy to GitHub Pages
-        if: success() && github.ref == 'refs/heads/master'
+        if: ${{ success() && github.event_name == 'push' && github.ref == 'refs/heads/master' }}
         uses: crazy-max/ghaction-github-pages@v2
         with:
           target_branch: gh-pages
