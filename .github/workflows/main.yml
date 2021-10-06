@@ -33,7 +33,6 @@ jobs:
           cache: 'yarn'
       -
         name: Install
-        if: ${{ steps.yarn-cache.outputs.cache-hit != 'true' }}
         run: yarn
       -
         name: Build
