@@ -553,7 +553,7 @@ export default class ArenaBrowser {
       if (!html) {
         return;
       }
-      const matchStart = /<!--StartFragment-->/.exec(html);
+      const matchStart = /(<!--StartFragment-->)|(<meta charset=['"][^'"]+['"]>)/.exec(html);
       if (matchStart) {
         html = html.slice(matchStart.index + matchStart[0].length);
         html = html.trimLeft();
