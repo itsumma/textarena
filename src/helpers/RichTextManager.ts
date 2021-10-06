@@ -211,6 +211,12 @@ export default class RichTextManager {
     }
   }
 
+  public removeFormating(name: string, start: number, end: number): void {
+    if (this.formatings[name]) {
+      this.formatings[name].removeInterval(start, end);
+    }
+  }
+
   public clearFormatings(start: number, end: number): void {
     Object.entries(this.formatings).forEach(([, intervaler]) => {
       intervaler.removeInterval(start, end);

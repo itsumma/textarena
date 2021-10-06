@@ -3,6 +3,7 @@ import ArenaPlugin from '../interfaces/ArenaPlugin';
 import ArenaSelection from '../helpers/ArenaSelection';
 import { AnyArenaNode } from '../interfaces/ArenaNode';
 import { TagAndAttributes } from '../interfaces/ArenaFormating';
+import utils from '../utils';
 
 type FormatingOptions = {
   name: string,
@@ -285,10 +286,8 @@ const formatingsPlugin = (opts?: FormatingsOptions): ArenaPlugin => ({
       );
       textarena.registerCommand(
         command,
-        (ta: Textarena, selection: ArenaSelection) => {
-          selection.trim();
-          return ta.applyFormationToSelection(selection, formating);
-        },
+        (ta: Textarena, selection: ArenaSelection) =>
+          ta.applyFormationToSelection(selection, formating),
       );
       if (shortcut) {
         textarena.registerShortcut(
@@ -306,7 +305,7 @@ const formatingsPlugin = (opts?: FormatingsOptions): ArenaPlugin => ({
           shortcut,
           checkStatus: (node: AnyArenaNode, start?: number, end?: number): boolean => {
             if (node.hasText) {
-              return node.getText().hasFormating(name, start, end);
+              return utils.text.hasFormating(name, node, start, end);
             }
             return true;
           },

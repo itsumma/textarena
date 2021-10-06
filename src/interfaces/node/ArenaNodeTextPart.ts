@@ -39,6 +39,10 @@ export default interface ArenaNodeTextPart {
 
   toggleFormating(name: string, start: number, end: number): void;
 
+  hasFormating(name: string, start: number, end: number): boolean;
+
+  removeFormating(name: string, start: number, end: number): void;
+
   clearFormatings(start: number, end: number): void;
 
   togglePromiseFormating(formating: ArenaFormating, offset: number): void;

@@ -897,7 +897,7 @@ export default class ArenaModel {
         selection,
         (node: AnyArenaNode, start?: number, end?: number) => {
           if (node.hasText) {
-            node.toggleFormating(formating.name, start || 0, end || node.getTextLength());
+            utils.text.toggleFormating(formating.name, node, start, end);
           }
           if (node.hasChildren) {
             const startIndex = start || 0;
@@ -906,7 +906,7 @@ export default class ArenaModel {
               const n = node.getChild(i);
               if (n) {
                 if (n.hasText) {
-                  n.toggleFormating(formating.name, start || 0, end || n.getTextLength());
+                  n.toggleFormating(formating.name, 0, n.getTextLength());
                 }
                 if (n.hasChildren) {
                   utils.modelTree.runOfChildren(n, (someNode: AnyArenaNode) => {

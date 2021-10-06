@@ -133,6 +133,14 @@ export default class TextNode
     this.richTextManager.toggleFormating(name, start, end);
   }
 
+  public hasFormating(name: string, start: number, end: number): boolean {
+    return this.richTextManager.hasFormating(name, start, end);
+  }
+
+  public removeFormating(name: string, start: number, end: number): void {
+    this.richTextManager.removeFormating(name, start, end);
+  }
+
   public clearFormatings(start: number, end: number): void {
     this.richTextManager.clearFormatings(start, end);
   }
