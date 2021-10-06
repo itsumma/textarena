@@ -85,6 +85,9 @@ export default class Toolbar {
         const options = this.availableTools[toolOptions];
         const elem = new ElementHelper('BUTTON', 'textarena-toolbar__item');
         elem.setAttribute('type', 'button');
+        if (options.title) {
+          elem.setAttribute('title', options.title);
+        }
         const tool: Tool = {
           elem,
           options,

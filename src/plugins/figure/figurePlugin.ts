@@ -50,7 +50,7 @@ const defaultOptions: FigurePluginOptions = {
 const figurePlugin = (opts?: Partial<ImagePluginOptions>): ArenaPlugin => ({
   register(textarena: Textarena): void {
     const {
-      name, icon, title, tag, attributes, allowedAttributes, classes,
+      name, icon, title, tag, attributes, allowedAttributes, classes, shortcut, hint,
       command, marks, component, componentConstructor, srcset, placeholder,
     } = { ...defaultOptions, ...(opts || {}) };
     if (component && componentConstructor && !customElements.get(component)) {
@@ -109,10 +109,18 @@ const figurePlugin = (opts?: Partial<ImagePluginOptions>): ArenaPlugin => ({
           return sel;
         },
       );
+      if (shortcut) {
+        textarena.registerShortcut(
+          shortcut,
+          command,
+        );
+      }
       textarena.registerCreator({
         name,
-        icon,
         title,
+        icon,
+        shortcut,
+        hint,
         command,
         canShow: (node: AnyArenaNode) =>
           textarena.isAllowedNode(node, arena),

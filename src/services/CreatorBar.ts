@@ -122,6 +122,9 @@ export default class CreatorBar {
         const options = this.availableCreators[name];
         const elem = new ElementHelper('BUTTON', 'textarena-creator__item');
         elem.setAttribute('type', 'button');
+        if (options.title) {
+          elem.setAttribute('title', options.title);
+        }
         const creator: Creator = {
           elem,
           options,

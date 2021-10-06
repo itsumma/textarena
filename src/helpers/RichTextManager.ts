@@ -323,7 +323,7 @@ export default class RichTextManager {
 
   protected cutFormatings(start: number, end?: number): Formatings {
     const formatings: Formatings = {};
-    this.inlines.cut(start, end);
+    // this.inlines.cut(start, end);
     Object.entries(this.formatings).forEach(([name, intervaler]) => {
       formatings[name] = intervaler.cut(start, end);
     });
