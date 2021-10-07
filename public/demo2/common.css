@@ -418,17 +418,3 @@ arena-embed-simple blockquote {
   position: relative;
   margin: 0 !important;
 }
-
-arena-two-columns-col {
-  width: 50%;
-  padding: 1em;
-  min-height: 2em;
-  background: white;
-  border-right: 1px solid #ccc;
-}
-arena-two-columns-col:last-child {
-  border-right: none;
-}
-arena-two-columns-col:hover {
-  border: 1px dashed #ccc
-}

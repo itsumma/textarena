@@ -43,6 +43,7 @@ import quotePlugin from './plugins/quoteBlock/quoteBlockPlugin';
 import figurePlugin from './plugins/figure/figurePlugin';
 import typoSugarPlugin from './plugins/typoSugarPlugin';
 import codePlugin from './plugins/codePlugin';
+import twoColumnsPlugin from './plugins/twoColumns/twoColumnsPlugin';
 
 export const defaultOptions: TextarenaOptions = {
   editable: true,
@@ -519,6 +520,7 @@ Textarena.constructor.prototype.getPlugins = () => ({
   codePlugin,
   quotePlugin,
   typoSugarPlugin,
+  twoColumnsPlugin,
 });
 
 export default Textarena;
