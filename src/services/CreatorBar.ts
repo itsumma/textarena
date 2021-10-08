@@ -99,6 +99,8 @@ export default class CreatorBar {
         this.openList();
         return selection;
       },
+      false,
+      false,
     );
     this.asm.commandManager.registerShortcut('Tab', 'open-creator-list');
     this.keyDownListenerInstance = this.keyDownListener.bind(this);

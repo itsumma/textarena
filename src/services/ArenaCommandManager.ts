@@ -73,6 +73,7 @@ type Commands = {
   [key: string]: {
     action: CommandAction,
     saveToHistory: boolean,
+    fireChanges: boolean,
   }
 };
 
@@ -92,10 +93,12 @@ export default class ArenaCommandManager {
     command: string,
     action: CommandAction,
     saveToHistory = true,
+    fireChanges = true,
   ): ArenaCommandManager {
     this.commands[command] = {
       action,
       saveToHistory,
+      fireChanges,
     };
     return this;
   }
@@ -124,12 +127,14 @@ export default class ArenaCommandManager {
     this.asm.logger.log('exec command', command, selection);
     if (this.commands[command]) {
       if (selection) {
-        const { action, saveToHistory } = this.commands[command];
+        const { action, saveToHistory, fireChanges } = this.commands[command];
         const newSelection = action(this.asm.textarena, selection);
         if (saveToHistory) {
           this.asm.history.save(newSelection);
         }
-        this.asm.eventManager.fire('modelChanged', { selection: newSelection });
+        if (fireChanges) {
+          this.asm.eventManager.fire('modelChanged', { selection: newSelection });
+        }
       }
     }
   }
