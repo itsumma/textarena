@@ -21,7 +21,7 @@ export default class SingleNode
   public getTemplate(): TemplateResult | string {
     const id = this.getGlobalIndex();
     if (this.parent.protected) {
-      return this.arena.getTemplate(undefined, id, this.attributes);
+      return this.arena.getTemplate(undefined, id, this.attributes, this);
     }
     const content = this.arena.getTemplate(undefined, '', this.attributes, this);
     const removeButton = html`<textarena-remove node-id="${id}">

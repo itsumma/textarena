@@ -10,8 +10,13 @@
     height: 0.4em;
     -webkit-transform: rotate(-45deg);
     transform: rotate(-45deg);
-    background-color: #333;
     z-index: -1;
+    background-color: #333;
+
+    @supports ((-webkit-backdrop-filter: none) or (backdrop-filter: none)) {
+      background-color: #0000009c;
+      backdrop-filter: blur(20px);
+    }
   }
 
   &_bottom {
@@ -37,11 +42,16 @@
     // transform: translateX(-50%);
     color: #ccc;
     box-shadow: 0 8px 23px -6px rgba(21, 40, 54, 0.31), 22px -14px 34px -18px rgba(33, 48, 73, 0.26);
-    border-radius: 0.1em;
-    background-color: #333;
+    border-radius: 0.3em;
     z-index: 2;
     // transition: 0.3s;
     user-select: none;
+    background-color: #333;
+
+    @supports ((-webkit-backdrop-filter: none) or (backdrop-filter: none)) {
+      background-color: #0000009c;
+      backdrop-filter: blur(20px);
+    }
   }
 
   &__item {
@@ -60,9 +70,15 @@
     margin: 0.1em 0.1em 0.1em 0;
     padding: 0.2em 0;
     box-sizing: border-box;
+    border-radius: 0.2em;
 
     &:first-child {
       margin-left: 0.2em;
+    }
+
+    &:hover {
+      background-color: #373737;
+      color: white;
     }
 
     &_active {

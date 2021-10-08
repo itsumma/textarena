@@ -84,6 +84,7 @@ const headersPlugin = (opts?: PartialHeaderOptions): ArenaPlugin => ({
           marks,
           [textarena.getRootArenaName()],
         ) as ArenaTextInterface;
+        textarena.addSimpleArenas(arena);
         if (command) {
           textarena.registerCommand(
             command,

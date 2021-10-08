@@ -99,7 +99,7 @@ const figurePlugin = (opts?: Partial<FigurePluginOptions>): ArenaPlugin => ({
       marks,
       [textarena.getRootArenaName()],
     ) as ArenaMediatorInterface;
-
+    textarena.addSimpleArenas(arena);
     if (command) {
       textarena.registerCommand(
         command,

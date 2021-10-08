@@ -156,6 +156,11 @@ export default class ArenaParser {
         if (!newArenaNode) {
           return [...this.insertChildren(elementNode, arenaNode, offset), true];
         }
+        try {
+          this.asm.model.getTextCursor(newArenaNode, 0);
+        } catch (e) {
+          //
+        }
         // const newArenaNode = this.asm.model.createChildNode(arena);
         this.setAttributes(newArenaNode, elementNode);
         if (newArenaNode.hasText) {

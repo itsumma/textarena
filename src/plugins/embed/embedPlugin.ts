@@ -96,6 +96,7 @@ const embedPlugin = (opts?: Partial<EmbedPluginOptions>): ArenaPlugin => ({
       marks,
       [ta.getRootArenaName()],
     ) as ArenaSingleInterface;
+    ta.addSimpleArenas(arena);
     if (command) {
       ta.registerCommand(
         command,
@@ -122,7 +123,7 @@ const embedPlugin = (opts?: Partial<EmbedPluginOptions>): ArenaPlugin => ({
       });
     }
 
-    ta.registerArena(
+    const simpleArena = ta.registerArena(
       {
         name: 'simple-embed',
         tag: 'ARENA-EMBED-SIMPLE',
@@ -138,6 +139,7 @@ const embedPlugin = (opts?: Partial<EmbedPluginOptions>): ArenaPlugin => ({
       ],
       [ta.getRootArenaName()],
     ) as ArenaSingleInterface;
+    ta.addSimpleArenas(simpleArena);
     ta.subscribe('rendered', () => {
       setTimeout(() => {
         if (typeof window !== 'undefined' && window.twttr) {

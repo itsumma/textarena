@@ -147,24 +147,10 @@ hr {
   display: block;
   user-select: none;
   width: 100%;
-  margin: 0 0 1em;
+  margin: 1.3em 0;
   background: #ccc;
   border: 0;
   height: 1px;
-  position: relative;
-  overflow: visible;
-}
-hr.asterisk {
-  background: none;
-  height: 1em;
-}
-hr.asterisk::after {
-  content: "***";
-  position: absolute;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 2em;
 }
 
 blockquote {
@@ -263,8 +249,6 @@ picture {
 img {
   border-radius: 0.2em;
   background-color: #b688e4;
-  max-width: 100%;
-  display: block;
 }
 
 .place-center picture {
@@ -433,87 +417,4 @@ arena-embed-simple blockquote {
 .twitter-tweet-rendered {
   position: relative;
   margin: 0 !important;
-}
-
-arena-two-columns-col {
-  width: 50%;
-  padding: 1px 1em;
-  min-height: 2em;
-  border-right: 1px solid #ccc;
-}
-arena-two-columns-col:last-child {
-  border-right: none;
-}
-arena-two-columns-col:hover {
-  /* border: 1px dashed #ccc */
-}
-arena-two-columns-col > *:last-child {
-  margin-bottom: 0;
-}
-
-
-.arena-two-col {
-  display: flex;
-  min-height: 2em;
-  margin-bottom: 1em;
-}
-.arena-col {
-  width: 50%;
-  padding: 0 1em;
-  border-right: 1px solid #ccc;
-}
-.arena-col:last-child {
-  border-right: none;
-}
-@media screen and (max-width: 600px) {
-  .arena-two-col {
-    display: contents;
-  }
-  .arena-col {
-    width: 100%;
-    padding: 0;
-    border-right: none;
-  }
-}
-
-.arena-col > *:last-child {
-  margin-bottom: 0;
-}
-
-roadmap {
-  font-size: 1.5em;
-  display: block;
-}
-roadmap p.paragraph {
-  padding: 1em 1em 1em 2em;
-  margin-left: 2em;
-  margin-bottom: 0;
-  position: relative;
-}
-roadmap p.paragraph::before {
-    content: '';
-    position: absolute;
-    width: 0.2em;
-    background: #ccc;
-    top: 0;
-    left: 0;
-    bottom: 0;
-}
-roadmap p.paragraph:first-child::before {
-  top: 50%;
-}
-roadmap p.paragraph:last-child::before {
-  bottom: 50%;
-}
-roadmap p.paragraph::after {
-    content: '';
-    position: absolute;
-    width: 1em;
-    height: 1em;
-    background: white;
-    border: 0.2em solid #a5c9fd;
-    border-radius: 50%;
-    top: 50%;
-    left: 0;
-    transform: translate(-0.6em, -0.6em);
 }

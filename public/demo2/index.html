@@ -5,7 +5,7 @@
 	<meta charset="utf-8" />
 	<title>Textarena</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="textarena.css">
+  <link rel="stylesheet" href="../textarena.css">
   <link rel="stylesheet" href="common.css">
   <link rel="preconnect" href="https://fonts.gstatic.com">
   <link href="https://fonts.googleapis.com/css2?family=Bitter:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
@@ -109,8 +109,6 @@
     }
 
     .textarena-container {
-      max-width: 43rem;
-      margin: 0 auto;
       /* border: 1px solid rgb(182, 182, 182);
       border-radius: 2px; */
       /* max-width: 721px; */
@@ -128,17 +126,13 @@
 
 
     .textarena-editor {
-      padding: 2rem;
-      border-radius: 1rem;
-      box-shadow: 0 0 1em 0.1em rgb(32 68 122 / 12%);
-
-      min-height: 50vh;
+      padding: 1rem calc((100% - 721px) / 2) 10rem;
     }
     .textarena-placeholder {
-      padding: 2rem;
+      padding: 1rem calc((100% - 721px) / 2) 0;
     }
     .textarena-creator {
-      padding: 0 0.3em;
+      padding: 0 calc((100% - 721px) / 2 - 2rem);
     }
     @media screen and (max-width: 900px) {
       .textarena-editor {
@@ -175,6 +169,7 @@
       flex-wrap: wrap;
       position: sticky;
       top: 0;
+      background: white;
       z-index: 1;
     }
     .toggler > * {
@@ -226,7 +221,7 @@
       document.querySelector("#" + tab).setAttribute('show', true);
     }));
   </script>
-	<script src="textarena.js"></script>
+	<script src="../textarena.js"></script>
   <script src="index.js"></script>
   <script async defer src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 	<script async defer src="//connect.facebook.net/en_US/sdk.js"></script>
