@@ -10,6 +10,6 @@ export type FigureClass = {
 
 export type FigurePluginOptions = DefaulPluginOptions & {
   srcset?: Srcset,
-  classes?: FigureClass,
+  classes?: FigureClass[],
   placeholder: string,
 };

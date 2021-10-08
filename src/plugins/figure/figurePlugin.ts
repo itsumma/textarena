@@ -3,14 +3,13 @@ import ArenaSelection from '../../helpers/ArenaSelection';
 import ArenaPlugin from '../../interfaces/ArenaPlugin';
 import { ArenaMediatorInterface, ArenaTextInterface } from '../../interfaces/Arena';
 import { AnyArenaNode } from '../../interfaces/ArenaNode';
-import { ImagePluginOptions } from '../image/types';
 import ArenaFigure from './ArenaFigure';
 import outputFigure from './outputFigure';
 import { FigurePluginOptions } from './types';
 import ArenaSingle from '../../arenas/ArenaSingle';
 
 const defaultOptions: FigurePluginOptions = {
-  name: 'fugire',
+  name: 'figure',
   icon: `<svg width="18px" height="18px" viewBox="0 0 18 18" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
     <g id="Icons" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
         <g id="Rounded" transform="translate(-851.000000, -2061.000000)">
@@ -47,7 +46,7 @@ const defaultOptions: FigurePluginOptions = {
   placeholder: '',
 };
 
-const figurePlugin = (opts?: Partial<ImagePluginOptions>): ArenaPlugin => ({
+const figurePlugin = (opts?: Partial<FigurePluginOptions>): ArenaPlugin => ({
   register(textarena: Textarena): void {
     const {
       name, icon, title, tag, attributes, allowedAttributes, classes, shortcut, hint,

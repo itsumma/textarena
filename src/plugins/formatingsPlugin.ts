@@ -248,6 +248,8 @@ const defaultOptions: FormatingsOptions = {
       tag: 'MARK',
       attributes: [],
       command: 'format-mark',
+      shortcut: 'Ctrl + KeyH',
+      hint: 'h',
       marks: [
         {
           tag: 'MARK',
