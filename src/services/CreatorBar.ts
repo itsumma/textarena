@@ -18,6 +18,8 @@ export default class CreatorBar {
 
   elem: ElementHelper;
 
+  placeholder: ElementHelper;
+
   list: ElementHelper;
 
   buttonWrapper: ElementHelper;
@@ -45,12 +47,14 @@ export default class CreatorBar {
   ) {
     this.elem = new ElementHelper('ARENA-CREATOR', 'textarena-creator');
     this.elem.setContentEditable(false);
+    this.elem.css({
+      display: 'none',
+    });
     this.elem.onClick(() => {
       this.closeList();
       this.asm.textarena.getEditorElement().focus();
     });
     this.list = new ElementHelper('DIV', 'textarena-creator__list');
-    this.hide();
     const createButton = new ElementHelper('BUTTON', 'textarena-creator__create-button');
     createButton.setAttribute('type', 'button');
     createButton.onClick((e: MouseEvent) => {
@@ -63,21 +67,20 @@ export default class CreatorBar {
         this.openList();
       }
     });
-    createButton.setInnerHTML(`<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 14 14">
+    createButton.setInnerHTML(`<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 14 14" fill="currentColor">
     <path d="M8.05 5.8h4.625a1.125 1.125 0 0 1 0 2.25H8.05v4.625a1.125 1.125 0 0 1-2.25 0V8.05H1.125a1.125 1.125 0 0 1 0-2.25H5.8V1.125a1.125 1.125 0 0 1 2.25 0V5.8z"/>
     </svg>`);
     // const MACOS = isMac();
     // const altKey = MACOS ? '⌥' : 'Alt';
-    const placeholder = new ElementHelper(
+    this.placeholder = new ElementHelper(
       'DIV',
       'textarena-creator__placeholder',
-      // `Введите текст или ${altKey}-Q`,
     );
     this.buttonWrapper = new ElementHelper('DIV', 'textarena-creator__create-button-wrapper');
     this.buttonWrapper.appendChild(createButton);
     this.elem.appendChild(this.buttonWrapper);
+    this.elem.appendChild(this.placeholder);
     this.elem.appendChild(this.list);
-    this.elem.appendChild(placeholder);
     this.asm.textarena.getContainerElement().appendChild(this.getElem());
     this.asm.eventManager.subscribe('moveCursor', () => {
       this.handleChangeSelection();
@@ -159,6 +162,9 @@ export default class CreatorBar {
     if (!this.enabled) {
       this.hide();
     }
+    if (creatorBarOptions.placeholder) {
+      this.placeholder.setInnerHTML(creatorBarOptions.placeholder);
+    }
   }
 
   public registerCreator(opts: CreatorOptions): void {
@@ -203,13 +209,16 @@ export default class CreatorBar {
   private keyDownListener(e: KeyboardEvent): void {
     const modifiersSum = this.asm.browser.getModifiersSum(e);
     if (this.showed && this.active) {
-      if (modifiersSum === 0 && e.code === 'ArrowRight') {
+      if (modifiersSum === 0 && (e.code === 'ArrowRight' || e.code === 'Tab')) {
+        e.preventDefault();
         this.activeCreator();
       }
       if (modifiersSum === 0 && e.code === 'ArrowLeft') {
+        e.preventDefault();
         this.activeCreator(false);
       }
       if (modifiersSum === 0 && e.code === 'Escape') {
+        e.preventDefault();
         this.closeList();
         this.asm.textarena.getEditorElement().focus();
       }
@@ -294,9 +303,10 @@ export default class CreatorBar {
     const rect = target.getBoundingClientRect();
     const containerRect = this.asm.textarena.getContainerElement().getBoundingClientRect();
     this.buttonWrapper.css({
-      height: `${target.offsetHeight}px`,
+      paddingLeft: `${rect.x - containerRect.x}px`,
     });
     this.elem.css({
+      height: `${target.offsetHeight}px`,
       display: 'flex',
       top: `${rect.y - containerRect.y}px`,
     });
@@ -323,6 +333,7 @@ export default class CreatorBar {
       if (this.creators.length > 0) {
         this.creators[0].elem.focus();
       }
+      this.asm.textarena.checkPlaceholder();
     }
   }
 
@@ -332,6 +343,7 @@ export default class CreatorBar {
     this.creators.forEach((tool: Creator) => {
       tool.elem.removeClass('textarena-creator__item_show-hint');
     });
+    this.asm.textarena.checkPlaceholder();
     // this.asm.textarena.getEditorElement().focus();
   }
 }

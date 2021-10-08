@@ -50,14 +50,14 @@
       //   </arena-quote>
       //   `;
       dataHtml = "<p class=\"paragraph\">Текст <em>Италик </em><strong>Жирный </strong><em>Жирный италик </em><s>Зачеркнуто</s>&nbsp;</p>\n<p class=\"paragraph\"><font color=\"#545454\">Покрашено </font>Не покрашено</p>\n<p class=\"paragraph\"><a href=\"http://reminder.media/\" target=\"_blank\">Ссылка</a></p>\n<p class=\"paragraph\"><mark>Текст с фоном</mark> без фона.</p>\n<pre>\n<p class=\"paragraph\">Моноширный текст.</p>\n</pre>\n<h2>Заголовок 2</h2>\n<h3>Заголовок 3</h3>\n<h4>Заголовок 4</h4>\n<hr></hr>\n<ol>\n<li>Список 1</li>\n<li>Список 2</li>\n<li>Список 3</li>\n</ol>\n<p class=\"paragraph\">Текст</p>\n<ul>\n<li>Список 1</li>\n<li>Список 2</li>\n<li>Список 3</li>\n</ul>\n<aside class=\"aside-fill aside-fill-grey\">\n<p class=\"paragraph\">Текст на сером фоне</p>\n</aside>\n<aside class=\"aside-fill aside-fill-purple\">\n<p class=\"paragraph\">Текст на фиолетовом фоне</p>\n</aside>\n<aside class=\"aside-fill aside-fill-orange\">\n<p class=\"paragraph\">Текст на морковном фоне.</p>\n<p class=\"paragraph\">В несколько строк</p>\n</aside>\n<blockquote>\n<p class=\"paragraph\">Цитата</p>\n</blockquote>\n<p class=\"paragraph\">Текст</p>\n<arena-figure class=\"image place-wide\">\n<arena-image slot=\"image\" src=\"https://d3qc8znfr3ejm3.cloudfront.net/images/e19a2301-e099-46f7-bc89-12bfded9b455.jpg\"></arena-image>\n<figcaption slot=\"image-caption\">Подпись к рисунку</figcaption>\n</arena-figure>\n\n<arena-figure class=\"image place-center\">\n<arena-image slot=\"image\" src=\"https://d3qc8znfr3ejm3.cloudfront.net/images/c4061779-d99e-45c9-91a2-66d9142c04b6.png\"></arena-image>\n<figcaption slot=\"image-caption\">Подпись к рисунку</figcaption>\n</arena-figure>\n<arena-figure class=\"image place-fill\">\n<arena-image slot=\"image\" src=\"https://d3qc8znfr3ejm3.cloudfront.net/images/8690b897-c596-4ffa-b8f0-448978bbef5f.jpg\"></arena-image>\n<figcaption slot=\"image-caption\">Подпись к рисунку</figcaption>\n</arena-figure>";
-      dataHtml = `<arena-two-columns>
-        <arena-two-columns-col>
-          <p class=\"paragraph\">1</p>
-        </arena-two-columns-col>
-        <arena-two-columns-col>
-          <p class=\"paragraph\">2</p>
-        </arena-two-columns-col>
-      </arena-two-columns>`;
+      // dataHtml = `<arena-two-columns>
+      //   <arena-two-columns-col>
+      //     <p class=\"paragraph\">1</p>
+      //   </arena-two-columns-col>
+      //   <arena-two-columns-col>
+      //     <p class=\"paragraph\">2</p>
+      //   </arena-two-columns-col>
+      // </arena-two-columns>`;
       // dataHtml = `<h2><s>Простой</s> Крутой текстовый редактор</h2><arena-image src="https://storage.yandexcloud.net/itsizo.app/ee907a4a-9ff2-40fb-ae3f-1e4f91a02800.png"></arena-image><p>Выделите текст, появится панель для форматирования.</p>`;
     }
     const initData = {
@@ -103,6 +103,7 @@
       quotePlugin,
       typoSugarPlugin,
       twoColumnsPlugin,
+      roadmapPlugin,
     } = Textarena.getPlugins();
 
     const textarena = new Textarena(
@@ -115,7 +116,7 @@
         onReady: onChange,
         initData,
         outputTypes: ['html', 'amp', 'rss'],
-        placeholder: 'Введите текст…',
+        placeholder: 'Введите текст или нажмите Tab',
         plugins: [
           commonPlugin(),
           formatingsPlugin(),
@@ -131,6 +132,22 @@
                 tag: 'DIV',
                 attributes: [
                   'class=separator',
+                ],
+              },
+            ],
+          }),
+          hrPlugin({
+            name: 'hr-asterisk',
+            icon: '***',
+            title: '***',
+            tag: 'HR',
+            attributes: { class: 'asterisk' },
+            command: 'add-hr-asterisk',
+            marks: [
+              {
+                tag: 'HR',
+                attributes: [
+                  'class=asterisk'
                 ],
               },
             ],
@@ -317,6 +334,7 @@
           codePlugin(),
           quotePlugin(),
           typoSugarPlugin(),
+          roadmapPlugin(),
           twoColumnsPlugin(),
         ],
         toolbar: {
@@ -353,16 +371,18 @@
             'unordered-list',
             'ordered-list',
             'hr',
-            'fugire',
+            'hr-asterisk',
+            'figure',
             'blockquote',
             'embed',
             'asideColoredGrey',
             'asideColoredPurple',
             'asideColoredOrange',
             'two-columns',
+            'roadmap',
           ],
         },
-      },
+      }
     );
   }
 }());

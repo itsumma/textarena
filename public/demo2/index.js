@@ -343,7 +343,7 @@
             'unordered-list',
             'ordered-list',
             'hr',
-            'fugire',
+            'figure',
             'blockquote',
             'embed',
             'asideColoredGrey',

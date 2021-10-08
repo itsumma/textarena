@@ -1,9 +1,13 @@
 import {
-  LitElement,
+  LitElement, property,
 } from 'lit-element';
+import { AnyArenaNode } from '../interfaces/ArenaNode';
 import NodeAttributes from '../interfaces/NodeAttributes';
 
 export default class WebComponent extends LitElement {
+  @property({ type: Object })
+  node: AnyArenaNode | undefined;
+
   constructor() {
     super();
     this.addEventListener('keydown', this.handleEvent);
@@ -49,6 +53,7 @@ export default class WebComponent extends LitElement {
         attrs,
         target: this,
         stopRender,
+        node: this.node,
       },
     });
     this.dispatchEvent(event);

@@ -8,11 +8,13 @@ import twoColumnsOutput from './twoColumnsOutput';
 
 const defaultOptions: DefaulPluginOptions = {
   name: 'two-columns',
-  // icon: '<b>Q</b>',
+  icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 14.06 13.69" fill="currentColor"><g ><g ><path d="M5.68,13.69h-5A.71.71,0,0,1,0,13V.71A.71.71,0,0,1,.71,0h5a.71.71,0,0,1,.71.71V13A.71.71,0,0,1,5.68,13.69ZM1.42,12.28H5V1.42H1.42Z"/><path d="M13.35,13.69h-5A.71.71,0,0,1,7.67,13V.71A.71.71,0,0,1,8.38,0h5a.71.71,0,0,1,.71.71V13A.71.71,0,0,1,13.35,13.69ZM9.09,12.28h3.55V1.42H9.09Z"/></g></g></svg>',
   title: 'Две колонки',
   tag: 'ARENA-TWO-COLUMNS',
   attributes: {},
   command: 'add-two-columns',
+  shortcut: 'Alt + Digit5',
+  hint: '5',
   component: 'arena-two-columns',
   componentConstructor: ArenaTwoColumns,
   marks: [

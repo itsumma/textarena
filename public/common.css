@@ -151,6 +151,20 @@ hr {
   background: #ccc;
   border: 0;
   height: 1px;
+  position: relative;
+  overflow: visible;
+}
+hr.asterisk {
+  background: none;
+  height: 1em;
+}
+hr.asterisk::after {
+  content: "***";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 2em;
 }
 
 blockquote {
@@ -464,4 +478,42 @@ arena-two-columns-col > *:last-child {
 
 .arena-col > *:last-child {
   margin-bottom: 0;
+}
+
+roadmap {
+  font-size: 1.5em;
+  display: block;
+}
+roadmap p.paragraph {
+  padding: 1em 1em 1em 2em;
+  margin-left: 2em;
+  margin-bottom: 0;
+  position: relative;
+}
+roadmap p.paragraph::before {
+    content: '';
+    position: absolute;
+    width: 0.2em;
+    background: #ccc;
+    top: 0;
+    left: 0;
+    bottom: 0;
+}
+roadmap p.paragraph:first-child::before {
+  top: 50%;
+}
+roadmap p.paragraph:last-child::before {
+  bottom: 50%;
+}
+roadmap p.paragraph::after {
+    content: '';
+    position: absolute;
+    width: 1em;
+    height: 1em;
+    background: white;
+    border: 0.2em solid #a5c9fd;
+    border-radius: 50%;
+    top: 50%;
+    left: 0;
+    transform: translate(-0.6em, -0.6em);
 }

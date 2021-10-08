@@ -44,6 +44,7 @@ import figurePlugin from './plugins/figure/figurePlugin';
 import typoSugarPlugin from './plugins/typoSugarPlugin';
 import codePlugin from './plugins/codePlugin';
 import twoColumnsPlugin from './plugins/twoColumns/twoColumnsPlugin';
+import roadmapPlugin from './plugins/roadmapPlugin';
 
 export const defaultOptions: TextarenaOptions = {
   editable: true,
@@ -132,6 +133,10 @@ class Textarena {
   }
 
   public setOptions(options: TextarenaOptions): void {
+    if (options.placeholder !== undefined) {
+      this.placeholderText = options.placeholder;
+      this.placeholder.setInnerHTML(options.placeholder);
+    }
     if (options.onChange !== undefined) {
       this.setOnChange(options.onChange);
     }
@@ -155,9 +160,6 @@ class Textarena {
     // }
     if (options.editable !== undefined) {
       this.setEditable(options.editable);
-    }
-    if (options.placeholder !== undefined) {
-      this.placeholder.setInnerHTML(options.placeholder);
     }
     if (options.debug !== undefined) {
       this.debug = options.debug;
@@ -240,7 +242,7 @@ class Textarena {
   }
 
   public setCreatorBarOptions(creatorBarOptions: CreatorBarOptions): void {
-    this.asm.creatorBar.setOptions(creatorBarOptions);
+    this.asm.creatorBar.setOptions({ ...creatorBarOptions, placeholder: this.placeholderText });
   }
 
   public getRootArenaName(): string {
@@ -429,6 +431,8 @@ class Textarena {
 
   protected placeholder: ElementHelper;
 
+  protected placeholderText = '';
+
   protected placeholderShowed = true;
 
   protected options: TextarenaOptions = {};
@@ -469,14 +473,18 @@ class Textarena {
     }
   }
 
-  protected checkPlaceholder(): void {
+  public checkPlaceholder(): void {
     let isEmpty = true;
-    const { children } = this.asm.model.model;
-    for (let i = 0; i < children.length; i += 1) {
-      const child = children[i];
-      if (!child.hasText || child.getTextLength() > 0) {
-        isEmpty = false;
-        break;
+    if (this.asm.creatorBar.showed) {
+      isEmpty = false;
+    } else {
+      const { children } = this.asm.model.model;
+      for (let i = 0; i < children.length; i += 1) {
+        const child = children[i];
+        if (!child.hasText || child.getTextLength() > 0) {
+          isEmpty = false;
+          break;
+        }
       }
     }
     if (isEmpty && !this.placeholderShowed) {
@@ -531,6 +539,7 @@ Textarena.constructor.prototype.getPlugins = () => ({
   quotePlugin,
   typoSugarPlugin,
   twoColumnsPlugin,
+  roadmapPlugin,
 });
 
 export default Textarena;

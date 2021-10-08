@@ -109,6 +109,8 @@
     }
 
     .textarena-container {
+      max-width: 43rem;
+      margin: 0 auto;
       /* border: 1px solid rgb(182, 182, 182);
       border-radius: 2px; */
       /* max-width: 721px; */
@@ -126,13 +128,17 @@
 
 
     .textarena-editor {
-      padding: 1rem calc((100% - 721px) / 2) 10rem;
+      padding: 2rem;
+      border-radius: 1rem;
+      box-shadow: 0 0 1em 0.1em rgb(32 68 122 / 12%);
+
+      min-height: 50vh;
     }
     .textarena-placeholder {
-      padding: 1rem calc((100% - 721px) / 2) 0;
+      padding: 2rem;
     }
     .textarena-creator {
-      padding: 0 calc((100% - 721px) / 2 - 2rem);
+      padding: 0 0.3em;
     }
     @media screen and (max-width: 900px) {
       .textarena-editor {
@@ -169,7 +175,6 @@
       flex-wrap: wrap;
       position: sticky;
       top: 0;
-      background: white;
       z-index: 1;
     }
     .toggler > * {

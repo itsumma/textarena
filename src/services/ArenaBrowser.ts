@@ -18,11 +18,13 @@ import ArenaServiceManager from './ArenaServiceManager';
 import ArenaSelection from '../helpers/ArenaSelection';
 import NodeAttributes from '../interfaces/NodeAttributes';
 import { isMac } from '../utils/navigator';
+import { AnyArenaNode } from '../interfaces/ArenaNode';
 
 type ArenaChangeAttribute = CustomEvent<{
   attrs: NodeAttributes,
   target: HTMLElement,
   stopRender?: boolean,
+  node?: AnyArenaNode,
 }>;
 
 type ArenaCustomEvent = CustomEvent<unknown>;
@@ -601,21 +603,19 @@ export default class ArenaBrowser {
   }
 
   protected changeAttributeListener(e: ArenaChangeAttribute): void {
-    const { attrs, target, stopRender } = e.detail;
-    const id = this.getIdOfTarget(target);
-    if (id) {
-      const node = this.asm.model.getNodeById(id);
-      if (node) {
-        node.setAttributes(attrs);
-        const sel = this.asm.view.getCurrentSelection();
-        if (sel) {
-          this.asm.history.save(sel);
-        }
-        this.asm.eventManager.fire('modelChanged', {
-          selection: sel,
-          stopRender: !!stopRender,
-        });
+    const {
+      attrs, stopRender, node,
+    } = e.detail;
+    if (node) {
+      node.setAttributes(attrs);
+      const sel = this.asm.view.getCurrentSelection();
+      if (sel) {
+        this.asm.history.save(sel);
       }
+      this.asm.eventManager.fire('modelChanged', {
+        selection: sel,
+        stopRender: !!stopRender,
+      });
     }
   }
 

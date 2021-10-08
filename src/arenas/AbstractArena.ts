@@ -14,6 +14,8 @@ export default abstract class AbstractArena {
 
   readonly attributes: ArenaAttributes;
 
+  readonly single: boolean = false;
+
   readonly allowedAttributes: string[] = [];
 
   protected getOutputProcessor: OutputProcessor | undefined;
@@ -126,7 +128,7 @@ export default abstract class AbstractArena {
 
   protected getAttributesString(id: string, attributes: NodeAttributes): string {
     let result: string[] = [];
-    if (id) {
+    if (id && !this.single) {
       result.push(`arena-id="${id}"`);
     }
     result = result.concat(utils.attr.getStringsFromAttributes(this.attributes));
