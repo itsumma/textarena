@@ -257,6 +257,16 @@ class Textarena {
     this.simpleArenas.push(arena);
   }
 
+  protected middleArenas: ChildArena[] = [];
+
+  public getMiddleArenas(): ChildArena[] {
+    return this.middleArenas;
+  }
+
+  public addMiddleArenas(arena: ChildArena): void {
+    this.middleArenas.push(arena);
+  }
+
   public setDefaultTextArena(arena: ArenaMediatorInterface | ArenaTextInterface): void {
     this.asm.model.setDefaultTextArena(arena);
   }

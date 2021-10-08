@@ -7,7 +7,6 @@ export default class ArenaTwoColumns extends LitElement {
     :host {
       display: flex;
       min-height: 2em;
-      background: gray;
     }
   `;
 

@@ -99,9 +99,9 @@
     position: relative;
     min-width: 2em;
     height: 2em;
-    border: 0.05em solid #888;
+    // border: 0.05em solid #888;
     color: #888;
-    border-radius: 2em;
+    // border-radius: 2em;
     align-items: center;
     justify-content: center;
     cursor: pointer;
@@ -109,16 +109,28 @@
     margin-right: -1.4em;
     padding: 0.4em;
     box-sizing: border-box;
-    background: white;
+    // background: white;
     margin-bottom: 0.2em;
     font-size: 1em;
+    background: hsl(0deg 0% 100% / 45%);
+    backdrop-filter: blur(20px);
+    border: 0;
+    border-radius: 0.8em;
+    outline: none;
 
-    &:hover,
+    &:hover {
+      color: #000;
+      outline: none;
+      background: rgb(229 229 229 / 45%);
+    }
+
     &:focus,
     &:active {
       outline: none;
-      border-color: #000;
+      // border-color: #000;
       color: #000;
+      animation: bounceIn 0.3s 1;
+      animation-fill-mode: forwards;
     }
   }
 
@@ -141,5 +153,25 @@
 
   &__item_show-hint &__hint {
     display: block;
+  }
+}
+
+@keyframes bounceIn {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+
+  70% {
+    transform: scale(0.9);
+  }
+
+  100% {
+    transform: scale(1);
   }
 }

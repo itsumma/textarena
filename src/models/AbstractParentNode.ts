@@ -165,7 +165,7 @@ export default abstract class AbstractParentNode<
   public insertNode(node: ChildArenaNode, offset?: number):
     ChildArenaNode | undefined {
     if (this.arena.protected) {
-      for (let i = 0; i < this.children.length; i += 1) {
+      for (let i = offset || 0; i < this.children.length; i += 1) {
         const child = this.children[i];
         if (child.arena === node.arena) {
           return child;

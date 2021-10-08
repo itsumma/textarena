@@ -97,7 +97,7 @@ export default class CreatorBar {
         return selection;
       },
     );
-    this.asm.commandManager.registerShortcut('Alt + KeyQ', 'open-creator-list');
+    this.asm.commandManager.registerShortcut('Tab', 'open-creator-list');
     this.keyDownListenerInstance = this.keyDownListener.bind(this);
     this.keyUpListenerInstance = this.keyDownListener.bind(this);
     this.asm.eventManager.subscribe('turnOn', () => {
@@ -291,12 +291,14 @@ export default class CreatorBar {
   }
 
   setPosition(target: HTMLElement): void {
+    const rect = target.getBoundingClientRect();
+    const containerRect = this.asm.textarena.getContainerElement().getBoundingClientRect();
     this.buttonWrapper.css({
       height: `${target.offsetHeight}px`,
     });
     this.elem.css({
       display: 'flex',
-      top: `${target.offsetTop}px`,
+      top: `${rect.y - containerRect.y}px`,
     });
   }
 

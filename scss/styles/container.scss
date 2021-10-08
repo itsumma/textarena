@@ -15,8 +15,21 @@
     font-size: 1em;
     line-height: 1em;
 
+    &::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      pointer-events: none;
+      height: 0.1em;
+      width: 100%;
+      background: #88d8ff;
+      display: none;
+    }
+
     &:hover {
-      background: #ececec;
+      &::after {
+        display: block;
+      }
     }
   }
 }

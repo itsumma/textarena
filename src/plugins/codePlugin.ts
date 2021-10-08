@@ -44,6 +44,7 @@ const codePlugin = (opts?: Partial<DefaulPluginOptions>): ArenaPlugin => ({
       marks,
       [textarena.getRootArenaName()],
     ) as ArenaMediatorInterface;
+    textarena.addSimpleArenas(arena);
     if (command) {
       textarena.registerCommand(
         command,
