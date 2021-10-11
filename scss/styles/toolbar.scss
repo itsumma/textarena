@@ -4,6 +4,7 @@
   pointer-events: none;
 
   &__pointer {
+    display: none;
     position: absolute;
     left: 0;
     width: 0.4em;
@@ -46,10 +47,11 @@
     z-index: 2;
     // transition: 0.3s;
     user-select: none;
-    background-color: #333;
+    background-color: rgb(231, 231, 231);
 
+    padding: 0.2em;
     @supports ((-webkit-backdrop-filter: none) or (backdrop-filter: none)) {
-      background-color: #0000009c;
+      background-color: #dadada45;
       backdrop-filter: blur(20px);
     }
   }
@@ -59,7 +61,7 @@
     display: flex;
     background: none;
     border: none;
-    color: inherit;
+    color: #4a4a4a;
     line-height: inherit;
     font-size: 1em;
     align-items: center;
@@ -67,24 +69,25 @@
     width: 1.4em;
     height: 1.4em;
     cursor: pointer;
-    margin: 0.1em 0.1em 0.1em 0;
+    margin: 0.1em;
     padding: 0.2em 0;
     box-sizing: border-box;
-    border-radius: 0.2em;
-
-    &:first-child {
-      margin-left: 0.2em;
-    }
+    border-radius: 0.3em;
+    background-color: none;
 
     &:hover {
-      background-color: #373737;
-      color: white;
+      background: white;
+      color: black;
     }
 
     &_active {
-      color: #fff;
-      box-shadow: inset -0.05em -0.05em 0 0 rgba(255, 255, 255, 0.4);
-      background: #1a1a1a;
+      color: #fff !important;
+      box-shadow: none;
+      background: #00000082;
+      &:hover {
+        background: #00000062;
+        color: #fff !important;
+      }
     }
   }
 

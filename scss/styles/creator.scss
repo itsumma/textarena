@@ -95,10 +95,14 @@
     margin-left: 0;
     flex-direction: row;
     opacity: 1;
-    background: rgba(255, 255, 255, 0.45);
-    backdrop-filter: blur(20px);
     padding: 0.2em;
     border-radius: 0.7em;
+    background: white;
+
+    @supports ((-webkit-backdrop-filter: none) or (backdrop-filter: none)) {
+      background: rgba(255, 255, 255, 0.45);
+      backdrop-filter: blur(20px);
+    }
   }
 
   &__item {
@@ -113,7 +117,7 @@
     margin-right: -1.4em;
     padding: 0.3em;
     cursor: pointer;
-    background: white;
+    background: none;
     font-size: 1em;
     color: #888;
     border: 0;

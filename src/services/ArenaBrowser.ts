@@ -304,9 +304,9 @@ export default class ArenaBrowser {
     // if (code === 'KeyS' && modifiersSum === Modifiers.Ctrl) {
     //   return new BrowserCommandEvent(e);
     // }
-    if (code === 'KeyE' && modifiersSum === Modifiers.Ctrl) {
-      return new BrowserCommandEvent(e);
-    }
+    // if (code === 'KeyE' && modifiersSum === Modifiers.Ctrl) {
+    //   return new BrowserCommandEvent(e);
+    // }
     // if (code === 'KeyK' && modifiersSum === Modifiers.Ctrl) {
     //   return new BrowserCommandEvent(e);
     // }

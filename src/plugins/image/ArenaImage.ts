@@ -86,6 +86,7 @@ export default class ArenaImage extends WebComponent {
           border-radius: inherit;
           overflow: inherit;
           min-width: inherit;
+          border: inherit;
         }
         .svg {
           width: 3em;
