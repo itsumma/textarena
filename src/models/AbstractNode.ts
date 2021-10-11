@@ -74,6 +74,16 @@ export default abstract class AbstractNode<
     return { node: this.parent, offset: this.getIndex() };
   }
 
+  public containsParent(parent: ParentArenaNode): boolean {
+    if (this.parent === parent) {
+      return true;
+    }
+    if (!this.parent.hasParent) {
+      return false;
+    }
+    return this.parent.containsParent(parent);
+  }
+
   public setParent(parent: ParentArenaNode): void {
     this._parent = parent;
   }

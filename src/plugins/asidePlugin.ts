@@ -3,6 +3,7 @@ import ArenaPlugin, { DefaulPluginOptions } from '../interfaces/ArenaPlugin';
 import ArenaSelection from '../helpers/ArenaSelection';
 import { ArenaMediatorInterface, ArenaTextInterface } from '../interfaces/Arena';
 import { AnyArenaNode } from '../interfaces/ArenaNode';
+import utils from '../utils';
 
 const defaultOptions: DefaulPluginOptions = {
   name: 'aside',
@@ -75,7 +76,7 @@ const asidePlugin = (opts?: Partial<DefaulPluginOptions>): ArenaPlugin => ({
           hint,
           command,
           checkStatus: (node: AnyArenaNode):
-            boolean => node.arena === arena,
+            boolean => !!utils.modelTree.findNodeUp(node, (n) => n.arena === arena),
         });
       }
       textarena.registerCreator({

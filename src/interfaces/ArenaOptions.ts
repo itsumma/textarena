@@ -26,6 +26,7 @@ export type ArenaOptionsCore = {
   single?: boolean,
   root?: boolean;
   output?: OutputProcessor;
+  defaultParentArena?: ArenaMediatorInterface;
 };
 
 export type ArenaOptionsAncestor = ArenaOptionsCore & {
@@ -40,6 +41,7 @@ export type ArenaOptionsAncestor = ArenaOptionsCore & {
   group?: boolean,
   // protected?: boolean,
   arenaForText: ArenaMediatorInterface | ArenaTextInterface
+  noPseudoCursor?: boolean;
 } & ({
   allowedArenas: ChildArena[],
 } | {

@@ -53,14 +53,15 @@ export default abstract class AbstractParentNode<
     const id = this.getGlobalIndex();
     const result: Array<[string, TemplateResult | string]> = [];
     let noText = true;
+    const noCursor = this.protected || this.arena.noPseudoCursor;
     this.children.forEach((child, index) => {
-      if (!this.protected && noText && !child.hasText) {
+      if (!noCursor && noText && !child.hasText) {
         result.push(this.getPseudoCursor(index));
       }
       noText = !child.hasText;
       result.push([child.getId(), child.getTemplate(frms)]);
     });
-    if (!this.protected && noText) {
+    if (!noCursor && noText) {
       result.push(this.getPseudoCursor(this.children.length));
     }
     const content = this.arena.getTemplate(

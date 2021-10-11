@@ -7,6 +7,7 @@ import { AnyArenaNode, ArenaNodeText } from '../interfaces/ArenaNode';
 import { AnyArena } from '../interfaces/Arena';
 import ArenaSelection from '../helpers/ArenaSelection';
 import { ArenaMark, FormatingMark } from './ArenaModel';
+import utils from '../utils';
 
 export default class ArenaParser {
   constructor(protected asm: ArenaServiceManager) {
@@ -135,11 +136,11 @@ export default class ArenaParser {
       if (arena && !arena.inline) {
         if (firstNode && arena.hasText && arenaNode.hasText) {
           if (arenaNode.isEmpty()) {
-            const cursot = arenaNode.remove();
+            const cursor = arenaNode.remove();
             return this.insertChild(
               htmlNode,
-              cursot.node,
-              cursot.offset,
+              cursor.node,
+              cursor.offset,
               firstNode,
             );
           }
@@ -156,11 +157,11 @@ export default class ArenaParser {
         if (!newArenaNode) {
           return [...this.insertChildren(elementNode, arenaNode, offset), true];
         }
-        try {
-          this.asm.model.getTextCursor(newArenaNode, 0);
-        } catch (e) {
-          //
-        }
+        // try {
+        //   this.asm.model.getTextCursor(newArenaNode, 0);
+        // } catch (e) {
+        //   //
+        // }
         // const newArenaNode = this.asm.model.createChildNode(arena);
         this.setAttributes(newArenaNode, elementNode);
         if (newArenaNode.hasText) {
@@ -178,6 +179,16 @@ export default class ArenaParser {
         }
         if (newArenaNode.hasChildren) {
           const [cursorNode, cursorOffset] = this.insertChildren(elementNode, newArenaNode, 0);
+          const [commonAncestor, ofset1, offset2] = utils.modelTree.getCommonAncestor(
+            { node: cursorNode, offset: cursorOffset },
+            newArenaNode.getParent(),
+          );
+          if (commonAncestor) {
+            return [commonAncestor, offset2 + 1, true];
+          }
+          if (cursorNode.hasParent && cursorNode.containsParent(newArenaNode.parent)) {
+            return [newArenaNode.parent, newArenaNode.getIndex() + 1, true];
+          }
           if (cursorNode.hasParent) {
             return [cursorNode.parent, cursorNode.getIndex() + 1, true];
           }

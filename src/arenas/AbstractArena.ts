@@ -2,6 +2,7 @@ import { TemplateResult, defaultTemplateProcessor } from 'lit-html';
 import NodeAttributes from '../interfaces/NodeAttributes';
 import { ArenaFormatings } from '../interfaces/ArenaFormating';
 import { AnyArenaNode } from '../interfaces/ArenaNode';
+import { ArenaMediatorInterface } from '../interfaces/Arena';
 import ArenaOptions, { OutputProcessor } from '../interfaces/ArenaOptions';
 import ArenaAttributes from '../interfaces/ArenaAttributes';
 import utils from '../utils';
@@ -18,6 +19,10 @@ export default abstract class AbstractArena {
 
   readonly allowedAttributes: string[] = [];
 
+  readonly defaultParentArena: ArenaMediatorInterface | undefined;
+
+  readonly noPseudoCursor: boolean = false;
+
   protected getOutputProcessor: OutputProcessor | undefined;
 
   constructor(options: ArenaOptions) {
@@ -26,6 +31,12 @@ export default abstract class AbstractArena {
     this.attributes = options.attributes;
     if (options.allowedAttributes) {
       this.allowedAttributes = options.allowedAttributes;
+    }
+    if (options.defaultParentArena) {
+      this.defaultParentArena = options.defaultParentArena;
+    }
+    if ('noPseudoCursor' in options && options.noPseudoCursor) {
+      this.noPseudoCursor = true;
     }
     this.getOutputProcessor = options.output;
   }

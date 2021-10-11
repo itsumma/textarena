@@ -60,6 +60,10 @@ const twoColumnsPlugin = (opts?: Partial<DefaulPluginOptions>): ArenaPlugin => (
           tag: `${tag}-COL`,
           attributes: ['class="arena-col"'],
         },
+        {
+          tag: 'DIV',
+          attributes: ['class="arena-col"'],
+        },
       ],
       [],
     ) as ArenaMediatorInterface;

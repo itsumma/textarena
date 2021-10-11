@@ -33,22 +33,22 @@
       <p class="paragraph"><strong>Textarena</strong> адаптирована для быстрой работы с текстом. К тому же она легко расширяется с помощью плагинов.</p>
       <p class="paragraph">Выделите текст, появится панель для форматирования.</p>
       <p class="paragraph">Зажмите Ctrl (⌘ для Mac) или Alt (⌥ для Mac) и вы увидите подсказки.</p>
-
       <figure class="">
         <picture>
           <img src="https://d3qc8znfr3ejm3.cloudfront.net/images/7d7b94c6-72d0-4756-9da2-984e8496c817.png" alt="" class="">
         </picture>
         <figcaption slot="image-caption">Панелька для форматирования появляется когда выделен текст, но работает по горячим клавишам</figcaption>
       </figure>
-
       <p class="paragraph">Ctrl (⌘) + I — выделенный текст станет <em>италиком</em>. Повторное нажатие уберёт италик.</p>
       <p class="paragraph">Ctrl (⌘) + B — изменит <strong>жирность</strong> выделенного текста.</p>
       <p class="paragraph">И так далее…</p>
 
       <h3>Заголовки</h3>
-      <ul><li>H2 — второй по величине.</li>
-      <li>H3 — третий по величине.</li>
-      <li>H4 — четвёртый.</li></ul>
+      <ul>
+        <li>H2 — второй по величине.</li>
+        <li>H3 — третий по величине.</li>
+        <li>H4 — четвёртый.</li>
+      </ul>
       <p class="paragraph">Почему нет первого? Во-первых, какие заголовки доступны в редакторе, настраивается. Во-вторых, не рекомендуется на странице использовать более одного заголовка первого уровня. На этой странице уже есть заголовок — «TEXTARENA» — в верху страницы.</p>
       <p class="paragraph">Чтобы превратить текст в заголовок можно нажать Alt (⌥) + 2 или 3 или 4.</p>
       <p class="paragraph">Чтобы вернуть параграф — Alt (⌥) + 0.</p>
@@ -61,19 +61,18 @@
       <h3>Несложные текстовые блоки</h3>
       <blockquote><p class="paragraph">Для того чтобы сделать простой блок цитаты, нажмите Alt (⌥) + &quot;.</p></blockquote>
       <p class="paragraph">Или нажмите кнопку с плюсом на пустой строке.</p>
-
       <figure class="">
         <picture>
           <img src="https://d3qc8znfr3ejm3.cloudfront.net/images/f2a48b32-3db9-456a-b03b-e142a0bc38ca.png" alt="" class="">
         </picture>
         <figcaption slot="image-caption">Панель для создания заголовков, списков и других блоков оформления</figcaption>
       </figure>
+      <aside class="aside aside-gray">
+        <p class="paragraph">Текстовый блок с рамочкой.</p>
+        <p class="paragraph">Чтобы выйти из него, можно в конце строки два раза нажать Enter.</p>
+      </aside>
 
-      <aside class="aside aside-gray"><p class="paragraph">Блок с рамочкой.</p></aside>
-      <p class="paragraph">Чтобы выйти из него, можно в конце строки два раза нажать Enter.</p>
-
-      <h4>Сложные текстовые блоки</h4>
-
+      <h3>Сложные текстовые блоки</h3>
       <blockquote class="quote-block">
         <div class="quote-block__line">
           <div class="quote-block__author-block">
@@ -84,29 +83,16 @@
           <div class="quote-block__image">
             <picture>
               <source media="(max-width: 600px)"
-            srcset="https://storage.yandexcloud.net/itsizo.app/87e7c025-d3bd-4f6e-9e84-595dc629affb_200_200.jpg 1x, https://storage.yandexcloud.net/itsizo.app/87e7c025-d3bd-4f6e-9e84-595dc629affb_400_400.jpg 2x"/>
-        <source media=""
-            srcset="https://storage.yandexcloud.net/itsizo.app/87e7c025-d3bd-4f6e-9e84-595dc629affb_100_100.jpg 1x, https://storage.yandexcloud.net/itsizo.app/87e7c025-d3bd-4f6e-9e84-595dc629affb_200_200.jpg 2x, https://storage.yandexcloud.net/itsizo.app/87e7c025-d3bd-4f6e-9e84-595dc629affb_400_400.jpg 4x"/>
+                srcset="https://storage.yandexcloud.net/itsizo.app/87e7c025-d3bd-4f6e-9e84-595dc629affb_200_200.jpg 1x, https://storage.yandexcloud.net/itsizo.app/87e7c025-d3bd-4f6e-9e84-595dc629affb_400_400.jpg 2x"/>
+              <source media=""
+                srcset="https://storage.yandexcloud.net/itsizo.app/87e7c025-d3bd-4f6e-9e84-595dc629affb_100_100.jpg 1x, https://storage.yandexcloud.net/itsizo.app/87e7c025-d3bd-4f6e-9e84-595dc629affb_200_200.jpg 2x, https://storage.yandexcloud.net/itsizo.app/87e7c025-d3bd-4f6e-9e84-595dc629affb_400_400.jpg 4x"/>
               <img src="https://storage.yandexcloud.net/itsizo.app/87e7c025-d3bd-4f6e-9e84-595dc629affb_200_200.jpg" alt="" class="quote-block__image">
             </picture>
           </div>
         </div>
         <quote slot="quote_body" class="quote-block__body">…вы можете превратить старика в молодого человека, если разрежете его и бросите в кипящий котёл.</quote>
       </blockquote>
-
       <p class="paragraph">Такие блоки настраиваются с помощью плагинов.</p>
-      <h4>Эмбеды</h4>
-      <div embed class="embed" type=instagram>
-        <blockquote
-          class="instagram-media"
-          data-instgrm-version="10"
-          data-instgrm-captioned
-          data-instgrm-permalink="https://www.instagram.com/p/CMxXv-pFi6y/?utm_source=ig_web_copy_link"
-          postid="CMxXv-pFi6y"
-          style='background:#FFF; border:0; border-radius:3px; box-shadow:0 0 1px 0 rgba(0,0,0,0.5),0 1px 10px 0 rgba(0,0,0,0.15); margin: 1px; max-width:540px; min-width:326px; padding:0; width:99.375%; width:-webkit-calc(100% - 2px); width:calc(100% - 2px);'
-          data-lang="ru">
-        </blockquote>
-      </div>
 
       <h4>Картинки</h4>
       <figure class="">
@@ -118,7 +104,8 @@
 
       <h4>Колонки</h4>
       <div class="arena-two-col">
-          <div class="arena-col"><p class="paragraph">Хоба!</p>
+          <div class="arena-col">
+            <p class="paragraph">Хоба!</p>
           </div>
           <div class="arena-col">
             <figure class="">
@@ -126,7 +113,6 @@
                 <img src="https://d3qc8znfr3ejm3.cloudfront.net/images/09c2b96f-961b-4797-8ed8-41e2166bc670.jpg" alt="" class="">
               </picture>
             </figure>
-
           </div>
       </div>
 

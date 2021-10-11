@@ -205,7 +205,7 @@ export default class TextNode
     return new TextNode(
       this.arena,
       this.id,
-      this.attributes,
+      { ...this.attributes },
       this.richTextManager.clone(),
     );
   }

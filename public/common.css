@@ -80,7 +80,7 @@ li {
 
 ul, ol {
   width: 100%;
-  margin: 1em 0 0;
+  margin: 1em 0 0 1em;
   line-height: inherit;
   list-style-position: inside;
   padding: 0;
@@ -97,7 +97,6 @@ li {
   min-height: 1em;
   margin-bottom: 0.5em;
   position: relative;
-  padding-left: 1em;
 }
 
 ul {
@@ -112,6 +111,7 @@ ul > li::before {
   height: 9px;
   background-color: currentColor;
   border-radius: 10em;
+  margin-left: -1em;
 }
 
 ol > li::marker {

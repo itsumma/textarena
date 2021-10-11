@@ -7,14 +7,21 @@ import { ArenaNodeText } from './ArenaNode';
 export interface ArenaRootInterface extends ArenaAncestorCore {
   readonly root: true;
   readonly hasParent: false;
+  readonly noPseudoCursor?: boolean;
 }
 
 export interface ArenaMediatorInterface extends ArenaAncestorCore {
   readonly root: boolean;
   readonly hasParent: boolean;
+  readonly defaultParentArena?: ArenaMediatorInterface | undefined;
+  readonly noPseudoCursor?: boolean;
 }
 
-export interface ArenaTextInterface extends ArenaCore {
+interface ParentbleArena {
+  readonly defaultParentArena: ArenaMediatorInterface | undefined;
+}
+
+export interface ArenaTextInterface extends ArenaCore, ParentbleArena {
   readonly hasParent: true;
   readonly hasChildren: false;
   readonly hasText: true;
@@ -27,7 +34,7 @@ export interface ArenaTextInterface extends ArenaCore {
   getPlain: (text: string, node: ArenaNodeText) => string;
 }
 
-export interface ArenaSingleInterface extends ArenaCore {
+export interface ArenaSingleInterface extends ArenaCore, ParentbleArena {
   readonly hasParent: true;
   readonly hasChildren: false;
   readonly hasText: false;
@@ -35,7 +42,7 @@ export interface ArenaSingleInterface extends ArenaCore {
   readonly single: true;
 }
 
-export interface ArenaInlineInterface extends ArenaCore {
+export interface ArenaInlineInterface extends ArenaCore, ParentbleArena {
   readonly hasParent: false;
   readonly hasChildren: false;
   readonly hasText: false;

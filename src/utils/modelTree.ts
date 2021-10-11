@@ -104,7 +104,7 @@ export function runThroughSelection(
   }
 
   const endNodes: [AnyArenaNode, number | undefined, number | undefined ][] = [];
-  if (endCursor.node !== commonAncestor) {
+  if (endCursor.node !== commonAncestor && endCursor.offset !== 0) {
     endNodes.push([endCursor.node, undefined, endCursor.offset]);
   }
   while (endCursor.node.hasParent) {
@@ -122,8 +122,7 @@ export function runThroughSelection(
     }
   }
 
-  // callback(startNode, startOffset);
-  startNodes.forEach((n) => callback(...n));
+  const middleNodes: AnyArenaNode[] = [];
   let i = commonStart + 1;
   if (startNode === commonAncestor) {
     i = commonStart;
@@ -132,12 +131,14 @@ export function runThroughSelection(
     for (i; i < commonEnd; i += 1) {
       const child = commonAncestor.getChild(i);
       if (child) {
-        callback(child);
+        middleNodes.push(child);
       }
     }
   }
+
+  startNodes.forEach((n) => callback(...n));
+  middleNodes.forEach((n) => callback(n));
   endNodes.reverse().forEach((n) => callback(...n));
-  // callback(endNode, undefined, endOffset);
   return commonAncestorCursor;
 }
 
@@ -150,4 +151,17 @@ export function runOfChildren(node: AnyArenaNode, callback: (n: AnyArenaNode) =>
   } else {
     callback(node);
   }
+}
+
+export function findNodeUp(
+  node: AnyArenaNode,
+  callback: (node: AnyArenaNode) => boolean,
+): AnyArenaNode | undefined {
+  if (callback(node)) {
+    return node;
+  }
+  if (node.hasParent) {
+    return findNodeUp(node.parent, callback);
+  }
+  return undefined;
 }

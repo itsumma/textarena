@@ -20,7 +20,7 @@ export default class MediatorNode
       this.arena,
       this.id,
       this.children.map((child) => child.clone()),
-      this.attributes,
+      { ...this.attributes },
     );
   }
 }
