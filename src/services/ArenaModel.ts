@@ -375,6 +375,14 @@ export default class ArenaModel {
       const newNode = this.createChildNode(arena, isNew);
       return parent.insertNode(newNode, offset);
     }
+    if (arena.defaultParentArena && parent.isAllowedNode(arena.defaultParentArena)) {
+      const newParentNode = this.createChildNode(arena.defaultParentArena, isNew);
+      if (newParentNode.hasChildren) {
+        parent.insertNode(newParentNode, offset);
+        const newNode = this.createChildNode(arena, isNew);
+        return newParentNode.insertNode(newNode, offset);
+      }
+    }
     if (parent.protected) {
       if (before) {
         for (let i = offset; i >= 0; i -= 1) {
@@ -413,7 +421,7 @@ export default class ArenaModel {
       }
     }
     if (!onlyChild && parent.hasParent) {
-      this.splitMediatorNode(parent, offset);
+      // this.splitMediatorNode(parent, offset);
       const secondParent = this.splitMediatorNode(parent, offset);
       let parentOffset = offset === 0 ? parent.getIndex() : parent.getIndex() + 1;
       if (secondParent) {
@@ -778,11 +786,29 @@ export default class ArenaModel {
     return newSelection;
   }
 
+  /**
+   * Breaks the text node into two. Returns the parent of both and the offset between them
+   * @param param0 ArenaCursorText
+   * @returns ArenaCursorAncestor
+   */
   public splitTextNode(
     { node, offset }: ArenaCursorText,
   ): ArenaCursorAncestor {
     const { parent, arena } = node;
     const before = offset <= 0;
+    if (before) {
+      return {
+        node: parent,
+        offset: node.getIndex(),
+      };
+    }
+    const after = offset >= node.getTextLength();
+    if (after) {
+      return {
+        node: parent,
+        offset: node.getIndex() + 1,
+      };
+    }
     const newOffset = node.getIndex() + (before ? 0 : 1);
     const nextArena = before ? arena : arena.nextArena || arena;
     const newNode = this.createAndInsertNode(
@@ -1064,7 +1090,7 @@ export default class ArenaModel {
   }
 
   /**  */
-  protected getOutFromMediator(
+  public getOutFromMediator(
     node: ArenaNodeText,
     onlyGroup = false,
   ): ArenaNodeText | undefined {
@@ -1249,178 +1275,117 @@ export default class ArenaModel {
     selection: ArenaSelection,
     arena: ArenaMediatorInterface,
   ): ArenaSelection {
-    const {
-      startNode, startOffset, endNode, endOffset,
-    } = selection;
     const newSelection = selection.clone();
-    const toWrap: AnyArenaNode[] = [];
-    const toUnwrap: AnyArenaNode[] = [];
-    utils.modelTree.runThroughSelection(
+    const toWrap: ChildArenaNode[] = [];
+    const toUnwrap: ArenaNodeMediator[] = [];
+    const commonAncestorCursor = utils.modelTree.runThroughSelection(
       selection,
       (node: AnyArenaNode) => {
-        if (node.hasText) {
-          if (node.parent.isAllowedNode(arena)) {
-            toWrap.push(node);
-          } else if (node.parent.group && node.parent.hasParent) {
-            if (node.parent.arena === arena) {
-              toUnwrap.push(node.parent);
-            } else if (node.parent.parent.isAllowedNode(arena)) {
-              toWrap.push(node.parent);
+        if (node.hasParent
+          && node.parent.isAllowedNode(arena)
+          && arena.allowedArenas.includes(node.arena)
+        ) {
+          toWrap.push(node);
+        } else if (node.hasParent
+          && node.arena === arena
+          && node.hasChildren
+        ) {
+          toUnwrap.push(node);
+        } else if (node.hasParent
+          && node.parent.arena === arena
+          && node.parent.hasParent) {
+          toUnwrap.push(node.parent);
+        } else if (node.hasChildren && node.isAllowedNode(arena)) {
+          node.children.forEach((n) => {
+            if (n.arena === arena
+              && n.hasChildren
+            ) {
+              toUnwrap.push(n);
+            } else if (arena.allowedArenas.includes(n.arena)) {
+              toWrap.push(n);
             }
-          }
-        } else if (node.hasChildren) {
-          if (node.group) {
-            if (node.arena === arena) {
-              toUnwrap.push(node);
-            } else {
-              toWrap.push(node);
-            }
-          }
+          });
         }
       },
     );
-    if (toWrap.length > 0) {
-      toWrap.forEach((node) => {
-        if (node.hasText) {
-          if (node.parent.isAllowedNode(arena)) {
-            const newNode = this.createAndInsertNode(
-              arena,
-              node.parent,
-              node.getIndex(),
-            ) as ArenaNodeMediator;
-            const cursor = this.getOrCreateNodeForText(newNode);
-            if (cursor) {
-              cursor.node.insertText(node.getText(), cursor.offset);
-              if (node === startNode) {
-                newSelection.setStartNode(cursor.node, startOffset);
-              }
-              if (node === endNode) {
-                newSelection.setEndNode(cursor.node, endOffset);
-              }
-              node.remove();
-            }
-          } else if (node.parent.group && node.parent.hasParent) {
-            if (node.parent.arena !== arena
-              && node.parent.parent.isAllowedNode(arena)) {
-              const newNode = this.createAndInsertNode(
-                arena,
-                node.parent.parent,
-                node.parent.getIndex(),
-              ) as ArenaNodeMediator;
-              if (newNode) {
-                newNode.insertChildren(node.parent.cutChildren(0));
-                node.parent.remove();
-                // node.parent.parent.mergeChildren();
-              }
-            }
-          }
-        } else if (node.hasChildren) {
-          if (node.group && node.hasParent) {
-            if (node.arena !== arena) {
-              const newNode = this.createAndInsertNode(
-                arena,
-                node.parent,
-                node.getIndex(),
-              ) as ArenaNodeMediator;
-              if (newNode) {
-                newNode.insertChildren(node.cutChildren(0));
-                node.remove();
-                // node.parent.mergeChildren();
-              }
-            }
+    if (commonAncestorCursor) {
+      const [commonAncestor] = commonAncestorCursor;
+      const parentToUnwrap = utils.modelTree.findNodeUp(
+        commonAncestor,
+        (node) => node.arena === arena,
+      );
+      if (parentToUnwrap && parentToUnwrap.hasParent && parentToUnwrap.hasChildren) {
+        const { parent } = parentToUnwrap;
+        for (let i = 0; i < parentToUnwrap.children.length; i += 1) {
+          if (!parentToUnwrap.parent.isAllowedNode(parentToUnwrap.children[i].arena)) {
+            return newSelection;
           }
         }
+        parent.insertChildren(parentToUnwrap.children, parentToUnwrap.getIndex());
+        parent.mergeChildren(0);
+        parentToUnwrap.remove();
+        return newSelection;
+      }
+      if (toWrap.length === 0 && toUnwrap.length === 0) {
+        const nodeToWrap = utils.modelTree.findNodeUp(
+          commonAncestor,
+          (node) => node.hasParent && node.parent.isAllowedNode(arena),
+        );
+        if (nodeToWrap
+          && nodeToWrap.hasParent
+          && arena.allowedArenas.includes(nodeToWrap.arena)
+        ) {
+          toWrap.push(nodeToWrap);
+        }
+      }
+    }
+    if (toWrap.length > 0) {
+      toWrap.forEach((node) => {
+        const { parent } = node;
+        const newParent = this.createChildNode(arena) as ArenaNodeMediator;
+        parent.insertNode(newParent, node.getIndex());
+        const children = parent.cutChildren(node.getIndex(), 1);
+        newParent.insertChildren(children);
+        parent.mergeChildren(0);
       });
     } else if (toUnwrap.length > 0) {
       toUnwrap.forEach((node) => {
-        if (node.hasText) {
-          if (node.parent.group && node.parent.hasParent) {
-            if (node.parent.arena === arena) {
-              const { parent } = node;
-              const grandpa = parent;
-              let offset = parent.getIndex();
-              const children = parent.cutChildren(0);
-              children.forEach((child) => {
-                if (grandpa.isAllowedNode(child.arena)) {
-                  grandpa.insertChildren([child], offset);
-                  offset += 1;
-                } else if (child.hasText) {
-                  const newNode = this.createAndInsertNode(
-                    grandpa.arena.arenaForText,
-                    grandpa,
-                    offset,
-                  );
-                  if (newNode) {
-                    offset += 1;
-                    const cursor = this.getOrCreateNodeForText(newNode);
-                    if (cursor) {
-                      cursor.node.insertText(child.getText(), cursor.offset);
-                      if (child === startNode) {
-                        newSelection.setStartNode(cursor.node, startOffset);
-                      }
-                      if (child === endNode) {
-                        newSelection.setEndNode(cursor.node, endOffset);
-                      }
-                    }
-                  }
-                }
-              });
-              parent.remove();
-              // parent.mergeChildren();
-            }
+        const { parent } = node;
+        const offset = node.getIndex();
+        for (let i = 0; i < node.children.length; i += 1) {
+          if (!node.parent.isAllowedNode(node.children[i].arena)) {
+            return;
           }
-        } else if (node.hasChildren) {
-          if (node.group && node.hasParent) {
-            if (node.arena === arena) {
-              const { parent } = node;
-              let offset = node.getIndex();
-              const children = node.cutChildren(0);
-              children.forEach((child) => {
-                if (parent.isAllowedNode(child.arena)) {
-                  parent.insertChildren([child], offset);
-                  offset += 1;
-                } else if (child.hasText) {
-                  const newNode = this.createAndInsertNode(
-                    parent.arena.arenaForText,
-                    node.parent,
-                    offset,
-                  );
-                  if (newNode) {
-                    offset += 1;
-                    const cursor = this.getOrCreateNodeForText(newNode);
-                    if (cursor) {
-                      cursor.node.insertText(child.getText(), cursor.offset);
-                      if (child === startNode) {
-                        newSelection.setStartNode(cursor.node, startOffset);
-                      }
-                      if (child === endNode) {
-                        newSelection.setEndNode(cursor.node, endOffset);
-                      }
-                    }
-                  }
-                }
-              });
-              node.remove();
-              // node.mergeChildren();
-            }
-          }
+        }
+        const children = node.cutChildren(0);
+        parent.insertChildren(children, node.getIndex());
+        if (selection.startNode === parent
+          && selection.startOffset === offset
+        ) {
+          //
+        }
+        const { offset: newOffset } = node.remove();
+        if (selection.endNode === parent
+          && selection.endOffset === offset
+        ) {
+          newSelection.setEndNode(parent, newOffset);
         }
       });
     } else if (selection.isCollapsed()) {
-      const { node, offset } = selection.getCursor();
-      if (node.hasChildren && node.isAllowedNode(arena)) {
-        const newNode = this.createAndInsertNode(
-          arena,
-          node,
-          offset,
-        ) as ArenaNodeMediator;
-        if (newNode) {
-          const cursor2 = this.getTextCursor(newNode, 0);
-          if (cursor2) {
-            newSelection.setCursor(cursor2);
-          }
-        }
-      }
+      // const { node, offset } = selection.getCursor();
+      // if (node.hasChildren && node.isAllowedNode(arena)) {
+      //   const newNode = this.createAndInsertNode(
+      //     arena,
+      //     node,
+      //     offset,
+      //   ) as ArenaNodeMediator;
+      //   if (newNode) {
+      //     const cursor2 = this.getTextCursor(newNode, 0);
+      //     if (cursor2) {
+      //       newSelection.setCursor(cursor2);
+      //     }
+      //   }
+      // }
     }
     return newSelection;
   }

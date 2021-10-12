@@ -37,6 +37,7 @@ import paragraphPlugin from './plugins/paragraphPlugin';
 
 import ArenaCommandManager from './services/ArenaCommandManager';
 import ArenaServiceManager from './services/ArenaServiceManager';
+import ArenaModel from './services/ArenaModel';
 import { ArenaHandler } from './services/EventManager';
 import asidePlugin from './plugins/asidePlugin';
 import quotePlugin from './plugins/quoteBlock/quoteBlockPlugin';
@@ -88,19 +89,19 @@ export const defaultOptions: TextarenaOptions = {
   },
   plugins: [
     commonPlugin(),
-    paragraphPlugin(),
     formatingsPlugin(),
+    typoSugarPlugin(),
+    paragraphPlugin(),
+    linkPlugin(),
     headersPlugin(),
-    hrPlugin(),
     listsPlugin(),
+    hrPlugin(),
     blockquotePlugin(),
+    asidePlugin(),
+    codePlugin(),
     imagePlugin(),
     figurePlugin(),
     embedPlugin(),
-    linkPlugin(),
-    asidePlugin(),
-    codePlugin(),
-    typoSugarPlugin(),
   ],
 };
 
@@ -421,6 +422,10 @@ class Textarena {
 
   public getCurrentSelection(): ArenaSelection | undefined {
     return this.asm.view.getCurrentSelection();
+  }
+
+  public getModel(): ArenaModel {
+    return this.asm.model;
   }
 
   protected debug = false;

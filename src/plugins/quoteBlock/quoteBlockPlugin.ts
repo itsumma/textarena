@@ -26,6 +26,10 @@ const defaultOptions: DefaulPluginOptions = {
       tag: 'ARENA-QUOTE',
       attributes: [],
     },
+    {
+      tag: 'BLOCKQUOTE',
+      attributes: ['class="quote-block"'],
+    },
   ],
   output: outputQuoteBlock,
 };

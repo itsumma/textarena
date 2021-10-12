@@ -80,7 +80,7 @@ li {
 
 ul, ol {
   width: 100%;
-  margin: 1em 0 0;
+  margin: 1em 0 0 1em;
   line-height: inherit;
   list-style-position: inside;
   padding: 0;
@@ -95,17 +95,14 @@ li {
   width: 100%;
   line-height: inherit;
   min-height: 1em;
-  margin-bottom: 15px;
+  margin-bottom: 0.5em;
+  position: relative;
 }
 
 ul {
   list-style: none;
 }
-ul li {
-  position: relative;
-  padding-left: 20px;
-}
-ul li::before {
+ul > li::before {
   content: '';
   position: absolute;
   top: calc(0.5em + 1px);
@@ -114,33 +111,11 @@ ul li::before {
   height: 9px;
   background-color: currentColor;
   border-radius: 10em;
+  margin-left: -1em;
 }
 
-ol {
-  counter-reset: numberList;
-  list-style: none;
-  margin-left: -0.2em;
-}
-ol li {
-  position: relative;
-  padding-left: 40px;
-  counter-increment: numberList;
-}
-ol li::before {
-  content: counter(numberList);
-  position: absolute;
-  top: 0;
-  left: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 30px;
-  height: 30px;
-  font-size: 15px;
-  font-weight: 700;
-  border-radius: 10em;
-  background-color: #ECECEC;
-  opacity: 0.4;
+ol > li::marker {
+  margin-left: -1em;
 }
 
 hr {
@@ -273,9 +248,10 @@ picture {
 }
 img {
   border-radius: 0.2em;
-  background-color: #b688e4;
   max-width: 100%;
   display: block;
+  border: 1px solid #ccc;
+  border-radius: 1rem;
 }
 
 .place-center picture {
@@ -339,7 +315,8 @@ arena-image {
   display: contents;
   width: 100%;
   border-radius: 0.2em;
-  background-color: #b688e4;
+  border: 1px solid #ccc;
+  border-radius: 1rem;
 }
 .place-wide arena-image {
   width: auto;
@@ -373,11 +350,10 @@ figcaption {
 }
 
 mark {
-  display: inline-flex;
-  border-radius: 4px;
-  padding: 4px 8px;
-  background-color: #efefef;
-  line-height: 1;
+  border-radius: 0.2em;
+  padding: 0;
+  background-color: #efff93;
+  line-height: inherit;
 }
 
 pre {
@@ -527,4 +503,11 @@ roadmap p.paragraph::after {
     top: 50%;
     left: 0;
     transform: translate(-0.6em, -0.6em);
+}
+
+code {
+  background: #f4dbeb;
+  border-radius: 0.2em;
+  padding: 0.1em;
+  font-family: monospace;
 }

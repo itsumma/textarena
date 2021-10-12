@@ -60,7 +60,7 @@ export default class SingleNode
     return new SingleNode(
       this.arena,
       this.id,
-      this.attributes,
+      { ...this.attributes },
     );
   }
 }

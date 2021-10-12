@@ -22,6 +22,10 @@ const defaultOptions: DefaulPluginOptions = {
       tag: 'ARENA-TWO-COLUMNS',
       attributes: [],
     },
+    {
+      tag: 'DIV',
+      attributes: ['class="arena-two-col"'],
+    },
   ],
   output: twoColumnsOutput,
 };
@@ -54,7 +58,11 @@ const twoColumnsPlugin = (opts?: Partial<DefaulPluginOptions>): ArenaPlugin => (
       [
         {
           tag: `${tag}-COL`,
-          attributes: [],
+          attributes: ['class="arena-col"'],
+        },
+        {
+          tag: 'DIV',
+          attributes: ['class="arena-col"'],
         },
       ],
       [],

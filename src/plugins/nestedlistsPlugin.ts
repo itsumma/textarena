@@ -202,7 +202,7 @@ const defaultOptions: ListsOptions = {
   ],
 };
 
-const listsPlugin = (opts?: ListsOptions): ArenaPlugin => ({
+const nestedlistsPlugin = (opts?: ListsOptions): ArenaPlugin => ({
   register(textarena: Textarena): void {
     const paragraph = textarena.getDefaultTextArena();
     if (!paragraph) {
@@ -233,6 +233,24 @@ const listsPlugin = (opts?: ListsOptions): ArenaPlugin => ({
         },
       ],
     ) as ArenaTextInterface;
+
+    // const li = textarena.registerArena(
+    //   {
+    //     ...item,
+    //     allowedArenas: [paragraph],
+    //     arenaForText: paragraph,
+    //     automerge: true,
+    //     group: true,
+    //     noPseudoCursor: true,
+    //   },
+    //   [
+    //     {
+    //       tag: item.tag,
+    //       attributes: [],
+    //     },
+    //   ],
+    // ) as ArenaMediatorInterface;
+    const listsNames: string[] = [];
     const listsArenas: ArenaMediatorInterface[] = [];
     lists.forEach(({
       prefix,
@@ -255,15 +273,25 @@ const listsPlugin = (opts?: ListsOptions): ArenaPlugin => ({
           tag,
           attributes,
           allowedAttributes,
-          allowedArenas: [li],
+          allowedArenas: [
+            li,
+            ...listsArenas,
+          ],
           arenaForText: li,
           automerge: true,
           group: true,
           noPseudoCursor: true,
+          // defaultParentArena: li,
         },
         marks,
-        [textarena.getRootArenaName()],
+        [
+          textarena.getRootArenaName(),
+          // li.name,
+          name,
+          ...listsNames,
+        ],
       ) as ArenaMediatorInterface;
+      listsNames.push(listArena.name);
       listsArenas.push(listArena);
       if (command) {
         textarena.registerCommand(
@@ -323,7 +351,65 @@ const listsPlugin = (opts?: ListsOptions): ArenaPlugin => ({
       }
       textarena.addSimpleArenas(listArena);
     });
+
+    textarena.registerCommand(
+      'tabsList',
+      (ta: Textarena, selection: ArenaSelection) => {
+        const model = ta.getModel();
+        utils.modelTree.runThroughSelection(
+          selection,
+          (node: AnyArenaNode) => {
+            if (node.hasParent
+              && node.arena.name === 'li'
+              && node.parent.isAllowedNode(node.parent.arena)
+            ) {
+              const { parent } = node;
+              const newParent = model.createChildNode(parent.arena) as ArenaNodeMediator;
+              parent.insertNode(newParent, node.getIndex());
+              const children = parent.cutChildren(node.getIndex(), 1);
+              newParent.insertChildren(children);
+              parent.mergeChildren(0);
+            }
+          },
+        );
+        return selection;
+      },
+    );
+    textarena.registerShortcut(
+      'Tab',
+      'tabsList',
+    );
+    textarena.registerCommand(
+      'untabsList',
+      (ta: Textarena, selection: ArenaSelection) => {
+        const model = ta.getModel();
+        utils.modelTree.runThroughSelection(
+          selection,
+          (node: AnyArenaNode) => {
+            if (node.hasParent
+              && node.arena.name === 'li'
+              && node.parent.isAllowedNode(node.parent.arena)
+            ) {
+              const newNode = model.getOutFromMediator(node as ArenaNodeText, true);
+              if (newNode) {
+                if (selection.startNode === node) {
+                  selection.setStartNode(newNode as ArenaNodeText, selection.startOffset);
+                }
+                if (selection.endNode === node) {
+                  selection.setEndNode(newNode as ArenaNodeText, selection.endOffset);
+                }
+              }
+            }
+          },
+        );
+        return selection;
+      },
+    );
+    textarena.registerShortcut(
+      'Shift + Tab',
+      'untabsList',
+    );
   },
 });
 
-export default listsPlugin;
+export default nestedlistsPlugin;

@@ -129,6 +129,12 @@ export default class ArenaBrowser {
 
   protected beforeinputListenerInstance: ((e: InputEvent) => void);
 
+  protected compositionstartListenerInstance: ((e: CompositionEvent) => void);
+
+  protected compositionupdateListenerInstance: ((e: CompositionEvent) => void);
+
+  protected compositionendListenerInstance: ((e: CompositionEvent) => void);
+
   protected mouseUpListenerInstance: ((e: MouseEvent) => void);
 
   protected keyUpListenerInstance: ((e: KeyboardEvent) => void);
@@ -161,6 +167,9 @@ export default class ArenaBrowser {
     this.editor = this.asm.textarena.getEditorElement();
     this.inputListenerInstance = this.inputListener.bind(this);
     this.beforeinputListenerInstance = this.beforeinputListener.bind(this);
+    this.compositionstartListenerInstance = this.compositionstartListener.bind(this);
+    this.compositionupdateListenerInstance = this.compositionupdateListener.bind(this);
+    this.compositionendListenerInstance = this.compositionendListener.bind(this);
     this.mouseUpListenerInstance = this.mouseUpListener.bind(this);
     this.keyUpListenerInstance = this.keyUpListener.bind(this);
     this.keyPressListenerInstance = this.keyPressListener.bind(this);
@@ -174,6 +183,9 @@ export default class ArenaBrowser {
     this.asm.eventManager.subscribe('turnOn', () => {
       this.editor.addEventListener('input', this.inputListenerInstance, false);
       this.editor.addEventListener('beforeinput', this.beforeinputListenerInstance, false);
+      this.editor.addEventListener('compositionstart', this.compositionstartListenerInstance, false);
+      this.editor.addEventListener('compositionupdate', this.compositionupdateListenerInstance, false);
+      this.editor.addEventListener('compositionend', this.compositionendListenerInstance, false);
       this.editor.addEventListener('mouseup', this.mouseUpListenerInstance, false);
       this.editor.addEventListener('keyup', this.keyUpListenerInstance, false);
       this.editor.addEventListener('keypress', this.keyPressListenerInstance, false);
@@ -195,6 +207,10 @@ export default class ArenaBrowser {
     });
     this.asm.eventManager.subscribe('turnOff', () => {
       this.editor.removeEventListener('input', this.inputListenerInstance);
+      this.editor.removeEventListener('beforeinput', this.beforeinputListenerInstance);
+      this.editor.removeEventListener('compositionstart', this.compositionstartListenerInstance);
+      this.editor.removeEventListener('compositionupdate', this.compositionupdateListenerInstance);
+      this.editor.removeEventListener('compositionend', this.compositionendListenerInstance);
       this.editor.removeEventListener('mouseup', this.mouseUpListenerInstance);
       this.editor.removeEventListener('keyup', this.keyUpListenerInstance);
       this.editor.removeEventListener('keypress', this.keyPressListenerInstance);
@@ -304,9 +320,9 @@ export default class ArenaBrowser {
     // if (code === 'KeyS' && modifiersSum === Modifiers.Ctrl) {
     //   return new BrowserCommandEvent(e);
     // }
-    if (code === 'KeyE' && modifiersSum === Modifiers.Ctrl) {
-      return new BrowserCommandEvent(e);
-    }
+    // if (code === 'KeyE' && modifiersSum === Modifiers.Ctrl) {
+    //   return new BrowserCommandEvent(e);
+    // }
     // if (code === 'KeyK' && modifiersSum === Modifiers.Ctrl) {
     //   return new BrowserCommandEvent(e);
     // }
@@ -392,6 +408,35 @@ export default class ArenaBrowser {
 
   protected inputListener(e: Event): void {
     this.asm.logger.log('Input event', e);
+  }
+
+  protected compositionstartListener(e: CompositionEvent): void {
+    this.asm.logger.log('Composition Start event', e);
+  }
+
+  protected compositionupdateListener(e: CompositionEvent): void {
+    this.asm.logger.log('Composition Update event', e);
+  }
+
+  protected compositionendListener(e: CompositionEvent): void {
+    this.asm.logger.log('Composition End event', e);
+    e.preventDefault();
+    const { data } = e;
+    if (data) {
+      const selection = this.asm.view.getCurrentSelection();
+      if (selection) {
+        const newSelection = this.asm.model.insertTextToModel(selection, data, true);
+        this.asm.history.save(newSelection, false);
+        const [result, newSel] = this.asm.model.applyMiddlewares(
+          newSelection,
+          data,
+        );
+        if (result) {
+          this.asm.history.save(newSel);
+        }
+        this.asm.eventManager.fire('modelChanged', { selection: newSel });
+      }
+    }
   }
 
   protected mouseUpListener(e: MouseEvent): void {

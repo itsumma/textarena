@@ -16,6 +16,8 @@ export default interface ArenaNodeScionPart {
 
   getParent(): ArenaCursorAncestor;
 
+  containsParent(parent: ParentArenaNode): boolean;
+
   setParent(parent: ParentArenaNode): void;
 
   getUnprotectedParent(): ArenaCursorAncestor | undefined;

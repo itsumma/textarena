@@ -261,6 +261,24 @@ const defaultOptions: FormatingsOptions = {
         icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 14.6 13" fill="currentColor"><path d="M6,5 L2,9 L3,10 L0,13 L4,13 L5,12 L5,12 L6,13 L10,9 L6,5 L6,5 Z M10.2937851,0.706214905 C10.6838168,0.316183183 11.3138733,0.313873291 11.7059121,0.705912054 L14.2940879,3.29408795 C14.6839524,3.68395241 14.6796852,4.32031476 14.2937851,4.7062149 L11,8 L7,4 L10.2937851,0.706214905 Z"/></svg>',
       },
     },
+    {
+      name: 'inline-code',
+      tag: 'CODE',
+      attributes: [],
+      command: 'format-inline-code',
+      shortcut: 'Ctrl + KeyE',
+      hint: 'e',
+      marks: [
+        {
+          tag: 'CODE',
+          attributes: [],
+        },
+      ],
+      tool: {
+        title: 'Inline Code',
+        icon: '〈&nbsp;〉',
+      },
+    },
   ],
 };
 

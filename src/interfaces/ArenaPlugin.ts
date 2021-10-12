@@ -2,6 +2,7 @@ import Textarena from '../Textarena';
 import ArenaAttributes from './ArenaAttributes';
 import { TagAndAttributes } from './ArenaFormating';
 import { OutputProcessor } from './ArenaOptions';
+import { ArenaMediatorInterface } from './Arena';
 
 export default interface ArenaPlugin {
   register: (textarena: Textarena) => void;
@@ -22,4 +23,5 @@ export type DefaulPluginOptions = {
   componentConstructor?: CustomElementConstructor,
   marks: TagAndAttributes[],
   output?: OutputProcessor
+  defaultParentArena?: ArenaMediatorInterface;
 };
