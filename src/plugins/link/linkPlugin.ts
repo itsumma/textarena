@@ -7,6 +7,7 @@ import linkManage from './linkManage';
 import { LinkPluginOptions } from './types';
 import linkCommand from './linkCommand';
 import ArenaSelection from '../../helpers/ArenaSelection';
+import LinkModal from './LinkModal';
 
 const urlPattern = /^https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&/=;]*)$/;
 const htmlUrlPattern = /^<a[ _-a-zA-Z0-9="\\]* href="(https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_+.~#?&/=;]*))"(?: [ _-a-zA-Z0-9="\\]*)?>.*< ?\/a>$/;
@@ -64,14 +65,20 @@ const linkPlugin = (opts?: Partial<LinkPluginOptions>): ArenaPlugin => ({
       },
       marks,
     ) as ArenaInlineInterface;
+    let linkModal: ElementHelper | undefined;
     if (component && componentConstructor) {
       if (!customElements.get(component)) {
         customElements.define(component, componentConstructor);
+        customElements.define('arena-link-modal', LinkModal);
       }
       const linkbar = new ElementHelper(component);
+      linkModal = new ElementHelper('arena-link-modal');
       linkbar.setProperty('textarena', textarena);
+      linkbar.setProperty('linkModal', linkModal);
+      linkModal.setProperty('textarena', textarena);
       const container = textarena.getContainerElement();
       container.appendChild(linkbar);
+      container.appendChild(linkModal);
       textarena.subscribe('moveCursor', () => {
         moveCursorHandler(textarena, arena, linkbar);
       });
@@ -79,7 +86,7 @@ const linkPlugin = (opts?: Partial<LinkPluginOptions>): ArenaPlugin => ({
     if (command) {
       textarena.registerCommand(
         command,
-        commandFunction(arena),
+        commandFunction(arena, linkModal),
       );
       if (shortcut) {
         textarena.registerShortcut(

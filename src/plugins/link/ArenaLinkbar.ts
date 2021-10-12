@@ -3,6 +3,8 @@ import {
 } from 'lit-element';
 import { ArenaNodeInline, ArenaNodeText } from '../../interfaces/ArenaNode';
 import Textarena from '../../Textarena';
+import { requestLink } from './linkCommand';
+import ElementHelper from '../../helpers/ElementHelper';
 
 export default class ArenaLinkbar extends LitElement {
   static styles = css`
@@ -84,6 +86,9 @@ export default class ArenaLinkbar extends LitElement {
 
   @property({ type: Object })
   textarena: Textarena | undefined;
+
+  @property({ type: Object })
+  linkModal: ElementHelper | undefined;
 
   observer: MutationObserver;
 
@@ -169,12 +174,16 @@ export default class ArenaLinkbar extends LitElement {
   }
 
   handleEdit(): void {
-    if (this.node) {
-      const href = this.node.getAttribute('href');
-      const prevHref = typeof href === 'string' ? href : '';
-      // eslint-disable-next-line no-alert
-      const newHref = prompt('Укажите ссылку', prevHref);
-      if (newHref === null) {
+    if (!this.node) return;
+    const href = this.node.getAttribute('href');
+    const prevHref = typeof href === 'string' ? href : '';
+    this.linkModal?.setProperty('url', prevHref);
+    if (this.parent?.hasText) {
+      this.linkModal?.setProperty('text', this.parent.getRawText());
+    }
+    this.linkModal?.setProperty('show', true);
+    this.linkModal?.setProperty('saveCB', (newHref: string, _text: string) => {
+      if (!this.node) {
         return;
       }
       if (newHref) {
@@ -187,7 +196,7 @@ export default class ArenaLinkbar extends LitElement {
       }
       (this.textarena as Textarena).fire('modelChanged');
       this.requestUpdate();
-    }
+    });
   }
 
   handleRemove(): void {
