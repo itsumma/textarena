@@ -48,10 +48,10 @@
     // transition: 0.3s;
     user-select: none;
     background-color: rgb(231, 231, 231);
-
     padding: 0.2em;
+
     @supports ((-webkit-backdrop-filter: none) or (backdrop-filter: none)) {
-      background-color: #dadada45;
+      background-color: #dadada8f;
       backdrop-filter: blur(20px);
     }
   }
@@ -84,6 +84,7 @@
       color: #fff !important;
       box-shadow: none;
       background: #00000082;
+
       &:hover {
         background: #00000062;
         color: #fff !important;

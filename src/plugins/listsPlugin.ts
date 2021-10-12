@@ -37,7 +37,7 @@ const toggleListForSelection = (
   const toWrap: ChildArenaNode[] = [];
   const toUnwrap: ChildArenaNode[] = [];
   const toChange: ArenaNodeMediator[] = [];
-  const commonAncestorCursor = utils.modelTree.runThroughSelection(
+  utils.modelTree.runThroughSelection(
     selection,
     (node: AnyArenaNode) => {
       if (node.arena === arena && node.hasParent) {

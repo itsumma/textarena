@@ -179,7 +179,7 @@ export default class ArenaParser {
         }
         if (newArenaNode.hasChildren) {
           const [cursorNode, cursorOffset] = this.insertChildren(elementNode, newArenaNode, 0);
-          const [commonAncestor, ofset1, offset2] = utils.modelTree.getCommonAncestor(
+          const [commonAncestor, , offset2] = utils.modelTree.getCommonAncestor(
             { node: cursorNode, offset: cursorOffset },
             newArenaNode.getParent(),
           );

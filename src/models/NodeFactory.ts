@@ -39,7 +39,7 @@ export default class NodeFactory {
           node.setAttributes(attributes);
           return node;
         });
-      } else if (isNew && content && arena.arenaForText) {
+      } else if (isNew && arena.arenaForText) {
         const node = this.createChildNode(arena.arenaForText, registry, isNew, content);
         children.push(node);
       }
