@@ -20,7 +20,7 @@ export default class ArenaLinkbar extends LitElement {
       padding: 0.2em 0.5em;
       flex-wrap: wrap;
       color: #ccc;
-      box-shadow: 0 8px 23px -6px rgb(21 40 54 / 31%), 22px -14px 34px -18px rgb(33 48 73 / 26%);
+      box-shadow: #1528364f 0px 8px 23px -6px, #21304942 22px -14px 34px -18px;
       border-radius: 0.1em;
       background-color: #333;
       pointer-events: all;
