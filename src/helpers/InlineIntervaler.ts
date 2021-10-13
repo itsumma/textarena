@@ -178,17 +178,22 @@ export default class InlineIntervaler {
     this.intervals = newIntervals;
   }
 
-  public getNode(start: number, end: number): ArenaNodeInline | undefined {
+  public getInterval(start: number, end: number): Interval | undefined {
     for (let i = 0; i < this.intervals.length; i += 1) {
       const interval = this.intervals[i];
       if (interval.end >= start && interval.start <= end) {
-        return interval.node;
+        return interval;
       }
       if (interval.start > start) {
         return undefined;
       }
     }
     return undefined;
+  }
+
+  public getNode(start: number, end: number): ArenaNodeInline | undefined {
+    const interval = this.getInterval(start, end);
+    return interval?.node;
   }
 
   public removeNode(node: ArenaNodeInline): void {

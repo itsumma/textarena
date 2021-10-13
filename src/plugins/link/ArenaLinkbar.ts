@@ -3,7 +3,6 @@ import {
 } from 'lit-element';
 import { ArenaNodeInline, ArenaNodeText } from '../../interfaces/ArenaNode';
 import Textarena from '../../Textarena';
-import { requestLink } from './linkCommand';
 import ElementHelper from '../../helpers/ElementHelper';
 
 export default class ArenaLinkbar extends LitElement {
@@ -178,8 +177,14 @@ export default class ArenaLinkbar extends LitElement {
     const href = this.node.getAttribute('href');
     const prevHref = typeof href === 'string' ? href : '';
     this.linkModal?.setProperty('url', prevHref);
-    if (this.parent?.hasText) {
-      this.linkModal?.setProperty('text', this.parent.getRawText());
+    const selection = this.textarena?.getCurrentSelection();
+    const text = this.parent?.getText();
+    if (text && selection) {
+      const interval = text.getInlineInterval(selection.startOffset, selection.endOffset);
+      if (interval) {
+        const { start, end } = interval;
+        this.linkModal?.setProperty('text', text.getText().slice(start, end));
+      }
     }
     this.linkModal?.setProperty('show', true);
     this.linkModal?.setProperty('saveCB', (newHref: string, _text: string) => {

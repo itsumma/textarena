@@ -523,6 +523,7 @@ declare global {
         process: () => void,
       },
     };
+    debugSymbol: any;
   }
 }
 

@@ -4,6 +4,7 @@ import CommandAction from '../../interfaces/CommandAction';
 import Textarena from '../../Textarena';
 import ElementHelper from '../../helpers/ElementHelper';
 import { ArenaNodeInline } from '../../interfaces/ArenaNode';
+import TextNode from '../../models/TextNode';
 
 export default function linkCommand(
   arena: ArenaInlineInterface, linkModal: ElementHelper | undefined,
@@ -20,8 +21,9 @@ export default function linkCommand(
     if (link) {
       linkModal?.setProperty('url', link);
     }
-    if (selection.startNode.hasText) {
-      linkModal?.setProperty('text', selection.startNode.getRawText());
+    const { startNode, startOffset, endOffset } = selection;
+    if (startNode instanceof TextNode) {
+      linkModal?.setProperty('text', startNode.getRawText().slice(startOffset, endOffset));
     }
     linkModal?.setProperty('show', true);
     linkModal?.setProperty('saveCB', (newHref: string, _text: string) => {
