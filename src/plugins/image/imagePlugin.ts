@@ -16,7 +16,9 @@ export const prepareImageSrc = (src: string, width?: number, height?: number): s
   if (arr.length < 2) {
     return src;
   }
-  arr[arr.length - 2] += `_${width}_${height}`;
+  const arr2 = arr[arr.length - 2].split('_');
+  const [name] = arr2;
+  arr[arr.length - 2] = `${name}_${width}_${height}`;
   return arr.join('.');
 };
 

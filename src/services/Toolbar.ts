@@ -124,7 +124,7 @@ export default class Toolbar {
   }
 
   private keyListener(event: ArenaEvent): void {
-    if (!this.enabled) {
+    if (!this.enabled || !this.showed) {
       return;
     }
     if (typeof event === 'object' && typeof event.detail === 'number') {

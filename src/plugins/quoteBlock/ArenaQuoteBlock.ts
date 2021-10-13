@@ -20,10 +20,9 @@ export default class ArenaQuoteBlock extends LitElement {
       flex: 1;
       margin-right: 1em;
     }
-    /* .quote-block__image {
-      width: 2.6em;
-      height: 2.6em;
-    } */
+    .quote-block__image {
+      position: relative;
+    }
   `;
 
   // Render element DOM by returning a `lit-html` template.

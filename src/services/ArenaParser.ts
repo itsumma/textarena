@@ -151,7 +151,8 @@ export default class ArenaParser {
           && !arenaNode.arena.allowedArenas.includes(arena)
         ) {
           // dont insert not allowed nodes in the protected node
-          return [arenaNode, offset, false];
+          // return [arenaNode, offset, false];
+          return [...this.insertChildren(elementNode, arenaNode, offset), true];
         }
         const newArenaNode = this.asm.model.createAndInsertNode(arena, arenaNode, offset);
         if (!newArenaNode) {
