@@ -83,10 +83,10 @@
           <div class="quote-block__image">
             <picture>
               <source media="(max-width: 600px)"
-                srcset="https://storage.yandexcloud.net/itsizo.app/87e7c025-d3bd-4f6e-9e84-595dc629affb_200_200.jpg 1x, https://storage.yandexcloud.net/itsizo.app/87e7c025-d3bd-4f6e-9e84-595dc629affb_400_400.jpg 2x"/>
+                srcset="https://d3qc8znfr3ejm3.cloudfront.net/images/bcc46c3f-b4d9-4f04-8b68-fe2878f9490a_200_200.jpg 1x, https://d3qc8znfr3ejm3.cloudfront.net/images/bcc46c3f-b4d9-4f04-8b68-fe2878f9490a_400_400.jpg 2x"/>
               <source media=""
-                srcset="https://storage.yandexcloud.net/itsizo.app/87e7c025-d3bd-4f6e-9e84-595dc629affb_100_100.jpg 1x, https://storage.yandexcloud.net/itsizo.app/87e7c025-d3bd-4f6e-9e84-595dc629affb_200_200.jpg 2x, https://storage.yandexcloud.net/itsizo.app/87e7c025-d3bd-4f6e-9e84-595dc629affb_400_400.jpg 4x"/>
-              <img src="https://storage.yandexcloud.net/itsizo.app/87e7c025-d3bd-4f6e-9e84-595dc629affb_200_200.jpg" alt="" class="quote-block__image">
+                srcset="https://d3qc8znfr3ejm3.cloudfront.net/images/bcc46c3f-b4d9-4f04-8b68-fe2878f9490a_100_100.jpg 1x, https://d3qc8znfr3ejm3.cloudfront.net/images/bcc46c3f-b4d9-4f04-8b68-fe2878f9490a_200_200.jpg 2x, https://d3qc8znfr3ejm3.cloudfront.net/images/bcc46c3f-b4d9-4f04-8b68-fe2878f9490a_400_400.jpg 4x"/>
+              <img src="https://d3qc8znfr3ejm3.cloudfront.net/images/bcc46c3f-b4d9-4f04-8b68-fe2878f9490a_200_200.jpg" alt="true" class="quote-block__image">
             </picture>
           </div>
         </div>
@@ -117,11 +117,13 @@
       </div>
 
       <h4>Роадмап</h4>
-      <roadmap><p class="paragraph">Форматирование</p>
-      <p class="paragraph">Списки</p>
-      <p class="paragraph">Эмбеды</p>
-      <p class="paragraph">Сложные блоки</p>
-      <p class="paragraph">Таблицы</p></roadmap>
+      <roadmap>
+        <p class="paragraph">✨ Форматирование</p>
+        <p class="paragraph">🎉 Списки</p>
+        <p class="paragraph">🎈 Эмбеды</p>
+        <p class="paragraph">✨ Сложные блоки</p>
+        <p class="paragraph">⌛ Таблицы</p>
+      </roadmap>
       <hr class="asterisk"></hr>
       <p class="paragraph">И многое другое с помощью плагинов…</p>
       `;
@@ -170,6 +172,7 @@
       typoSugarPlugin,
       twoColumnsPlugin,
       roadmapPlugin,
+      tablePlugin,
     } = Textarena.getPlugins();
 
     const textarena = new Textarena(
@@ -334,6 +337,7 @@
           typoSugarPlugin(),
           roadmapPlugin(),
           twoColumnsPlugin(),
+          tablePlugin(),
         ],
         toolbar: {
           enabled: true,

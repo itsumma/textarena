@@ -46,6 +46,7 @@ import typoSugarPlugin from './plugins/typoSugarPlugin';
 import codePlugin from './plugins/codePlugin';
 import twoColumnsPlugin from './plugins/twoColumns/twoColumnsPlugin';
 import roadmapPlugin from './plugins/roadmapPlugin';
+import tablePlugin from './plugins/table/tablePlugin';
 
 export const defaultOptions: TextarenaOptions = {
   editable: true,
@@ -546,6 +547,7 @@ Textarena.constructor.prototype.getPlugins = () => ({
   typoSugarPlugin,
   twoColumnsPlugin,
   roadmapPlugin,
+  tablePlugin,
 });
 
 export default Textarena;
