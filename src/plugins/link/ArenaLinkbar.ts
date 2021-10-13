@@ -199,7 +199,7 @@ export default class ArenaLinkbar extends LitElement {
           parent.removeInlineNode(this.node);
         }
       }
-      (this.textarena as Textarena).fire('modelChanged');
+      (this.textarena as Textarena).fire('modelChanged', {});
       this.requestUpdate();
     });
   }
@@ -207,7 +207,7 @@ export default class ArenaLinkbar extends LitElement {
   handleRemove(): void {
     if (this.parent && this.node) {
       this.parent.removeInlineNode(this.node);
-      (this.textarena as Textarena).fire('modelChanged');
+      (this.textarena as Textarena).fire('modelChanged', {});
       this.requestUpdate();
     }
   }
