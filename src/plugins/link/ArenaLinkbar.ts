@@ -175,8 +175,7 @@ export default class ArenaLinkbar extends LitElement {
   handleEdit(): void {
     if (!this.node) return;
     const href = this.node.getAttribute('href');
-    const prevHref = typeof href === 'string' ? href : '';
-    this.linkModal?.setProperty('url', prevHref);
+    this.linkModal?.setProperty('url', href || '');
     const selection = this.textarena?.getCurrentSelection();
     const text = this.parent?.getText();
     if (text && selection) {

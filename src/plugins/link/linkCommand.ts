@@ -18,9 +18,7 @@ export default function linkCommand(
       const oldLink = oldNode.getAttribute('href');
       link = typeof oldLink === 'string' ? oldLink : '';
     }
-    if (link) {
-      linkModal?.setProperty('url', link);
-    }
+    linkModal?.setProperty('url', link);
     const { startNode, startOffset, endOffset } = selection;
     if (startNode instanceof TextNode) {
       linkModal?.setProperty('text', startNode.getRawText().slice(startOffset, endOffset));

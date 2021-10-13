@@ -168,6 +168,7 @@ export default class LinkModal extends LitElement {
   }
 
   updated(props: Map<string, any>): void {
+    // For some reason after showing the modal updated cb receives props with show equals to false
     if (props.get('show') === false) {
       this.urlEl.focus();
     }
@@ -186,9 +187,17 @@ export default class LinkModal extends LitElement {
   }
 
   onKeydown(e: KeyboardEvent): void {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      this.onSave();
+    switch (e.key) {
+      case 'Enter':
+        e.preventDefault();
+        this.onSave();
+        break;
+      case 'Escape':
+        e.preventDefault();
+        this.onClose();
+        break;
+      default:
+        break;
     }
   }
 
