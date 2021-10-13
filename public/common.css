@@ -431,9 +431,6 @@ arena-two-columns-col {
 arena-two-columns-col:last-child {
   border-right: none;
 }
-arena-two-columns-col:hover {
-  /* border: 1px dashed #ccc */
-}
 arena-two-columns-col > *:last-child {
   margin-bottom: 0;
 }
@@ -510,4 +507,16 @@ code {
   border-radius: 0.2em;
   padding: 0.1em;
   font-family: monospace;
+}
+
+td {
+  padding: 0.5em 1em;
+  border-bottom: 1px solid #ccc;
+  border-right: 1px solid #ccc;
+}
+tr:last-child td {
+  border-bottom: none;
+}
+td:last-child {
+  border-right: none;
 }
