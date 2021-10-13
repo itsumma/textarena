@@ -173,32 +173,35 @@ export default class ArenaLinkbar extends LitElement {
   }
 
   handleEdit(): void {
-    if (!this.node) return;
+    if (!this.node || !this.parent) return;
+    const selection = this.textarena?.getCurrentSelection();
+    if (!selection) return;
+    const text = this.parent.getText();
+    const interval = text.getInlineInterval(selection.startOffset, selection.endOffset);
+    if (!interval) return;
     const href = this.node.getAttribute('href');
     this.linkModal?.setProperty('url', href || '');
-    const selection = this.textarena?.getCurrentSelection();
-    const text = this.parent?.getText();
-    if (text && selection) {
-      const interval = text.getInlineInterval(selection.startOffset, selection.endOffset);
-      if (interval) {
-        const { start, end } = interval;
-        this.linkModal?.setProperty('text', text.getText().slice(start, end));
-      }
-    }
+    const { start, end } = interval;
+    this.linkModal?.setProperty('text', text.getText().slice(start, end));
     this.linkModal?.setProperty('show', true);
-    this.linkModal?.setProperty('saveCB', (newHref: string, _text: string) => {
-      if (!this.node) {
+    this.linkModal?.setProperty('saveCB', (newHref: string, newText: string) => {
+      if (!this.node || !this.parent || !this.textarena) {
         return;
       }
+      this.parent.removeText(start, end);
+      this.parent.insertText(newText, start, false);
+      selection.setStartNode(this.parent, start);
+      selection.setEndNode(this.parent, start + newText.length);
       if (newHref) {
-        this.node.setAttribute('href', newHref);
-      } else {
-        const parent = this.parent as ArenaNodeText;
-        if (parent) {
-          parent.removeInlineNode(this.node);
+        const node = this.textarena.addInlineNode(selection, this.node.arena);
+        if (node) {
+          node.setAttribute('href', newHref);
+          node.setAttribute('target', '_blank');
         }
+      } else {
+        this.textarena.removeInlineNode(selection, this.node);
       }
-      (this.textarena as Textarena).fire('modelChanged', {});
+      (this.textarena as Textarena).fire('modelChanged', { selection });
       this.requestUpdate();
     });
   }

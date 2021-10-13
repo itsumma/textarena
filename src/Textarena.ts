@@ -47,6 +47,7 @@ import codePlugin from './plugins/codePlugin';
 import twoColumnsPlugin from './plugins/twoColumns/twoColumnsPlugin';
 import roadmapPlugin from './plugins/roadmapPlugin';
 import tablePlugin from './plugins/table/tablePlugin';
+import { ArenaInterval } from './interfaces/ArenaInterval';
 
 export const defaultOptions: TextarenaOptions = {
   editable: true,
@@ -379,6 +380,12 @@ class Textarena {
 
   public moveChild(selection: ArenaSelection, direction: 'up' | 'down'): ArenaSelection {
     return this.asm.model.moveChild(selection, direction);
+  }
+
+  public getInlineInterval(
+    selection: ArenaSelection,
+  ): ArenaInterval | undefined {
+    return this.asm.model.getInlineInterval(selection);
   }
 
   public addInlineNode(

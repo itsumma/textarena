@@ -1,5 +1,5 @@
 import {
-  css, html, LitElement, property, TemplateResult,
+  css, html, LitElement, property, PropertyValues, TemplateResult,
 } from 'lit-element';
 
 export default class LinkModal extends LitElement {
@@ -153,11 +153,11 @@ export default class LinkModal extends LitElement {
                 <div class="label">
                     <label for="text">Текст</label>
                 </div>
-                <input type="text" id="text" .value="${this.text}" />
+                <input type="text" id="text" value="${this.text}" .value="${this.text}" />
                 <div class="label">
                     <label for="url">URL</label>
                 </div>
-                <input type="text" id="url" .value="${this.url}" />
+                <input type="text" id="url" value="${this.text}" .value="${this.url}" />
             </div>
             <div class="footer">
                 <button @click="${this.onSave}">OK</button>
@@ -167,7 +167,7 @@ export default class LinkModal extends LitElement {
     `;
   }
 
-  updated(props: Map<string, any>): void {
+  updated(props: PropertyValues<LinkModal>): void {
     // For some reason after showing the modal updated cb receives props with show equals to false
     if (props.get('show') === false) {
       this.urlEl.focus();
@@ -212,7 +212,7 @@ export default class LinkModal extends LitElement {
       return;
     }
     if (this.saveCB) {
-      this.saveCB(newHref, newText);
+      this.saveCB(newHref.trim(), newText.trim());
     }
     this.onClose();
   }

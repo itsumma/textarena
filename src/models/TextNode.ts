@@ -9,6 +9,7 @@ import {
   ArenaNodeInline, ArenaNodeText,
 } from '../interfaces/ArenaNode';
 import AbstractNode from './AbstractNode';
+import { ArenaInterval } from '../interfaces/ArenaInterval';
 
 export default class TextNode
   extends AbstractNode<ArenaTextInterface>
@@ -175,6 +176,10 @@ export default class TextNode
 
   public isEmpty(): boolean {
     return /^[\s\n]*$/.test(this.getRawText());
+  }
+
+  public getInlineInterval(start: number, end: number): ArenaInterval | undefined {
+    return this.richTextManager.getInlineInterval(start, end);
   }
 
   public addInlineNode(
