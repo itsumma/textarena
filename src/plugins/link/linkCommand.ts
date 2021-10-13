@@ -26,23 +26,25 @@ export default function linkCommand(
       linkModal?.setProperty('text', startNode.getRawText().slice(startOffset, endOffset));
     }
     linkModal?.setProperty('show', true);
-    linkModal?.setProperty('saveCB', (newHref: string, _text: string) => {
-      if (newHref) {
-        selection.trim();
-        if (oldNode) {
-          ta.updateInlineNode(selection, oldNode);
-          oldNode.setAttribute('href', newHref);
-        } else {
-          const node = ta.addInlineNode(selection, arena);
-          if (node) {
-            node.setAttribute('href', newHref);
-            node.setAttribute('target', '_blank');
+    return new Promise<ArenaSelection>((r) => {
+      linkModal?.setProperty('saveCB', (newHref: string, _text: string) => {
+        if (newHref) {
+          selection.trim();
+          if (oldNode) {
+            ta.updateInlineNode(selection, oldNode);
+            oldNode.setAttribute('href', newHref);
+          } else {
+            const node = ta.addInlineNode(selection, arena);
+            if (node) {
+              node.setAttribute('href', newHref);
+              node.setAttribute('target', '_blank');
+            }
           }
+        } else if (oldNode) {
+          ta.removeInlineNode(selection, oldNode);
         }
-      } else if (oldNode) {
-        ta.removeInlineNode(selection, oldNode);
-      }
+        return r(selection);
+      });
     });
-    return selection;
   };
 }

@@ -187,7 +187,7 @@ export default class LinkModal extends LitElement {
 
   onKeydown(e: KeyboardEvent): void {
     if (e.key === 'Enter') {
-      e.stopPropagation();
+      e.preventDefault();
       this.onSave();
     }
   }
