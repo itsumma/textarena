@@ -170,19 +170,22 @@ export default class LinkModal extends LitElement {
   updated(props: PropertyValues<LinkModal>): void {
     // For some reason after showing the modal updated cb receives props with show equals to false
     if (props.get('show') === false) {
-      this.urlEl.focus();
+      this.urlEl?.focus();
     }
   }
 
-  private getElementById(id: string) {
-    return this.shadowRoot!.getElementById(id)! as HTMLInputElement;
+  private getElementById(id: string): HTMLInputElement | undefined {
+    if (this.shadowRoot !== null) {
+      return this.shadowRoot.getElementById(id) as HTMLInputElement || undefined;
+    }
+    return undefined;
   }
 
-  private get textEl(): HTMLInputElement {
+  private get textEl(): HTMLInputElement | undefined {
     return this.getElementById('text');
   }
 
-  private get urlEl(): HTMLInputElement {
+  private get urlEl(): HTMLInputElement | undefined {
     return this.getElementById('url');
   }
 
@@ -206,13 +209,13 @@ export default class LinkModal extends LitElement {
   }
 
   onSave(): void {
-    const newHref = this.urlEl.value;
-    const newText = this.textEl.value;
+    const newHref = this.urlEl?.value;
+    const newText = this.textEl?.value;
     if (!newHref && !newText) {
       return;
     }
     if (this.saveCB) {
-      this.saveCB(newHref.trim(), newText.trim());
+      this.saveCB(newHref?.trim() || '', newText?.trim() || '');
     }
     this.onClose();
   }

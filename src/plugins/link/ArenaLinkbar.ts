@@ -89,6 +89,9 @@ export default class ArenaLinkbar extends LitElement {
   @property({ type: Object })
   linkModal: ElementHelper | undefined;
 
+  @property({ type: String })
+  commandName: string | undefined;
+
   observer: MutationObserver;
 
   constructor() {
@@ -173,37 +176,9 @@ export default class ArenaLinkbar extends LitElement {
   }
 
   handleEdit(): void {
-    if (!this.node || !this.parent) return;
     const selection = this.textarena?.getCurrentSelection();
-    if (!selection) return;
-    const text = this.parent.getText();
-    const interval = text.getInlineInterval(selection.startOffset, selection.endOffset);
-    if (!interval) return;
-    const href = this.node.getAttribute('href');
-    this.linkModal?.setProperty('url', href || '');
-    const { start, end } = interval;
-    this.linkModal?.setProperty('text', text.getText().slice(start, end));
-    this.linkModal?.setProperty('show', true);
-    this.linkModal?.setProperty('saveCB', (newHref: string, newText: string) => {
-      if (!this.node || !this.parent || !this.textarena) {
-        return;
-      }
-      this.parent.removeText(start, end);
-      this.parent.insertText(newText, start, false);
-      selection.setStartNode(this.parent, start);
-      selection.setEndNode(this.parent, start + newText.length);
-      if (newHref) {
-        const node = this.textarena.addInlineNode(selection, this.node.arena);
-        if (node) {
-          node.setAttribute('href', newHref);
-          node.setAttribute('target', '_blank');
-        }
-      } else {
-        this.textarena.removeInlineNode(selection, this.node);
-      }
-      (this.textarena as Textarena).fire('modelChanged', { selection });
-      this.requestUpdate();
-    });
+    if (!selection || !this.commandName) return;
+    this.textarena?.execCommand(this.commandName, selection);
   }
 
   handleRemove(): void {

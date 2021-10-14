@@ -513,6 +513,10 @@ class Textarena {
       });
     }
   }
+
+  public execCommand(command: string, selection?: ArenaSelection): void {
+    this.asm.commandManager.execCommand(command, selection);
+  }
 }
 
 declare global {
@@ -531,7 +535,7 @@ declare global {
         process: () => void,
       },
     };
-    debugSymbol: any;
+    debugSymbol: unknown;
   }
 }
 

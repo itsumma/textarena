@@ -76,6 +76,7 @@ const linkPlugin = (opts?: Partial<LinkPluginOptions>): ArenaPlugin => ({
       linkbar.setProperty('textarena', textarena);
       linkbar.setProperty('linkModal', linkModal);
       linkModal.setProperty('textarena', textarena);
+      linkbar.setProperty('commandName', command);
       const container = textarena.getContainerElement();
       container.appendChild(linkbar);
       container.appendChild(linkModal);
