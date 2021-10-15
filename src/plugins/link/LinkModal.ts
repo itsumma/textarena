@@ -232,7 +232,7 @@ export default class LinkModal extends LitElement {
     this.show = false;
   }
 
-  clearFields() {
+  clearFields(): void {
     this.url = '';
     this.text = '';
     if (this.textEl) {
