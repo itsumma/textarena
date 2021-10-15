@@ -70,19 +70,23 @@ export type Modifiers = {
 };
 
 type Commands = {
-  [key: string]: {
+  [name: string]: {
     action: CommandAction,
     saveToHistory: boolean,
     fireChanges: boolean,
   }
 };
 
+type ShortcutOptions = { command: string };
+
+type Shortcuts = {
+  [key: string]: ShortcutOptions[],
+};
+
 export default class ArenaCommandManager {
   commands: Commands = {};
 
-  shortcuts: {
-    [key: string]: string,
-  } = {};
+  shortcuts: Shortcuts = {};
 
   help: ShortcutsHelp = [];
 
@@ -110,7 +114,10 @@ export default class ArenaCommandManager {
   ): ArenaCommandManager {
     const [modifiersSum, key] = this.parseShortcut(shortcut);
     const s = `${modifiersSum}+${key}`;
-    this.shortcuts[s] = command;
+    if (!this.shortcuts[s]) {
+      this.shortcuts[s] = [];
+    }
+    this.shortcuts[s].push({ command });
     if (description) {
       this.help.push({
         shortcut: this.getHumanShortcut(shortcut),
@@ -123,7 +130,7 @@ export default class ArenaCommandManager {
   execCommand(
     command: string,
     selection?: ArenaSelection,
-  ): void {
+  ): ArenaSelection | undefined {
     this.asm.logger.log('exec command', command, selection);
     if (this.commands[command]) {
       if (selection) {
@@ -135,8 +142,10 @@ export default class ArenaCommandManager {
         if (fireChanges) {
           this.asm.eventManager.fire('modelChanged', { selection: newSelection });
         }
+        return newSelection;
       }
     }
+    return selection;
   }
 
   execShortcut(
@@ -146,7 +155,11 @@ export default class ArenaCommandManager {
   ): void {
     const shortcut = `${modifiersSum}+${key}`;
     if (this.shortcuts[shortcut]) {
-      this.execCommand(this.shortcuts[shortcut], selection);
+      const options = this.shortcuts[shortcut];
+      let sel: ArenaSelection | undefined = selection;
+      for (let i = 0; i < options.length; i += 1) {
+        sel = this.execCommand(options[i].command, sel);
+      }
     }
   }
 

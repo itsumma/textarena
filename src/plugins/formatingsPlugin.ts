@@ -197,8 +197,8 @@ const defaultOptions: FormatingsOptions = {
       name: 'superscript',
       tag: 'SUP',
       attributes: [],
-      shortcut: 'Ctrl + Period',
-      hint: '.',
+      shortcut: 'Ctrl + KeyP',
+      hint: 'p',
       command: 'format-superscript',
       marks: [
         {
