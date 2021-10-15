@@ -155,7 +155,7 @@ export default class LinkModal extends LitElement {
             </div>
             <div class="body">
                 <div class="label">
-                    <label for="text">Текст</label>
+                    <label for="text">Text</label>
                 </div>
                 <input type="text" id="text" value="${this.text}" .value="${this.text}" />
                 <div class="label">
