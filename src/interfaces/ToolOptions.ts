@@ -1,5 +1,7 @@
 import { AnyArenaNode } from './ArenaNode';
 
+export type ToolCheckStatus = (node: AnyArenaNode, start?: number, end?: number) => boolean;
+
 export default interface ToolOptions {
   name: string;
   icon: string;
@@ -7,5 +9,5 @@ export default interface ToolOptions {
   command: string;
   hint?: string;
   shortcut?: string;
-  checkStatus?: (node: AnyArenaNode, start?: number, end?: number) => boolean;
+  checkStatus?: ToolCheckStatus;
 }
