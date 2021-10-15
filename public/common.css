@@ -79,7 +79,7 @@ li {
 } */
 
 ul, ol {
-  width: 100%;
+  /* width: 100%; */
   margin: 1em 0 0 1em;
   line-height: inherit;
   list-style-position: inside;
@@ -100,9 +100,9 @@ li {
 }
 
 ul {
-  list-style: none;
+  /* list-style: none; */
 }
-ul > li::before {
+/* ul > li::before {
   content: '';
   position: absolute;
   top: calc(0.5em + 1px);
@@ -112,11 +112,84 @@ ul > li::before {
   background-color: currentColor;
   border-radius: 10em;
   margin-left: -1em;
+} */
+ul {
+  list-style-type: disc;
+}
+ul > ul {
+  list-style-type: circle;
+}
+ul > ul > ul {
+  list-style-type: square;
 }
 
-ol > li::marker {
-  margin-left: -1em;
+ol {
+  counter-reset: numberList;
+  list-style: none;
 }
+ol > li {
+  position: relative;
+  counter-increment: numberList;
+}
+ol > li::before {
+  content: counter(numberList) '.';
+  position: absolute;
+  right: 100%;
+  padding-right: 1em;
+}
+ol > ol {
+  counter-reset: numberList2;
+  list-style: none;
+}
+ol > ol > li {
+  position: relative;
+  counter-increment: numberList2;
+}
+ol > ol > li::before {
+  content: counter(numberList2, lower-alpha) ')';
+  position: absolute;
+  right: 100%;
+  padding-right: 1em;
+}
+ol > ol > ol {
+  counter-reset: numberList3;
+  list-style: none;
+}
+ol > ol > ol > li {
+  position: relative;
+  counter-increment: numberList3;
+}
+ol > ol > ol > li::before {
+  content: counter(numberList3, lower-roman) '.';
+  position: absolute;
+  right: 100%;
+  padding-right: 1em;
+}
+ol > ol > ol > ol {
+  list-style-type: decimal;
+}
+ol > ol > ol > ol > li::before {
+  display: none;
+}
+
+/* ol {
+  list-style-type: decimal;
+}
+ol > ol {
+  list-style-type: lower-alpha;
+}
+
+ol > ol > ol {
+  list-style-type: lower-roman;
+}
+
+ol > ol > ol > ol {
+  list-style-type: lower-latin;
+}
+
+ol > ol > ol > ol > ol {
+  list-style-type: decimal;
+} */
 
 hr {
   display: block;
@@ -509,14 +582,15 @@ code {
   font-family: monospace;
 }
 
-td {
+table, arena-table {
+  margin: 0 0 1em;
+}
+
+arena-td, td {
   padding: 0.5em 1em;
-  border-bottom: 1px solid #ccc;
-  border-right: 1px solid #ccc;
+  border: 1px solid #ccc;
 }
-tr:last-child td {
-  border-bottom: none;
-}
-td:last-child {
-  border-right: none;
+
+arena-td {
+  min-width: 4em;
 }

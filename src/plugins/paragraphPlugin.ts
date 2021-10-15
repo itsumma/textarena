@@ -56,7 +56,7 @@ const paragraphPlugin = (opts?: Partial<DefaulPluginOptions>): ArenaPlugin => ({
           description,
         );
       }
-      if (icon) {
+      if (icon && title) {
         textarena.registerTool({
           name,
           title,

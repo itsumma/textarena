@@ -111,16 +111,18 @@ const embedPlugin = (opts?: Partial<EmbedPluginOptions>): ArenaPlugin => ({
           command,
         );
       }
-      ta.registerCreator({
-        name,
-        icon,
-        title,
-        shortcut,
-        hint,
-        command,
-        canShow: (node: AnyArenaNode) =>
-          ta.isAllowedNode(node, arena),
-      });
+      if (title) {
+        ta.registerCreator({
+          name,
+          icon,
+          title,
+          shortcut,
+          hint,
+          command,
+          canShow: (node: AnyArenaNode) =>
+            ta.isAllowedNode(node, arena),
+        });
+      }
     }
 
     const simpleArena = ta.registerArena(

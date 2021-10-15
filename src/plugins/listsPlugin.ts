@@ -277,28 +277,30 @@ const listsPlugin = (opts?: ListsOptions): ArenaPlugin => ({
             command,
           );
         }
-        if (icon) {
-          textarena.registerTool({
+        if (title) {
+          if (icon) {
+            textarena.registerTool({
+              name,
+              title,
+              icon,
+              shortcut,
+              command,
+              hint,
+              checkStatus: (node: AnyArenaNode):
+                boolean => node.hasParent && node.parent.arena === listArena,
+            });
+          }
+          textarena.registerCreator({
             name,
             title,
             icon,
             shortcut,
             command,
             hint,
-            checkStatus: (node: AnyArenaNode):
-              boolean => node.hasParent && node.parent.arena === listArena,
+            canShow: (node: AnyArenaNode) =>
+              textarena.isAllowedNode(node, listArena),
           });
         }
-        textarena.registerCreator({
-          name,
-          title,
-          icon,
-          shortcut,
-          command,
-          hint,
-          canShow: (node: AnyArenaNode) =>
-            textarena.isAllowedNode(node, listArena),
-        });
       }
       if (paragraph.hasText) {
         paragraph.registerMiddleware((ta: Textarena, sel: ArenaSelection, text: string) => {

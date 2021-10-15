@@ -1121,6 +1121,9 @@ export default class ArenaModel {
       // Try to get out from this node (ex. in a list)
       if (parent.hasParent && parent.parent === grandpaCursor.node) {
         // try to separate
+        if (!parent.arena.group) {
+          return undefined;
+        }
         this.splitMediatorNode(parent, index);
       } else if (!node.isLastChild()
         || parent.children.length < 2

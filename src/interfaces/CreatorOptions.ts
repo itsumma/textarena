@@ -1,5 +1,7 @@
 import { AnyArenaNode } from './ArenaNode';
 
+export type CreatorCanShow = (node: AnyArenaNode) => boolean;
+
 export default interface CreatorOptions {
   name: string;
   icon?: string;
@@ -7,5 +9,5 @@ export default interface CreatorOptions {
   command: string;
   hint?: string;
   shortcut?: string;
-  canShow: (node: AnyArenaNode) => boolean;
+  canShow: CreatorCanShow;
 }

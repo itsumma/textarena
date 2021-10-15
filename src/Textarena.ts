@@ -33,6 +33,7 @@ import hrPlugin from './plugins/hrPlugin';
 import imagePlugin from './plugins/image/imagePlugin';
 import linkPlugin from './plugins/link/linkPlugin';
 import listsPlugin from './plugins/listsPlugin';
+import nestedlistsPlugin from './plugins/nestedlistsPlugin';
 import paragraphPlugin from './plugins/paragraphPlugin';
 
 import ArenaCommandManager from './services/ArenaCommandManager';
@@ -546,6 +547,7 @@ Textarena.constructor.prototype.getPlugins = () => ({
   headersPlugin,
   hrPlugin,
   listsPlugin,
+  nestedlistsPlugin,
   blockquotePlugin,
   calloutPlugin,
   imagePlugin,
