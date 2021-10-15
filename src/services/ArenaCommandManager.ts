@@ -141,6 +141,7 @@ export default class ArenaCommandManager {
             this.asm.history.save(newSelection);
           }
           if (fireChanges) {
+            console.log('FIREEEEEEEEE', command);
             this.asm.eventManager.fire('modelChanged', { selection: newSelection });
           }
           return newSelection;
@@ -149,7 +150,9 @@ export default class ArenaCommandManager {
           result.then(handleNewSelection).catch((e) => this.asm.logger.error(e));
           return undefined;
         }
-        return handleNewSelection(result);
+        if (typeof result !== 'boolean') {
+          return handleNewSelection(result);
+        }
       }
     }
     return selection;

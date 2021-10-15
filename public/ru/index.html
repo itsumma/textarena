@@ -7,7 +7,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="../textarena.css">
   <link rel="stylesheet" href="../common.css">
-  <link rel="stylesheet" href="custom.css">
   <link rel="preconnect" href="https://fonts.gstatic.com">
   <link href="https://fonts.googleapis.com/css2?family=Bitter:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
 	<style>
@@ -169,6 +168,12 @@
       padding: 0 1rem;
     }
 
+    .menu {
+      padding: 0 2em;
+      display: flex;
+      justify-content: center;
+    }
+
     .toggler {
       display: flex;
       align-items: center;
@@ -204,6 +209,11 @@
 
 <body>
 	<h1 class="demo-h1"><span>T</span><span>E</span><span>X</span><span>T</span><span>A</span><span>R</span><span>E</span><span>N</span><span>A</span></h1>
+  <div class="menu">
+    <a href="/">English version</a>
+    <span>&nbsp;|&nbsp;</span>
+    <span>Russian version</span>
+  </div>
   <div class="toggler">
     <button class="toggler-btn" data-tab="tab-editor" pressed>Редактор</button>
     <button class="toggler-btn" data-tab="tab-output">Результат</button>

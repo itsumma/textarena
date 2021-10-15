@@ -18,7 +18,7 @@
 
   if (elem && (typeof Textarena !== 'undefined')) {
     let dataHtml;
-    const storedData = localStorage.getItem('dataHtml');
+    // const storedData = localStorage.getItem('dataHtml');
     try {
       if (storedData) {
         data = JSON.parse(storedData);
@@ -213,7 +213,7 @@
         onReady: onChange,
         initData,
         outputTypes: ['html', 'amp', 'rss'],
-        placeholder: 'Введите текст или нажмите Tab',
+        placeholder: 'Type or Tab…',
         plugins: [
           commonPlugin(),
           formatingsPlugin(),

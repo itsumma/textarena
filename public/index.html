@@ -168,6 +168,12 @@
       padding: 0 1rem;
     }
 
+    .menu {
+      padding: 0 2em;
+      display: flex;
+      justify-content: center;
+    }
+
     .toggler {
       display: flex;
       align-items: center;
@@ -203,9 +209,14 @@
 
 <body>
 	<h1 class="demo-h1"><span>T</span><span>E</span><span>X</span><span>T</span><span>A</span><span>R</span><span>E</span><span>N</span><span>A</span></h1>
+  <div class="menu">
+    <span>English version</span>
+    <span>&nbsp;|&nbsp;</span>
+    <a href="/ru">Russian version</a>
+  </div>
   <div class="toggler">
-    <button class="toggler-btn" data-tab="tab-editor" pressed>Редактор</button>
-    <button class="toggler-btn" data-tab="tab-output">Результат</button>
+    <button class="toggler-btn" data-tab="tab-editor" pressed>Editor</button>
+    <button class="toggler-btn" data-tab="tab-output">Result</button>
     <button class="toggler-btn" data-tab="tab-html">HTML</button>
   </div>
   <div class="tab" id="tab-editor" show>
