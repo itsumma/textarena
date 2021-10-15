@@ -31,13 +31,12 @@ const codePlugin = (opts?: Partial<DefaulPluginOptions>): ArenaPlugin => ({
     if (!paragraph) {
       throw new Error('Default Arena for text not found');
     }
-    const allowedArenas = textarena.getSimpleArenas();
     const arena = textarena.registerArena(
       {
         name,
         tag,
         attributes,
-        allowedArenas,
+        allowedArenas: [paragraph],
         arenaForText: paragraph as ArenaTextInterface,
         automerge: true,
         group: true,
@@ -58,28 +57,30 @@ const codePlugin = (opts?: Partial<DefaulPluginOptions>): ArenaPlugin => ({
           command,
         );
       }
-      if (icon) {
-        textarena.registerTool({
+      if (title) {
+        if (icon) {
+          textarena.registerTool({
+            name,
+            title,
+            icon,
+            shortcut,
+            hint,
+            command,
+            checkStatus: (node: AnyArenaNode):
+              boolean => !!utils.modelTree.findNodeUp(node, (n) => n.arena === arena),
+          });
+        }
+        textarena.registerCreator({
           name,
           title,
           icon,
           shortcut,
           hint,
           command,
-          checkStatus: (node: AnyArenaNode):
-            boolean => !!utils.modelTree.findNodeUp(node, (n) => n.arena === arena),
+          canShow: (node: AnyArenaNode) =>
+            textarena.isAllowedNode(node, arena),
         });
       }
-      textarena.registerCreator({
-        name,
-        title,
-        icon,
-        shortcut,
-        hint,
-        command,
-        canShow: (node: AnyArenaNode) =>
-          textarena.isAllowedNode(node, arena),
-      });
     }
   },
 });

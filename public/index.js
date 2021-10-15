@@ -41,7 +41,7 @@
       </figure>
       <p class="paragraph">Ctrl (⌘) + I — выделенный текст станет <em>италиком</em>. Повторное нажатие уберёт италик.</p>
       <p class="paragraph">Ctrl (⌘) + B — изменит <strong>жирность</strong> выделенного текста.</p>
-      <p class="paragraph">И так далее…</p>
+      <p class="paragraph">И так далее: <em>италик</em>, <u>подчеркнутый</u>, <s>зачеркнутый</s>, <sub>нижний</sub> и <sup>верхний</sup> индексы, <mark>маркированный</mark>, <code>строчный код</code>, <a href="https://github.com/itsumma/textarena" target="_blank">ссылка</a>…&nbsp;</p>
 
       <h3>Заголовки</h3>
       <ul>
@@ -123,7 +123,35 @@
         <p class="paragraph">🎈 Эмбеды</p>
         <p class="paragraph">✨ Сложные блоки</p>
         <p class="paragraph">⌛ Таблицы</p>
+        <p class="paragraph">⌛ Вложенные списки</p>
       </roadmap>
+
+      <h4>Таблицы <sup>Alpha</sup></h4>
+      <table>
+        <tr>
+          <td>Shift + Enter — добавить строку</td>
+          <td>
+            Shift + Tab — добавить колонку
+          </td>
+        </tr>
+        <tr>
+          <td>Ctrl + Shift + Backspace — удалить строку</td>
+          <td>
+            Ctrl + Backspace — удалить колонку
+          </td>
+        </tr>
+      </table>
+
+      <h4>Вложенные списки<sup>Alpha</sup></h4>
+      <ol start="1"><li>Первый уровень</li>
+      <ol><li>Второй</li>
+      <ol><li>Третий</li>
+      <li>Снова третий</li>
+      <ul><li>…внезапно булеты</li>
+      <ul><li>ещё булеты</li></ul></ul></ol>
+      <li>Обратно второй</li></ol>
+      <li>И опять первый</li></ol>
+
       <hr class="asterisk"></hr>
       <p class="paragraph">И многое другое с помощью плагинов…</p>
       `;
@@ -159,7 +187,7 @@
       formatingsPlugin,
       headersPlugin,
       hrPlugin,
-      listsPlugin,
+      nestedlistsPlugin,
       blockquotePlugin,
       calloutPlugin,
       imagePlugin,
@@ -221,7 +249,7 @@
               },
             ],
           }),
-          listsPlugin(),
+          nestedlistsPlugin(),
           blockquotePlugin({
             marks: [
               {
@@ -375,6 +403,7 @@
             'aside',
             'two-columns',
             'roadmap',
+            'add-table',
           ],
         },
       }

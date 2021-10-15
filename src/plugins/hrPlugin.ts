@@ -51,16 +51,18 @@ const hrPlugin = (opts?: Partial<DefaulPluginOptions>): ArenaPlugin => ({
           command,
         );
       }
-      textarena.registerCreator({
-        name,
-        icon,
-        title,
-        shortcut,
-        hint,
-        command,
-        canShow: (node: AnyArenaNode) =>
-          textarena.isAllowedNode(node, arena),
-      });
+      if (title) {
+        textarena.registerCreator({
+          name,
+          icon,
+          title,
+          shortcut,
+          hint,
+          command,
+          canShow: (node: AnyArenaNode) =>
+            textarena.isAllowedNode(node, arena),
+        });
+      }
     }
     textarena.addSimpleArenas(arena);
   },

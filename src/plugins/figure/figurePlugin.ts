@@ -114,16 +114,18 @@ const figurePlugin = (opts?: Partial<FigurePluginOptions>): ArenaPlugin => ({
           command,
         );
       }
-      textarena.registerCreator({
-        name,
-        title,
-        icon,
-        shortcut,
-        hint,
-        command,
-        canShow: (node: AnyArenaNode) =>
-          textarena.isAllowedNode(node, arena),
-      });
+      if (title) {
+        textarena.registerCreator({
+          name,
+          title,
+          icon,
+          shortcut,
+          hint,
+          command,
+          canShow: (node: AnyArenaNode) =>
+            textarena.isAllowedNode(node, arena),
+        });
+      }
     }
   },
 });

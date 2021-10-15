@@ -168,16 +168,18 @@ const quotePlugin = (opts?: Partial<DefaulPluginOptions>): ArenaPlugin => ({
       });
 
       // textarena.registerShortcut(shortcut, command);
-      textarena.registerCreator({
-        name,
-        icon,
-        title,
-        shortcut,
-        hint,
-        command,
-        canShow: (node: AnyArenaNode) =>
-          textarena.isAllowedNode(node, arena),
-      });
+      if (title) {
+        textarena.registerCreator({
+          name,
+          icon,
+          title,
+          shortcut,
+          hint,
+          command,
+          canShow: (node: AnyArenaNode) =>
+            textarena.isAllowedNode(node, arena),
+        });
+      }
     }
   },
 });

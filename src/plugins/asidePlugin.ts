@@ -67,28 +67,30 @@ const asidePlugin = (opts?: Partial<DefaulPluginOptions>): ArenaPlugin => ({
           command,
         );
       }
-      if (icon) {
-        textarena.registerTool({
+      if (title) {
+        if (icon) {
+          textarena.registerTool({
+            name,
+            title,
+            icon,
+            shortcut,
+            hint,
+            command,
+            checkStatus: (node: AnyArenaNode):
+              boolean => !!utils.modelTree.findNodeUp(node, (n) => n.arena === arena),
+          });
+        }
+        textarena.registerCreator({
           name,
           title,
           icon,
           shortcut,
           hint,
           command,
-          checkStatus: (node: AnyArenaNode):
-            boolean => !!utils.modelTree.findNodeUp(node, (n) => n.arena === arena),
+          canShow: (node: AnyArenaNode) =>
+            textarena.isAllowedNode(node, arena),
         });
       }
-      textarena.registerCreator({
-        name,
-        title,
-        icon,
-        shortcut,
-        hint,
-        command,
-        canShow: (node: AnyArenaNode) =>
-          textarena.isAllowedNode(node, arena),
-      });
     }
   },
 });

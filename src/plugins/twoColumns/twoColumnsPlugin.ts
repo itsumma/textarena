@@ -94,28 +94,30 @@ const twoColumnsPlugin = (opts?: Partial<DefaulPluginOptions>): ArenaPlugin => (
           command,
         );
       }
-      if (icon) {
-        textarena.registerTool({
+      if (title) {
+        if (icon) {
+          textarena.registerTool({
+            name,
+            title,
+            icon,
+            shortcut,
+            hint,
+            command,
+            checkStatus: (node: AnyArenaNode):
+              boolean => node.arena === arena,
+          });
+        }
+        textarena.registerCreator({
           name,
-          title,
           icon,
+          title,
           shortcut,
           hint,
           command,
-          checkStatus: (node: AnyArenaNode):
-            boolean => node.arena === arena,
+          canShow: (node: AnyArenaNode) =>
+            textarena.isAllowedNode(node, arena),
         });
       }
-      textarena.registerCreator({
-        name,
-        icon,
-        title,
-        shortcut,
-        hint,
-        command,
-        canShow: (node: AnyArenaNode) =>
-          textarena.isAllowedNode(node, arena),
-      });
     }
   },
 });
