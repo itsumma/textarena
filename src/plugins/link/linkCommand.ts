@@ -46,6 +46,7 @@ export default function linkCommand(
     linkModal?.setProperty('text', originalText.slice(startOffset, endOffset));
     linkModal?.setProperty('show', true);
     return new Promise<ArenaSelection>((r) => {
+      linkModal?.setProperty('closeCB', () => r(selection));
       linkModal?.setProperty('saveCB', (newHref: string, newText: string) => {
         startNode.removeText(startOffset, endOffset);
         startNode.insertText(newText, startOffset, false);

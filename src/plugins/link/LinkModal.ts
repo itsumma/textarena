@@ -132,6 +132,9 @@ export default class LinkModal extends LitElement {
   @property({ type: Function })
   saveCB: ((url: string, text: string) => void) | undefined;
 
+  @property({ type: Function })
+  closeCB: (() => void) | undefined;
+
   @property({ type: String })
   text: string;
 
@@ -217,10 +220,13 @@ export default class LinkModal extends LitElement {
     if (this.saveCB) {
       this.saveCB(newHref?.trim() || '', newText?.trim() || '');
     }
-    this.onClose();
+    this.show = false;
   }
 
   onClose(): void {
     this.show = false;
+    if (this.closeCB) {
+      this.closeCB();
+    }
   }
 }
