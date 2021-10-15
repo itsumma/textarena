@@ -160,7 +160,7 @@ export default class LinkModal extends LitElement {
                 <div class="label">
                     <label for="url">URL</label>
                 </div>
-                <input type="text" id="url" value="${this.text}" .value="${this.url}" />
+                <input type="text" id="url" value="${this.url}" .value="${this.url}" />
             </div>
             <div class="footer">
                 <button @click="${this.onSave}">OK</button>
