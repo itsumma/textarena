@@ -7,7 +7,6 @@
 * [Recomendations](#recomendations)
 
 ## Installation
----
 
 There are three ways to install Textarena to your project:
 
@@ -63,7 +62,7 @@ You can load specific version of package from [jsDelivr](https://www.jsdelivr.co
 Load textarena.js and textarena.css files to your project and use them.
 
 ## Usage
----
+
 Add a HTML element to the page with `id='textarena-container'`, for example:
 
 ```html
@@ -102,7 +101,7 @@ Hold Ctrl (Cmd ⌘ on Mac) or Alt (Option ⌥ on Mac) to see shortcut tips.
 ![Toolbar](../resources/img/toolbar-tips.png)
 
 ## Configuration
----
+
 You can configure your Texarena by passing optional configuration object at second parametr of Textarena initialization:
 
 ```js
@@ -230,7 +229,6 @@ The available properties are listed below:
 </table>
 
 ## Run for development
----
 
 Install all Textarena dependencies by yarn:
 
@@ -247,7 +245,6 @@ yarn start
 Open in your browser http://localhost:8080.
 
 ## Recomendations
----
 
 Add paddings arround the editor:
 

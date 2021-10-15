@@ -15,7 +15,7 @@
 ![Preview](resources/gif/preview.gif)
 
 ## Key features
----
+
 There are a few key features:
 
 * [Block elements](#block-elements)
@@ -80,5 +80,5 @@ To use the Typograf, select the text and click the button centered at the bottom
 ![Typograf](/resources/gif/typograf.gif)
 
 ## Related
----
+
 [ng-textarena](https://github.com/devopsprodigy/ng-textarena) - Angular version of the Textarena
