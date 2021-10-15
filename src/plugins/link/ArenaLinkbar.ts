@@ -18,10 +18,10 @@ export default class ArenaLinkbar extends LitElement {
       z-index: 2;
       padding: 0.2em 0.5em;
       flex-wrap: wrap;
-      color: #ccc;
-      box-shadow: #1528364f 0px 8px 23px -6px, #21304942 22px -14px 34px -18px;
-      border-radius: 0.1em;
-      background-color: #333;
+      color: #4a4a4a;
+      box-shadow: 0 8px 23px -6px rgba(21, 40, 54, 0.31), 22px -14px 34px -18px rgba(33, 48, 73, 0.26);
+      border-radius: 0.3em;
+      background-color: rgb(231, 231, 231);
       pointer-events: all;
       user-select: none;
       max-width: 100%;
@@ -43,7 +43,9 @@ export default class ArenaLinkbar extends LitElement {
       text-overflow: ellipsis;
     }
     a:hover {
-      color: white;
+      background: white;
+      color: black;
+      border-radius: 0.3em;
     }
     button {
       display: flex;
@@ -62,7 +64,9 @@ export default class ArenaLinkbar extends LitElement {
       cursor: pointer;
     }
     button:hover {
-      color: white;
+      background: white;
+      color: black;
+      border-radius: 0.3em;
     }
     button:active {
       color: #fff;

@@ -28,12 +28,13 @@ export default class LinkModal extends LitElement {
     opacity: 0;
     position: fixed;
     left: calc(50% - 150px);
-    box-shadow: 0 0 1em 0.1em rgb(32 68 122 / 28%);
     border: none;
-    background-color: #eee;
     width: 300px;
-    border-radius: 5px;
-  }
+    color: #4a4a4a;
+    box-shadow: 0 8px 23px -6px rgba(21, 40, 54, 0.31), 22px -14px 34px -18px rgba(33, 48, 73, 0.26);
+    border-radius: 0.3em;
+    background-color: rgb(231, 231, 231);
+}
   .content.showed {
     opacity: 1;
     animation-name: slideIn;
@@ -78,7 +79,7 @@ export default class LinkModal extends LitElement {
     box-sizing: border-box;
     border: none;
     border-radius: 5px;
-    color: #333;
+    color: #4a4a4a;
   }
   input:focus, .footer button:focus { 
     outline: none !important;
