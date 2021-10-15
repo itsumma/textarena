@@ -1,5 +1,9 @@
 /// <reference types="cypress" />
 
+import { isMac } from '../../src/utils/navigator';
+
+const ctrl = isMac() ? 'cmd' : 'ctrl';
+
 context('Actions', () => {
   beforeEach(() => {
     cy.visit('http://0.0.0.0:8080/');
@@ -42,12 +46,12 @@ context('Actions', () => {
       .type('{selectall}')
       .type('{del}')
       .type('Normal ')
-      .type('{ctrl+b}')
+      .type(`{${ctrl}+b}`)
       .type('bold ')
-      .type('{ctrl+b}')
-      .type('{ctrl+i}')
+      .type(`{${ctrl}+b}`)
+      .type(`{${ctrl}+i}`)
       .type('italic ')
-      .type('{ctrl+i}')
+      .type(`{${ctrl}+i}`)
       .type('normal2.');
     cy.wait(100);
     cy.get('#html')

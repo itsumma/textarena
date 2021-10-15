@@ -135,14 +135,24 @@ export default class ArenaCommandManager {
     if (this.commands[command]) {
       if (selection) {
         const { action, saveToHistory, fireChanges } = this.commands[command];
-        const newSelection = action(this.asm.textarena, selection);
-        if (saveToHistory) {
-          this.asm.history.save(newSelection);
+        const result = action(this.asm.textarena, selection);
+        const handleNewSelection = (newSelection: ArenaSelection): ArenaSelection => {
+          if (saveToHistory) {
+            this.asm.history.save(newSelection);
+          }
+          if (fireChanges) {
+            console.log('FIREEEEEEEEE', command);
+            this.asm.eventManager.fire('modelChanged', { selection: newSelection });
+          }
+          return newSelection;
+        };
+        if (result instanceof Promise) {
+          result.then(handleNewSelection).catch((e) => this.asm.logger.error(e));
+          return undefined;
         }
-        if (fireChanges) {
-          this.asm.eventManager.fire('modelChanged', { selection: newSelection });
+        if (typeof result !== 'boolean') {
+          return handleNewSelection(result);
         }
-        return newSelection;
       }
     }
     return selection;

@@ -12,5 +12,6 @@ type LinkManage = (
 
 export type LinkPluginOptions = DefaulPluginOptions & {
   moveCursorHandler: LinkManage,
-  commandFunction: (arena: ArenaInlineInterface) => CommandAction,
+  commandFunction:
+    (arena: ArenaInlineInterface, linkModal: ElementHelper | undefined) => CommandAction,
 };

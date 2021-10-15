@@ -18,7 +18,7 @@
 
   if (elem && (typeof Textarena !== 'undefined')) {
     let dataHtml;
-    const storedData = localStorage.getItem('dataHtml');
+    // const storedData = localStorage.getItem('dataHtml');
     try {
       if (storedData) {
         data = JSON.parse(storedData);
@@ -28,37 +28,133 @@
       }
     } catch {}
     if (dataHtml === undefined) {
-      dataHtml = "<h2>Дорожная карта Editorica</h2>\n<roadmap>\n<p class=\"paragraph\">Сентябрь 2021 — демо</p>\n<p class=\"paragraph\">Октябрь 2021 — дефолтный шаблон публичной части сайта</p>\n<p class=\"paragraph\">Ноябрь 2021 — управления баннерами</p>\n<p class=\"paragraph\">Декабрь 2021 — автопубликация в соцсети</p>\n</roadmap>\n<p class=\"paragraph\"><a href=\"https://www.orbitmedia.com/blog/blogging-statistics/\">A recent survey by Orbit Media</a> found that bloggers who invest more time in writing their blogs – and also write longer articles– generally have a higher number of readers and interactions. The best SEO results are booked with blogs that are approximately 2,000 words long. However, how do you keep a long read interesting? How do you make sure that your readers don&#039;t just scroll through, or tap out when they are halfway through your article?</p>\n<blockquote>\n<p class=\"paragraph\">Bloggers who spend 6 or more hours per post are 56% more likely to report “strong results” than those who don’t. (<a href=\"https://www.linkedin.com/in/jodiharriscontentconsulting/\">Jodi Harris, Content Marketing Institute</a>)</p>\n<p class=\"paragraph\">Here are some handy tips that will vastly improve your long read game.</p>\n</blockquote>\n<arena-figure class=\"image place-wide\">\n<arena-image slot=\"image\" src=\"https://d3qc8znfr3ejm3.cloudfront.net/images/6a7e0d35-c34b-4b08-ae05-b5bcaf702b47.png\"></arena-image>\n\n</arena-figure>\n<h3>Другие картинки</h3>\n<arena-figure class=\"image place-center\">\n<arena-image slot=\"image\" src=\"https://d3qc8znfr3ejm3.cloudfront.net/images/81400751-b6e7-4d7f-86a4-dca3e7c02a50.webp\"></arena-image>\n\n</arena-figure>\n\n\n\n";
-      // dataHtml = `
-      // <arena-image src="https://storage.yandexcloud.net/itsizo.app/ee907a4a-9ff2-40fb-ae3f-1e4f91a02800.png"></arena-image>
-      // <arena-image src="https://storage.yandexcloud.net/itsizo.app/ee907a4a-9ff2-40fb-ae3f-1e4f91a02800.png"></arena-image>
-      //   <aside class="aside aside-gray">
-      //     <p>Другой блок с рамочкой.</p>
-      //     <p>Чтобы выйти из него, можно в конце строки два раза нажать Enter.</p>
-      //   </aside>
-      //   <arena-quote class=textarena-quote>
-      //     <arena-image width="100" height="100" src="https://storage.yandexcloud.net/itsizo.app/87e7c025-d3bd-4f6e-9e84-595dc629affb.jpg"></arena-image>
-      //     <cite slot=quote_author class=textarena-quote__author>Меде́я</cite>
-      //     <cite slot=quote_role class=textarena-quote__role>царевна из страны Эета</cite>
-      //     <quote slot=quote_body class=body>…вы можете превратить старика в молодого человека, если разрежете его и бросите в кипящий котёл.</quote>
-      //   </arena-quote>
-      //   <arena-quote class=textarena-quote>
-      //     <arena-image width="100" height="100" src="https://storage.yandexcloud.net/itsizo.app/87e7c025-d3bd-4f6e-9e84-595dc629affb.jpg"></arena-image>
-      //     <cite slot=quote_author class=textarena-quote__author>Меде́я</cite>
-      //     <cite slot=quote_role class=textarena-quote__role>царевна из страны Эета</cite>
-      //     <quote slot=quote_body class=body>…вы можете превратить старика в молодого человека, если разрежете его и бросите в кипящий котёл.</quote>
-      //   </arena-quote>
-      //   `;
-      // dataHtml = "<p class=\"paragraph\">Текст <em>Италик </em><strong>Жирный </strong><em>Жирный италик </em><s>Зачеркнуто</s>&nbsp;</p>\n<p class=\"paragraph\"><font color=\"#545454\">Покрашено </font>Не покрашено</p>\n<p class=\"paragraph\"><a href=\"http://reminder.media/\" target=\"_blank\">Ссылка</a></p>\n<p class=\"paragraph\"><mark>Текст с фоном</mark> без фона.</p>\n<pre>\n<p class=\"paragraph\">Моноширный текст.</p>\n</pre>\n<h2>Заголовок 2</h2>\n<h3>Заголовок 3</h3>\n<h4>Заголовок 4</h4>\n<hr></hr>\n<ol>\n<li>Список 1</li>\n<li>Список 2</li>\n<li>Список 3</li>\n</ol>\n<p class=\"paragraph\">Текст</p>\n<ul>\n<li>Список 1</li>\n<li>Список 2</li>\n<li>Список 3</li>\n</ul>\n<aside class=\"aside-fill aside-fill-grey\">\n<p class=\"paragraph\">Текст на сером фоне</p>\n</aside>\n<aside class=\"aside-fill aside-fill-purple\">\n<p class=\"paragraph\">Текст на фиолетовом фоне</p>\n</aside>\n<aside class=\"aside-fill aside-fill-orange\">\n<p class=\"paragraph\">Текст на морковном фоне.</p>\n<p class=\"paragraph\">В несколько строк</p>\n</aside>\n<blockquote>\n<p class=\"paragraph\">Цитата</p>\n</blockquote>\n<p class=\"paragraph\">Текст</p>\n<arena-figure class=\"image place-wide\">\n<arena-image slot=\"image\" src=\"https://d3qc8znfr3ejm3.cloudfront.net/images/e19a2301-e099-46f7-bc89-12bfded9b455.jpg\"></arena-image>\n<figcaption slot=\"image-caption\">Подпись к рисунку</figcaption>\n</arena-figure>\n\n<arena-figure class=\"image place-center\">\n<arena-image slot=\"image\" src=\"https://d3qc8znfr3ejm3.cloudfront.net/images/c4061779-d99e-45c9-91a2-66d9142c04b6.png\"></arena-image>\n<figcaption slot=\"image-caption\">Подпись к рисунку</figcaption>\n</arena-figure>\n<arena-figure class=\"image place-fill\">\n<arena-image slot=\"image\" src=\"https://d3qc8znfr3ejm3.cloudfront.net/images/8690b897-c596-4ffa-b8f0-448978bbef5f.jpg\"></arena-image>\n<figcaption slot=\"image-caption\">Подпись к рисунку</figcaption>\n</arena-figure>";
-      // dataHtml = `<arena-two-columns>
-      //   <arena-two-columns-col>
-      //     <p class=\"paragraph\">1</p>
-      //   </arena-two-columns-col>
-      //   <arena-two-columns-col>
-      //     <p class=\"paragraph\">2</p>
-      //   </arena-two-columns-col>
-      // </arena-two-columns>`;
-      // dataHtml = `<h2><s>Простой</s> Крутой текстовый редактор</h2><arena-image src="https://storage.yandexcloud.net/itsizo.app/ee907a4a-9ff2-40fb-ae3f-1e4f91a02800.png"></arena-image><p>Выделите текст, появится панель для форматирования.</p>`;
+      dataHtml = `
+      <h2><s>Простой</s> Крутой текстовый редактор</h2>
+      <p class="paragraph"><strong>Textarena</strong> адаптирована для быстрой работы с текстом. К тому же она легко расширяется с помощью плагинов.</p>
+      <p class="paragraph">Выделите текст, появится панель для форматирования.</p>
+      <p class="paragraph">Зажмите Ctrl (⌘ для Mac) или Alt (⌥ для Mac) и вы увидите подсказки.</p>
+      <figure class="">
+        <picture>
+          <img src="https://d3qc8znfr3ejm3.cloudfront.net/images/7d7b94c6-72d0-4756-9da2-984e8496c817.png" alt="" class="">
+        </picture>
+        <figcaption slot="image-caption">Панелька для форматирования появляется когда выделен текст, но работает по горячим клавишам</figcaption>
+      </figure>
+      <p class="paragraph">Ctrl (⌘) + I — выделенный текст станет <em>италиком</em>. Повторное нажатие уберёт италик.</p>
+      <p class="paragraph">Ctrl (⌘) + B — изменит <strong>жирность</strong> выделенного текста.</p>
+      <p class="paragraph">И так далее: <em>италик</em>, <u>подчеркнутый</u>, <s>зачеркнутый</s>, <sub>нижний</sub> и <sup>верхний</sup> индексы, <mark>маркированный</mark>, <code>строчный код</code>, <a href="https://github.com/itsumma/textarena" target="_blank">ссылка</a>…&nbsp;</p>
+
+      <h3>Заголовки</h3>
+      <ul>
+        <li>H2 — второй по величине.</li>
+        <li>H3 — третий по величине.</li>
+        <li>H4 — четвёртый.</li>
+      </ul>
+      <p class="paragraph">Почему нет первого? Во-первых, какие заголовки доступны в редакторе, настраивается. Во-вторых, не рекомендуется на странице использовать более одного заголовка первого уровня. На этой странице уже есть заголовок — «TEXTARENA» — в верху страницы.</p>
+      <p class="paragraph">Чтобы превратить текст в заголовок можно нажать Alt (⌥) + 2 или 3 или 4.</p>
+      <p class="paragraph">Чтобы вернуть параграф — Alt (⌥) + 0.</p>
+
+      <h3>Списки</h3>
+      <p class="paragraph">Чтобы начать список:</p>
+      <ol><li>напечатать в начале строки «1.» и пробел или «-» с пробелом;</li>
+      <li>нажать Alt (⌥) + O или Alt (⌥) + L для нумерованного или списка с буллетами соответственно.</li></ol>
+
+      <h3>Несложные текстовые блоки</h3>
+      <blockquote><p class="paragraph">Для того чтобы сделать простой блок цитаты, нажмите Alt (⌥) + &quot;.</p></blockquote>
+      <p class="paragraph">Или нажмите кнопку с плюсом на пустой строке.</p>
+      <figure class="">
+        <picture>
+          <img src="https://d3qc8znfr3ejm3.cloudfront.net/images/f2a48b32-3db9-456a-b03b-e142a0bc38ca.png" alt="" class="">
+        </picture>
+        <figcaption slot="image-caption">Панель для создания заголовков, списков и других блоков оформления</figcaption>
+      </figure>
+      <aside class="aside aside-gray">
+        <p class="paragraph">Текстовый блок с рамочкой.</p>
+        <p class="paragraph">Чтобы выйти из него, можно в конце строки два раза нажать Enter.</p>
+      </aside>
+
+      <h3>Сложные текстовые блоки</h3>
+      <blockquote class="quote-block">
+        <div class="quote-block__line">
+          <div class="quote-block__author-block">
+            <cite slot="quote_author" class="quote-block__author">Меде́я</cite>
+            <cite slot="quote_role" class="quote-block__role">царевна из страны Эета</cite>
+          </div>
+
+          <div class="quote-block__image">
+            <picture>
+              <source media="(max-width: 600px)"
+                srcset="https://d3qc8znfr3ejm3.cloudfront.net/images/bcc46c3f-b4d9-4f04-8b68-fe2878f9490a_200_200.jpg 1x, https://d3qc8znfr3ejm3.cloudfront.net/images/bcc46c3f-b4d9-4f04-8b68-fe2878f9490a_400_400.jpg 2x"/>
+              <source media=""
+                srcset="https://d3qc8znfr3ejm3.cloudfront.net/images/bcc46c3f-b4d9-4f04-8b68-fe2878f9490a_100_100.jpg 1x, https://d3qc8znfr3ejm3.cloudfront.net/images/bcc46c3f-b4d9-4f04-8b68-fe2878f9490a_200_200.jpg 2x, https://d3qc8znfr3ejm3.cloudfront.net/images/bcc46c3f-b4d9-4f04-8b68-fe2878f9490a_400_400.jpg 4x"/>
+              <img src="https://d3qc8znfr3ejm3.cloudfront.net/images/bcc46c3f-b4d9-4f04-8b68-fe2878f9490a_200_200.jpg" alt="true" class="quote-block__image">
+            </picture>
+          </div>
+        </div>
+        <quote slot="quote_body" class="quote-block__body">…вы можете превратить старика в молодого человека, если разрежете его и бросите в кипящий котёл.</quote>
+      </blockquote>
+      <p class="paragraph">Такие блоки настраиваются с помощью плагинов.</p>
+
+      <h4>Картинки</h4>
+      <figure class="">
+        <picture>
+          <img src="https://d3qc8znfr3ejm3.cloudfront.net/images/bdf131ea-e9ea-4b29-8d63-96a9c440ddff.jpg" alt="" class="">
+        </picture>
+        <figcaption slot="image-caption">С подписью</figcaption>
+      </figure>
+
+      <h4>Колонки</h4>
+      <div class="arena-two-col">
+          <div class="arena-col">
+            <p class="paragraph">Хоба!</p>
+          </div>
+          <div class="arena-col">
+            <figure class="">
+              <picture>
+                <img src="https://d3qc8znfr3ejm3.cloudfront.net/images/09c2b96f-961b-4797-8ed8-41e2166bc670.jpg" alt="" class="">
+              </picture>
+            </figure>
+          </div>
+      </div>
+
+      <h4>Роадмап</h4>
+      <roadmap>
+        <p class="paragraph">✨ Форматирование</p>
+        <p class="paragraph">🎉 Списки</p>
+        <p class="paragraph">🎈 Эмбеды</p>
+        <p class="paragraph">✨ Сложные блоки</p>
+        <p class="paragraph">⌛ Таблицы</p>
+        <p class="paragraph">⌛ Вложенные списки</p>
+      </roadmap>
+
+      <h4>Таблицы <sup>Alpha</sup></h4>
+      <table>
+        <tr>
+          <td>Shift + Enter — добавить строку</td>
+          <td>
+            Shift + Tab — добавить колонку
+          </td>
+        </tr>
+        <tr>
+          <td>Ctrl + Shift + Backspace — удалить строку</td>
+          <td>
+            Ctrl + Backspace — удалить колонку
+          </td>
+        </tr>
+      </table>
+
+      <h4>Вложенные списки<sup>Alpha</sup></h4>
+      <ol start="1"><li>Первый уровень</li>
+      <ol><li>Второй</li>
+      <ol><li>Третий</li>
+      <li>Снова третий</li>
+      <ul><li>…внезапно булеты</li>
+      <ul><li>ещё булеты</li></ul></ul></ol>
+      <li>Обратно второй</li></ol>
+      <li>И опять первый</li></ol>
+
+      <hr class="asterisk"></hr>
+      <p class="paragraph">И многое другое с помощью плагинов…</p>
+      `;
     }
     const initData = {
       dataHtml,
@@ -91,7 +187,7 @@
       formatingsPlugin,
       headersPlugin,
       hrPlugin,
-      listsPlugin,
+      nestedlistsPlugin,
       blockquotePlugin,
       calloutPlugin,
       imagePlugin,
@@ -104,6 +200,7 @@
       typoSugarPlugin,
       twoColumnsPlugin,
       roadmapPlugin,
+      tablePlugin,
     } = Textarena.getPlugins();
 
     const textarena = new Textarena(
@@ -152,7 +249,7 @@
               },
             ],
           }),
-          listsPlugin(),
+          nestedlistsPlugin(),
           blockquotePlugin({
             marks: [
               {
@@ -262,80 +359,13 @@
           }),
           embedPlugin(),
           linkPlugin(),
-          asidePlugin({
-            name: 'asideColoredGrey',
-            tag: 'ASIDE',
-            attributes: { class: 'aside-fill aside-fill-grey' },
-            title: 'Цветной блок',
-            icon: `<svg xmlns="http://www.w3.org/2000/svg"
-              height="24px" viewBox="0 0 24 24" width="24px" fill="currentColor"><path d="M0 0h24v24H0z" fill="none"/>
-              <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
-              </svg>`,
-            shortcut: 'Alt + Digit7',
-            hint: '7',
-            command: 'convert-to-aside-colored-grey',
-            marks: [
-              {
-                tag: 'ASIDE',
-                attributes: ['class="aside-fill aside-fill-grey"'],
-              },
-              {
-                tag: 'DIV',
-                attributes: ['class="contentGroup contentGroup-grey"'],
-              },
-            ],
-          }),
-          asidePlugin({
-            name: 'asideColoredPurple',
-            tag: 'ASIDE',
-            attributes: { class: 'aside-fill aside-fill-purple' },
-            title: 'Цветной блок',
-            icon: `<svg xmlns="http://www.w3.org/2000/svg"
-              height="24px" viewBox="0 0 24 24" width="24px" fill="#b460ff"><path d="M0 0h24v24H0z" fill="none"/>
-              <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
-              </svg>`,
-            shortcut: 'Alt + Digit8',
-            hint: '8',
-            command: 'convert-to-aside-colored-purple',
-            marks: [
-              {
-                tag: 'ASIDE',
-                attributes: ['class="aside-fill aside-fill-purple"'],
-              },
-              {
-                tag: 'DIV',
-                attributes: ['class="contentGroup contentGroup-purple"'],
-              },
-            ],
-          }),
-          asidePlugin({
-            name: 'asideColoredOrange',
-            tag: 'ASIDE',
-            attributes: { class: 'aside-fill aside-fill-orange' },
-            title: 'Цветной блок',
-            icon: `<svg xmlns="http://www.w3.org/2000/svg"
-              height="24px" viewBox="0 0 24 24" width="24px" fill="#ffb09a"><path d="M0 0h24v24H0z" fill="none"/>
-              <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
-              </svg>`,
-            shortcut: 'Alt + Digit9',
-            hint: '9',
-            command: 'convert-to-aside-colored-orange',
-            marks: [
-              {
-                tag: 'ASIDE',
-                attributes: ['class="aside-fill aside-fill-orange"'],
-              },
-              {
-                tag: 'DIV',
-                attributes: ['class="contentGroup contentGroup-orange"'],
-              },
-            ],
-          }),
+          asidePlugin(),
           codePlugin(),
           quotePlugin(),
           typoSugarPlugin(),
           roadmapPlugin(),
           twoColumnsPlugin(),
+          tablePlugin(),
         ],
         toolbar: {
           enabled: true,
@@ -346,19 +376,14 @@
             'strikethrough',
             'subscript',
             'superscript',
-            'colored',
             'mark',
+            'inline-code',
             'link',
             'header2',
             'header3',
             'header4',
-            'code',
             'unordered-list',
             'ordered-list',
-            'asideColoredGrey',
-            'asideColoredPurple',
-            'asideColoredOrange',
-            'blockquote',
             'clearFormatings',
           ],
         },
@@ -375,11 +400,10 @@
             'figure',
             'blockquote',
             'embed',
-            'asideColoredGrey',
-            'asideColoredPurple',
-            'asideColoredOrange',
+            'aside',
             'two-columns',
             'roadmap',
+            'add-table',
           ],
         },
       }

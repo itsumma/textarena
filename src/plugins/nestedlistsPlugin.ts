@@ -358,6 +358,7 @@ const nestedlistsPlugin = (opts?: ListsOptions): ArenaPlugin => ({
       'tabsList',
       (ta: Textarena, selection: ArenaSelection) => {
         const model = ta.getModel();
+        let result = false;
         utils.modelTree.runThroughSelection(
           selection,
           (node: AnyArenaNode) => {
@@ -365,6 +366,7 @@ const nestedlistsPlugin = (opts?: ListsOptions): ArenaPlugin => ({
               && node.arena.name === 'li'
               && node.parent.isAllowedNode(node.parent.arena)
             ) {
+              result = true;
               const { parent } = node;
               const newParent = model.createChildNode(parent.arena) as ArenaNodeMediator;
               parent.insertNode(newParent, node.getIndex());
@@ -374,7 +376,7 @@ const nestedlistsPlugin = (opts?: ListsOptions): ArenaPlugin => ({
             }
           },
         );
-        return selection;
+        return result ? selection : false;
       },
     );
     textarena.registerShortcut(
@@ -385,6 +387,7 @@ const nestedlistsPlugin = (opts?: ListsOptions): ArenaPlugin => ({
       'untabsList',
       (ta: Textarena, selection: ArenaSelection) => {
         const model = ta.getModel();
+        let result = false;
         utils.modelTree.runThroughSelection(
           selection,
           (node: AnyArenaNode) => {
@@ -392,6 +395,7 @@ const nestedlistsPlugin = (opts?: ListsOptions): ArenaPlugin => ({
               && node.arena.name === 'li'
               && node.parent.isAllowedNode(node.parent.arena)
             ) {
+              result = true;
               const newNode = model.getOutFromMediator(node as ArenaNodeText, true);
               if (newNode) {
                 if (selection.startNode === node) {
@@ -404,7 +408,7 @@ const nestedlistsPlugin = (opts?: ListsOptions): ArenaPlugin => ({
             }
           },
         );
-        return selection;
+        return result ? selection : false;
       },
     );
     textarena.registerShortcut(

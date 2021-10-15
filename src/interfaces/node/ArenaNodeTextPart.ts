@@ -3,6 +3,7 @@ import ArenaFormating from '../ArenaFormating';
 import ArenaCursorText from '../ArenaCursorText';
 import { ArenaInlineInterface, ArenaTextInterface } from '../Arena';
 import { ArenaNodeInline } from '../ArenaNode';
+import { ArenaInterval } from '../ArenaInterval';
 
 export default interface ArenaNodeTextPart {
   readonly arena: ArenaTextInterface;
@@ -54,6 +55,11 @@ export default interface ArenaNodeTextPart {
   clearSpaces(): void;
 
   delBeforeDot(): void;
+
+  getInlineInterval(
+    start: number,
+    end: number,
+  ): ArenaInterval | undefined;
 
   addInlineNode(
     node: ArenaNodeInline,
