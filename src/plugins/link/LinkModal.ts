@@ -27,86 +27,113 @@ export default class LinkModal extends LitElement {
   .content {
     opacity: 0;
     position: fixed;
-    left: calc(50% - 150px);
+    left: calc(50% - 7.5em);
     border: none;
-    width: 300px;
-    color: #4a4a4a;
+    width: 15em;
+    color: rgb(74, 74, 74);
     box-shadow: 0 8px 23px -6px rgba(21, 40, 54, 0.31), 22px -14px 34px -18px rgba(33, 48, 73, 0.26);
     border-radius: 0.3em;
     background-color: rgb(231, 231, 231);
-}
+  }
+  @supports ((-webkit-backdrop-filter: none) or (backdrop-filter: none)) {
+    .content {
+      background-color: #ffffff96;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+    }
+  }
   .content.showed {
     opacity: 1;
     animation-name: slideIn;
     animation-duration: 0.4s;
-    top: 100px;
+    top: 5em;
   }
   /* Close button */
   .close {
-    color: #aaa;
-    float: left;
-    font-size: 28px;
+    font-family: inherit;
+    color: inherit;
+    background: none;
+    display: block;
+    box-sizing: border-box;
+    border: none;
+    position: absolute;
+    right: 0.2em;
+    top: 0.2em;
+    font-size: 1.5em;
     font-weight: bold;
-    position: relative;
-    left: 5px;
+    border-radius: 0.2em;
+    width: 1em;
+    height: 1em;
+    line-height: 1.1em;
+    padding: 0px;
   }
   .close:hover,
   .clsoe:focus {
     color: #000;
     text-decoration: none;
-    cursor: pointer;    
+    cursor: pointer;
+    background: #fff;
   }
   .title {
     margin: 0;
     text-align: center;
+    line-height: 1.5em;
   }
   .body {
-    padding: 0px 20px 25px;
+    padding: 1em 1em 0;
   }
   .header {
-    background: #fff;
-    padding: 5px 10px;
-    border-radius: 5px 5px 0 0;
+    /* background: #fff; */
+    padding: 1em 1em 0;
+    border-radius: 0.5em 0.5em 0 0;
   }
   .label {
     margin-top: 10px;
   }
   input {
     width: 100%;
+    background-color: #ffffff7a;
+    color: black;
     font-size: 0.7rem;
     padding: 8px;
     font-family: inherit;
     box-sizing: border-box;
     border: none;
-    border-radius: 5px;
-    color: #4a4a4a;
+    border-radius: 0.2em;
   }
-  input:focus, .footer button:focus { 
+  input:focus, .footer button:focus {
     outline: none !important;
     border-color: #20447a;
     box-shadow: 0 0 0.3em rgb(32 68 122 / 58%);
+    background-color: #ffffff;
   }
   .footer {
-    background: #fff;
+    /* background: #fff; */
     text-align: center;
-    border-radius: 0 0 5px 5px;
+    border-radius: 0 0 0.5em 0.5em;
+    padding: 1em;
   }
   .footer button {
     font-family: inherit;
     font-weight: bold;
-    background: #fff;
+    color: inherit;
+    background: none;
     width: 100%;
     display: block;
     box-sizing: border-box;
     padding: 10px;
     border: none;
-    border-radius: 0 0 5px 5px;
+    border-radius: 0.2em;
+    cursor: pointer;
+  }
+  .footer button:hover {
+    background: #fff;
   }
   @keyframes fadein {
     from {
       opacity: 0;
     }
-  
+
     to {
       opacity: 1;
     }
@@ -116,7 +143,7 @@ export default class LinkModal extends LitElement {
       top: 0px;
       opacity: 0;
     }
-  
+
     to {
       top: 100px;
       opacity: 1;
@@ -149,10 +176,7 @@ export default class LinkModal extends LitElement {
     return html`
       <div class="wrapper ${this.show ? 'showed' : ''}" @click="${this.onClose}">
         <div class="content ${this.show ? 'showed' : ''}" @click="${this.onClick}" @keydown="${this.onKeydown}">
-            <div class="header">
-                <span class="close" @click="${this.onClose}">&times;</span>
-                <h3 class="title">URL</h3>
-            </div>
+          <button class="close" @click="${this.onClose}">&times;</button>
             <div class="body">
                 <div class="label">
                     <label for="text">Text</label>

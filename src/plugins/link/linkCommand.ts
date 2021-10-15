@@ -13,6 +13,7 @@ export default function linkCommand(
     if (!selection.isSameNode()) {
       return selection;
     }
+    selection.trim();
     const { startNode } = selection;
     if (!(startNode instanceof TextNode)) {
       return selection;
