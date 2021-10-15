@@ -278,6 +278,13 @@ export default class RichTextManager {
     return node;
   }
 
+  public getInlineInterval(
+    start: number,
+    end: number,
+  ): Interval | undefined {
+    return this.inlines.getInterval(start, end);
+  }
+
   public getInlineNode(
     arena: ArenaInlineInterface,
     start: number,

@@ -21,6 +21,7 @@ import NodeFactory from '../models/NodeFactory';
 import ArenaServiceManager from './ArenaServiceManager';
 import NodeRegistry from '../helpers/NodeRegistry';
 import utils from '../utils';
+import { ArenaInterval } from '../interfaces/ArenaInterval';
 
 export type ArenaMark = {
   attributes: string[],
@@ -989,6 +990,16 @@ export default class ArenaModel {
       },
     );
     return selection;
+  }
+
+  public getInlineInterval(
+    selection: ArenaSelection,
+  ): ArenaInterval | undefined {
+    const { startNode, startOffset, endOffset } = selection;
+    if (selection.isSameNode() && startNode.hasText) {
+      return startNode.getInlineInterval(startOffset, endOffset);
+    }
+    return undefined;
   }
 
   // #region [Inline Node]

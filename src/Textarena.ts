@@ -48,6 +48,7 @@ import codePlugin from './plugins/codePlugin';
 import twoColumnsPlugin from './plugins/twoColumns/twoColumnsPlugin';
 import roadmapPlugin from './plugins/roadmapPlugin';
 import tablePlugin from './plugins/table/tablePlugin';
+import { ArenaInterval } from './interfaces/ArenaInterval';
 
 export const defaultOptions: TextarenaOptions = {
   editable: true,
@@ -382,6 +383,12 @@ class Textarena {
     return this.asm.model.moveChild(selection, direction);
   }
 
+  public getInlineInterval(
+    selection: ArenaSelection,
+  ): ArenaInterval | undefined {
+    return this.asm.model.getInlineInterval(selection);
+  }
+
   public addInlineNode(
     selection: ArenaSelection,
     arena: ArenaInlineInterface,
@@ -507,6 +514,10 @@ class Textarena {
       });
     }
   }
+
+  public execCommand(command: string, selection?: ArenaSelection): void {
+    this.asm.commandManager.execCommand(command, selection);
+  }
 }
 
 declare global {
@@ -525,6 +536,7 @@ declare global {
         process: () => void,
       },
     };
+    debugSymbol: unknown;
   }
 }
 
