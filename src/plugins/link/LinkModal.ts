@@ -220,13 +220,27 @@ export default class LinkModal extends LitElement {
     if (this.saveCB) {
       this.saveCB(newHref?.trim() || '', newText?.trim() || '');
     }
+    this.clearFields();
     this.show = false;
   }
 
   onClose(): void {
-    this.show = false;
     if (this.closeCB) {
       this.closeCB();
     }
+    this.clearFields();
+    this.show = false;
+  }
+
+  clearFields() {
+    this.url = '';
+    this.text = '';
+    if (this.textEl) {
+      this.textEl.value = '';
+    }
+    if (this.urlEl) {
+      this.urlEl.value = '';
+    }
+    this.requestUpdate();
   }
 }
