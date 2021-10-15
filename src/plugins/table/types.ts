@@ -2,11 +2,8 @@ import { ArenaMediatorInterface, ArenaTextInterface, ChildArena } from '../../in
 import { DefaulPluginOptions } from '../../interfaces/ArenaPlugin';
 import CommandAction from '../../interfaces/CommandAction';
 import { TagAndAttributes } from '../../interfaces/ArenaFormating';
-import { OutputProcessor } from '../../interfaces/ArenaOptions';
 import { ToolCheckStatus } from '../../interfaces/ToolOptions';
 import { CreatorCanShow } from '../../interfaces/CreatorOptions';
-import ArenaAttributes from '../../interfaces/ArenaAttributes';
-import NodeAttributes from '../../interfaces/NodeAttributes';
 
 export type ArenaPluginOptions = DefaulPluginOptions & {
   marks: TagAndAttributes[],

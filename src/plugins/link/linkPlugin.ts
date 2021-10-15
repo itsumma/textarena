@@ -87,7 +87,7 @@ const linkPlugin = (opts?: Partial<LinkPluginOptions>): ArenaPlugin => ({
           command,
         );
       }
-      if (icon) {
+      if (icon && title) {
         textarena.registerTool({
           name,
           icon,
