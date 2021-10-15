@@ -49,7 +49,7 @@ export default function linkCommand(
       linkModal?.setProperty('closeCB', () => r(selection));
       linkModal?.setProperty('saveCB', (newHref: string, newText: string) => {
         startNode.removeText(startOffset, endOffset);
-        startNode.insertText(newText, startOffset, false);
+        startNode.insertText(newText, startOffset, true);
         selection.setStartNode(startNode, startOffset);
         selection.setEndNode(startNode, startOffset + newText.length);
         if (newHref) {
