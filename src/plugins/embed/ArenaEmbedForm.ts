@@ -1,6 +1,5 @@
-import {
-  html, css, property, TemplateResult,
-} from 'lit-element';
+import { css, html, TemplateResult } from 'lit';
+import { property } from 'lit/decorators.js';
 import WebComponent from '../../helpers/WebComponent';
 
 const HOSTS = {
@@ -83,7 +82,7 @@ export default class ArenaEmbedForm extends WebComponent {
     type: String,
     reflect: true,
   })
-  href: string | undefined;
+    href: string | undefined;
 
   inputValue = '';
 

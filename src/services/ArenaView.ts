@@ -1,4 +1,4 @@
-import { render } from 'lit-html';
+import { render } from 'lit';
 import ArenaSelection from '../helpers/ArenaSelection';
 import { AnyArenaNode } from '../interfaces/ArenaNode';
 import ArenaServiceManager from './ArenaServiceManager';

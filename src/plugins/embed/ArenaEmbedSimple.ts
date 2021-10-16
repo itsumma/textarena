@@ -1,6 +1,5 @@
-import {
-  LitElement, html, property, TemplateResult,
-} from 'lit-element';
+import { html, LitElement, TemplateResult } from 'lit';
+import { property } from 'lit/decorators.js';
 
 export default class ArenaEmbedSimple extends LitElement {
   protected currentHref = '';
@@ -8,17 +7,17 @@ export default class ArenaEmbedSimple extends LitElement {
   @property({
     type: String,
   })
-  type: string | undefined;
+    type: string | undefined;
 
   @property({
     type: String,
   })
-  postid: string | undefined;
+    postid: string | undefined;
 
   @property({
     type: String,
   })
-  href: string | undefined;
+    href: string | undefined;
 
   createRenderRoot(): LitElement {
     return this;

@@ -1,6 +1,7 @@
 import {
-  html, css, property, TemplateResult, CSSResult,
-} from 'lit-element';
+  CSSResult, css, TemplateResult, html,
+} from 'lit';
+import { property } from 'lit/decorators.js';
 import WebComponent from '../../helpers/WebComponent';
 import { AnyArena } from '../../interfaces/Arena';
 import { ScrProcessor, UploadProcessor } from './types';
@@ -9,22 +10,22 @@ export default class ArenaImage extends WebComponent {
   @property({
     type: String,
   })
-  src: string | undefined;
+    src: string | undefined;
 
   @property({
     type: Number,
   })
-  width: number | undefined;
+    width: number | undefined;
 
   @property({
     type: Number,
   })
-  height: number | undefined;
+    height: number | undefined;
 
   @property({
     type: Object,
   })
-  arena: AnyArena | undefined;
+    arena: AnyArena | undefined;
 
   @property({
     type: String,

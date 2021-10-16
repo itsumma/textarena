@@ -1,6 +1,7 @@
 import {
-  css, html, LitElement, property, TemplateResult,
-} from 'lit-element';
+  css, html, LitElement, TemplateResult,
+} from 'lit';
+import { property } from 'lit/decorators.js';
 import { ArenaNodeInline, ArenaNodeText } from '../../interfaces/ArenaNode';
 import Textarena from '../../Textarena';
 import ElementHelper from '../../helpers/ElementHelper';
@@ -92,25 +93,25 @@ export default class ArenaLinkbar extends LitElement {
   `;
 
   @property({ type: Boolean })
-  show: boolean | undefined;
+    show: boolean | undefined;
 
   @property({ type: Object })
-  node: ArenaNodeInline | undefined;
+    node: ArenaNodeInline | undefined;
 
   @property({ type: Object })
-  parent: ArenaNodeText | undefined;
+    parent: ArenaNodeText | undefined;
 
   @property({ type: Number })
-  centerposition: number | undefined;
+    centerposition: number | undefined;
 
   @property({ type: Object })
-  textarena: Textarena | undefined;
+    textarena: Textarena | undefined;
 
   @property({ type: Object })
-  linkModal: ElementHelper | undefined;
+    linkModal: ElementHelper | undefined;
 
   @property({ type: String })
-  commandName: string | undefined;
+    commandName: string | undefined;
 
   observer: MutationObserver;
 

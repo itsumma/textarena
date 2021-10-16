@@ -60,7 +60,9 @@ module.exports = {
   ],
   devServer: {
     hot: false,
-    contentBase: path.join(__dirname, 'public'),
+    static: {
+      directory: path.join(__dirname, 'public'),
+    },
     host: '0.0.0.0',
   },
 };

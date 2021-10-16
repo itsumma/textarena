@@ -1,8 +1,9 @@
 import {
-  html, css, property, TemplateResult, CSSResult, queryAssignedNodes,
-} from 'lit-element';
-import { unsafeHTML } from 'lit-html/directives/unsafe-html';
-import { styleMap } from 'lit-html/directives/style-map.js';
+  CSSResult, css, TemplateResult, html,
+} from 'lit';
+import { property, queryAssignedNodes } from 'lit/decorators.js';
+import { unsafeHTML } from 'lit/directives/unsafe-html.js';
+import { styleMap } from 'lit/directives/style-map.js';
 import WebComponent from '../../helpers/WebComponent';
 import { AnyArena } from '../../interfaces/Arena';
 import { ArenaNodeMediator } from '../../interfaces/ArenaNode';
@@ -27,18 +28,18 @@ export default class ArenaFigure extends WebComponent {
   @property({
     type: Boolean,
   })
-  withCaption = false;
+    withCaption = false;
 
   @property({
     type: Object,
   })
-  arena: AnyArena | undefined;
+    arena: AnyArena | undefined;
 
   @property({ type: Object })
-  node: ArenaNodeMediator | undefined;
+    node: ArenaNodeMediator | undefined;
 
   @queryAssignedNodes('image-caption', true)
-  captionNodes: HTMLElement[] | undefined;
+    captionNodes: HTMLElement[] | undefined;
 
   // loading = false;
 

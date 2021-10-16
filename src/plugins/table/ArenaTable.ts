@@ -1,6 +1,6 @@
 import {
-  LitElement, html, css, TemplateResult,
-} from 'lit-element';
+  LitElement, css, TemplateResult, html,
+} from 'lit';
 
 export default class ArenaTable extends LitElement {
   static styles = css`

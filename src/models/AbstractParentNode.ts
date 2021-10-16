@@ -1,5 +1,5 @@
-import { TemplateResult, html } from 'lit-html';
-import { repeat } from 'lit-html/directives/repeat';
+import { html, TemplateResult } from 'lit';
+import { repeat } from 'lit/directives/repeat.js';
 import { ChildArena, ParentArena } from '../interfaces/Arena';
 import ArenaCursorText from '../interfaces/ArenaCursorText';
 import ArenaCursorAncestor from '../interfaces/ArenaCursorAncestor';
