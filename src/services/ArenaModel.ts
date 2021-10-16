@@ -1,5 +1,4 @@
-import { TemplateResult } from 'lit-html';
-
+import { TemplateResult } from 'lit';
 import ArenaFactory from '../arenas/ArenaFactory';
 import { Direction } from '../events/RemoveEvent';
 import ArenaSelection from '../helpers/ArenaSelection';

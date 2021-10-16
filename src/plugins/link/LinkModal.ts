@@ -1,6 +1,7 @@
 import {
-  css, html, LitElement, property, PropertyValues, TemplateResult,
-} from 'lit-element';
+  LitElement, css, TemplateResult, html, PropertyValues,
+} from 'lit';
+import { property } from 'lit/decorators.js';
 
 export default class LinkModal extends LitElement {
   static styles = css`
@@ -158,19 +159,19 @@ export default class LinkModal extends LitElement {
   }
 
   @property({ type: Function })
-  saveCB: ((url: string, text: string) => void) | undefined;
+    saveCB: ((url: string, text: string) => void) | undefined;
 
   @property({ type: Function })
-  closeCB: (() => void) | undefined;
+    closeCB: (() => void) | undefined;
 
   @property({ type: String })
-  text: string;
+    text: string;
 
   @property({ type: String })
-  url: string;
+    url: string;
 
   @property({ type: Boolean })
-  show = false;
+    show = false;
 
   protected render(): TemplateResult | undefined {
     return html`

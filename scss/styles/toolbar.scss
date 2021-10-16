@@ -50,7 +50,7 @@
     background-color: rgb(231, 231, 231);
     padding: 0.2em;
 
-    @supports ((-webkit-backdrop-filter: none) or (backdrop-filter: none)) {
+    @supports ((-webkit-backdrop-filter: blur(20px)) or (backdrop-filter: blur(20px))) {
       background-color: #dadada8f;
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);

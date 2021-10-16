@@ -1,12 +1,13 @@
 import {
-  LitElement, html, css, property, TemplateResult,
-} from 'lit-element';
+  css, html, LitElement, TemplateResult,
+} from 'lit';
+import { property } from 'lit/decorators.js';
 
 export default class ArenaCallout extends LitElement {
   // This decorator creates a property accessor that triggers rendering and
   // an observed attribute.
   @property()
-  mood = 'great';
+    mood = 'great';
 
   static styles = css`
     :host {

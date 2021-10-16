@@ -1,12 +1,13 @@
+import { LitElement } from 'lit';
 import {
-  LitElement, property,
-} from 'lit-element';
+  property,
+} from 'lit/decorators.js';
 import { AnyArenaNode } from '../interfaces/ArenaNode';
 import NodeAttributes from '../interfaces/NodeAttributes';
 
 export default class WebComponent extends LitElement {
   @property({ type: Object })
-  node: AnyArenaNode | undefined;
+    node: AnyArenaNode | undefined;
 
   constructor() {
     super();
