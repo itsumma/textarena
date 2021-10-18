@@ -1,8 +1,6 @@
-name: Publish textarena
+name: Test textarena
 
 on:
-  push:
-    branches: [master]
   pull_request:
     branches: [master]
 
@@ -48,17 +46,3 @@ jobs:
         uses: cypress-io/github-action@v2
         with:
           start: yarn serve
-      -
-        name: Check GitHub Pages status
-        uses: crazy-max/ghaction-github-status@v2
-        with:
-          pages_threshold: major_outage
-      -
-        name: Deploy to GitHub Pages
-        if: ${{ success() && github.event_name == 'push' && github.ref == 'refs/heads/master' }}
-        uses: crazy-max/ghaction-github-pages@v2
-        with:
-          target_branch: gh-pages
-          build_dir: public
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
