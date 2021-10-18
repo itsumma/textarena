@@ -25,6 +25,7 @@ module.exports = {
     libraryExport: 'default',
     libraryTarget: 'umd',
     path: path.resolve(__dirname, 'public'),
+    assetModuleFilename: 'textarena.css',
   },
   resolve: {
     extensions: ['.ts', '.js', '.json', 'scss'],
@@ -40,15 +41,22 @@ module.exports = {
       },
       {
         test: /\.s[ac]ss$/i,
+        exclude: /node_modules/,
+        type: 'asset/resource',
         use: [
+          // MiniCssExtractPlugin.loader,
           {
-            loader: 'file-loader',
+            loader: 'postcss-loader',
             options: {
-              name: 'textarena.css',
-            },
+              postcssOptions: {
+                plugins: [
+                  [
+                    'autoprefixer',
+                  ],
+                ],
+              }
+            }
           },
-          'extract-loader',
-          'css-loader',
           'sass-loader',
         ],
       },
