@@ -202,6 +202,7 @@
       roadmapPlugin,
       tablePlugin,
       contentsPlugin,
+      backImagePlugin,
     } = Textarena.getPlugins();
 
     const textarena = new Textarena(
@@ -323,44 +324,36 @@
                 className: 'image place-wide',
                 ratio: 1.84,
                 icon: `<svg viewBox="0 0 25 25" fill="currentColor"><path d="M3 17.004V9.01a.4.4 0 0 1 .145-.31.476.476 0 0 1 .328-.13h17.74c.12 0 .23.043.327.13a.4.4 0 0 1 .145.31v7.994a.404.404 0 0 1-.145.313.48.48 0 0 1-.328.13H3.472a.483.483 0 0 1-.327-.13.402.402 0 0 1-.145-.313zm2.212 3.554v-.87c0-.13.05-.243.145-.334a.472.472 0 0 1 .328-.137H19c.124 0 .23.045.322.137a.457.457 0 0 1 .138.335v.86c0 .12-.046.22-.138.31a.478.478 0 0 1-.32.13H5.684a.514.514 0 0 1-.328-.13.415.415 0 0 1-.145-.32zm0-14.246v-.84c0-.132.05-.243.145-.334A.477.477 0 0 1 5.685 5H19a.44.44 0 0 1 .322.138.455.455 0 0 1 .138.335v.84a.451.451 0 0 1-.138.334.446.446 0 0 1-.32.138H5.684a.466.466 0 0 1-.328-.138.447.447 0 0 1-.145-.335z"></path></svg>`,
-                srcset: [
-                  {
-                    media: '(max-width: 1441px)',
-                    rations: [
-                      {
-                        ratio: 1,
-                        width: 721,
-                        height: 392,
-                      },
-                      {
-                        ratio: 2,
-                        width: 1442,
-                        height: 784,
-                      },
-                    ],
-                  },
-                  {
-                    media: '',
-                    rations: [
-                      {
-                        ratio: 1,
-                        width: 1161,
-                        height: 631,
-                      },
-                      {
-                        ratio: 2,
-                        width: 2322,
-                        height: 1262,
-                      },
-                    ],
-                  },
-                ],
               },
             ],
           }),
           embedPlugin(),
           linkPlugin(),
           asidePlugin(),
+          asidePlugin({
+            name: 'black-back',
+            tag: 'ASIDE',
+            attributes: { class: 'black-back' },
+            title: 'Черная подложка',
+            icon: `<svg id="_x31_"viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><g>
+              <path d="m21.5 22h-19c-1.378 0-2.5-1.121-2.5-2.5v-15c0-1.379 1.122-2.5 2.5-2.5h19c1.378
+              0 2.5 1.121 2.5 2.5v15c0 1.379-1.122 2.5-2.5 2.5zm-19-19c-.827 0-1.5.673-1.5 1.5v15c0
+              .827.673 1.5 1.5 1.5h19c.827 0 1.5-.673 1.5-1.5v-15c0-.827-.673-1.5-1.5-1.5z"
+              fill="currentColor"/></g><g>
+              <path d="m3.5 10c-.276 0-.5-.224-.5-.5v-2c0-1.379 1.122-2.5 2.5-2.5h2c.276 0
+              .5.224.5.5s-.224.5-.5.5h-2c-.827 0-1.5.673-1.5 1.5v2c0 .276-.224.5-.5.5z"
+              fill="currentColor"/></g><g>
+              <path d="m18.5 19h-2c-.276 0-.5-.224-.5-.5s.224-.5.5-.5h2c.827 0 1.5-.673
+              1.5-1.5v-2c0-.276.224-.5.5-.5s.5.224.5.5v2c0 1.379-1.122 2.5-2.5 2.5z"
+              fill="currentColor"/></g></svg>`,
+            command: 'convert-to-black-back',
+            marks: [
+              {
+                tag: 'ASIDE',
+                attributes: ['class="black-back"'],
+              },
+            ],
+          }),
           codePlugin(),
           quotePlugin(),
           typoSugarPlugin(),
@@ -368,6 +361,7 @@
           twoColumnsPlugin(),
           tablePlugin(),
           contentsPlugin(),
+          backImagePlugin(),
         ],
         toolbar: {
           enabled: true,
@@ -403,10 +397,12 @@
             'blockquote',
             'embed',
             'aside',
+            'black-back',
             'two-columns',
             'roadmap',
             'add-table',
             'contents',
+            'back-image',
           ],
         },
       }

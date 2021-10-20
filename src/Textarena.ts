@@ -35,6 +35,7 @@ import linkPlugin from './plugins/link/linkPlugin';
 import listsPlugin from './plugins/listsPlugin';
 import nestedlistsPlugin from './plugins/nestedlistsPlugin';
 import paragraphPlugin from './plugins/paragraphPlugin';
+import backImagePlugin from './plugins/backImage/backImagePlugin';
 
 import ArenaCommandManager from './services/ArenaCommandManager';
 import ArenaServiceManager from './services/ArenaServiceManager';
@@ -567,6 +568,7 @@ Textarena.constructor.prototype.getPlugins = () => ({
   roadmapPlugin,
   tablePlugin,
   contentsPlugin,
+  backImagePlugin,
 });
 
 export default Textarena;
