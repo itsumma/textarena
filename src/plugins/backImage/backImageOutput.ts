@@ -13,7 +13,9 @@ const backImageOutput = (
     const image = outputImage(type, node, frms, arenaAttrs);
     return `
       <div class="arena-back-image">
-      ${image}
+        <div class="arena-back-image-img">
+          ${image}
+        </div>
         <div class="arena-back-image-body">
           ${node.hasChildren ? node.children.map((child) => child.getOutput(type, frms)).join('\n') : null}
         </div>
