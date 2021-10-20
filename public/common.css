@@ -626,7 +626,7 @@ arena-back-image,
   z-index: 1;
   position: relative;
 }
-.arena-back-image img {
+.arena-back-image-img img {
   position: absolute;
   inset: 0;
   object-fit: cover;
