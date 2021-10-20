@@ -22,16 +22,17 @@ const outputImage = (
   const prepareSrc = arenaAttrs.prepareSrc as ScrProcessor | undefined;
   const resultSrc = prepareSrc ? prepareSrc(src, width, height) : src;
   const img = `<img src="${resultSrc}" alt="${alt}" class="${className}">`;
+  let sources = '';
   if (srcset && prepareSrc) {
-    const sources = srcset.map((item) => `<source media="${item.media}"
+    sources = srcset.map((item) => `<source media="${item.media}"
     srcset="${item.rations.map((r) => `${prepareSrc(src, r.width, r.height)} ${r.ratio}x`).join(', ')}"/>`).join('\n');
-    return `
+  }
+  return `
     <picture>
       ${sources}
       ${img}
-    </picture>`;
-  }
-  return img;
+    </picture>
+  `;
 };
 
 export default outputImage;

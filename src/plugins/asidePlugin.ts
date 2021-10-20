@@ -55,6 +55,7 @@ const asidePlugin = (opts?: Partial<DefaulPluginOptions>): ArenaPlugin => ({
       marks,
       [textarena.getRootArenaName()],
     ) as ArenaMediatorInterface;
+    textarena.addMiddleArenas(arena);
     if (command) {
       textarena.registerCommand(
         command,
