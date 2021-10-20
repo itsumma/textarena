@@ -1,3 +1,7 @@
+*, ::after, ::before {
+  box-sizing: border-box;
+}
+
 h1 {
   font-size: 3em;
   font-weight: bold;
@@ -548,13 +552,13 @@ roadmap p.paragraph {
   position: relative;
 }
 roadmap p.paragraph::before {
-    content: '';
-    position: absolute;
-    width: 0.2em;
-    background: #ccc;
-    top: 0;
-    left: 0;
-    bottom: 0;
+  content: '';
+  position: absolute;
+  width: 0.2em;
+  background: #ccc;
+  top: 0;
+  left: 0;
+  bottom: 0;
 }
 roadmap p.paragraph:first-child::before {
   top: 50%;
@@ -563,16 +567,16 @@ roadmap p.paragraph:last-child::before {
   bottom: 50%;
 }
 roadmap p.paragraph::after {
-    content: '';
-    position: absolute;
-    width: 1em;
-    height: 1em;
-    background: white;
-    border: 0.2em solid #a5c9fd;
-    border-radius: 50%;
-    top: 50%;
-    left: 0;
-    transform: translate(-0.6em, -0.6em);
+  content: '';
+  position: absolute;
+  width: 1em;
+  height: 1em;
+  background: white;
+  border: 0.15em solid #a5c9fd;
+  border-radius: 50%;
+  top: 50%;
+  left: 0;
+  transform: translate(-0.4em, -0.5em);
 }
 
 code {
