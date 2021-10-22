@@ -29,131 +29,131 @@
     } catch {}
     if (dataHtml === undefined) {
       dataHtml = `
-      <h2><s>Простой</s> Крутой текстовый редактор</h2>
-      <p class="paragraph"><strong>Textarena</strong> адаптирована для быстрой работы с текстом. К тому же она легко расширяется с помощью плагинов.</p>
-      <p class="paragraph">Выделите текст, появится панель для форматирования.</p>
-      <p class="paragraph">Зажмите Ctrl (⌘ для Mac) или Alt (⌥ для Mac) и вы увидите подсказки.</p>
+      <h2><s>Simple</s> Cool text editor</h2>
+      <p class="paragraph"><strong>Textarena</strong> is adapted for quick work with text. In addition, it is easily expanded with plugins.</p>
+      <p class="paragraph">When the text is selected, the formatting panel will appear.</p>
+      <p class="paragraph">On the open panel, hold down Ctrl (⌘ for Mac) or Alt (⌥ for Mac) and you will see keyboard shortcuts hints.</p>
       <figure class="">
         <picture>
-          <img src="https://d3qc8znfr3ejm3.cloudfront.net/images/7d7b94c6-72d0-4756-9da2-984e8496c817.png" alt="" class="">
+          <img src="https://d3qc8znfr3ejm3.cloudfront.net/images/781b832a-2fe6-46f0-b561-08b81799f809.png" alt="true" class="">
         </picture>
-        <figcaption slot="image-caption">Панелька для форматирования появляется когда выделен текст, но работает по горячим клавишам</figcaption>
+        <figcaption slot="image-caption">The formatting panel appears when the text is highlighted, and can also be controlled by keyboard shortcuts</figcaption>
       </figure>
-      <p class="paragraph">Ctrl (⌘) + I — выделенный текст станет <em>италиком</em>. Повторное нажатие уберёт италик.</p>
-      <p class="paragraph">Ctrl (⌘) + B — изменит <strong>жирность</strong> выделенного текста.</p>
-      <p class="paragraph">И так далее: <em>италик</em>, <u>подчеркнутый</u>, <s>зачеркнутый</s>, <sub>нижний</sub> и <sup>верхний</sup> индексы, <mark>маркированный</mark>, <code>строчный код</code>, <a href="https://github.com/itsumma/textarena" target="_blank">ссылка</a>…&nbsp;</p>
+      <p class="paragraph">Ctrl (⌘) + I — the highlighted text will become <em>italic</em>. Pressing again will remove the italic.</p>
+      <p class="paragraph">Ctrl (⌘) + B — will change <strong>bold</strong> of the selected text.</p>
+      <p class="paragraph">And so on: <em>italic</em>, <u>underline</u>, <s>strikethrough</s>, <sub>subscript</sub> and <sup>superscript</sup>, <mark>mark</mark>, <code>inline code</code>, <a href="https://github.com/itsumma/textarena" target="_blank">link</a>…&nbsp;</p>
 
-      <h3>Заголовки</h3>
+      <h3>Headings</h3>
       <ul>
-        <li>H2 — второй по величине.</li>
-        <li>H3 — третий по величине.</li>
-        <li>H4 — четвёртый.</li>
+        <li>H2 — second level.</li>
+        <li>H3 — third level.</li>
+        <li>H4 — fourth.</li>
       </ul>
-      <p class="paragraph">Почему нет первого? Во-первых, какие заголовки доступны в редакторе, настраивается. Во-вторых, не рекомендуется на странице использовать более одного заголовка первого уровня. На этой странице уже есть заголовок — «TEXTARENA» — в верху страницы.</p>
-      <p class="paragraph">Чтобы превратить текст в заголовок можно нажать Alt (⌥) + 2 или 3 или 4.</p>
-      <p class="paragraph">Чтобы вернуть параграф — Alt (⌥) + 0.</p>
+      <p class="paragraph">Why is there no first level? First of all, which headers are available in the editor is configurable. Secondly, it is not recommended to use more than one first-level heading on the page. This page already has a title - "TEXTARENA" - at the top of the page.</p>
+      <p class="paragraph">To turn the text into a heading, you can press Alt (⌥) + 2 or 3 or 4.</p>
+      <p class="paragraph">To return a paragraph — Alt (⌥) + 0.</p>
 
-      <h3>Списки</h3>
-      <p class="paragraph">Чтобы начать список:</p>
-      <ol><li>напечатать в начале строки «1.» и пробел или «-» с пробелом;</li>
-      <li>нажать Alt (⌥) + O или Alt (⌥) + L для нумерованного или списка с буллетами соответственно.</li></ol>
+      <h3>Lists</h3>
+      <p class="paragraph">To start the list:</p>
+      <ol><li>type at the beginning of the line "1." and a space or "-" with a space;</li>
+      <li>нpress Alt (⌥) + O or Alt (⌥) + L for ordered or bullet list, respectively.</li></ol>
 
-      <h3>Несложные текстовые блоки</h3>
-      <blockquote><p class="paragraph">Для того чтобы сделать простой блок цитаты, нажмите Alt (⌥) + &quot;.</p></blockquote>
-      <p class="paragraph">Или нажмите кнопку с плюсом на пустой строке.</p>
+      <h3>Simple text blocks</h3>
+      <blockquote><p class="paragraph">To make a simple quote block, press Alt (⌥) + &quot;.</p></blockquote>
+      <p class="paragraph">Or press the plus button on an empty line.</p>
       <figure class="">
         <picture>
           <img src="https://d3qc8znfr3ejm3.cloudfront.net/images/f2a48b32-3db9-456a-b03b-e142a0bc38ca.png" alt="" class="">
         </picture>
-        <figcaption slot="image-caption">Панель для создания заголовков, списков и других блоков оформления</figcaption>
+        <figcaption slot="image-caption">Panel for creating headings, lists and other elements</figcaption>
       </figure>
       <aside class="aside aside-gray">
-        <p class="paragraph">Текстовый блок с рамочкой.</p>
-        <p class="paragraph">Чтобы выйти из него, можно в конце строки два раза нажать Enter.</p>
+        <p class="paragraph">A text block with a frame.</p>
+        <p class="paragraph">To exit it, you can press Enter twice at the end of the line.</p>
       </aside>
 
-      <h3>Сложные текстовые блоки</h3>
+      <h3>Complex text blocks</h3>
       <blockquote class="quote-block">
         <div class="quote-block__line">
           <div class="quote-block__author-block">
-            <cite slot="quote_author" class="quote-block__author">Меде́я</cite>
-            <cite slot="quote_role" class="quote-block__role">царевна из страны Эета</cite>
+            <cite slot="quote_author" class="quote-block__author">A. A. Milne</cite>
+            <cite slot="quote_role" class="quote-block__role">an English author</cite>
           </div>
 
           <div class="quote-block__image">
-            <picture>
-              <source media="(max-width: 600px)"
-                srcset="https://d3qc8znfr3ejm3.cloudfront.net/images/bcc46c3f-b4d9-4f04-8b68-fe2878f9490a_200_200.jpg 1x, https://d3qc8znfr3ejm3.cloudfront.net/images/bcc46c3f-b4d9-4f04-8b68-fe2878f9490a_400_400.jpg 2x"/>
-              <source media=""
-                srcset="https://d3qc8znfr3ejm3.cloudfront.net/images/bcc46c3f-b4d9-4f04-8b68-fe2878f9490a_100_100.jpg 1x, https://d3qc8znfr3ejm3.cloudfront.net/images/bcc46c3f-b4d9-4f04-8b68-fe2878f9490a_200_200.jpg 2x, https://d3qc8znfr3ejm3.cloudfront.net/images/bcc46c3f-b4d9-4f04-8b68-fe2878f9490a_400_400.jpg 4x"/>
-              <img src="https://d3qc8znfr3ejm3.cloudfront.net/images/bcc46c3f-b4d9-4f04-8b68-fe2878f9490a_200_200.jpg" alt="true" class="quote-block__image">
-            </picture>
+          <picture>
+            <source media="(max-width: 600px)"
+              srcset="https://d3qc8znfr3ejm3.cloudfront.net/images/16bc58c6-66aa-4a99-81d9-67bc8fe44307_200_200.jpg 1x, https://d3qc8znfr3ejm3.cloudfront.net/images/16bc58c6-66aa-4a99-81d9-67bc8fe44307_400_400.jpg 2x"/>
+            <source media=""
+              srcset="https://d3qc8znfr3ejm3.cloudfront.net/images/16bc58c6-66aa-4a99-81d9-67bc8fe44307_100_100.jpg 1x, https://d3qc8znfr3ejm3.cloudfront.net/images/16bc58c6-66aa-4a99-81d9-67bc8fe44307_200_200.jpg 2x, https://d3qc8znfr3ejm3.cloudfront.net/images/16bc58c6-66aa-4a99-81d9-67bc8fe44307_400_400.jpg 4x"/>
+            <img src="https://d3qc8znfr3ejm3.cloudfront.net/images/16bc58c6-66aa-4a99-81d9-67bc8fe44307_200_200.jpg" alt="true" class="quote-block__image">
+          </picture>
           </div>
         </div>
-        <quote slot="quote_body" class="quote-block__body">…вы можете превратить старика в молодого человека, если разрежете его и бросите в кипящий котёл.</quote>
+        <quote slot="quote_body" class="quote-block__body">People say nothing is impossible, but I do nothing every day.</quote>
       </blockquote>
-      <p class="paragraph">Такие блоки настраиваются с помощью плагинов.</p>
+      <p class="paragraph">Such blocks are configured using plugins.</p>
 
-      <h4>Картинки</h4>
+      <h4>Pictures</h4>
       <figure class="">
         <picture>
           <img src="https://d3qc8znfr3ejm3.cloudfront.net/images/bdf131ea-e9ea-4b29-8d63-96a9c440ddff.jpg" alt="" class="">
         </picture>
-        <figcaption slot="image-caption">С подписью</figcaption>
+        <figcaption slot="image-caption">With a caption</figcaption>
       </figure>
 
-      <h4>Колонки</h4>
+      <h4>Columns</h4>
       <div class="arena-two-col">
           <div class="arena-col">
-            <p class="paragraph">Хоба!</p>
+            <p class="paragraph">You don't need to look for a good text editor if you've already found the Textarena</p>
           </div>
           <div class="arena-col">
             <figure class="">
               <picture>
-                <img src="https://d3qc8znfr3ejm3.cloudfront.net/images/09c2b96f-961b-4797-8ed8-41e2166bc670.jpg" alt="" class="">
+                <img src="https://d3qc8znfr3ejm3.cloudfront.net/images/df1ba26d-aaf9-4b01-a600-e59547a083cb.jpg" alt="" class="">
               </picture>
             </figure>
           </div>
       </div>
 
-      <h4>Роадмап</h4>
+      <h4>Roadmap</h4>
       <roadmap>
-        <p class="paragraph">✨ Форматирование</p>
-        <p class="paragraph">🎉 Списки</p>
-        <p class="paragraph">🎈 Эмбеды</p>
-        <p class="paragraph">✨ Сложные блоки</p>
-        <p class="paragraph">⌛ Таблицы</p>
-        <p class="paragraph">⌛ Вложенные списки</p>
+        <p class="paragraph">✨ Formatting</p>
+        <p class="paragraph">🎉 Lists</p>
+        <p class="paragraph">🎈 Embeds</p>
+        <p class="paragraph">✨ Complex blocks</p>
+        <p class="paragraph">⌛ Tables</p>
+        <p class="paragraph">⌛ Nested lists</p>
       </roadmap>
 
-      <h4>Таблицы <sup>Alpha</sup></h4>
+      <h4>Tables <sup>Alpha</sup></h4>
       <table>
         <tr>
-          <td>Shift + Enter — добавить строку</td>
+          <td>Shift + Enter — add a row</td>
           <td>
-            Shift + Tab — добавить колонку
+            Shift + Tab — add a column
           </td>
         </tr>
         <tr>
-          <td>Ctrl + Shift + Backspace — удалить строку</td>
+          <td>Ctrl + Shift + Backspace — remove a row</td>
           <td>
-            Ctrl + Backspace — удалить колонку
+            Ctrl + Backspace — remove a column
           </td>
         </tr>
       </table>
 
-      <h4>Вложенные списки<sup>Alpha</sup></h4>
-      <ol start="1"><li>Первый уровень</li>
-      <ol><li>Второй</li>
-      <ol><li>Третий</li>
-      <li>Снова третий</li>
-      <ul><li>…внезапно булеты</li>
-      <ul><li>ещё булеты</li></ul></ul></ol>
-      <li>Обратно второй</li></ol>
-      <li>И опять первый</li></ol>
+      <h4>Nested lists<sup>Alpha</sup></h4>
+      <ol start="1"><li>First level</li>
+      <ol><li>Second</li>
+      <ol><li>Third</li>
+      <li>Third again</li>
+      <ul><li>…suddenly bullet list</li>
+      <ul><li>more bullets</li></ul></ul></ol>
+      <li>Back to the second level</li></ol>
+      <li>And again the first</li></ol>
 
       <hr class="asterisk"></hr>
-      <p class="paragraph">И многое другое с помощью плагинов…</p>
+      <p class="paragraph">And much more with plugins…</p>
       `;
     }
     const initData = {
