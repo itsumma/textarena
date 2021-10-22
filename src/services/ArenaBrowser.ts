@@ -37,11 +37,14 @@ declare global {
   }
 }
 
+const META_KEY_CODE_LEFT = 91;
+const META_KEY_CODE_RIGHT = 93;
+
 const modifiersKeys = {
   Shift: 16,
   Ctrl: 17,
   Alt: 18,
-  Meta: 91,
+  Meta: META_KEY_CODE_LEFT,
 };
 
 const selectionKeys = {
@@ -243,6 +246,10 @@ export default class ArenaBrowser {
   }
 
   public isModificationEvent(e: KeyboardEvent): boolean {
+    // Handle right meta key for Mac
+    if (isMac() && e.keyCode === META_KEY_CODE_RIGHT) {
+      return !!modifiersCodes[META_KEY_CODE_LEFT];
+    }
     return !!modifiersCodes[e.keyCode];
   }
 
