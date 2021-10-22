@@ -1,3 +1,6 @@
+/**
+ * @jest-environment jsdom
+ */
 import ArenaFactory from '../src/arenas/ArenaFactory';
 import ArenaText from '../src/arenas/ArenaText';
 import ArenaSelection from '../src/helpers/ArenaSelection';

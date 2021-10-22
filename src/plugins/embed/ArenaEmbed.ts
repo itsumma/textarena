@@ -1,28 +1,27 @@
-import {
-  LitElement, html, property, TemplateResult,
-} from 'lit-element';
+import { html, LitElement, TemplateResult } from 'lit';
+import { property } from 'lit/decorators.js';
 import NodeAttributes from '../../interfaces/NodeAttributes';
 
 export default class ArenaEmbed extends LitElement {
   @property({
     type: String,
   })
-  type: string | undefined;
+    type: string | undefined;
 
   @property({
     type: String,
   })
-  href: string | undefined;
+    href: string | undefined;
 
   @property({
     type: String,
   })
-  postid: string | undefined;
+    postid: string | undefined;
 
   @property({
     type: Boolean,
   })
-  border: boolean | undefined;
+    border: boolean | undefined;
 
   createRenderRoot(): LitElement {
     return this;

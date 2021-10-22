@@ -1,7 +1,6 @@
-import {
-  html, css, property, TemplateResult,
-} from 'lit-element';
-import { classMap } from 'lit-html/directives/class-map';
+import { classMap } from 'lit/directives/class-map.js';
+import { css, TemplateResult, html } from 'lit';
+import { property } from 'lit/decorators.js';
 import WebComponent from '../../helpers/WebComponent';
 
 export default class ArenaEmbedYoutube extends WebComponent {
@@ -9,12 +8,12 @@ export default class ArenaEmbedYoutube extends WebComponent {
     type: String,
     reflect: true,
   })
-  href: string | undefined;
+    href: string | undefined;
 
   @property({
     type: Boolean,
   })
-  border: boolean | undefined;
+    border: boolean | undefined;
 
   static styles = css`
     :host {

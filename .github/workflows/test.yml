@@ -1,8 +1,6 @@
-name: Publish textarena
+name: Test textarena
 
 on:
-  push:
-    branches: [master]
   pull_request:
     branches: [master]
 
@@ -26,10 +24,10 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-yarn-
       -
-        name: Use Node.js 14.17.1
+        name: Use Node.js 14.18.1
         uses: actions/setup-node@v2
         with:
-          node-version: 14.17.1
+          node-version: 14.18.1
           cache: 'yarn'
       -
         name: Install
@@ -47,18 +45,4 @@ jobs:
         name: Run Cypress
         uses: cypress-io/github-action@v2
         with:
-          start: yarn start
-      -
-        name: Check GitHub Pages status
-        uses: crazy-max/ghaction-github-status@v2
-        with:
-          pages_threshold: major_outage
-      -
-        name: Deploy to GitHub Pages
-        if: ${{ success() && github.event_name == 'push' && github.ref == 'refs/heads/master' }}
-        uses: crazy-max/ghaction-github-pages@v2
-        with:
-          target_branch: gh-pages
-          build_dir: public
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          start: yarn serve

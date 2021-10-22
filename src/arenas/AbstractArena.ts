@@ -1,4 +1,5 @@
-import { TemplateResult, defaultTemplateProcessor } from 'lit-html';
+import { TemplateResult } from 'lit';
+import { html, unsafeStatic } from 'lit/static-html.js';
 import NodeAttributes from '../interfaces/NodeAttributes';
 import { ArenaFormatings } from '../interfaces/ArenaFormating';
 import { AnyArenaNode } from '../interfaces/ArenaNode';
@@ -50,31 +51,9 @@ export default abstract class AbstractArena {
     if (!this.tag) {
       return children;
     }
-    const strings = [
-    ];
-    const values = [
-    ];
-    if (this.tag) {
-      const attrs = this.getAttributesString(id, attributes);
-      const tag = this.tag.toLowerCase();
-      strings.push(`<${tag} ${attrs} .arena="`);
-      strings.push('" .node="');
-      strings.push('">');
-      strings.push(`</${tag}>`);
-      values.push(this);
-      values.push(node);
-    } else {
-      strings.push('');
-      strings.push('');
-    }
-    values.push(children);
-    // FIXME
-    return new TemplateResult(
-      (strings as unknown as TemplateStringsArray),
-      values,
-      'html',
-      defaultTemplateProcessor,
-    );
+    const attrs = unsafeStatic(this.getAttributesString(id, attributes));
+    const tag = unsafeStatic(this.tag.toLowerCase());
+    return html`<${tag} ${attrs} .arena="${this}" .node="${node}">${children}</${tag}>`;
   }
 
   public getDataHtml(
