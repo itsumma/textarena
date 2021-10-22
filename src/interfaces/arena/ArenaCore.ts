@@ -1,4 +1,4 @@
-import { TemplateResult } from 'lit-html';
+import { TemplateResult } from 'lit';
 import NodeAttributes from '../NodeAttributes';
 import { ArenaFormatings } from '../ArenaFormating';
 import { AnyArenaNode } from '../ArenaNode';

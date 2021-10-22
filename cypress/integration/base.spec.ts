@@ -6,7 +6,7 @@ const ctrl = isMac() ? 'cmd' : 'ctrl';
 
 context('Actions', () => {
   beforeEach(() => {
-    cy.visit('http://0.0.0.0:8080/');
+    cy.visit('http://localhost:8080/');
     cy.get('.textarena-editor').focus();
     cy.get('.textarena-editor').as('root');
 

@@ -1,4 +1,4 @@
-import { TemplateResult } from 'lit-html';
+import { TemplateResult } from 'lit';
 import { ArenaInlineInterface } from '../interfaces/Arena';
 import NodeAttributes from '../interfaces/NodeAttributes';
 import { ArenaNodeInline } from '../interfaces/ArenaNode';

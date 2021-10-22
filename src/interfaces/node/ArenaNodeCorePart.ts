@@ -1,4 +1,4 @@
-import { TemplateResult } from 'lit-html';
+import { TemplateResult } from 'lit';
 import ArenaAttribute from '../ArenaAttribute';
 import ArenaCursorText from '../ArenaCursorText';
 import { ArenaFormatings } from '../ArenaFormating';

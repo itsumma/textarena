@@ -1,5 +1,5 @@
-import { TemplateResult, html } from 'lit-html';
-import { unsafeHTML } from 'lit-html/directives/unsafe-html';
+import { html, TemplateResult } from 'lit';
+import { unsafeHTML } from 'lit/directives/unsafe-html.js';
 import RichTextManager from '../helpers/RichTextManager';
 import { ArenaInlineInterface, ArenaTextInterface } from '../interfaces/Arena';
 import NodeAttributes from '../interfaces/NodeAttributes';
