@@ -89,7 +89,7 @@ export default class CreatorBar {
       this.reposition();
     });
     this.asm.eventManager.subscribe('customEvent', (e) => {
-      if (e.detail === 'imageLoaded') {
+      if (e.detail === 'contentResize') {
         this.reposition();
       }
     });

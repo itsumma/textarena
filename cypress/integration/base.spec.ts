@@ -143,13 +143,13 @@ context('Actions', () => {
       .type('{alt+2}');
     cy.wait(100);
     cy.get('#html')
-      .contains('<h2>Header2</h2>')
+      .contains(/<h2[^>]*>Header2<\/h2>/)
       .contains('<p class="paragraph">Simple paragraph after header2</p>')
-      .contains('<h3>Header3</h3>')
+      .contains(/<h3[^>]*>Header3<\/h3>/)
       .contains('<p class="paragraph">Simple paragraph after header3</p>')
-      .contains('<h4>Header4</h4>')
+      .contains(/<h4[^>]*>Header4<\/h4>/)
       .contains('<p class="paragraph">Simple paragraph after header4</p>')
-      .contains('<h2>Simple paragraph will be a header2</h2>');
+      .contains(/<h2[^>]*>Simple paragraph will be a header2<\/h2>/)
   });
 
   it('Breaking', () => {

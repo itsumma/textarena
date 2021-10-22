@@ -229,7 +229,7 @@ export default class ArenaImage extends WebComponent {
   }
 
   protected onLoad(): void {
-    this.fireCustomEvent('imageLoaded');
+    this.fireCustomEvent('contentResize');
   }
 
   protected onChange(): void {
