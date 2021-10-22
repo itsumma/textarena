@@ -8,7 +8,7 @@ import {
   ArenaInlineInterface, ArenaMediatorInterface, ArenaTextInterface, ChildArena,
 } from './interfaces/Arena';
 import {
-  AnyArenaNode, ArenaNodeInline, ArenaNodeText, ChildArenaNode, ParentArenaNode,
+  AnyArenaNode, ArenaNodeInline, ArenaNodeRoot, ArenaNodeText, ChildArenaNode, ParentArenaNode,
 } from './interfaces/ArenaNode';
 import ArenaFormating, { TagAndAttributes } from './interfaces/ArenaFormating';
 import ArenaOptionsChild from './interfaces/ArenaOptions';
@@ -49,6 +49,7 @@ import twoColumnsPlugin from './plugins/twoColumns/twoColumnsPlugin';
 import roadmapPlugin from './plugins/roadmapPlugin';
 import tablePlugin from './plugins/table/tablePlugin';
 import { ArenaInterval } from './interfaces/ArenaInterval';
+import contentsPlugin from './plugins/contents/contentsPlugin';
 
 export const defaultOptions: TextarenaOptions = {
   editable: true,
@@ -251,6 +252,10 @@ class Textarena {
 
   public getRootArenaName(): string {
     return this.asm.model.rootArenaName;
+  }
+
+  public getRootModel(): ArenaNodeRoot {
+    return this.asm.model.model;
   }
 
   protected simpleArenas: ChildArena[] = [];
@@ -561,6 +566,7 @@ Textarena.constructor.prototype.getPlugins = () => ({
   twoColumnsPlugin,
   roadmapPlugin,
   tablePlugin,
+  contentsPlugin,
 });
 
 export default Textarena;

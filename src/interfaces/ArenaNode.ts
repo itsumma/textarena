@@ -6,6 +6,7 @@ import {
   ArenaInlineInterface, ArenaMediatorInterface, ArenaRootInterface, ArenaSingleInterface,
 } from './Arena';
 import ArenaAttribute from './ArenaAttribute';
+import NodeAttributes from './NodeAttributes';
 
 export type ArenaNodeRoot = ArenaNodeCorePart<ArenaNodeRoot>
   & ArenaNodeAncestorPart
@@ -59,6 +60,8 @@ export interface ArenaNodeInline {
   getTags(): [string, string];
 
   getAttribute(name: string): ArenaAttribute;
+
+  getAttributes(): NodeAttributes;
 
   setAttribute(name: string, value: ArenaAttribute): void;
 

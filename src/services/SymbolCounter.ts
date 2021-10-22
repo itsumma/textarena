@@ -5,28 +5,6 @@ import { AnyArenaNode } from '../interfaces/ArenaNode';
 import helpTextRu from '../helpTextRu';
 import utils from '../utils';
 
-function debounce<T extends Array<unknown>>(
-  func: (...args: T) => void,
-  wait: number,
-  immediate = false,
-) {
-  let timeout: number | undefined;
-  return (...args: T) => {
-    const later = () => {
-      timeout = undefined;
-      if (!immediate) {
-        func(...args);
-      }
-    };
-    const callNow = immediate && !timeout;
-    clearTimeout(timeout);
-    timeout = setTimeout(later, wait) as unknown as number;
-    if (callNow) {
-      func(...args);
-    }
-  };
-}
-
 export default class SymbolCounter {
   elem: ElementHelper;
 
@@ -63,7 +41,7 @@ export default class SymbolCounter {
     this.container = this.asm.textarena.getContainerElement();
     this.container.appendChild(this.elem);
     this.asm.eventManager.subscribe('ready', this.update.bind(this));
-    this.asm.eventManager.subscribe('modelChanged', debounce(this.update.bind(this), 1000));
+    this.asm.eventManager.subscribe('modelChanged', utils.debounce(this.update.bind(this), 1000));
   }
 
   private update(): void {

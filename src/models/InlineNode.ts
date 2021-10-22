@@ -52,6 +52,10 @@ implements ArenaNodeInline {
     return this.attributes[name] || '';
   }
 
+  public getAttributes(): NodeAttributes {
+    return this.attributes;
+  }
+
   public clone(): ArenaNodeInline {
     const newNode = new InlineNode(this.arena);
     Object.entries(this.attributes).forEach(([name, value]) => {

@@ -18,7 +18,7 @@
 
   if (elem && (typeof Textarena !== 'undefined')) {
     let dataHtml;
-    // const storedData = localStorage.getItem('dataHtml');
+    const storedData = localStorage.getItem('dataHtml');
     try {
       if (storedData) {
         data = JSON.parse(storedData);
@@ -201,6 +201,7 @@
       twoColumnsPlugin,
       roadmapPlugin,
       tablePlugin,
+      contentsPlugin,
     } = Textarena.getPlugins();
 
     const textarena = new Textarena(
@@ -366,6 +367,7 @@
           roadmapPlugin(),
           twoColumnsPlugin(),
           tablePlugin(),
+          contentsPlugin(),
         ],
         toolbar: {
           enabled: true,
@@ -404,6 +406,7 @@
             'two-columns',
             'roadmap',
             'add-table',
+            'contents',
           ],
         },
       }
