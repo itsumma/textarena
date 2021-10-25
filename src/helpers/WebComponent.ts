@@ -35,8 +35,8 @@ export default class WebComponent extends LitElement {
   }
 
   protected handleEvent(event: Event): void {
-    const e = event as unknown as { path: Node[] };
-    let elem: Node | null = e.path[0];
+    const path = event.composedPath();
+    let elem: Node | null = path && path.length ? path[0] as unknown as Node : null;
     while (elem) {
       if (elem === this.shadowRoot) {
         // Prevent event from ArenaBrowser
