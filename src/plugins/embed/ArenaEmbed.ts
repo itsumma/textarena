@@ -1,8 +1,9 @@
 import { html, LitElement, TemplateResult } from 'lit';
 import { property } from 'lit/decorators.js';
 import NodeAttributes from '../../interfaces/NodeAttributes';
+import WebComponent from '../../helpers/WebComponent';
 
-export default class ArenaEmbed extends LitElement {
+export default class ArenaEmbed extends WebComponent {
   @property({
     type: String,
   })
@@ -35,17 +36,6 @@ export default class ArenaEmbed extends LitElement {
 
   handleForm({ detail }: { detail: NodeAttributes }): void {
     this.fireChangeAttribute(detail);
-  }
-
-  fireChangeAttribute(attrs: NodeAttributes): void {
-    const event = new CustomEvent('arena-change-attribute', {
-      bubbles: true,
-      detail: {
-        attrs,
-        target: this,
-      },
-    });
-    this.dispatchEvent(event);
   }
 
   render(): TemplateResult {
