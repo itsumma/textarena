@@ -147,20 +147,19 @@ export default class Toolbar {
 
   private updateState() {
     const sel = this.asm.view.getCurrentSelection();
-    const status: { [key: string]: boolean } = {};
-    this.tools.forEach(({ options: { name, checkStatus } }: Tool) => {
-      status[name] = !!checkStatus;
+    const status: { [key: string]: boolean | undefined } = {};
+    this.tools.forEach(({ options: { name } }: Tool) => {
+      status[name] = undefined;
     });
     if (sel) {
       utils.modelTree.runThroughSelection(
         sel,
         (node: AnyArenaNode, start?: number, end?: number) => {
           this.tools.forEach(({ options: { name, checkStatus } }: Tool) => {
-            if (status[name]) {
-              if (!checkStatus) {
-                status[name] = false;
-              } else {
-                status[name] = checkStatus(node, start, end);
+            if (status[name] === undefined || status[name] === true) {
+              const result = checkStatus ? checkStatus(node, start, end) : false;
+              if (typeof result === 'boolean') {
+                status[name] = result;
               }
             }
           });
