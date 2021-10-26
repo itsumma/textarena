@@ -62,13 +62,10 @@ export default class ArenaEmbedYoutube extends WebComponent {
   `;
 
   handleToggle(e: Event): void {
-    const event = e as unknown as { path: HTMLInputElement[] };
-    if (event.path[0]) {
-      const customEvent = new CustomEvent('toggle', {
-        detail: event.path[0].checked,
-      });
-      this.dispatchEvent(customEvent);
-    }
+    const customEvent = new CustomEvent('toggle', {
+      detail: (e.target as unknown as { checked: boolean })?.checked,
+    });
+    this.dispatchEvent(customEvent);
   }
 
   // Render element DOM by returning a `lit-html` template.
