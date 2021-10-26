@@ -76,7 +76,7 @@ export const defaultTableOptions: TablePluginOptions = {
       action: (ta: Textarena, selection: ArenaSelection): ArenaSelection => {
         const arena = ta.getArena('table') as ArenaMediatorInterface;
         if (arena) {
-          const sel = ta.insertBeforeSelected(selection, arena);
+          const [sel] = ta.insertBeforeSelected(selection, arena);
           return sel;
         }
         return selection;

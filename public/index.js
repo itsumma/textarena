@@ -183,6 +183,7 @@
 
     const {
       commonPlugin,
+      pastePlugin,
       paragraphPlugin,
       formatingsPlugin,
       headersPlugin,
@@ -218,6 +219,7 @@
         placeholder: 'Type or Tab…',
         plugins: [
           commonPlugin(),
+          pastePlugin(),
           formatingsPlugin(),
           paragraphPlugin(),
           headersPlugin(),

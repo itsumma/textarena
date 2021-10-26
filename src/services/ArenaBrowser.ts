@@ -154,6 +154,8 @@ export default class ArenaBrowser {
 
   protected focusListenerInstance: ((event: FocusEvent) => void);
 
+  protected dropListenerInstance: ((event: DragEvent) => void);
+
   protected changeAttributeListenerInstance: ((event: ArenaChangeAttribute) => void);
 
   protected arenaCustomEventListenerInstance: ((event: ArenaCustomEvent) => void);
@@ -181,6 +183,7 @@ export default class ArenaBrowser {
     this.copyListenerInstance = this.copyListener.bind(this);
     this.pasteListenerInstance = this.pasteListener.bind(this);
     this.focusListenerInstance = this.focusListener.bind(this);
+    this.dropListenerInstance = this.dropListener.bind(this);
     this.changeAttributeListenerInstance = this.changeAttributeListener.bind(this);
     this.arenaCustomEventListenerInstance = this.arenaCustomEventListener.bind(this);
     this.asm.eventManager.subscribe('turnOn', () => {
@@ -196,6 +199,7 @@ export default class ArenaBrowser {
       this.editor.addEventListener('copy', this.copyListenerInstance, false);
       this.editor.addEventListener('paste', this.pasteListenerInstance, false);
       this.editor.addEventListener('focus', this.focusListenerInstance, false);
+      this.editor.addEventListener('drop', this.dropListenerInstance, false);
       this.editor.addEventListener('arena-change-attribute', this.changeAttributeListenerInstance, false);
       this.editor.addEventListener('arena-custom-event', this.arenaCustomEventListenerInstance, false);
       document.addEventListener('selectionchange', this.selectListenerInstance, false);
@@ -221,6 +225,7 @@ export default class ArenaBrowser {
       this.editor.removeEventListener('copy', this.copyListenerInstance);
       this.editor.removeEventListener('paste', this.pasteListenerInstance);
       this.editor.removeEventListener('focus', this.focusListenerInstance);
+      this.editor.removeEventListener('drop', this.dropListenerInstance);
       this.editor.removeEventListener('arena-change-attribute', this.changeAttributeListenerInstance);
       this.editor.removeEventListener('arena-custom-event', this.arenaCustomEventListenerInstance);
       document.removeEventListener('selectionchange', this.selectListenerInstance);
@@ -407,7 +412,7 @@ export default class ArenaBrowser {
       if (data) {
         const targetSelection = this.asm.view.detectArenaSelection();
         if (targetSelection) {
-          this.insertData(data, targetSelection);
+          this.asm.textarena.insertData(targetSelection, data);
         }
       }
       e.preventDefault();
@@ -433,16 +438,7 @@ export default class ArenaBrowser {
     if (data) {
       const selection = this.asm.view.getCurrentSelection();
       if (selection) {
-        const newSelection = this.asm.model.insertTextToModel(selection, data, true);
-        this.asm.history.save(newSelection, false);
-        const [result, newSel] = this.asm.model.applyMiddlewares(
-          newSelection,
-          data,
-        );
-        if (result) {
-          this.asm.history.save(newSel);
-        }
-        this.asm.eventManager.fire('modelChanged', { selection: newSel });
+        this.asm.textarena.insertText(selection, data);
       }
     }
   }
@@ -543,16 +539,7 @@ export default class ArenaBrowser {
     if (event instanceof ArenaInputEvent) {
       const selection = this.asm.view.getCurrentSelection();
       if (selection) {
-        const newSelection = this.asm.model.insertTextToModel(selection, event.character, true);
-        this.asm.history.save(newSelection, /[a-zа-яА-Я0-9]/i.test(event.character));
-        const [result, newSel] = this.asm.model.applyMiddlewares(
-          newSelection,
-          event.character,
-        );
-        if (result) {
-          this.asm.history.save(newSel);
-        }
-        this.asm.eventManager.fire('modelChanged', { selection: newSel });
+        this.asm.textarena.insertText(selection, event.character);
       }
     }
     if (event instanceof RemoveEvent) {
@@ -594,7 +581,7 @@ export default class ArenaBrowser {
     if (!selection) {
       return;
     }
-    this.insertData(clipboardData, selection);
+    this.asm.textarena.insertData(selection, clipboardData);
   }
 
   protected focusListener(e: FocusEvent): void {
@@ -602,47 +589,21 @@ export default class ArenaBrowser {
     this.asm.creatorBar.closeList();
   }
 
-  protected insertData(data: DataTransfer, selection: ArenaSelection): void {
-    const types: string[] = [...data.types || []];
-    if (types.includes('text/html')) {
-      let html = data.getData('text/html');
-      if (!html) {
-        return;
-      }
-      const matchStart = /(<!--StartFragment-->)|(<meta charset=['"][^'"]+['"]>)/.exec(html);
-      if (matchStart) {
-        html = html.slice(matchStart.index + matchStart[0].length);
-        html = html.trimLeft();
-      }
-      const matchEnd = /<!--EndFragment-->/.exec(html);
-      if (matchEnd) {
-        html = html.slice(0, matchEnd.index);
-        html = html.trimRight();
-      }
-      // html = html.replace(/\u00A0/, ' ');
-      this.asm.logger.log(`Insert html: «${html}»`);
-      const newSelection = this.asm.model.insertHtml(selection, html);
-      this.asm.history.save(newSelection);
-      this.asm.eventManager.fire('modelChanged', { selection: newSelection });
-    } else if (types.includes('text/plain')) {
-      const text = data.getData('text/plain');
-      if (!text) {
-        return;
-      }
-      this.asm.logger.log(`Insert text: «${text}»`);
-      const [result, newSel] = this.asm.model.applyMiddlewares(
-        selection,
-        text,
-      );
-      const newSelection = result ? newSel : this.asm.model.insertTextToModel(selection, text);
-      this.asm.history.save(newSelection);
-      this.asm.eventManager.fire('modelChanged', { selection: newSelection });
-    }
-  }
-
   protected selectListener(e: Event): void {
     this.asm.logger.log('Select event', e);
     this.checkSelection();
+  }
+
+  protected dropListener(e: DragEvent): void {
+    e.preventDefault();
+    const selection = this.asm.view.getCurrentSelection();
+    if (!selection) {
+      return;
+    }
+    const { dataTransfer } = e;
+    if (dataTransfer) {
+      this.asm.textarena.insertData(selection, dataTransfer);
+    }
   }
 
   protected getIdOfTarget(target: HTMLElement): string | undefined {

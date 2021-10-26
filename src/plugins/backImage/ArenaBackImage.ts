@@ -1,9 +1,10 @@
 import {
-  html, css, TemplateResult, property,
-} from 'lit-element';
+  html, css, TemplateResult,
+} from 'lit';
+import { property } from 'lit/decorators.js';
 import WebComponent from '../../helpers/WebComponent';
 import { AnyArena } from '../../interfaces/Arena';
-import { ScrProcessor } from '../image/types';
+import { ScrProcessor, UploadProcessor } from '../image/types';
 
 export default class ArenaBackImage extends WebComponent {
   @property({

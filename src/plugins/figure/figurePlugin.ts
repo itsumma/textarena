@@ -1,12 +1,13 @@
 import Textarena from '../../Textarena';
 import ArenaSelection from '../../helpers/ArenaSelection';
 import ArenaPlugin from '../../interfaces/ArenaPlugin';
-import { ArenaMediatorInterface, ArenaTextInterface } from '../../interfaces/Arena';
+import { ArenaMediatorInterface, ArenaSingleInterface, ArenaTextInterface } from '../../interfaces/Arena';
 import { AnyArenaNode } from '../../interfaces/ArenaNode';
 import ArenaFigure from './ArenaFigure';
 import outputFigure from './outputFigure';
 import { FigurePluginOptions } from './types';
 import ArenaSingle from '../../arenas/ArenaSingle';
+import { UploadProcessor } from '../image/types';
 
 const defaultOptions: FigurePluginOptions = {
   name: 'figure',
@@ -104,7 +105,7 @@ const figurePlugin = (opts?: Partial<FigurePluginOptions>): ArenaPlugin => ({
       textarena.registerCommand(
         command,
         (ta: Textarena, selection: ArenaSelection) => {
-          const sel = ta.insertBeforeSelected(selection, arena);
+          const [sel] = ta.insertBeforeSelected(selection, arena);
           return sel;
         },
       );
@@ -127,6 +128,48 @@ const figurePlugin = (opts?: Partial<FigurePluginOptions>): ArenaPlugin => ({
         });
       }
     }
+    textarena.registerMiddleware(
+      (
+        ta: Textarena,
+        selection: ArenaSelection,
+        data: string | DataTransfer,
+      ): [boolean, ArenaSelection] => {
+        if (typeof data === 'object') {
+          const types: string[] = [...data.types || []];
+          if (types.includes('Files')) {
+            const file = data.files[0];
+            if (file) {
+              const image = textarena.getArena('image') as ArenaSingleInterface;
+              const upload = image?.getAttribute('upload') as UploadProcessor;
+              if (upload) {
+                const [sel, node] = ta.insertBeforeSelected(selection, arena);
+                if (node) {
+                  upload(file).then(({ src }) => {
+                    if (src && node?.hasChildren) {
+                      const imageNode = node.getChild(0);
+                      if (imageNode) {
+                        imageNode?.setAttribute('src', src);
+                        const currentSelection = ta.getCurrentSelection();
+                        if (currentSelection) {
+                          const history = ta.getHistory();
+                          history.save(currentSelection);
+                        }
+                        textarena.fire('modelChanged', {
+                          selection: sel,
+                        });
+                      }
+                    }
+                  });
+                }
+                return [true, sel];
+              }
+            }
+          }
+        }
+        return [false, selection];
+      },
+      'before',
+    );
   },
 });
 
