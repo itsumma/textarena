@@ -254,7 +254,6 @@ export default class ArenaBrowser {
   }
 
   protected checkSelection(): void {
-    this.asm.view.resetCurrentSelection();
     const s = window.getSelection();
     if (!s || !s.rangeCount) {
       return;
@@ -262,6 +261,8 @@ export default class ArenaBrowser {
     if (!s.anchorNode || !isDescendant(this.editor, s.anchorNode)) {
       return;
     }
+
+    this.asm.view.resetCurrentSelection();
 
     this.asm.eventManager.fire('moveCursor');
 
