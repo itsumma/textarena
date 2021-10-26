@@ -106,9 +106,8 @@ export default class ArenaContents extends WebComponent {
 
   handleToggle(c: ContentItem) {
     return (e: Event): void => {
-      const event = e as unknown as { path: HTMLInputElement[] };
       // eslint-disable-next-line no-param-reassign
-      c.active = event.path[0].checked;
+      c.active = (e.target as unknown as { checked: boolean })?.checked;
       this.updateList(c);
     };
   }
