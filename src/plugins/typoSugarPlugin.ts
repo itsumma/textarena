@@ -103,24 +103,26 @@ const typings = [
 
 const typoSugarPlugin = (): ArenaPlugin => ({
   register(textarena: Textarena): void {
-    const arenas = textarena.getArenas();
-    arenas.forEach((arena) => {
-      if (arena.hasText) {
-        arena.registerMiddleware((ta: Textarena, sel: ArenaSelection, text: string) => {
-          if (sel.isCollapsed() && text === '-') {
-            const { node, offset } = sel.getCursor();
-            if (node.hasText && node.getRawText().slice(offset - 2, offset) === '--') {
-              const newSel = sel.clone();
-              node.cutText(offset - 2, offset);
-              node.insertText('—', offset - 2);
-              newSel.setBoth(node, offset - 1);
-              return [true, newSel];
-            }
+    textarena.registerMiddleware(
+      (
+        ta: Textarena,
+        sel: ArenaSelection,
+        text: string | DataTransfer,
+      ) => {
+        if (sel.isCollapsed() && text === '-') {
+          const { node, offset } = sel.getCursor();
+          if (node.hasText && node.getRawText().slice(offset - 2, offset) === '--') {
+            const newSel = sel.clone();
+            node.cutText(offset - 2, offset);
+            node.insertText('—', offset - 2);
+            newSel.setBoth(node, offset - 1);
+            return [true, newSel];
           }
-          return [false, sel];
-        });
-      }
-    });
+        }
+        return [false, sel];
+      },
+      'after',
+    );
     typings.forEach(({ shortcut, text }) => {
       const command = `insert${text}`;
       textarena.registerCommand(

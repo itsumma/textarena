@@ -330,8 +330,8 @@ const nestedlistsPlugin = (opts?: ListsOptions): ArenaPlugin => ({
           });
         }
       }
-      if (paragraph.hasText) {
-        paragraph.registerMiddleware((ta: Textarena, sel: ArenaSelection, text: string) => {
+      textarena.registerMiddleware(
+        (ta: Textarena, sel: ArenaSelection, text: string | DataTransfer) => {
           if (sel.isCollapsed() && text === ' ') {
             const { node, offset } = sel.getCursor();
             if (node.hasText) {
@@ -349,8 +349,10 @@ const nestedlistsPlugin = (opts?: ListsOptions): ArenaPlugin => ({
             }
           }
           return [false, sel];
-        });
-      }
+        },
+        'after',
+        paragraph,
+      );
       textarena.addSimpleArenas(listArena);
     });
 

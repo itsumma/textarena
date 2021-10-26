@@ -163,7 +163,7 @@ const quotePlugin = (opts?: Partial<DefaulPluginOptions>): ArenaPlugin => ({
 
     if (command) {
       textarena.registerCommand(command, (ta: Textarena, selection: ArenaSelection) => {
-        const sel = ta.insertBeforeSelected(selection, arena);
+        const [sel] = ta.insertBeforeSelected(selection, arena);
         return sel;
       });
 

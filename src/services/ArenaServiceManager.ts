@@ -10,6 +10,7 @@ import CreatorBar from './CreatorBar';
 import EventManager from './EventManager';
 import Toolbar from './Toolbar';
 import SymbolCounter from './SymbolCounter';
+import ArenaMiddlewareManager from './ArenaMiddlewareManager';
 
 export default class ArenaServiceManager {
   public logger: ArenaLogger;
@@ -34,6 +35,8 @@ export default class ArenaServiceManager {
 
   public counter: SymbolCounter;
 
+  public middlewares: ArenaMiddlewareManager;
+
   constructor(public textarena: Textarena) {
     this.eventManager = new EventManager(this);
     this.logger = new ArenaLogger();
@@ -46,5 +49,6 @@ export default class ArenaServiceManager {
     this.creatorBar = new CreatorBar(this);
     this.history = new ArenaHistory(this);
     this.counter = new SymbolCounter(this);
+    this.middlewares = new ArenaMiddlewareManager(this);
   }
 }

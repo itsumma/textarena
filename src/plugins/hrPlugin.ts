@@ -41,8 +41,10 @@ const hrPlugin = (opts?: Partial<DefaulPluginOptions>): ArenaPlugin => ({
     if (command) {
       textarena.registerCommand(
         command,
-        (ta: Textarena, selection: ArenaSelection) =>
-          ta.insertBeforeSelected(selection, arena),
+        (ta: Textarena, selection: ArenaSelection) => {
+          const [sel] = ta.insertBeforeSelected(selection, arena);
+          return sel;
+        },
       );
 
       if (shortcut) {

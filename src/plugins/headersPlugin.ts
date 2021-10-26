@@ -90,17 +90,21 @@ const headersPlugin = (opts?: PartialHeaderOptions): ArenaPlugin => ({
           [textarena.getRootArenaName()],
         ) as ArenaTextInterface;
         textarena.addSimpleArenas(arena);
-        arena.registerMiddleware((ta: Textarena, selection: ArenaSelection) => {
-          if (selection.isCollapsed()) {
-            const cursor = selection.getCursor();
-            if (cursor.node.hasText) {
-              const text = cursor.node.getRawText();
-              const slug = utils.str.prepareForAttribute(text.toLowerCase().trim());
-              cursor.node.setAttribute('id', slug);
+        textarena.registerMiddleware(
+          (ta: Textarena, selection: ArenaSelection) => {
+            if (selection.isCollapsed()) {
+              const cursor = selection.getCursor();
+              if (cursor.node.hasText) {
+                const text = cursor.node.getRawText();
+                const slug = utils.str.prepareForAttribute(text.toLowerCase().trim());
+                cursor.node.setAttribute('id', slug);
+              }
             }
-          }
-          return [false, selection];
-        });
+            return [false, selection];
+          },
+          'after',
+          arena,
+        );
         if (command) {
           textarena.registerCommand(
             command,

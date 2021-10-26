@@ -58,7 +58,7 @@ const contentsPlugin = (opts?: Partial<ContentsOptions>): ArenaPlugin => ({
       textarena.registerCommand(
         command,
         (ta: Textarena, selection: ArenaSelection) => {
-          const sel = ta.insertBeforeSelected(selection, arena);
+          const [sel] = ta.insertBeforeSelected(selection, arena);
           return sel;
         },
       );
