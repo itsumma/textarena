@@ -8,22 +8,20 @@ export default function contentsProcessor(textarena: Textarena, node: AnyArenaNo
   const bySlug: { [key: string]: ContentItem } = {};
   const byId: { [key: string]: ContentItem } = {};
   let currentData = node.getAttribute('data') as Contents;
-  if (Array.isArray(currentData)) {
+  const list = node.getAttribute('list');
+  if (list && typeof list === 'string') {
+    try {
+      currentData = JSON.parse(list);
+      currentData.forEach((item) => {
+        bySlug[item.slug] = item;
+      });
+    } catch (e) {
+      currentData = [];
+    }
+  } else if (Array.isArray(currentData)) {
     currentData.forEach((item) => {
       byId[item.id] = item;
     });
-  } else {
-    const list = node.getAttribute('list');
-    if (typeof list === 'string') {
-      try {
-        currentData = JSON.parse(list);
-        currentData.forEach((item) => {
-          bySlug[item.slug] = item;
-        });
-      } catch (e) {
-        currentData = [];
-      }
-    }
   }
   utils.modelTree.runOfChildren(textarena.getRootModel(), (n: AnyArenaNode) => {
     if (n.hasText && n.arena.name.substr(0, n.arena.name.length - 1) === 'header') {

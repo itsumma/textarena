@@ -89,7 +89,7 @@ const contentsPlugin = (opts?: Partial<ContentsOptions>): ArenaPlugin => ({
       });
     };
     textarena.subscribe('ready', updateAllContents);
-    textarena.subscribe('modelChanged', utils.debounce(updateAllContents, 1000));
+    textarena.subscribe('modelChanged', updateAllContents);
   },
 });
 

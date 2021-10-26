@@ -109,14 +109,13 @@ export default class ArenaContents extends WebComponent {
       const event = e as unknown as { path: HTMLInputElement[] };
       // eslint-disable-next-line no-param-reassign
       c.active = event.path[0].checked;
-      this.updateList();
+      this.updateList(c);
     };
   }
 
   handleInput(c: ContentItem) {
     return (e: Event): void => {
-      const event = e as unknown as { path: HTMLInputElement[] };
-      const title = event.path[0].value;
+      const title = (e.target as unknown as { value: string })?.value;
       if (title === c.originalTitle) {
         // eslint-disable-next-line no-param-reassign
         c.title = undefined;
@@ -124,35 +123,47 @@ export default class ArenaContents extends WebComponent {
         // eslint-disable-next-line no-param-reassign
         c.title = title;
       }
-      this.updateList();
+      this.updateList(c);
     };
+  }
+
+  processContents() {
+    if (!this.node) return;
+    const processor = this.node.arena.getAttribute('processor') as ContentsComponentProcessor;
+    if (processor) {
+      processor(this.node);
+      this.requestUpdate();
+    }
   }
 
   handleClick(e: Event): void {
     e.preventDefault();
-    if (this.node) {
-      const processor = this.node.arena.getAttribute('processor') as ContentsComponentProcessor;
-      if (processor) {
-        processor(this.node);
-        this.updateList();
-        this.requestUpdate();
-      }
-    }
+    this.processContents();
   }
 
   handleResetTitle(c: ContentItem) {
     return (): void => {
       // eslint-disable-next-line no-param-reassign
       c.title = undefined;
-      this.updateList();
+      this.updateList(c);
       this.requestUpdate();
     };
   }
 
-  updateList(): void {
+  updateList(c?: ContentItem): void {
+    if (!this.node) return;
     const data = this.node?.getAttribute('data') as Contents || [];
+    const list = JSON.stringify(data.map(({
+      id, slug, title, active,
+    }) => ({
+      slug,
+      title: c && id === c.id ? c.title : title,
+      active: c && id === c.id ? c.active : active,
+    })));
+    this.node.setAttribute('list', list);
+    this.processContents();
     this.fireChangeAttribute({
-      list: JSON.stringify(data.map(({ slug, title, active }) => ({ slug, title, active }))),
+      list,
     });
   }
 }
