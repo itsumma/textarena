@@ -51,9 +51,12 @@ export default abstract class AbstractArena {
     if (!this.tag) {
       return children;
     }
-    const attrs = unsafeStatic(this.getAttributesString(id, attributes));
+    let attrs = this.getAttributesString(id, attributes);
+    if (node?.hasText) {
+      attrs += ' contenteditable="true"';
+    }
     const tag = unsafeStatic(this.tag.toLowerCase());
-    return html`<${tag} ${attrs} .arena="${this}" .node="${node}">${children}</${tag}>`;
+    return html`<${tag} ${unsafeStatic(attrs)} .arena="${this}" .node="${node}">${children}</${tag}>`;
   }
 
   public getDataHtml(

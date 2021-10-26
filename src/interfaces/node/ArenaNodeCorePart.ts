@@ -37,5 +37,7 @@ export default interface ArenaNodeCorePart<T> {
 
   getAttribute(name: string): ArenaAttribute;
 
+  getAttributes(): NodeAttributes;
+
   clone(): T;
 }

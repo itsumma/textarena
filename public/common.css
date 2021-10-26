@@ -419,6 +419,9 @@ figcaption {
   margin-top: 0.15em;
   opacity: .7;
 }
+figcaption:focus-visible {
+  outline: none;
+}
 
 .embed > blockquote {
   padding: 0;

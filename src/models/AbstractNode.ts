@@ -120,5 +120,9 @@ export default abstract class AbstractNode<
     return this.attributes[name] || '';
   }
 
+  public getAttributes(): NodeAttributes {
+    return this.attributes;
+  }
+
   protected attributes: NodeAttributes = {};
 }

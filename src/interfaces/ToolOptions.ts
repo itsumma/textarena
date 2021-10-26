@@ -1,6 +1,10 @@
 import { AnyArenaNode } from './ArenaNode';
 
-export type ToolCheckStatus = (node: AnyArenaNode, start?: number, end?: number) => boolean;
+export type ToolCheckStatus = (
+  node: AnyArenaNode,
+  start?: number,
+  end?: number
+) => boolean | undefined;
 
 export default interface ToolOptions {
   name: string;

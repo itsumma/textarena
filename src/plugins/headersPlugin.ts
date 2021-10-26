@@ -13,6 +13,7 @@ const defaultOptions: HeaderOptions = {
     name: 'header2',
     tag: 'H2',
     attributes: {},
+    allowedAttributes: ['id'],
     title: 'Header 2',
     icon: '<b>H2</b>',
     command: 'convert-to-header2',
@@ -30,6 +31,7 @@ const defaultOptions: HeaderOptions = {
     name: 'header3',
     tag: 'H3',
     attributes: {},
+    allowedAttributes: ['id'],
     title: 'Header 3',
     icon: '<b>H3</b>',
     command: 'convert-to-header3',
@@ -47,6 +49,7 @@ const defaultOptions: HeaderOptions = {
     name: 'header4',
     tag: 'H4',
     attributes: {},
+    allowedAttributes: ['id'],
     title: 'Header 4',
     icon: '<b>H4</b>',
     command: 'convert-to-header4',
@@ -70,7 +73,8 @@ const headersPlugin = (opts?: PartialHeaderOptions): ArenaPlugin => ({
     }
     Object.entries(opts || defaultOptions).forEach(([type, options]) => {
       const {
-        name, tag, attributes, title, icon, shortcut, hint, command, marks, description,
+        name, tag, attributes, allowedAttributes, title,
+        icon, shortcut, hint, command, marks, description,
       } = defaultOptions[type] ? { ...defaultOptions[type], ...options } : options;
       if (name && tag && attributes) {
         const arena = textarena.registerArena(
@@ -78,6 +82,7 @@ const headersPlugin = (opts?: PartialHeaderOptions): ArenaPlugin => ({
             name,
             tag,
             attributes,
+            allowedAttributes,
             hasText: true,
             nextArena: paragraph,
           },
@@ -85,6 +90,17 @@ const headersPlugin = (opts?: PartialHeaderOptions): ArenaPlugin => ({
           [textarena.getRootArenaName()],
         ) as ArenaTextInterface;
         textarena.addSimpleArenas(arena);
+        arena.registerMiddleware((ta: Textarena, selection: ArenaSelection) => {
+          if (selection.isCollapsed()) {
+            const cursor = selection.getCursor();
+            if (cursor.node.hasText) {
+              const text = cursor.node.getRawText();
+              const slug = utils.str.prepareForAttribute(text.toLowerCase().trim());
+              cursor.node.setAttribute('id', slug);
+            }
+          }
+          return [false, selection];
+        });
         if (command) {
           textarena.registerCommand(
             command,
@@ -96,7 +112,24 @@ const headersPlugin = (opts?: PartialHeaderOptions): ArenaPlugin => ({
                   isApplied = isApplied && node.arena === arena;
                 },
               );
-              return ta.applyArenaToSelection(selection, isApplied ? paragraph : arena);
+              const newSelection = ta.applyArenaToSelection(
+                selection,
+                isApplied ? paragraph : arena,
+              );
+              utils.modelTree.runThroughSelection(
+                newSelection,
+                (n: AnyArenaNode) => {
+                  if (n.hasText && n.arena.name.substr(0, n.arena.name.length - 1) === 'header') {
+                    let slug = n.getAttribute('id');
+                    if (!slug && n.arena.allowedAttributes.includes('id')) {
+                      const text = n.getRawText();
+                      slug = utils.str.prepareForAttribute(text.toLowerCase().trim());
+                      n.setAttribute('id', slug);
+                    }
+                  }
+                },
+              );
+              return newSelection;
             },
           );
           if (shortcut) {

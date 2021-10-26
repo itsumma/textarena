@@ -323,11 +323,11 @@ const formatingsPlugin = (opts?: FormatingsOptions): ArenaPlugin => ({
           command,
           hint,
           shortcut,
-          checkStatus: (node: AnyArenaNode, start?: number, end?: number): boolean => {
+          checkStatus: (node: AnyArenaNode, start?: number, end?: number): boolean | undefined => {
             if (node.hasText) {
               return utils.text.hasFormating(name, node, start, end);
             }
-            return true;
+            return undefined;
           },
         });
       }

@@ -54,7 +54,6 @@ export default class ArenaFigure extends WebComponent {
         :host {
           display: block;
           margin: 0;
-          user-select: none;
           position: relative;
         }
         .panel {
