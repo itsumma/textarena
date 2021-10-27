@@ -8,7 +8,7 @@ import ArenaEmbed from './ArenaEmbed';
 import { EmbedPluginOptions } from './types';
 import ArenaEmbedSimple from './ArenaEmbedSimple';
 import ArenaEmbedForm from './ArenaEmbedForm';
-import ArenaEmbedYoutube from './ArenaEmbedYoutube';
+import embedServices from './embedServices';
 
 const defaultOptions: EmbedPluginOptions = {
   name: 'embed',
@@ -40,7 +40,7 @@ const defaultOptions: EmbedPluginOptions = {
   attributes: {
     contenteditable: false,
   },
-  allowedAttributes: ['href', 'type', 'postid', 'border'],
+  allowedAttributes: ['embed', 'type', 'ew', 'eh'],
   shortcut: 'Alt + KeyE',
   hint: 'e',
   command: 'add-embed',
@@ -57,10 +57,6 @@ const defaultOptions: EmbedPluginOptions = {
       component: 'arena-embed-form',
       componentConstructor: ArenaEmbedForm,
     },
-    {
-      component: 'arena-embed-youtube',
-      componentConstructor: ArenaEmbedYoutube,
-    },
   ],
   marks: [
     {
@@ -68,6 +64,9 @@ const defaultOptions: EmbedPluginOptions = {
       attributes: [],
     },
   ],
+  services: {
+    ...embedServices,
+  },
   output: outputEmbed,
 };
 
@@ -142,30 +141,6 @@ const embedPlugin = (opts?: Partial<EmbedPluginOptions>): ArenaPlugin => ({
       [ta.getRootArenaName()],
     ) as ArenaSingleInterface;
     ta.addSimpleArenas(simpleArena);
-    ta.subscribe('rendered', () => {
-      setTimeout(() => {
-        if (typeof window !== 'undefined' && window.twttr) {
-          const items = document.querySelectorAll('.twitter-tweet');
-          items.forEach((el) => {
-            const id = el.getAttribute('postid');
-            const requested = el.getAttribute('requested');
-            if (id && !requested) {
-              el.setAttribute('requested', 'true');
-              window.twttr?.widgets.createTweet(id, el as HTMLElement);
-            }
-          });
-        }
-        if (typeof window !== 'undefined' && window.FB) {
-          window.FB.init({
-            xfbml: true,
-            version: 'v10.0',
-          });
-        }
-        if (typeof window !== 'undefined' && window.instgrm) {
-          window.instgrm.Embeds.process();
-        }
-      }, 100);
-    });
   },
 });
 

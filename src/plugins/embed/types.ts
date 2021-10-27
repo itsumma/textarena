@@ -18,6 +18,27 @@ export type EmbedComponent = {
   componentConstructor: CustomElementConstructor,
 };
 
+export interface EmbedService {
+  regex: RegExp;
+  embedUrl: string;
+  html: string;
+  height?: number;
+  width?: number;
+  id?: ([id, params]: string[]) => string;
+}
+
+export interface EmbedServiceMap {
+  [service: string]: EmbedService;
+}
+
 export type EmbedPluginOptions = DefaulPluginOptions & {
   components: EmbedComponent[],
+  services: EmbedServiceMap,
 };
+
+export interface EmbedElem {
+  type: string;
+  embed: string;
+  ew?: number;
+  eh?: number;
+}

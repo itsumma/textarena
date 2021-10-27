@@ -1,88 +1,46 @@
 import { css, html, TemplateResult } from 'lit';
 import { property } from 'lit/decorators.js';
 import WebComponent from '../../helpers/WebComponent';
+import embedServices from './embedServices';
+import { EmbedElem, EmbedService } from './types';
 
-const HOSTS = {
-  twitter: ['twitter.com'],
-  youtube: ['youtu.be', 'youtube.com', 'youtube-nocookie.com'],
-  facebook: ['facebook.com'],
-  instagram: ['instagram.com'],
-};
-
-const getProviderName = (url: URL): string | undefined => {
-  const host = url.host.replace('www.', '');
-  const hosts = Object.entries(HOSTS);
-  for (let i = 0; i < hosts.length; i += 1) {
-    if (hosts[i][1].includes(host)) {
-      return hosts[i][0];
+const createElemEmbed = (url: string): EmbedElem | undefined => {
+  const keys = Object.keys(embedServices);
+  let type: string | undefined;
+  let service: EmbedService | undefined;
+  let found = false;
+  for (let i = 0; i < keys.length; i += 1) {
+    type = keys[i];
+    service = embedServices[type];
+    if (service.regex.test(url)) {
+      found = true;
+      break;
     }
   }
-  return undefined;
-};
-
-const createElemEmbed = (href: string) => {
-  let url: URL;
-  try {
-    url = new URL(href);
-  } catch (e) {
-    return undefined;
-  }
-  const name = getProviderName(url);
-  if (!name) {
-    return undefined;
-  }
-  if (name === 'youtube') {
-    let src = 'https://www.youtube.com/embed/';
-    const paths = url.pathname.split('/');
-    if (url.host === 'youtu.be') {
-      src += url.pathname;
-    } else if (paths[paths.length - 2] === 'embed') {
-      src += paths[paths.length - 1];
-    } else if (url.searchParams.has('v')) {
-      src += url.searchParams.get('v');
-    }
-    return {
-      type: 'youtube',
-      border: true,
-      href: src,
-    };
-  }
-  if (name === 'facebook') {
-    return {
-      type: 'facebook',
-      href,
-    };
-  }
-  if (name === 'twitter') {
-    const paths = url.pathname.split('/');
-    if (paths[paths.length - 2] === 'status') {
-      const postid = paths[paths.length - 1];
-      if (postid) {
-        return {
-          type: 'twitter',
-          postid,
-          href,
-        };
-      }
-    }
-  }
-  if (name === 'instagram') {
-    return {
-      type: 'instagram',
-      href,
-    };
-  }
-  return undefined;
+  if (!found || !service || !type) return undefined;
+  const {
+    regex,
+    embedUrl,
+    width: ew,
+    height: eh,
+    id = (ids: string[]) => ids.shift() as string,
+  } = service;
+  const result = regex.exec(url)?.slice(1) as string[];
+  const embed = embedUrl.replace(/<%= remote_id %>/g, id(result));
+  return {
+    type,
+    embed,
+    ew,
+    eh,
+  };
 };
 
 export default class ArenaEmbedForm extends WebComponent {
-  protected currentHref = '';
-
   @property({
     type: String,
     reflect: true,
   })
-    href: string | undefined;
+    embed: string | undefined;
 
   inputValue = '';
 
