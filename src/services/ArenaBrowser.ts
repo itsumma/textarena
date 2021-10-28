@@ -254,7 +254,6 @@ export default class ArenaBrowser {
   }
 
   protected checkSelection(): void {
-    this.asm.view.resetCurrentSelection();
     const s = window.getSelection();
     if (!s || !s.rangeCount) {
       return;
@@ -262,6 +261,8 @@ export default class ArenaBrowser {
     if (!s.anchorNode || !isDescendant(this.editor, s.anchorNode)) {
       return;
     }
+
+    this.asm.view.resetCurrentSelection();
 
     this.asm.eventManager.fire('moveCursor');
 
@@ -448,38 +449,39 @@ export default class ArenaBrowser {
 
   protected mouseUpListener(e: MouseEvent): void {
     this.asm.logger.log('MouseUp event', e);
-    const event = e as unknown as { path: ChildNode[] };
-    if (e.button === 0 && Array.isArray(event.path)) {
-      const { path } = event;
-      for (let i = 0; i < path.length; i += 1) {
-        const elem = path[i];
-        if (elem.nodeType === Node.ELEMENT_NODE
-        && (elem as HTMLElement).tagName === 'TEXTARENA-REMOVE') {
-          const id = (elem as HTMLElement).getAttribute('node-id');
-          if (id) {
-            e.preventDefault();
-            let sel;
-            const cursor = this.asm.model.removeNodeById(id);
-            if (cursor) {
-              const textCursor = this.asm.model.getTextCursor(cursor.node, cursor.offset);
-              sel = new ArenaSelection(
-                textCursor.node,
-                textCursor.offset,
-                textCursor.node,
-                textCursor.offset,
-                'forward',
-              );
-            }
-            if (!sel) {
-              sel = this.asm.view.getCurrentSelection();
-            }
-            if (sel) {
-              this.asm.history.save(sel);
-            }
-            this.asm.eventManager.fire('modelChanged', { selection: sel });
-          }
-          break;
+    const event = e as unknown as { target: Node };
+    if (e.button === 0 && event.target && event.target.parentNode) {
+      let elem: Node | null = event.target;
+      while (elem.parentNode) {
+        elem = elem.parentNode;
+        if (elem.nodeType !== Node.ELEMENT_NODE
+          || (elem as HTMLElement).tagName !== 'TEXTARENA-REMOVE') {
+          // eslint-disable-next-line no-continue
+          continue;
         }
+        const id = (elem as HTMLElement).getAttribute('node-id');
+        if (!id) break;
+        e.preventDefault();
+        let sel;
+        const cursor = this.asm.model.removeNodeById(id);
+        if (cursor) {
+          const textCursor = this.asm.model.getTextCursor(cursor.node, cursor.offset);
+          sel = new ArenaSelection(
+            textCursor.node,
+            textCursor.offset,
+            textCursor.node,
+            textCursor.offset,
+            'forward',
+          );
+        }
+        if (!sel) {
+          sel = this.asm.view.getCurrentSelection();
+        }
+        if (sel) {
+          this.asm.history.save(sel);
+        }
+        this.asm.eventManager.fire('modelChanged', { selection: sel });
+        break;
       }
     }
     this.asm.history.resetTyped();
