@@ -115,9 +115,10 @@ const linkPlugin = (opts?: Partial<LinkPluginOptions>): ArenaPlugin => ({
       (
         ta: Textarena,
         sel: ArenaSelection,
-        text: string | DataTransfer,
+        data: string | DataTransfer,
       ) => {
-        if (typeof text === 'string' && sel.isSameNode() && !sel.isCollapsed() && sel.getCursor().node.hasText) {
+        const text = typeof data === 'string' ? data : data.getData('text/plain');
+        if (text && sel.isSameNode() && !sel.isCollapsed() && sel.getCursor().node.hasText) {
           const trimmed = text.trim();
           let href = '';
           if (urlPattern.test(trimmed)) {

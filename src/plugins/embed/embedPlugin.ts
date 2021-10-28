@@ -9,6 +9,7 @@ import { EmbedPluginOptions } from './types';
 import ArenaEmbedSimple from './ArenaEmbedSimple';
 import ArenaEmbedForm from './ArenaEmbedForm';
 import embedServices from './embedServices';
+import { createElemEmbed } from './embedUtils';
 
 const defaultOptions: EmbedPluginOptions = {
   name: 'embed',
@@ -71,7 +72,7 @@ const defaultOptions: EmbedPluginOptions = {
 };
 
 const embedPlugin = (opts?: Partial<EmbedPluginOptions>): ArenaPlugin => ({
-  register: (ta: Textarena) => {
+  register: (textarena: Textarena) => {
     const {
       name, icon, title, tag, attributes, allowedAttributes,
       shortcut, hint, command, components, marks, output,
@@ -83,7 +84,7 @@ const embedPlugin = (opts?: Partial<EmbedPluginOptions>): ArenaPlugin => ({
         }
       });
     }
-    const arena = ta.registerArena(
+    const arena = textarena.registerArena(
       {
         name,
         tag,
@@ -93,11 +94,11 @@ const embedPlugin = (opts?: Partial<EmbedPluginOptions>): ArenaPlugin => ({
         output,
       },
       marks,
-      [ta.getRootArenaName()],
+      [textarena.getRootArenaName()],
     ) as ArenaSingleInterface;
-    ta.addSimpleArenas(arena);
+    textarena.addSimpleArenas(arena);
     if (command) {
-      ta.registerCommand(
+      textarena.registerCommand(
         command,
         (someTa: Textarena, selection: ArenaSelection) => {
           const [sel] = someTa.insertBeforeSelected(selection, arena, true);
@@ -105,13 +106,13 @@ const embedPlugin = (opts?: Partial<EmbedPluginOptions>): ArenaPlugin => ({
         },
       );
       if (shortcut) {
-        ta.registerShortcut(
+        textarena.registerShortcut(
           shortcut,
           command,
         );
       }
       if (title) {
-        ta.registerCreator({
+        textarena.registerCreator({
           name,
           icon,
           title,
@@ -119,12 +120,12 @@ const embedPlugin = (opts?: Partial<EmbedPluginOptions>): ArenaPlugin => ({
           hint,
           command,
           canShow: (node: AnyArenaNode) =>
-            ta.isAllowedNode(node, arena),
+            textarena.isAllowedNode(node, arena),
         });
       }
     }
 
-    const simpleArena = ta.registerArena(
+    const simpleArena = textarena.registerArena(
       {
         name: 'simple-embed',
         tag: 'ARENA-EMBED-SIMPLE',
@@ -138,9 +139,34 @@ const embedPlugin = (opts?: Partial<EmbedPluginOptions>): ArenaPlugin => ({
           attributes: [],
         },
       ],
-      [ta.getRootArenaName()],
+      [textarena.getRootArenaName()],
     ) as ArenaSingleInterface;
-    ta.addSimpleArenas(simpleArena);
+    textarena.addSimpleArenas(simpleArena);
+    textarena.registerMiddleware(
+      (
+        ta: Textarena,
+        sel: ArenaSelection,
+        data: string | DataTransfer,
+      ) => {
+        const text = typeof data === 'string' ? data : data.getData('text/plain');
+        if (text && sel.isSameNode() && sel.isCollapsed() && sel.getCursor().node.hasText) {
+          const embedElement = createElemEmbed(text);
+          if (embedElement) {
+            const { node: textNode } = sel.getCursor();
+            const replace = textNode.hasText && textNode.getText().getText().length === 0;
+            const [, node] = ta.insertBeforeSelected(sel, arena, replace);
+            node?.setAttribute('embed', embedElement.embed);
+            node?.setAttribute('type', embedElement.type);
+            node?.setAttribute('ew', embedElement.ew);
+            node?.setAttribute('eh', embedElement.eh);
+            const newSel = sel.clone();
+            return [true, newSel];
+          }
+        }
+        return [false, sel];
+      },
+      'before',
+    );
   },
 });
 
