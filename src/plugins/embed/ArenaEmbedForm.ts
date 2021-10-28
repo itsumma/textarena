@@ -114,6 +114,11 @@ export default class ArenaEmbedForm extends WebComponent {
     this.inputValue = value;
   }
 
+  connectedCallback() {
+    super.connectedCallback();
+    setTimeout(() => this.shadowRoot?.getElementById('link_input')?.focus());
+  }
+
   // Render element DOM by returning a `lit-html` template.
   render(): TemplateResult {
     return html`<div class="wrapper">

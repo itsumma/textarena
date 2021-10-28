@@ -336,6 +336,7 @@ export default class ArenaModel {
     before = false,
     onlyChild = false,
     isNew = false,
+    replace = false,
   ): ChildArenaNode | undefined {
     if (parent.hasText) {
       if (onlyChild) {
@@ -349,6 +350,7 @@ export default class ArenaModel {
         parentOffset === 0,
         false,
         isNew,
+        replace,
       );
     }
     if (parent.single) {
@@ -356,6 +358,9 @@ export default class ArenaModel {
     }
     if (parent.isAllowedNode(arena)) {
       const newNode = this.createChildNode(arena, isNew);
+      if (replace) {
+        parent.removeChild(offset);
+      }
       return parent.insertNode(newNode, offset);
     }
     if (arena.defaultParentArena && parent.isAllowedNode(arena.defaultParentArena)) {
@@ -378,6 +383,7 @@ export default class ArenaModel {
               true,
               true,
               isNew,
+              replace,
             );
             if (node) {
               return node;
@@ -395,6 +401,7 @@ export default class ArenaModel {
               false,
               true,
               isNew,
+              replace,
             );
             if (node) {
               return node;
@@ -417,6 +424,7 @@ export default class ArenaModel {
         before,
         false,
         isNew,
+        replace,
       );
     }
     return undefined;
@@ -840,6 +848,7 @@ export default class ArenaModel {
   public insertBeforeSelected(
     selection: ArenaSelection,
     arena: ChildArena,
+    replace = false,
   ): [ArenaSelection, AnyArenaNode | undefined] {
     if (!selection.isSameNode()) {
       return [selection, undefined];
@@ -855,11 +864,12 @@ export default class ArenaModel {
           false,
           false,
           true,
+          replace,
         );
       }
     } else if (node.hasChildren) {
       if (node.isAllowedNode(arena)) {
-        insertedNode = this.createAndInsertNode(arena, node, offset, false, false, true);
+        insertedNode = this.createAndInsertNode(arena, node, offset, false, false, true, replace);
       }
     }
     return [selection, insertedNode];

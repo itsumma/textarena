@@ -33,14 +33,19 @@ export default class ArenaEmbed extends WebComponent {
     return this;
   }
 
-  handleToggle({ detail }: { detail: boolean }): void {
-    this.fireChangeAttribute({
-      border: detail,
-    });
-  }
-
   handleForm({ detail }: { detail: NodeAttributes }): void {
     this.fireChangeAttribute(detail);
+  }
+
+  onKeydown(e: KeyboardEvent): void {
+    switch (e.key) {
+      case 'Escape':
+        e.preventDefault();
+        this.fireRemoveEvent();
+        break;
+      default:
+        break;
+    }
   }
 
   render(): TemplateResult {
@@ -53,6 +58,10 @@ export default class ArenaEmbed extends WebComponent {
           eh="${this.eh}"
         ></arena-embed-simple>`;
     }
-    return html`<arena-embed-form @change="${this.handleForm}"></arena-embed-form>`;
+    return html`
+        <arena-embed-form
+            @change="${this.handleForm}"
+            @keydown="${this.onKeydown}">
+        </arena-embed-form>`;
   }
 }

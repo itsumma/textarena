@@ -19,6 +19,7 @@ import ArenaSelection from '../helpers/ArenaSelection';
 import NodeAttributes from '../interfaces/NodeAttributes';
 import { isMac } from '../utils/navigator';
 import { AnyArenaNode } from '../interfaces/ArenaNode';
+import ArenaCursorAncestor from '../interfaces/ArenaCursorAncestor';
 
 type ArenaChangeAttribute = CustomEvent<{
   attrs: NodeAttributes,
@@ -29,10 +30,13 @@ type ArenaChangeAttribute = CustomEvent<{
 
 type ArenaCustomEvent = CustomEvent<unknown>;
 
+export type ArenaRemoveEvent = CustomEvent<{ node: AnyArenaNode; }>;
+
 declare global {
   interface GlobalEventHandlersEventMap {
     'arena-change-attribute': ArenaChangeAttribute;
     'arena-custom-event': ArenaCustomEvent;
+    'arena-remove-event': ArenaRemoveEvent;
     'beforeinput': InputEvent;
   }
 }
@@ -160,6 +164,8 @@ export default class ArenaBrowser {
 
   protected arenaCustomEventListenerInstance: ((event: ArenaCustomEvent) => void);
 
+  protected arenaRemoveEventListenerInstance: ((event: ArenaRemoveEvent) => void);
+
   protected lastSelectionStatus = false;
 
   protected lastSelectionRange: Range | undefined;
@@ -186,6 +192,7 @@ export default class ArenaBrowser {
     this.dropListenerInstance = this.dropListener.bind(this);
     this.changeAttributeListenerInstance = this.changeAttributeListener.bind(this);
     this.arenaCustomEventListenerInstance = this.arenaCustomEventListener.bind(this);
+    this.arenaRemoveEventListenerInstance = this.arenaRemoveEventListener.bind(this);
     this.asm.eventManager.subscribe('turnOn', () => {
       this.editor.addEventListener('input', this.inputListenerInstance, false);
       this.editor.addEventListener('beforeinput', this.beforeinputListenerInstance, false);
@@ -202,6 +209,7 @@ export default class ArenaBrowser {
       this.editor.addEventListener('drop', this.dropListenerInstance, false);
       this.editor.addEventListener('arena-change-attribute', this.changeAttributeListenerInstance, false);
       this.editor.addEventListener('arena-custom-event', this.arenaCustomEventListenerInstance, false);
+      this.editor.addEventListener('arena-remove-event', this.arenaRemoveEventListenerInstance, false);
       document.addEventListener('selectionchange', this.selectListenerInstance, false);
       this.editor.startObserve(
         () => this.asm.eventManager.fire('editorChanged'),
@@ -228,6 +236,7 @@ export default class ArenaBrowser {
       this.editor.removeEventListener('drop', this.dropListenerInstance);
       this.editor.removeEventListener('arena-change-attribute', this.changeAttributeListenerInstance);
       this.editor.removeEventListener('arena-custom-event', this.arenaCustomEventListenerInstance);
+      this.editor.removeEventListener('arena-remove-event', this.arenaRemoveEventListenerInstance);
       document.removeEventListener('selectionchange', this.selectListenerInstance);
       this.editor.stopObserve();
     });
@@ -458,25 +467,8 @@ export default class ArenaBrowser {
         const id = (elem as HTMLElement).getAttribute('node-id');
         if (!id) break;
         e.preventDefault();
-        let sel;
         const cursor = this.asm.model.removeNodeById(id);
-        if (cursor) {
-          const textCursor = this.asm.model.getTextCursor(cursor.node, cursor.offset);
-          sel = new ArenaSelection(
-            textCursor.node,
-            textCursor.offset,
-            textCursor.node,
-            textCursor.offset,
-            'forward',
-          );
-        }
-        if (!sel) {
-          sel = this.asm.view.getCurrentSelection();
-        }
-        if (sel) {
-          this.asm.history.save(sel);
-        }
-        this.asm.eventManager.fire('modelChanged', { selection: sel });
+        this.resetCursor(cursor);
         break;
       }
     }
@@ -636,5 +628,31 @@ export default class ArenaBrowser {
 
   protected arenaCustomEventListener(e: ArenaCustomEvent): void {
     this.asm.eventManager.fire('customEvent', e.detail);
+  }
+
+  private resetCursor(cursor: ArenaCursorAncestor | undefined): void {
+    let sel;
+    if (cursor) {
+      const textCursor = this.asm.model.getTextCursor(cursor.node, cursor.offset);
+      sel = new ArenaSelection(
+        textCursor.node,
+        textCursor.offset,
+        textCursor.node,
+        textCursor.offset,
+        'forward',
+      );
+    }
+    if (!sel) {
+      sel = this.asm.view.getCurrentSelection();
+    }
+    if (sel) {
+      this.asm.history.save(sel);
+    }
+    this.asm.eventManager.fire('modelChanged', { selection: sel });
+  }
+
+  protected arenaRemoveEventListener({ detail: { node } }: ArenaRemoveEvent): void {
+    const cursor = this.asm.model.removeNodeById(node.getGlobalIndex());
+    this.resetCursor(cursor);
   }
 }

@@ -4,6 +4,7 @@ import {
 } from 'lit/decorators.js';
 import { AnyArenaNode } from '../interfaces/ArenaNode';
 import NodeAttributes from '../interfaces/NodeAttributes';
+import { ArenaRemoveEvent } from '../services/ArenaBrowser';
 
 export default class WebComponent extends LitElement {
   @property({ type: Object })
@@ -64,6 +65,15 @@ export default class WebComponent extends LitElement {
     const event = new CustomEvent('arena-custom-event', {
       bubbles: true,
       detail: e,
+    });
+    this.dispatchEvent(event);
+  }
+
+  protected fireRemoveEvent(): void {
+    if (!this.node) return;
+    const event: ArenaRemoveEvent = new CustomEvent('arena-remove-event', {
+      bubbles: true,
+      detail: { node: this.node },
     });
     this.dispatchEvent(event);
   }

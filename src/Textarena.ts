@@ -381,8 +381,9 @@ class Textarena {
   public insertBeforeSelected(
     selection: ArenaSelection,
     arena: ChildArena,
+    replace = false,
   ): [ArenaSelection, AnyArenaNode | undefined] {
-    return this.asm.model.insertBeforeSelected(selection, arena);
+    return this.asm.model.insertBeforeSelected(selection, arena, replace);
   }
 
   public breakSelection(selection: ArenaSelection): ArenaSelection {
@@ -399,6 +400,7 @@ class Textarena {
     offset: number,
     before = false,
     onlyChild = false,
+    replace = false,
   ): ChildArenaNode | undefined {
     return this.asm.model.createAndInsertNode(
       arena,
@@ -406,6 +408,7 @@ class Textarena {
       offset,
       before,
       onlyChild,
+      replace,
     );
   }
 

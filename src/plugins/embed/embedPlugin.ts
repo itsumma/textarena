@@ -100,7 +100,7 @@ const embedPlugin = (opts?: Partial<EmbedPluginOptions>): ArenaPlugin => ({
       ta.registerCommand(
         command,
         (someTa: Textarena, selection: ArenaSelection) => {
-          const [sel] = someTa.insertBeforeSelected(selection, arena);
+          const [sel] = someTa.insertBeforeSelected(selection, arena, true);
           return sel;
         },
       );
