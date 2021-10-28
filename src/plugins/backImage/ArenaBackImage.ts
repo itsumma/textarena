@@ -10,12 +10,12 @@ export default class ArenaBackImage extends WebComponent {
   @property({
     type: String,
   })
-  src: string | undefined;
+    src: string | undefined;
 
   @property({
     type: Object,
   })
-  arena: AnyArena | undefined;
+    arena: AnyArena | undefined;
 
   loading = false;
 
