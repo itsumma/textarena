@@ -1,6 +1,6 @@
 ![Textarena](resources/gif/logo.gif)
 
-[![Build](https://github.com/itsumma/textarena/actions/workflows/main.yml/badge.svg)](https://github.com/itsumma/textarena/actions)
+[![Build](https://github.com/itsumma/textarena/actions/workflows/test.yml/badge.svg)](https://github.com/itsumma/textarena/actions)
 
 <h4 align="center">Textarena is a simple WYSIWYG (What You See Is What You Get) pluggable editor for rich media stories.</h4>
 
