@@ -671,6 +671,13 @@ export default class ArenaModel {
           }
         } else if (node.hasText) {
           node.removeText(start || 0, end);
+        } else if (node.hasChildren) {
+          const startOffset = start || 0;
+          const endOffset = end || node.children.length;
+          for (let i = startOffset; i < endOffset; i += 1) {
+            const n = node.children[i];
+            toRemove.push(n);
+          }
         }
       },
     );
@@ -1293,7 +1300,7 @@ export default class ArenaModel {
     const toUnwrap: ArenaNodeMediator[] = [];
     const commonAncestorCursor = utils.modelTree.runThroughSelection(
       selection,
-      (node: AnyArenaNode) => {
+      (node: AnyArenaNode, start, end) => {
         if (node.hasParent
           && node.parent.isAllowedNode(arena)
           && arena.allowedArenas.includes(node.arena)
@@ -1309,7 +1316,10 @@ export default class ArenaModel {
           && node.parent.hasParent) {
           toUnwrap.push(node.parent);
         } else if (node.hasChildren && node.isAllowedNode(arena)) {
-          node.children.forEach((n) => {
+          const startOffset = start || 0;
+          const endOffset = end || node.children.length;
+          for (let i = startOffset; i < endOffset; i += 1) {
+            const n = node.children[i];
             if (n.arena === arena
               && n.hasChildren
             ) {
@@ -1317,7 +1327,7 @@ export default class ArenaModel {
             } else if (arena.allowedArenas.includes(n.arena)) {
               toWrap.push(n);
             }
-          });
+          }
         }
       },
     );
@@ -1385,6 +1395,16 @@ export default class ArenaModel {
         }
       });
     } else if (selection.isCollapsed()) {
+      const { node, offset } = selection.getCursor();
+      if (node.hasText) {
+        if (node.parent.isAllowedNode(arena)) {
+          this.createAndInsertNode(arena, node.parent, node.getIndex(), false, false, true);
+        }
+      } else if (node.hasChildren) {
+        if (node.isAllowedNode(arena)) {
+          this.createAndInsertNode(arena, node, offset, false, false, true);
+        }
+      }
       // const { node, offset } = selection.getCursor();
       // if (node.hasChildren && node.isAllowedNode(arena)) {
       //   const newNode = this.createAndInsertNode(

@@ -86,7 +86,7 @@ export default class CreatorBar {
       this.handleChangeSelection();
     });
     this.asm.eventManager.subscribe('editorChanged', () => {
-      this.reposition();
+      setTimeout(() => this.reposition(), 0);
     });
     this.asm.eventManager.subscribe('customEvent', (e) => {
       if (e.detail === 'contentResize') {
