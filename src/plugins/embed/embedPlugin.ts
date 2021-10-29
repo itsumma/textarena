@@ -159,8 +159,7 @@ const embedPlugin = (opts?: Partial<EmbedPluginOptions>): ArenaPlugin => ({
             node?.setAttribute('type', embedElement.type);
             node?.setAttribute('ew', embedElement.ew);
             node?.setAttribute('eh', embedElement.eh);
-            const newSel = sel.clone();
-            return [true, newSel];
+            return [true, sel];
           }
         }
         return [false, sel];
