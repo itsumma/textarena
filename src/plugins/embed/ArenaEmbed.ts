@@ -12,49 +12,56 @@ export default class ArenaEmbed extends WebComponent {
   @property({
     type: String,
   })
-    href: string | undefined;
-
-  @property({
-    type: String,
-  })
-    postid: string | undefined;
+    embed: string | undefined;
 
   @property({
     type: Boolean,
   })
     border: boolean | undefined;
 
+  @property({
+    type: Number,
+  })
+    ew: number | undefined;
+
+  @property({
+    type: Number,
+  })
+    eh: number | undefined;
+
   createRenderRoot(): LitElement {
     return this;
-  }
-
-  handleToggle({ detail }: { detail: boolean }): void {
-    this.fireChangeAttribute({
-      border: detail,
-    });
   }
 
   handleForm({ detail }: { detail: NodeAttributes }): void {
     this.fireChangeAttribute(detail);
   }
 
-  render(): TemplateResult {
-    if (this.type === 'youtube' && this.href) {
-      return html`
-        <arena-embed-youtube
-          ?border=${this.border}
-          @toggle=${this.handleToggle}
-          href="${this.href}"
-        ></arena-embed-youtube>`;
+  onKeydown(e: KeyboardEvent): void {
+    switch (e.key) {
+      case 'Escape':
+        e.preventDefault();
+        this.fireRemoveEvent();
+        break;
+      default:
+        break;
     }
-    if (this.type && this.href) {
+  }
+
+  render(): TemplateResult {
+    if (this.type && this.embed) {
       return html`
         <arena-embed-simple
           type="${this.type}"
-          href="${this.href}"
-          postid="${this.postid || ''}"
+          embed="${this.embed}"
+          ew="${this.ew}"
+          eh="${this.eh}"
         ></arena-embed-simple>`;
     }
-    return html`<arena-embed-form @change="${this.handleForm}"></arena-embed-form>`;
+    return html`
+        <arena-embed-form
+            @change="${this.handleForm}"
+            @keydown="${this.onKeydown}">
+        </arena-embed-form>`;
   }
 }

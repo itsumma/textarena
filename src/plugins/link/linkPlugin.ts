@@ -111,9 +111,14 @@ const linkPlugin = (opts?: Partial<LinkPluginOptions>): ArenaPlugin => ({
     if (!paragraph) {
       throw new Error('Default Arena for text not found');
     }
-    if (paragraph.hasText) {
-      paragraph.registerMiddleware((ta: Textarena, sel: ArenaSelection, text: string) => {
-        if (sel.isSameNode() && !sel.isCollapsed()) {
+    textarena.registerMiddleware(
+      (
+        ta: Textarena,
+        sel: ArenaSelection,
+        data: string | DataTransfer,
+      ) => {
+        const text = typeof data === 'string' ? data : data.getData('text/plain');
+        if (text && sel.isSameNode() && !sel.isCollapsed() && sel.getCursor().node.hasText) {
           const trimmed = text.trim();
           let href = '';
           if (urlPattern.test(trimmed)) {
@@ -136,8 +141,9 @@ const linkPlugin = (opts?: Partial<LinkPluginOptions>): ArenaPlugin => ({
           }
         }
         return [false, sel];
-      });
-    }
+      },
+      'before',
+    );
   },
 });
 

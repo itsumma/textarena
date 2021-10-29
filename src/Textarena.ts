@@ -26,6 +26,7 @@ import ToolOptions from './interfaces/ToolOptions';
 import blockquotePlugin from './plugins/blockquotePlugin';
 import calloutPlugin from './plugins/callout/calloutPlugin';
 import commonPlugin from './plugins/commonPlugin';
+import pastePlugin from './plugins/pastePlugin';
 import embedPlugin from './plugins/embed/embedPlugin';
 import formatingsPlugin from './plugins/formatingsPlugin';
 import headersPlugin from './plugins/headersPlugin';
@@ -35,6 +36,7 @@ import linkPlugin from './plugins/link/linkPlugin';
 import listsPlugin from './plugins/listsPlugin';
 import nestedlistsPlugin from './plugins/nestedlistsPlugin';
 import paragraphPlugin from './plugins/paragraphPlugin';
+import backImagePlugin from './plugins/backImage/backImagePlugin';
 
 import ArenaCommandManager from './services/ArenaCommandManager';
 import ArenaServiceManager from './services/ArenaServiceManager';
@@ -50,6 +52,9 @@ import roadmapPlugin from './plugins/roadmapPlugin';
 import tablePlugin from './plugins/table/tablePlugin';
 import { ArenaInterval } from './interfaces/ArenaInterval';
 import contentsPlugin from './plugins/contents/contentsPlugin';
+import ArenaMiddleware from './interfaces/ArenaMiddleware';
+import ArenaHistory from './services/ArenaHistory';
+import { MiddlewareWhenCondition } from './services/ArenaMiddlewareManager';
 
 export const defaultOptions: TextarenaOptions = {
   editable: true,
@@ -93,6 +98,7 @@ export const defaultOptions: TextarenaOptions = {
   },
   plugins: [
     commonPlugin(),
+    pastePlugin(),
     formatingsPlugin(),
     typoSugarPlugin(),
     paragraphPlugin(),
@@ -328,6 +334,22 @@ class Textarena {
     return this.asm.commandManager.registerShortcut(shortcut, command, description);
   }
 
+  public registerMiddleware(
+    middleware: ArenaMiddleware,
+    when: MiddlewareWhenCondition,
+    scope?: AnyArena,
+  ): void {
+    this.asm.middlewares.registerMiddleware(middleware, when, scope);
+  }
+
+  public applyMiddlewares(
+    sel: ArenaSelection,
+    text: string,
+    when: MiddlewareWhenCondition,
+  ): [boolean, ArenaSelection] {
+    return this.asm.middlewares.applyMiddlewares(sel, text, when);
+  }
+
   public registerTool(opts: ToolOptions): void {
     this.asm.toolbar.registerTool(opts);
   }
@@ -356,8 +378,12 @@ class Textarena {
     return this.asm.model.clearFormationInSelection(selection);
   }
 
-  public insertBeforeSelected(selection: ArenaSelection, arena: ChildArena): ArenaSelection {
-    return this.asm.model.insertBeforeSelected(selection, arena);
+  public insertBeforeSelected(
+    selection: ArenaSelection,
+    arena: ChildArena,
+    replace = false,
+  ): [ArenaSelection, AnyArenaNode | undefined] {
+    return this.asm.model.insertBeforeSelected(selection, arena, replace);
   }
 
   public breakSelection(selection: ArenaSelection): ArenaSelection {
@@ -374,6 +400,7 @@ class Textarena {
     offset: number,
     before = false,
     onlyChild = false,
+    replace = false,
   ): ChildArenaNode | undefined {
     return this.asm.model.createAndInsertNode(
       arena,
@@ -381,6 +408,7 @@ class Textarena {
       offset,
       before,
       onlyChild,
+      replace,
     );
   }
 
@@ -440,6 +468,72 @@ class Textarena {
 
   public getModel(): ArenaModel {
     return this.asm.model;
+  }
+
+  public getHistory(): ArenaHistory {
+    return this.asm.history;
+  }
+
+  public insertData(selection: ArenaSelection, data: DataTransfer): ArenaSelection | undefined {
+    const [result, newSelection] = this.asm.middlewares.applyMiddlewares(
+      selection,
+      data,
+      'before',
+    );
+    if (result) {
+      this.asm.history.save(newSelection);
+      this.asm.eventManager.fire('modelChanged', { selection: newSelection });
+      return newSelection;
+    }
+    return undefined;
+  }
+
+  public insertText(selection: ArenaSelection, text: string): ArenaSelection {
+    // const newSelection = this.asm.model.insertTextToModel(selection, event.character, true);
+    // this.asm.history.save(newSelection, /[a-zа-яА-Я0-9]/i.test(event.character));
+    const [resultBefore, newSelBefore] = this.asm.middlewares.applyMiddlewares(
+      selection,
+      text,
+      'before',
+    );
+    let newSelection = newSelBefore;
+    if (!resultBefore) {
+      newSelection = this.asm.model.insertTextToModel(newSelection, text, true);
+    }
+    this.asm.history.save(newSelection);
+    const [resultAfter, newSelAfter] = this.asm.middlewares.applyMiddlewares(
+      selection,
+      text,
+      'after',
+    );
+    if (resultAfter) {
+      this.asm.history.save(newSelAfter);
+    }
+    this.asm.eventManager.fire('modelChanged', { selection: newSelAfter });
+    return newSelAfter;
+  }
+
+  public insertHtml(selection: ArenaSelection, html: string): ArenaSelection {
+    const [resultBefore, newSelBefore] = this.asm.middlewares.applyMiddlewares(
+      selection,
+      html,
+      'before',
+    );
+    let newSelection = newSelBefore;
+    if (!resultBefore) {
+      newSelection = this.asm.model.insertHtmlToModel(newSelection, html);
+    }
+    this.asm.history.save(newSelection);
+    const [resultAfter, newSelAfter] = this.asm.middlewares.applyMiddlewares(
+      selection,
+      html,
+      'after',
+    );
+    if (resultAfter) {
+      this.asm.history.save(newSelAfter);
+    }
+    this.asm.eventManager.fire('modelChanged', { selection: newSelAfter });
+    return newSelAfter;
   }
 
   protected debug = false;
@@ -547,6 +641,7 @@ declare global {
 
 Textarena.constructor.prototype.getPlugins = () => ({
   commonPlugin,
+  pastePlugin,
   paragraphPlugin,
   formatingsPlugin,
   headersPlugin,
@@ -567,6 +662,7 @@ Textarena.constructor.prototype.getPlugins = () => ({
   roadmapPlugin,
   tablePlugin,
   contentsPlugin,
+  backImagePlugin,
 });
 
 export default Textarena;

@@ -50,6 +50,7 @@
     &:active {
       outline: none;
       color: black;
+      background: white;
       // border: 0.05em solid #000;
     }
 
@@ -100,8 +101,9 @@
     background: white;
 
     @supports ((-webkit-backdrop-filter: none) or (backdrop-filter: none)) {
-      background: rgba(255, 255, 255, 0.45);
+      background: rgba(255, 255, 255, 0.72);
       backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
     }
   }
 

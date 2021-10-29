@@ -183,6 +183,7 @@
 
     const {
       commonPlugin,
+      pastePlugin,
       paragraphPlugin,
       formatingsPlugin,
       headersPlugin,
@@ -216,6 +217,7 @@
         placeholder: 'Введите текст или нажмите Tab',
         plugins: [
           commonPlugin(),
+          pastePlugin(),
           formatingsPlugin(),
           paragraphPlugin(),
           headersPlugin(),

@@ -1,40 +1,41 @@
 import ArenaSelection from '../../helpers/ArenaSelection';
-import { ArenaMediatorInterface, ArenaTextInterface } from '../../interfaces/Arena';
+import { ArenaMediatorInterface, ArenaSingleInterface, ArenaTextInterface } from '../../interfaces/Arena';
 import { AnyArenaNode } from '../../interfaces/ArenaNode';
-import ArenaPlugin, { DefaulPluginOptions } from '../../interfaces/ArenaPlugin';
+import ArenaPlugin from '../../interfaces/ArenaPlugin';
 import Textarena from '../../Textarena';
-import ArenaTwoColumns from './ArenaTwoColumns';
-import twoColumnsOutput from './twoColumnsOutput';
+import { izoUpload } from '../image/izoUpload';
+import ArenaBackImage from './ArenaBackImage';
+import backImageOutput from './backImageOutput';
+import { BackImagePluginOptions } from './types';
 
-const defaultOptions: DefaulPluginOptions = {
-  name: 'two-columns',
-  icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 14.06 13.69" fill="currentColor"><g ><g ><path d="M5.68,13.69h-5A.71.71,0,0,1,0,13V.71A.71.71,0,0,1,.71,0h5a.71.71,0,0,1,.71.71V13A.71.71,0,0,1,5.68,13.69ZM1.42,12.28H5V1.42H1.42Z"/><path d="M13.35,13.69h-5A.71.71,0,0,1,7.67,13V.71A.71.71,0,0,1,8.38,0h5a.71.71,0,0,1,.71.71V13A.71.71,0,0,1,13.35,13.69ZM9.09,12.28h3.55V1.42H9.09Z"/></g></g></svg>',
-  title: 'Две колонки',
-  tag: 'ARENA-TWO-COLUMNS',
+const defaultOptions: BackImagePluginOptions = {
+  name: 'back-image',
+  title: 'Картинка фоном',
+  tag: 'ARENA-BACK-IMAGE',
   attributes: {},
-  command: 'add-two-columns',
-  shortcut: 'Alt + Digit5',
-  hint: '5',
-  component: 'arena-two-columns',
-  componentConstructor: ArenaTwoColumns,
+  allowedAttributes: ['src'],
+  command: 'add-back-image',
+  component: 'arena-back-image',
+  componentConstructor: ArenaBackImage,
   marks: [
     {
-      tag: 'ARENA-TWO-COLUMNS',
+      tag: 'ARENA-BACK-IMAGE',
       attributes: [],
     },
     {
       tag: 'DIV',
-      attributes: ['class="arena-two-col"'],
+      attributes: ['class="arena-back-image"'],
     },
   ],
-  output: twoColumnsOutput,
+  output: backImageOutput,
 };
 
-const twoColumnsPlugin = (opts?: Partial<DefaulPluginOptions>): ArenaPlugin => ({
+const backImagePlugin = (opts?: Partial<BackImagePluginOptions>): ArenaPlugin => ({
   register(textarena: Textarena): void {
     const {
       name, icon, title, tag, attributes, shortcut, hint, command,
-      component, componentConstructor, marks, output,
+      component, componentConstructor, marks, output, allowedAttributes,
+      srcset, prepareSrc, upload, izoConfig,
     } = {
       ...defaultOptions,
       ...(opts || {}),
@@ -46,38 +47,27 @@ const twoColumnsPlugin = (opts?: Partial<DefaulPluginOptions>): ArenaPlugin => (
     if (!paragraph) {
       throw new Error('Default Arena for text not found');
     }
+    const image = textarena.getArena('image') as ArenaSingleInterface;
+    let uploadFunc = (image ? image.getAttribute('upload') : undefined) || upload;
+    if (izoConfig) {
+      uploadFunc = izoUpload(izoConfig);
+    }
     const allowedArenas = textarena.getSimpleArenas();
     const middleArenas = textarena.getMiddleArenas();
-    const bodyContainer = textarena.registerArena(
-      {
-        name: `${name}-col`,
-        tag: `${tag}-COL`,
-        attributes: {},
-        allowedArenas,
-        arenaForText: paragraph as ArenaTextInterface,
-      },
-      [
-        {
-          tag: `${tag}-COL`,
-          attributes: [],
-        },
-        {
-          tag: 'DIV',
-          attributes: ['class="arena-col"'],
-        },
-      ],
-      [],
-    ) as ArenaMediatorInterface;
     const arena = textarena.registerArena(
       {
         name,
         tag,
-        attributes,
-        protectedChildren: [
-          bodyContainer,
-          bodyContainer,
-        ],
-        arenaForText: bodyContainer,
+        attributes: {
+          ...attributes,
+          srcset: (image ? image.getAttribute('srcset') : undefined) || srcset,
+          prepareSrc: (image ? image.getAttribute('prepareSrc') : undefined) || prepareSrc,
+          upload: uploadFunc,
+        },
+        allowedAttributes,
+        allowedArenas,
+        group: true,
+        arenaForText: paragraph as ArenaTextInterface,
         output,
       },
       marks,
@@ -123,4 +113,4 @@ const twoColumnsPlugin = (opts?: Partial<DefaulPluginOptions>): ArenaPlugin => (
   },
 });
 
-export default twoColumnsPlugin;
+export default backImagePlugin;

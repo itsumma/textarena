@@ -231,7 +231,7 @@ blockquote {
 blockquote::before {
   content: "";
   width: 0.2em;
-  border-radius: 0.2em;
+  /* border-radius: 0.2em; */
   background-color: #e7e7e7;
   position: absolute;
   top: 0;
@@ -247,7 +247,7 @@ blockquote:last-child {
   display: block;
   background: white;
   border: 1px solid black;
-  border-radius: 1rem;
+  /* border-radius: 1rem; */
   padding: 1rem;
   margin: 0 0 1em;
 }
@@ -263,7 +263,7 @@ blockquote:last-child {
   display: block;
   background: white;
   border: 1px solid #ccc;
-  border-radius: 1rem;
+  /* border-radius: 1rem; */
   padding: 1rem;
   margin: 0 0 1em;
 }
@@ -321,14 +321,12 @@ picture {
   display: block;
   width: 100%;
   overflow: hidden;
-  border-radius: 0.2em;
 }
 img {
-  border-radius: 0.2em;
   max-width: 100%;
   display: block;
-  border: 1px solid #ccc;
-  border-radius: 1rem;
+  border: none;
+  /* border-radius: 1rem; */
 }
 
 .place-center picture {
@@ -358,15 +356,13 @@ img {
 }
 
 .place-wide {
-  margin-top: 2.5em !important;
-  margin-bottom: 2.5em !important;
-  margin-left: -220px;
-  margin-right: -220px;
+  margin-left: -2em;
+  margin-right: -2em;
 }
 @media screen and (max-width: 1441px) {
   .place-wide {
-    margin: 0 !important;
-    margin-top: 1em !important;
+    margin-left: 0;
+    margin-right: 0;
     width: 100%;
   }
 }
@@ -385,15 +381,15 @@ img {
   min-height: 100%;
   transform: translateX(-50%);
   left: 50%;
+  /* border-radius: 0; */
 }
-
 
 arena-image {
   display: contents;
   width: 100%;
-  border-radius: 0.2em;
-  border: 1px solid #ccc;
-  border-radius: 1rem;
+  /* border-radius: 0.2em; */
+  border: none;
+  /* border-radius: 1rem; */
 }
 .place-wide arena-image {
   width: auto;
@@ -401,6 +397,7 @@ arena-image {
   min-width: 100%;
   min-height: 100%;
   object-fit: cover;
+  /* border-radius: 0; */
 }
 .place-center arena-image {
   object-fit: cover;
@@ -413,7 +410,7 @@ arena-image {
 }
 
 figcaption {
-  color: black;
+  color: inherit;
   width: 100%;
   font-size: 0.75em;
   margin-top: 0.15em;
@@ -421,12 +418,6 @@ figcaption {
 }
 figcaption:focus-visible {
   outline: none;
-}
-
-.embed > blockquote {
-  padding: 0;
-  margin: 0;
-  border: none;
 }
 
 mark {
@@ -474,7 +465,6 @@ arena-embed-simple {
   min-height: 1.6em;
   min-height: 10em;
   overflow: hidden;
-  pointer-events: none;
 }
 
 arena-embed-simple blockquote {
@@ -483,23 +473,31 @@ arena-embed-simple blockquote {
   border: none;
 }
 
-.embed__content {
-  background: white;
-  border: 1px solid #ccc;
-  border-radius: 1re;
-  padding: 1re;
+.embed-youtube {
+  width: 100%;
+  padding-bottom: 56.25%;
+  position: relative;
   margin: 0 0 1em;
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 0;
-  bottom: 0;
-  max-width: 550px;
+  background: #ccc;
+  overflow: hidden;
 }
 
-.twitter-tweet-rendered {
-  position: relative;
-  margin: 0 !important;
+.embed-youtube-iframe {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  border: none;
+  min-width: 100%;
+  width: 0;
+  max-width: 100%;
+  min-height: 100%;
+  height: 0;
+  max-height: 100%;
 }
 
 arena-two-columns-col {
@@ -600,4 +598,39 @@ arena-td, td {
 
 arena-td {
   min-width: 4em;
+}
+
+
+.black-back {
+  background: #33393e;
+  color: white;
+  padding: 2em;
+  margin: 0 -2em;
+}
+
+
+.black-back > *:last-child {
+  margin-bottom: 0;
+}
+
+arena-back-image,
+.arena-back-image {
+  display: block;
+  background: #33393e;
+  color: white;
+  padding: 2em;
+  margin: 0 -2em;
+  position: relative;
+}
+.arena-back-image-body {
+  z-index: 1;
+  position: relative;
+}
+.arena-back-image-img img {
+  position: absolute;
+  inset: 0;
+  object-fit: cover;
+  display: block;
+  width: 100%;
+  height: 100%;
 }

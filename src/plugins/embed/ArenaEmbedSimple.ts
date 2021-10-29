@@ -1,9 +1,9 @@
 import { html, LitElement, TemplateResult } from 'lit';
 import { property } from 'lit/decorators.js';
+import { unsafeHTML } from 'lit/directives/unsafe-html.js';
+import embedServices from './embedServices';
 
 export default class ArenaEmbedSimple extends LitElement {
-  protected currentHref = '';
-
   @property({
     type: String,
   })
@@ -12,12 +12,17 @@ export default class ArenaEmbedSimple extends LitElement {
   @property({
     type: String,
   })
-    postid: string | undefined;
+    embed: string | undefined;
 
   @property({
-    type: String,
+    type: Number,
   })
-    href: string | undefined;
+    ew: number | undefined;
+
+  @property({
+    type: Number,
+  })
+    eh: number | undefined;
 
   createRenderRoot(): LitElement {
     return this;
@@ -25,39 +30,14 @@ export default class ArenaEmbedSimple extends LitElement {
 
   // Render element DOM by returning a `lit-html` template.
   render(): TemplateResult | undefined {
-    if (this.href) {
-      const loading = html`<p class="embed__content">
-        Грузится ембед… <a href="${this.href || ''}">${this.href}</a>
-      </p>`;
-      if (this.type === 'facebook') {
+    if (this.embed && this.type) {
+      const service = embedServices[this.type];
+      if (service) {
+        const { html: htmlTemplate } = service;
         return html`
-          <div
-            class="fb-post"
-            data-href="${this.href}"
-            data-width="auto"
-            data-show-captions="false"
-          ></div>
-        `;
-      }
-      if (this.type === 'instagram') {
-        return html`
-          <blockquote
-            class="instagram-media"
-            data-instgrm-version="13"
-            postid=${this.postid || ''}
-            style="background:#FFF; border:0; border-radius:3px; box-shadow:0 0 1px 0 rgba(0,0,0,0.5),0 1px 10px 0 rgba(0,0,0,0.15); margin: 1px; max-width:540px; min-width:326px; padding:0; width:99.375%; width:-webkit-calc(100% - 2px); width:calc(100% - 2px);"
-            data-lang="ru"
-          >
-            ${loading}
-          </blockquote>`;
-      }
-      if (this.type === 'twitter') {
-        return html`
-          <blockquote class="twitter-tweet" postid=${this.postid || ''} data-lang="ru">
-            <p class="embed__content">
-              Грузится ембед… <a href="${this.href}">${this.href}</a>
-            </p>
-          </blockquote>`;
+          <div embed class="embed embed-${this.type}" type="${this.type}">
+            ${unsafeHTML(htmlTemplate.replace(/^<([^>]+?)>/, `<$1 src="${this.embed}">`))}
+          </div>`;
       }
     }
     return undefined;

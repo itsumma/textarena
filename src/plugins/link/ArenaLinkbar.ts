@@ -147,7 +147,7 @@ export default class ArenaLinkbar extends LitElement {
 
   render(): TemplateResult | undefined {
     if (this.node && this.show) {
-      const href = this.node.getAttribute('href');
+      const href = this.node.getAttribute('href') as string;
       const isBlank = this.node.getAttribute('target') === '_blank';
       return html`
       <div class="preview">
