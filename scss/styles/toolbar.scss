@@ -3,6 +3,10 @@
   z-index: 1;
   pointer-events: none;
 
+  &:hover .textarena-shortcut-hint-short {
+    display: none;
+  }
+
   &__pointer {
     display: none;
     position: absolute;
@@ -79,15 +83,7 @@
       background: white;
       color: black;
 
-      .textarena-shortcut-hint {
-        display: block;
-      }
-
-      .textarena-shortcut-hint__short {
-        display: none;
-      }
-
-      .textarena-shortcut-hint__full {
+      .textarena-shortcut-hint-full {
         display: block;
       }
     }
@@ -119,11 +115,7 @@
     }
   }
 
-  &__item_show-hint .textarena-shortcut-hint {
+  &__item_show-hint .textarena-shortcut-hint-short {
     display: block;
-  }
-
-  &:hover .textarena-shortcut-hint {
-    display: none;
   }
 }

@@ -14,6 +14,10 @@
   // overflow-x: hidden;
   // overflow-y: visible;
 
+  &:hover .textarena-shortcut-hint-short {
+    display: none;
+  }
+
   &_active {
     width: 100%;
     z-index: 1;
@@ -142,15 +146,7 @@
     }
 
     &:hover {
-      .textarena-shortcut-hint {
-        display: block;
-      }
-
-      .textarena-shortcut-hint__short {
-        display: none;
-      }
-
-      .textarena-shortcut-hint__full {
+      .textarena-shortcut-hint-full {
         display: block;
       }
     }
@@ -171,12 +167,8 @@
     margin-right: 0.2em;
   }
 
-  &__item_show-hint .textarena-shortcut-hint {
+  &__item_show-hint .textarena-shortcut-hint-short {
     display: block;
-  }
-
-  &:hover .textarena-shortcut-hint {
-    display: none;
   }
 }
 
