@@ -11,15 +11,16 @@ import utils from '../../utils';
 
 const defaultOptions: ContentsOptions = {
   name: 'contents',
-  title: 'Содержание',
+  title: 'Contents',
   tag: 'ARENA-CONTENTS',
   attributes: {},
   allowedAttributes: ['list'],
-  shortcut: 'Alt + KeyU',
+  shortcut: 'Ctrl + Alt + C',
   hint: 'u',
   command: 'add-contents',
   component: 'arena-contents',
   componentConstructor: ArenaContents,
+  description: 'Contents',
   marks: [
     {
       tag: 'ARENA-CONTENTS',
@@ -34,7 +35,7 @@ const contentsPlugin = (opts?: Partial<ContentsOptions>): ArenaPlugin => ({
   register(textarena: Textarena): void {
     const {
       name, icon, title, tag, attributes, allowedAttributes, shortcut, hint, command,
-      component, componentConstructor, marks, output, processor,
+      component, componentConstructor, marks, output, processor, description,
     } = { ...defaultOptions, ...(opts || {}) };
     if (component && componentConstructor && !customElements.get(component)) {
       customElements.define(component, componentConstructor);
@@ -66,6 +67,7 @@ const contentsPlugin = (opts?: Partial<ContentsOptions>): ArenaPlugin => ({
         textarena.registerShortcut(
           shortcut,
           command,
+          description,
         );
       }
       if (title) {
@@ -74,7 +76,6 @@ const contentsPlugin = (opts?: Partial<ContentsOptions>): ArenaPlugin => ({
           icon,
           title,
           shortcut,
-          hint,
           command,
           canShow: (node: AnyArenaNode) =>
             textarena.isAllowedNode(node, arena),

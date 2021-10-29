@@ -18,7 +18,7 @@
 
   if (elem && (typeof Textarena !== 'undefined')) {
     let dataHtml;
-    const storedData = localStorage.getItem('dataHtml');
+    // const storedData = localStorage.getItem('dataHtml');
     try {
       if (storedData) {
         data = JSON.parse(storedData);
@@ -32,7 +32,7 @@
       <h2><s>Simple</s> Cool text editor</h2>
       <p class="paragraph"><strong>Textarena</strong> is adapted for quick work with text. In addition, it is easily expanded with plugins.</p>
       <p class="paragraph">When the text is selected, the formatting panel will appear.</p>
-      <p class="paragraph">On the open panel, hold down Ctrl (⌘ for Mac) or Alt (⌥ for Mac) and you will see keyboard shortcuts hints.</p>
+      <p class="paragraph">On the open panel, hold down Ctrl (⌘ for Mac) or Ctrl + Alt (⌘ + ⌥ for Mac) and you will see keyboard shortcuts hints.</p>
       <figure class="">
         <picture>
           <img src="https://d3qc8znfr3ejm3.cloudfront.net/images/781b832a-2fe6-46f0-b561-08b81799f809.png" alt="true" class="">
@@ -50,16 +50,16 @@
         <li>H4 — fourth.</li>
       </ul>
       <p class="paragraph">Why is there no first level? First of all, which headers are available in the editor is configurable. Secondly, it is not recommended to use more than one first-level heading on the page. This page already has a title - "TEXTARENA" - at the top of the page.</p>
-      <p class="paragraph">To turn the text into a heading, you can press Alt (⌥) + 2 or 3 or 4.</p>
-      <p class="paragraph">To return a paragraph — Alt (⌥) + 0.</p>
+      <p class="paragraph">To turn the text into a heading, you can press Ctrl + Alt (⌘ + ⌥) + 2 or 3 or 4.</p>
+      <p class="paragraph">To return a paragraph — Ctrl + Alt (⌘ + ⌥) + 0.</p>
 
       <h3>Lists</h3>
       <p class="paragraph">To start the list:</p>
       <ol><li>type at the beginning of the line "1." and a space or "-" with a space;</li>
-      <li>нpress Alt (⌥) + O or Alt (⌥) + L for ordered or bullet list, respectively.</li></ol>
+      <li>press Ctrl + Alt (⌘ + ⌥) + O or Ctrl + Alt (⌘ + ⌥) + L for ordered or bullet list, respectively.</li></ol>
 
       <h3>Simple text blocks</h3>
-      <blockquote><p class="paragraph">To make a simple quote block, press Alt (⌥) + &quot;.</p></blockquote>
+      <blockquote><p class="paragraph">To make a simple quote block, press Ctrl + Alt (⌘ + ⌥) + &quot;.</p></blockquote>
       <p class="paragraph">Or press the plus button on an empty line.</p>
       <figure class="">
         <picture>
@@ -224,34 +224,9 @@
           paragraphPlugin(),
           headersPlugin(),
           hrPlugin({
-            marks: [
-              {
-                tag: 'HR',
-                attributes: [],
-              },
-              {
-                tag: 'DIV',
-                attributes: [
-                  'class=separator',
-                ],
-              },
-            ],
-          }),
-          hrPlugin({
-            name: 'hr-asterisk',
             icon: '***',
             title: '***',
-            tag: 'HR',
             attributes: { class: 'asterisk' },
-            command: 'add-hr-asterisk',
-            marks: [
-              {
-                tag: 'HR',
-                attributes: [
-                  'class=asterisk'
-                ],
-              },
-            ],
           }),
           nestedlistsPlugin(),
           blockquotePlugin({
@@ -332,30 +307,19 @@
           embedPlugin(),
           linkPlugin(),
           asidePlugin(),
-          asidePlugin({
-            name: 'black-back',
-            tag: 'ASIDE',
-            attributes: { class: 'black-back' },
-            title: 'Черная подложка',
-            icon: `<svg id="_x31_"viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><g>
-              <path d="m21.5 22h-19c-1.378 0-2.5-1.121-2.5-2.5v-15c0-1.379 1.122-2.5 2.5-2.5h19c1.378
-              0 2.5 1.121 2.5 2.5v15c0 1.379-1.122 2.5-2.5 2.5zm-19-19c-.827 0-1.5.673-1.5 1.5v15c0
-              .827.673 1.5 1.5 1.5h19c.827 0 1.5-.673 1.5-1.5v-15c0-.827-.673-1.5-1.5-1.5z"
-              fill="currentColor"/></g><g>
-              <path d="m3.5 10c-.276 0-.5-.224-.5-.5v-2c0-1.379 1.122-2.5 2.5-2.5h2c.276 0
-              .5.224.5.5s-.224.5-.5.5h-2c-.827 0-1.5.673-1.5 1.5v2c0 .276-.224.5-.5.5z"
-              fill="currentColor"/></g><g>
-              <path d="m18.5 19h-2c-.276 0-.5-.224-.5-.5s.224-.5.5-.5h2c.827 0 1.5-.673
-              1.5-1.5v-2c0-.276.224-.5.5-.5s.5.224.5.5v2c0 1.379-1.122 2.5-2.5 2.5z"
-              fill="currentColor"/></g></svg>`,
-            command: 'convert-to-black-back',
-            marks: [
-              {
-                tag: 'ASIDE',
-                attributes: ['class="black-back"'],
-              },
-            ],
-          }),
+          // asidePlugin({
+          //   name: 'black-back',
+          //   tag: 'ASIDE',
+          //   attributes: { class: 'black-back' },
+          //   title: 'Черная подложка',
+          //   command: 'convert-to-black-back',
+          //   marks: [
+          //     {
+          //       tag: 'ASIDE',
+          //       attributes: ['class="black-back"'],
+          //     },
+          //   ],
+          // }),
           codePlugin(),
           quotePlugin(),
           typoSugarPlugin(),
@@ -394,17 +358,14 @@
             'unordered-list',
             'ordered-list',
             'hr',
-            'hr-asterisk',
             'figure',
             'blockquote',
             'embed',
             'aside',
-            'black-back',
             'two-columns',
             'roadmap',
             'add-table',
             'contents',
-            'back-image',
           ],
         },
       }

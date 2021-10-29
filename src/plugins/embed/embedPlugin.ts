@@ -42,7 +42,7 @@ const defaultOptions: EmbedPluginOptions = {
     contenteditable: false,
   },
   allowedAttributes: ['embed', 'type', 'ew', 'eh'],
-  shortcut: 'Alt + KeyE',
+  shortcut: 'Ctrl + Alt + E',
   hint: 'e',
   command: 'add-embed',
   components: [

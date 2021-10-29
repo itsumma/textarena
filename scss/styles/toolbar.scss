@@ -107,9 +107,23 @@
     }
   }
 
-  &__hint { @include key; }
-
-  &__item_show-hint &__hint {
+  &__item_show-hint .textarena-shortcut-hint {
     display: block;
+  }
+
+  &:hover .textarena-shortcut-hint {
+    display: none;
+  }
+
+  &__item:hover {
+    .textarena-shortcut-hint {
+      display: block;
+    }
+    .textarena-shortcut-hint__short {
+      display: none;
+    }
+    .textarena-shortcut-hint__full {
+      display: block;
+    }
   }
 }

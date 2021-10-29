@@ -136,8 +136,18 @@ export default class CreatorBar {
           show: true,
         };
         if (options.shortcut) {
-          const [modifiers] = this.asm.commandManager.parseShortcut(options.shortcut);
+          const [modifiers, key] = this.asm.commandManager.parseShortcut(options.shortcut);
           creator.modifiers = modifiers;
+          if (key) {
+            const humanShortcut = this.asm.commandManager.getHumanShortcut(options.shortcut);
+            const hint = this.asm.commandManager.getHumanKey(key);
+            const hintElem = new ElementHelper('DIV', 'textarena-shortcut-hint');
+            const shortHintElem = new ElementHelper('DIV', 'textarena-shortcut-hint__short', hint);
+            const fullHintElem = new ElementHelper('DIV', 'textarena-shortcut-hint__full', humanShortcut);
+            hintElem.appendChild(shortHintElem);
+            hintElem.appendChild(fullHintElem);
+            elem.appendChild(hintElem);
+          }
         }
         elem.onClick((e) => {
           e.preventDefault();
@@ -151,10 +161,6 @@ export default class CreatorBar {
             options.icon || options.title,
           );
           elem.appendChild(icon);
-        }
-        if (options.hint) {
-          const keyElem = new ElementHelper('DIV', 'textarena-creator__hint', options.hint);
-          elem.appendChild(keyElem);
         }
         this.list.append(elem);
         this.creators.push(creator);

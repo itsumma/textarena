@@ -33,7 +33,7 @@ const defaultOptions: LinkPluginOptions = {
   attributes: {
   },
   allowedAttributes: ['href', 'target'],
-  shortcut: 'Ctrl + KeyK',
+  shortcut: 'Ctrl + K',
   hint: 'k',
   command: 'add-link',
   commandFunction: linkCommand,

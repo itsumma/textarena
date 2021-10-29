@@ -10,7 +10,7 @@ const defaultOptions: DefaulPluginOptions = {
   tag: 'P',
   attributes: { class: 'paragraph' },
   icon: '<b>¶</b>',
-  shortcut: 'Alt + Digit0',
+  shortcut: 'Ctrl + Alt + 0',
   description: 'Параграф',
   hint: '0',
   command: 'convert-to-paragraph',

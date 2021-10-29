@@ -13,7 +13,7 @@ const defaultOptions: DefaulPluginOptions = {
   tag: 'ARENA-TWO-COLUMNS',
   attributes: {},
   command: 'add-two-columns',
-  shortcut: 'Alt + Digit5',
+  shortcut: 'Ctrl + Alt + 6',
   hint: '5',
   component: 'arena-two-columns',
   componentConstructor: ArenaTwoColumns,

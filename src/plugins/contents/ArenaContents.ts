@@ -67,7 +67,7 @@ export default class ArenaContents extends WebComponent {
     const data = this.node?.getAttribute('data') as Contents || [];
     return html`
       <h3>
-        Содержание <button type="button" @click="${this.handleClick}" >Обновить</button>
+        Содержание <button type="button" @click="${this.handleClick}" >Refresh</button>
       </h3>
       <ul>
         ${repeat(data, (c) => c.id, (c) => html`
@@ -86,7 +86,7 @@ export default class ArenaContents extends WebComponent {
             </div>
             ${c.title !== undefined ? html`
               <div class="original">
-                Оригинал заголовка: «${c.originalTitle}»
+                Original: «${c.originalTitle}»
                 <button
                   type="button"
                   class="reset"

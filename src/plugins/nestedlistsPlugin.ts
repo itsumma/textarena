@@ -156,7 +156,7 @@ const defaultOptions: ListsOptions = {
           </g>
       </g>
   </svg>`,
-      shortcut: 'Alt + KeyL',
+      shortcut: 'Ctrl + Alt + L',
       command: 'convert-to-unordered-list',
       hint: 'l',
       pattern: /^(-\s+).*$/,
@@ -188,7 +188,7 @@ const defaultOptions: ListsOptions = {
           </g>
       </g>
   </svg>`,
-      shortcut: 'Alt + KeyO',
+      shortcut: 'Ctrl + Alt + O',
       command: 'convert-to-ordered-list',
       hint: 'o',
       pattern: /^(\d+(?:\.|\))\s+).*$/,

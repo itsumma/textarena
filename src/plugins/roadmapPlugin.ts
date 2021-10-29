@@ -10,7 +10,7 @@ const defaultOptions: DefaulPluginOptions = {
   attributes: { },
   title: 'Дорожная карта',
   icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 6.94 13.69" fill="currentColor"><path d="M3.47,4.88a2,2,0,1,0,2,2A2,2,0,0,0,3.47,4.88Z" style="fill:none"/><path d="M6.94,6.85A3.48,3.48,0,0,0,4.22,3.46h0V.75a.75.75,0,1,0-1.5,0v2.7h0a3.47,3.47,0,0,0,0,6.77h0v2.7a.75.75,0,1,0,1.5,0v-2.7h0A3.47,3.47,0,0,0,6.94,6.85Zm-3.47,2a2,2,0,1,1,2-2A2,2,0,0,1,3.47,8.82Z"/></svg>',
-  shortcut: 'Alt + KeyU',
+  shortcut: 'Ctrl + Alt + 7',
   hint: 'u',
   command: 'convert-to-roadmap',
   marks: [

@@ -72,7 +72,7 @@ export const defaultTableOptions: TablePluginOptions = {
   commands: [
     {
       command: 'add-table',
-      shortcut: 'Alt + Digit6',
+      shortcut: 'Ctrl + Alt + T',
       action: (ta: Textarena, selection: ArenaSelection): ArenaSelection => {
         const arena = ta.getArena('table') as ArenaMediatorInterface;
         if (arena) {

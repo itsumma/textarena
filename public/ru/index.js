@@ -202,6 +202,7 @@
       twoColumnsPlugin,
       roadmapPlugin,
       tablePlugin,
+      contentsPlugin,
     } = Textarena.getPlugins();
 
     const textarena = new Textarena(
@@ -367,6 +368,9 @@
           typoSugarPlugin(),
           roadmapPlugin(),
           twoColumnsPlugin(),
+          contentsPlugin({
+            description: 'Содержание',
+          }),
           tablePlugin(),
         ],
         toolbar: {

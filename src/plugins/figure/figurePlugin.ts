@@ -29,7 +29,7 @@ const defaultOptions: FigurePluginOptions = {
   tag: 'ARENA-FIGURE',
   attributes: {},
   allowedAttributes: ['src', 'width', 'height', 'class'],
-  shortcut: 'Alt + KeyI',
+  shortcut: 'Ctrl + Alt + I',
   hint: 'i',
   command: 'add-figure',
   marks: [

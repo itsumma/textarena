@@ -522,10 +522,10 @@ export default class ArenaBrowser {
       }
     }
     if (event instanceof CommandEvent) {
-      const { command, modifiersSum } = event;
+      const { key, modifiersSum } = event;
       const selection = this.asm.view.getCurrentSelection();
       if (selection) {
-        this.asm.commandManager.execShortcut(selection, modifiersSum, command);
+        this.asm.commandManager.execShortcut(selection, modifiersSum, key.toLowerCase());
       }
     }
     if (event instanceof ArenaInputEvent) {

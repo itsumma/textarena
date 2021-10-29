@@ -17,7 +17,7 @@ const defaultOptions: HeaderOptions = {
     title: 'Header 2',
     icon: '<b>H2</b>',
     command: 'convert-to-header2',
-    shortcut: 'Alt + Digit2',
+    shortcut: 'Ctrl + Alt + 2',
     description: 'Заголовок второго уровня',
     hint: '2',
     marks: [
@@ -35,7 +35,7 @@ const defaultOptions: HeaderOptions = {
     title: 'Header 3',
     icon: '<b>H3</b>',
     command: 'convert-to-header3',
-    shortcut: 'Alt + Digit3',
+    shortcut: 'Ctrl + Alt + 3',
     description: 'Заголовок третьего уровня',
     hint: '3',
     marks: [
@@ -53,7 +53,7 @@ const defaultOptions: HeaderOptions = {
     title: 'Header 4',
     icon: '<b>H4</b>',
     command: 'convert-to-header4',
-    shortcut: 'Alt + Digit4',
+    shortcut: 'Ctrl + Alt + 4',
     description: 'Заголовок четвёртого уровня',
     hint: '4',
     marks: [

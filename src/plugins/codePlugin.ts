@@ -11,7 +11,7 @@ const defaultOptions: DefaulPluginOptions = {
   attributes: {},
   title: 'Моноширный',
   icon: 'pre',
-  shortcut: 'Alt + KeyP',
+  shortcut: 'Ctrl + Alt + P',
   hint: 'p',
   command: 'convert-to-code',
   marks: [

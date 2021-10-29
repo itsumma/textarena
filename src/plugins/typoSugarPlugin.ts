@@ -28,6 +28,10 @@ const typings = [
     text: '€',
   },
   {
+    shortcut: 'Alt + Shift + KeyE',
+    text: '⌥',
+  },
+  {
     shortcut: 'Alt + KeyR',
     text: '®',
   },

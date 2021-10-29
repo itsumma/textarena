@@ -21,7 +21,7 @@ const defaultOptions: DefaulPluginOptions = {
     <path d="m18.5 19h-2c-.276 0-.5-.224-.5-.5s.224-.5.5-.5h2c.827 0 1.5-.673
     1.5-1.5v-2c0-.276.224-.5.5-.5s.5.224.5.5v2c0 1.379-1.122 2.5-2.5 2.5z"
     fill="currentColor"/></g></svg>`,
-  shortcut: 'Alt + KeyA',
+  shortcut: 'Ctrl + Alt + 5',
   hint: 'a',
   command: 'convert-to-aside',
   marks: [

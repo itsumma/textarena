@@ -136,7 +136,7 @@ export default class ArenaFigure extends WebComponent {
         </div>
       </div>
       <div class="caption-wrap">
-        <div @click=${this.onPlaceholderClick} class="placeholder" contenteditable="false">Подпись:&nbsp;</div>
+        <div @click=${this.onPlaceholderClick} class="placeholder" contenteditable="false"></div>
         <slot name="image-caption"></slot>
       </div>
     `;

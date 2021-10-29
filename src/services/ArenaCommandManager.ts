@@ -2,6 +2,7 @@
 import ArenaSelection from '../helpers/ArenaSelection';
 import CommandAction from '../interfaces/CommandAction';
 import ArenaServiceManager from './ArenaServiceManager';
+import { isMac } from '../utils/navigator';
 
 export const keyboardKeys = [
   'Escape', 'F1', 'F2', 'F3', 'F4', 'F5', 'F6', 'F7', 'F8', 'F9', 'F10', 'F11', 'F12', 'Insert', 'Delete',
@@ -30,15 +31,53 @@ export const keyboardKeys = [
   'ArrowLeft', 'ArrowDown', 'ArrowRight',
 ];
 
-const keyboardReplases: Record<string, string> = {
+export const lowerKeyboardKeys = keyboardKeys.map((key) => key.toLowerCase());
+
+const keyboardReplaces: Record<string, string> = {
   backquote: '`',
+  digit1: '1',
+  digit2: '2',
+  digit3: '3',
+  digit4: '4',
+  digit5: '5',
+  digit6: '6',
+  digit7: '7',
+  digit8: '8',
+  digit9: '9',
+  digit0: '0',
   minus: '−',
   equal: '=',
+  keyq: 'q',
+  keyw: 'w',
+  keye: 'e',
+  keyr: 'r',
+  keyt: 't',
+  keyy: 'y',
+  keyu: 'u',
+  keyi: 'i',
+  keyo: 'o',
+  keyp: 'p',
   bracketleft: '[',
   bracketright: ']',
   backslash: '\\',
+  keya: 'a',
+  keys: 's',
+  keyd: 'd',
+  keyf: 'f',
+  keyg: 'g',
+  keyh: 'h',
+  keyj: 'j',
+  keyk: 'k',
+  keyl: 'l',
   semicolon: ':',
-  quote: '\'',
+  quote: '"',
+  keyz: 'z',
+  keyx: 'x',
+  keyc: 'c',
+  keyv: 'v',
+  keyb: 'b',
+  keyn: 'n',
+  keym: 'm',
   comma: ',',
   period: '.',
   slash: '/',
@@ -47,6 +86,12 @@ const keyboardReplases: Record<string, string> = {
   arrowleft: '←',
   arrowright: '→',
 };
+
+const keyboardRreplacesReverse = Object.entries(keyboardReplaces).reduce((ret, [key, value]) => {
+  // eslint-disable-next-line no-param-reassign
+  ret[value] = key;
+  return ret;
+}, {} as { [key: string]: string });
 
 export type KeyboardKey = typeof keyboardKeys[number];
 
@@ -184,21 +229,30 @@ export default class ArenaCommandManager {
     let sum = 0;
     let lastKey: string | undefined;
     keys.forEach((key) => {
-      if (key.trim().toLowerCase() === 'shift') {
+      const lower = key.trim().toLowerCase();
+      if (lower === 'shift') {
         sum += Modifiers.Shift;
-      } else if (['ctrl', 'control'].includes(key.trim().toLowerCase())) {
+      } else if (['ctrl', 'control'].includes(lower)) {
         sum += Modifiers.Ctrl;
-      } else if (key.trim().toLowerCase() === 'alt') {
+      } else if (lower === 'alt') {
         sum += Modifiers.Alt;
-      } else if (['meta', 'win', 'windows'].includes(key.trim().toLowerCase())) {
+      } else if (['meta', 'win', 'windows'].includes(lower)) {
         sum += Modifiers.Meta;
       } else {
-        lastKey = key.trim();
+        lastKey = lower;
       }
     });
-    if (lastKey && keyboardKeys.includes(lastKey)) {
-      return [sum, lastKey];
+
+    if (lastKey) {
+      if (lowerKeyboardKeys.includes(lastKey)) {
+        return [sum, lastKey];
+      }
+
+      if (keyboardRreplacesReverse[lastKey]) {
+        return [sum, keyboardRreplacesReverse[lastKey]];
+      }
     }
+
     throw new Error(`Can not parse shortcut ${shortcut}`);
   }
 
@@ -207,17 +261,29 @@ export default class ArenaCommandManager {
     const result: string[] = [];
     keys.forEach((key) => {
       const lowerKey = key.toLowerCase().trim();
-      if (lowerKey in keyboardReplases) {
-        result.push(keyboardReplases[lowerKey]);
-      } else if (lowerKey.substr(0, 3) === 'key') {
-        result.push(lowerKey.substr(3, 1).toUpperCase());
-      } else if (lowerKey.substr(0, 5) === 'digit') {
-        result.push(lowerKey.substr(5, 1).toUpperCase());
+      if (lowerKey === 'shift') {
+        result.push(isMac() ? '⇧' : 'Shift');
+      } else if (['ctrl', 'control'].includes(lowerKey)) {
+        result.push(isMac() ? '⌘' : 'Ctrl');
+      } else if (lowerKey === 'alt') {
+        result.push(isMac() ? '⌥' : 'Alt');
+      } else if (['meta', 'win', 'windows'].includes(lowerKey)) {
+        result.push(isMac() ? '⌃' : 'Win');
+      } else if (lowerKey in keyboardReplaces) {
+        result.push(keyboardReplaces[lowerKey].toUpperCase());
       } else {
         result.push(key.trim());
       }
     });
     return result.join(' + ');
+  }
+
+  getHumanKey(key: string): string {
+    const lowerKey = key.toLowerCase().trim();
+    if (lowerKey in keyboardReplaces) {
+      return keyboardReplaces[lowerKey].toUpperCase();
+    }
+    return '';
   }
 
   getHelp(): ShortcutsHelp {

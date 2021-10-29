@@ -11,7 +11,7 @@ export default interface ToolOptions {
   icon: string;
   title: string;
   command: string;
-  hint?: string;
+  hint?: string; // Deprecated
   shortcut?: string;
   checkStatus?: ToolCheckStatus;
 }

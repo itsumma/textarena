@@ -24,7 +24,7 @@ const defaultOptions: DefaulPluginOptions = {
       </g>
   </g>
 </svg>`,
-  shortcut: 'Alt + Quote',
+  shortcut: 'Ctrl + Alt + "',
   hint: '"',
   command: 'convert-to-blockquote',
   marks: [

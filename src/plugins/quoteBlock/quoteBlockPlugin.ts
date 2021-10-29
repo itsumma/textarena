@@ -12,7 +12,7 @@ const defaultOptions: DefaulPluginOptions = {
   title: 'Блок с цитатой',
   tag: 'ARENA-QUOTE-BLOCK',
   attributes: { class: 'quote-block' },
-  shortcut: 'Alt + KeyB',
+  shortcut: 'Ctrl + Alt + 8',
   hint: 'q',
   command: 'add-quote-block',
   component: 'arena-quote-block',

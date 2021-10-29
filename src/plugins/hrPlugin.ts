@@ -14,7 +14,7 @@ const defaultOptions: DefaulPluginOptions = {
   attributes: {
     contenteditable: false,
   },
-  shortcut: 'Alt + KeyH',
+  shortcut: 'Ctrl + Alt + H',
   hint: 'h',
   command: 'add-hr',
   marks: [

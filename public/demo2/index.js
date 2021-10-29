@@ -247,7 +247,7 @@
               height="24px" viewBox="0 0 24 24" width="24px" fill="currentColor"><path d="M0 0h24v24H0z" fill="none"/>
               <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
               </svg>`,
-            shortcut: 'Alt + Digit7',
+            shortcut: 'Ctrl + Alt + Digit7',
             hint: '7',
             command: 'convert-to-aside-colored-grey',
             marks: [
@@ -270,7 +270,7 @@
               height="24px" viewBox="0 0 24 24" width="24px" fill="#b460ff"><path d="M0 0h24v24H0z" fill="none"/>
               <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
               </svg>`,
-            shortcut: 'Alt + Digit8',
+            shortcut: 'Ctrl + Alt + Digit8',
             hint: '8',
             command: 'convert-to-aside-colored-purple',
             marks: [
@@ -293,7 +293,7 @@
               height="24px" viewBox="0 0 24 24" width="24px" fill="#ffb09a"><path d="M0 0h24v24H0z" fill="none"/>
               <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
               </svg>`,
-            shortcut: 'Alt + Digit9',
+            shortcut: 'Ctrl + Alt + Digit9',
             hint: '9',
             command: 'convert-to-aside-colored-orange',
             marks: [
