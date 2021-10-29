@@ -11,7 +11,9 @@ const defaultOptions: DefaulPluginOptions = {
   </svg>`,
   title: 'Horizontal rule',
   tag: 'HR',
-  attributes: {},
+  attributes: {
+    contenteditable: false,
+  },
   shortcut: 'Alt + KeyH',
   hint: 'h',
   command: 'add-hr',

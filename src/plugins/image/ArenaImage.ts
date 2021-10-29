@@ -63,13 +63,13 @@ export default class ArenaImage extends WebComponent {
           box-sizing: border-box;
           justify-content: center;
           align-items: center;
-          background: #e6e6e6;
-          /* padding-top: 56.25%; */
-          padding: .2em;
-          border: 3px solid #d0d0d0;
-          color: #ccc;
+          background: rgb(245, 245, 245);
+          padding: 0.2em;
+          border: 0.2em dashed rgb(217, 217, 217);
+          color: rgb(217, 217, 217);
           height: 100%;
           width: 100%;
+          min-height: 10em;
         }
         .input {
           display: none;

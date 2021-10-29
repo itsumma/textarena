@@ -415,6 +415,7 @@ figcaption {
   font-size: 0.75em;
   margin-top: 0.15em;
   opacity: .7;
+  font-style: italic;
 }
 figcaption:focus-visible {
   outline: none;

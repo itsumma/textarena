@@ -103,6 +103,7 @@ export default class ArenaFigure extends WebComponent {
         .placeholder {
           font-size: 0.8em;
           color: #ccc;
+          user-select: none;
         }
       `,
     ];
@@ -129,13 +130,13 @@ export default class ArenaFigure extends WebComponent {
     }
     return html`
       ${this.getPanel()}
-      <div class="picture-wrap" style=${styleMap(wrapStyles)}>
+      <div class="picture-wrap" style=${styleMap(wrapStyles)} contenteditable="false">
         <div class="image-wrap" style=${styleMap(imageStyles)}>
           <slot name="image"></slot>
         </div>
       </div>
       <div class="caption-wrap">
-        <div @click=${this.onPlaceholderClick} class="placeholder">Подпись:&nbsp;</div>
+        <div @click=${this.onPlaceholderClick} class="placeholder" contenteditable="false">Подпись:&nbsp;</div>
         <slot name="image-caption"></slot>
       </div>
     `;
@@ -172,7 +173,7 @@ export default class ArenaFigure extends WebComponent {
     }
     const className = this.node.getAttribute('class');
     return html`
-    <div class="panel">
+    <div class="panel" contenteditable="false">
       <div class="panel-content">
         ${classes.map((figureClass) => html`
           <button @click="${this.changeClass(figureClass)}" class="btn ${className === figureClass.className ? 'active' : ''}">

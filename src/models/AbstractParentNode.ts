@@ -73,7 +73,7 @@ export default abstract class AbstractParentNode<
       this as unknown as ParentArenaNode,
     );
     if (this.protected && !this.parent.protected) {
-      const removeButton = html`<textarena-remove node-id="${id}">
+      const removeButton = html`<textarena-remove node-id="${id}" contenteditable="false">
       <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
       viewBox="0 0 512.001 512.001" xml:space="preserve">
       <g>
@@ -85,7 +85,7 @@ export default abstract class AbstractParentNode<
       </svg>
       </textarena-remove>`;
       this.cache = html`
-        <textarena-node arena-id="${id}" contenteditable="false">${removeButton}${content}</textarena-node>
+        <textarena-node arena-id="${id}">${removeButton}${content}</textarena-node>
       `;
     } else {
       this.cache = content;
