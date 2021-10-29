@@ -127,9 +127,9 @@ export default class CreatorBar {
         const options = this.availableCreators[name];
         const elem = new ElementHelper('BUTTON', 'textarena-creator__item');
         elem.setAttribute('type', 'button');
-        if (options.title) {
-          elem.setAttribute('title', options.title);
-        }
+        // if (options.title) {
+        //   elem.setAttribute('title', options.title);
+        // }
         const creator: Creator = {
           elem,
           options,
@@ -143,7 +143,11 @@ export default class CreatorBar {
             const hint = this.asm.commandManager.getHumanKey(key);
             const hintElem = new ElementHelper('DIV', 'textarena-shortcut-hint');
             const shortHintElem = new ElementHelper('DIV', 'textarena-shortcut-hint__short', hint);
-            const fullHintElem = new ElementHelper('DIV', 'textarena-shortcut-hint__full', humanShortcut);
+            const fullHintElem = new ElementHelper(
+              'DIV',
+              'textarena-shortcut-hint__full',
+              `${options.title ? `${options.title}<br>` : ''}${humanShortcut}`,
+            );
             hintElem.appendChild(shortHintElem);
             hintElem.appendChild(fullHintElem);
             elem.appendChild(hintElem);

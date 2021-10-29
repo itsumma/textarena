@@ -13,7 +13,6 @@ const defaultOptions: DefaulPluginOptions = {
   tag: 'ARENA-QUOTE-BLOCK',
   attributes: { class: 'quote-block' },
   shortcut: 'Ctrl + Alt + 8',
-  hint: 'q',
   command: 'add-quote-block',
   component: 'arena-quote-block',
   componentConstructor: ArenaQuoteBlock,
@@ -75,7 +74,7 @@ const srcset = [
 const quotePlugin = (opts?: Partial<DefaulPluginOptions>): ArenaPlugin => ({
   register(textarena: Textarena): void {
     const {
-      name, icon, title, tag, attributes, shortcut, hint, command,
+      name, icon, title, tag, attributes, shortcut, command,
       component, componentConstructor, marks, output,
     } = {
       ...defaultOptions,
@@ -174,7 +173,6 @@ const quotePlugin = (opts?: Partial<DefaulPluginOptions>): ArenaPlugin => ({
           icon,
           title,
           shortcut,
-          hint,
           command,
           canShow: (node: AnyArenaNode) =>
             textarena.isAllowedNode(node, arena),

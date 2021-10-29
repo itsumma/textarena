@@ -18,7 +18,7 @@ export type DefaulPluginOptions = {
   icon?: string,
   shortcut?: string,
   description?: string,
-  hint?: string,
+  hint?: string, // Deprecated
   command?: string,
   component?: string,
   componentConstructor?: CustomElementConstructor,

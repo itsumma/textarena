@@ -12,7 +12,6 @@ const defaultOptions: DefaulPluginOptions = {
   tag: 'ARENA-CALLOUT',
   attributes: {},
   // shortcut: 'Alt + KeyC',
-  // hint: 'c',
   command: 'add-callout',
   component: 'arena-callout',
   componentConstructor: ArenaCallout,
@@ -28,7 +27,7 @@ const defaultOptions: DefaulPluginOptions = {
 const calloutPlugin = (opts?: Partial<DefaulPluginOptions>): ArenaPlugin => ({
   register(textarena: Textarena): void {
     const {
-      name, icon, title, tag, attributes, shortcut, hint, command,
+      name, icon, title, tag, attributes, shortcut, command,
       component, componentConstructor, marks, output,
     } = { ...defaultOptions, ...(opts || {}) };
     if (component && componentConstructor && !customElements.get(component)) {
@@ -93,7 +92,6 @@ const calloutPlugin = (opts?: Partial<DefaulPluginOptions>): ArenaPlugin => ({
           icon,
           title,
           shortcut,
-          hint,
           command,
           canShow: (node: AnyArenaNode) =>
             textarena.isAllowedNode(node, arena),

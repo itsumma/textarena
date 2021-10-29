@@ -12,7 +12,6 @@ const defaultOptions: DefaulPluginOptions = {
   icon: '<b>¶</b>',
   shortcut: 'Ctrl + Alt + 0',
   description: 'Параграф',
-  hint: '0',
   command: 'convert-to-paragraph',
   marks: [
     {
@@ -29,7 +28,7 @@ const defaultOptions: DefaulPluginOptions = {
 const paragraphPlugin = (opts?: Partial<DefaulPluginOptions>): ArenaPlugin => ({
   register(textarena: Textarena): void {
     const {
-      name, title, tag, attributes, icon, shortcut, hint, command, marks, description,
+      name, title, tag, attributes, icon, shortcut, command, marks, description,
     } = { ...defaultOptions, ...(opts || {}) };
     const arena = textarena.registerArena(
       {
@@ -62,7 +61,6 @@ const paragraphPlugin = (opts?: Partial<DefaulPluginOptions>): ArenaPlugin => ({
           title,
           icon,
           shortcut,
-          hint,
           command,
           checkStatus: (node: AnyArenaNode):
             boolean => node.arena === arena,

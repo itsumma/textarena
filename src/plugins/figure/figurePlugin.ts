@@ -30,7 +30,6 @@ const defaultOptions: FigurePluginOptions = {
   attributes: {},
   allowedAttributes: ['src', 'width', 'height', 'class'],
   shortcut: 'Ctrl + Alt + I',
-  hint: 'i',
   command: 'add-figure',
   marks: [
     {
@@ -50,7 +49,7 @@ const defaultOptions: FigurePluginOptions = {
 const figurePlugin = (opts?: Partial<FigurePluginOptions>): ArenaPlugin => ({
   register(textarena: Textarena): void {
     const {
-      name, icon, title, tag, attributes, allowedAttributes, classes, shortcut, hint,
+      name, icon, title, tag, attributes, allowedAttributes, classes, shortcut,
       command, marks, component, componentConstructor, srcset, placeholder,
     } = { ...defaultOptions, ...(opts || {}) };
     if (component && componentConstructor && !customElements.get(component)) {
@@ -121,7 +120,6 @@ const figurePlugin = (opts?: Partial<FigurePluginOptions>): ArenaPlugin => ({
           title,
           icon,
           shortcut,
-          hint,
           command,
           canShow: (node: AnyArenaNode) =>
             textarena.isAllowedNode(node, arena),

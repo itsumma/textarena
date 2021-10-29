@@ -34,7 +34,6 @@ const defaultOptions: LinkPluginOptions = {
   },
   allowedAttributes: ['href', 'target'],
   shortcut: 'Ctrl + K',
-  hint: 'k',
   command: 'add-link',
   commandFunction: linkCommand,
   component: 'arena-linkbar',
@@ -51,7 +50,7 @@ const defaultOptions: LinkPluginOptions = {
 const linkPlugin = (opts?: Partial<LinkPluginOptions>): ArenaPlugin => ({
   register(textarena: Textarena): void {
     const {
-      name, icon, title, tag, attributes, allowedAttributes, shortcut, hint,
+      name, icon, title, tag, attributes, allowedAttributes, shortcut,
       command, commandFunction,
       component, componentConstructor, moveCursorHandler, marks,
     } = { ...defaultOptions, ...(opts || {}) };
@@ -101,7 +100,6 @@ const linkPlugin = (opts?: Partial<LinkPluginOptions>): ArenaPlugin => ({
           icon,
           title,
           command,
-          hint,
           shortcut,
         });
       }

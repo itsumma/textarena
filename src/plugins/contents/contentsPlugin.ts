@@ -16,7 +16,6 @@ const defaultOptions: ContentsOptions = {
   attributes: {},
   allowedAttributes: ['list'],
   shortcut: 'Ctrl + Alt + C',
-  hint: 'u',
   command: 'add-contents',
   component: 'arena-contents',
   componentConstructor: ArenaContents,
@@ -34,7 +33,7 @@ const defaultOptions: ContentsOptions = {
 const contentsPlugin = (opts?: Partial<ContentsOptions>): ArenaPlugin => ({
   register(textarena: Textarena): void {
     const {
-      name, icon, title, tag, attributes, allowedAttributes, shortcut, hint, command,
+      name, icon, title, tag, attributes, allowedAttributes, shortcut, command,
       component, componentConstructor, marks, output, processor, description,
     } = { ...defaultOptions, ...(opts || {}) };
     if (component && componentConstructor && !customElements.get(component)) {

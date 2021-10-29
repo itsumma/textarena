@@ -225,7 +225,7 @@
           headersPlugin(),
           hrPlugin({
             icon: '***',
-            title: '***',
+            title: 'Separator',
             attributes: { class: 'asterisk' },
           }),
           nestedlistsPlugin(),

@@ -158,7 +158,6 @@ const defaultOptions: ListsOptions = {
   </svg>`,
       shortcut: 'Ctrl + Alt + L',
       command: 'convert-to-unordered-list',
-      hint: 'l',
       pattern: /^(-\s+).*$/,
       marks: [
         {
@@ -190,7 +189,6 @@ const defaultOptions: ListsOptions = {
   </svg>`,
       shortcut: 'Ctrl + Alt + O',
       command: 'convert-to-ordered-list',
-      hint: 'o',
       pattern: /^(\d+(?:\.|\))\s+).*$/,
       marks: [
         {
@@ -262,7 +260,6 @@ const nestedlistsPlugin = (opts?: ListsOptions): ArenaPlugin => ({
       icon,
       shortcut,
       command,
-      hint,
       marks,
       pattern,
     }) => {
@@ -313,7 +310,6 @@ const nestedlistsPlugin = (opts?: ListsOptions): ArenaPlugin => ({
               icon,
               shortcut,
               command,
-              hint,
               checkStatus: (node: AnyArenaNode):
                 boolean => node.hasParent && node.parent.arena === listArena,
             });
@@ -324,7 +320,6 @@ const nestedlistsPlugin = (opts?: ListsOptions): ArenaPlugin => ({
             icon,
             shortcut,
             command,
-            hint,
             canShow: (node: AnyArenaNode) =>
               textarena.isAllowedNode(node, listArena),
           });

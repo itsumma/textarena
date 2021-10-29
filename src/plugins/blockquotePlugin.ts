@@ -25,7 +25,6 @@ const defaultOptions: DefaulPluginOptions = {
   </g>
 </svg>`,
   shortcut: 'Ctrl + Alt + "',
-  hint: '"',
   command: 'convert-to-blockquote',
   marks: [
     {
@@ -38,7 +37,7 @@ const defaultOptions: DefaulPluginOptions = {
 const blockquotePlugin = (opts?: Partial<DefaulPluginOptions>): ArenaPlugin => ({
   register(textarena: Textarena): void {
     const {
-      name, tag, attributes, title, icon, shortcut, hint, command, marks,
+      name, tag, attributes, title, icon, shortcut, command, marks,
     } = { ...defaultOptions, ...(opts || {}) };
     const paragraph = textarena.getDefaultTextArena();
     if (!paragraph) {
@@ -77,7 +76,6 @@ const blockquotePlugin = (opts?: Partial<DefaulPluginOptions>): ArenaPlugin => (
             title,
             icon,
             shortcut,
-            hint,
             command,
             checkStatus: (node: AnyArenaNode):
               boolean => !!utils.modelTree.findNodeUp(node, (n) => n.arena === arena),
@@ -88,7 +86,6 @@ const blockquotePlugin = (opts?: Partial<DefaulPluginOptions>): ArenaPlugin => (
           title,
           icon,
           shortcut,
-          hint,
           command,
           canShow: (node: AnyArenaNode) =>
             textarena.isAllowedNode(node, arena),

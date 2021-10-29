@@ -22,7 +22,6 @@ const defaultOptions: DefaulPluginOptions = {
     1.5-1.5v-2c0-.276.224-.5.5-.5s.5.224.5.5v2c0 1.379-1.122 2.5-2.5 2.5z"
     fill="currentColor"/></g></svg>`,
   shortcut: 'Ctrl + Alt + 5',
-  hint: 'a',
   command: 'convert-to-aside',
   marks: [
     {
@@ -35,7 +34,7 @@ const defaultOptions: DefaulPluginOptions = {
 const asidePlugin = (opts?: Partial<DefaulPluginOptions>): ArenaPlugin => ({
   register(textarena: Textarena): void {
     const {
-      name, tag, attributes, title, icon, shortcut, hint, command, marks,
+      name, tag, attributes, title, icon, shortcut, command, marks,
     } = { ...defaultOptions, ...(opts || {}) };
     const paragraph = textarena.getDefaultTextArena();
     if (!paragraph) {
@@ -75,7 +74,6 @@ const asidePlugin = (opts?: Partial<DefaulPluginOptions>): ArenaPlugin => ({
             title,
             icon,
             shortcut,
-            hint,
             command,
             checkStatus: (node: AnyArenaNode):
               boolean => !!utils.modelTree.findNodeUp(node, (n) => n.arena === arena),
@@ -86,7 +84,6 @@ const asidePlugin = (opts?: Partial<DefaulPluginOptions>): ArenaPlugin => ({
           title,
           icon,
           shortcut,
-          hint,
           command,
           canShow: (node: AnyArenaNode) =>
             textarena.isAllowedNode(node, arena),

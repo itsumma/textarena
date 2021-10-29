@@ -12,7 +12,6 @@ const defaultOptions: DefaulPluginOptions = {
   title: 'Моноширный',
   icon: 'pre',
   shortcut: 'Ctrl + Alt + P',
-  hint: 'p',
   command: 'convert-to-code',
   marks: [
     {
@@ -25,7 +24,7 @@ const defaultOptions: DefaulPluginOptions = {
 const codePlugin = (opts?: Partial<DefaulPluginOptions>): ArenaPlugin => ({
   register(textarena: Textarena): void {
     const {
-      name, tag, attributes, title, icon, shortcut, hint, command, marks,
+      name, tag, attributes, title, icon, shortcut, command, marks,
     } = { ...defaultOptions, ...(opts || {}) };
     const paragraph = textarena.getDefaultTextArena();
     if (!paragraph) {
@@ -64,7 +63,6 @@ const codePlugin = (opts?: Partial<DefaulPluginOptions>): ArenaPlugin => ({
             title,
             icon,
             shortcut,
-            hint,
             command,
             checkStatus: (node: AnyArenaNode):
               boolean => !!utils.modelTree.findNodeUp(node, (n) => n.arena === arena),
@@ -75,7 +73,6 @@ const codePlugin = (opts?: Partial<DefaulPluginOptions>): ArenaPlugin => ({
           title,
           icon,
           shortcut,
-          hint,
           command,
           canShow: (node: AnyArenaNode) =>
             textarena.isAllowedNode(node, arena),

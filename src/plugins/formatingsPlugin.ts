@@ -11,7 +11,6 @@ type FormatingOptions = {
   attributes: string[];
   shortcut?: string,
   description?: string,
-  hint?: string,
   command: string,
   marks: TagAndAttributes[],
   tool?: {
@@ -32,7 +31,6 @@ const defaultOptions: FormatingsOptions = {
       attributes: [],
       shortcut: 'Ctrl + KeyB',
       description: 'Полужирное начертание',
-      hint: 'b',
       command: 'format-strong',
       marks: [
         {
@@ -89,7 +87,6 @@ const defaultOptions: FormatingsOptions = {
       command: 'format-emphasized',
       shortcut: 'Ctrl + KeyI',
       description: 'Курсивное начертание',
-      hint: 'i',
       marks: [
         {
           tag: 'I',
@@ -117,7 +114,6 @@ const defaultOptions: FormatingsOptions = {
       attributes: [],
       shortcut: 'Ctrl + KeyU',
       description: 'Подчеркнутый текст',
-      hint: 'u',
       command: 'format-underline',
       marks: [
         {
@@ -142,7 +138,6 @@ const defaultOptions: FormatingsOptions = {
       attributes: [],
       shortcut: 'Ctrl + KeyD',
       description: 'Зачеркнутый текст',
-      hint: 'd',
       command: 'format-strikethrough',
       marks: [
         {
@@ -174,7 +169,6 @@ const defaultOptions: FormatingsOptions = {
       tag: 'SUB',
       attributes: [],
       shortcut: 'Ctrl + Comma',
-      hint: ',',
       command: 'format-subscript',
       marks: [
         {
@@ -198,7 +192,6 @@ const defaultOptions: FormatingsOptions = {
       tag: 'SUP',
       attributes: [],
       shortcut: 'Ctrl + KeyP',
-      hint: 'p',
       command: 'format-superscript',
       marks: [
         {
@@ -249,7 +242,6 @@ const defaultOptions: FormatingsOptions = {
       attributes: [],
       command: 'format-mark',
       shortcut: 'Ctrl + KeyH',
-      hint: 'h',
       marks: [
         {
           tag: 'MARK',
@@ -267,7 +259,6 @@ const defaultOptions: FormatingsOptions = {
       attributes: [],
       command: 'format-inline-code',
       shortcut: 'Ctrl + KeyE',
-      hint: 'e',
       marks: [
         {
           tag: 'CODE',
@@ -291,7 +282,6 @@ const formatingsPlugin = (opts?: FormatingsOptions): ArenaPlugin => ({
       attributes,
       shortcut,
       description,
-      hint,
       command,
       marks,
       tool,
@@ -321,7 +311,6 @@ const formatingsPlugin = (opts?: FormatingsOptions): ArenaPlugin => ({
           ...tool,
           name,
           command,
-          hint,
           shortcut,
           checkStatus: (node: AnyArenaNode, start?: number, end?: number): boolean | undefined => {
             if (node.hasText) {
@@ -365,7 +354,6 @@ const formatingsPlugin = (opts?: FormatingsOptions): ArenaPlugin => ({
       </svg>`,
       title: 'Clear formatings',
       command: 'clearFormatings',
-      hint: '/',
       shortcut: 'Ctrl + Slash',
     });
   },

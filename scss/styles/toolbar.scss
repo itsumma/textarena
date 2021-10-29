@@ -78,6 +78,18 @@
     &:hover {
       background: white;
       color: black;
+
+      .textarena-shortcut-hint {
+        display: block;
+      }
+
+      .textarena-shortcut-hint__short {
+        display: none;
+      }
+
+      .textarena-shortcut-hint__full {
+        display: block;
+      }
     }
 
     &_active {
@@ -113,17 +125,5 @@
 
   &:hover .textarena-shortcut-hint {
     display: none;
-  }
-
-  &__item:hover {
-    .textarena-shortcut-hint {
-      display: block;
-    }
-    .textarena-shortcut-hint__short {
-      display: none;
-    }
-    .textarena-shortcut-hint__full {
-      display: block;
-    }
   }
 }

@@ -15,7 +15,6 @@ const defaultOptions: DefaulPluginOptions = {
     contenteditable: false,
   },
   shortcut: 'Ctrl + Alt + H',
-  hint: 'h',
   command: 'add-hr',
   marks: [
     {
@@ -28,7 +27,7 @@ const defaultOptions: DefaulPluginOptions = {
 const hrPlugin = (opts?: Partial<DefaulPluginOptions>): ArenaPlugin => ({
   register(textarena: Textarena): void {
     const {
-      name, icon, title, tag, attributes, shortcut, hint, command, marks,
+      name, icon, title, tag, attributes, shortcut, command, marks,
     } = { ...defaultOptions, ...(opts || {}) };
     const arena = textarena.registerArena(
       {
@@ -61,7 +60,6 @@ const hrPlugin = (opts?: Partial<DefaulPluginOptions>): ArenaPlugin => ({
           icon,
           title,
           shortcut,
-          hint,
           command,
           canShow: (node: AnyArenaNode) =>
             textarena.isAllowedNode(node, arena),

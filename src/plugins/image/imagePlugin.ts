@@ -63,7 +63,7 @@ const imagePlugin = (opts?: Partial<ImagePluginOptions>): ArenaPlugin => ({
   register(textarena: Textarena): void {
     const {
       name, icon, title, tag, attributes, allowedAttributes,
-      shortcut, hint, command, marks, component, componentConstructor,
+      shortcut, command, marks, component, componentConstructor,
       srcset, prepareSrc, output, upload, izoConfig,
     } = { ...defaultOptions, ...(opts || {}) };
     if (component && componentConstructor && !customElements.get(component)) {
@@ -112,7 +112,6 @@ const imagePlugin = (opts?: Partial<ImagePluginOptions>): ArenaPlugin => ({
           icon,
           title,
           shortcut,
-          hint,
           command,
           canShow: (node: AnyArenaNode) =>
             textarena.isAllowedNode(node, arena),

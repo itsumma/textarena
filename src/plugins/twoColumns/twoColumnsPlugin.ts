@@ -14,7 +14,6 @@ const defaultOptions: DefaulPluginOptions = {
   attributes: {},
   command: 'add-two-columns',
   shortcut: 'Ctrl + Alt + 6',
-  hint: '5',
   component: 'arena-two-columns',
   componentConstructor: ArenaTwoColumns,
   marks: [
@@ -33,7 +32,7 @@ const defaultOptions: DefaulPluginOptions = {
 const twoColumnsPlugin = (opts?: Partial<DefaulPluginOptions>): ArenaPlugin => ({
   register(textarena: Textarena): void {
     const {
-      name, icon, title, tag, attributes, shortcut, hint, command,
+      name, icon, title, tag, attributes, shortcut, command,
       component, componentConstructor, marks, output,
     } = {
       ...defaultOptions,
@@ -102,7 +101,6 @@ const twoColumnsPlugin = (opts?: Partial<DefaulPluginOptions>): ArenaPlugin => (
             title,
             icon,
             shortcut,
-            hint,
             command,
             checkStatus: (node: AnyArenaNode):
               boolean => node.arena === arena,
@@ -113,7 +111,6 @@ const twoColumnsPlugin = (opts?: Partial<DefaulPluginOptions>): ArenaPlugin => (
           icon,
           title,
           shortcut,
-          hint,
           command,
           canShow: (node: AnyArenaNode) =>
             textarena.isAllowedNode(node, arena),

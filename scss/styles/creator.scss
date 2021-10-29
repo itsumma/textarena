@@ -140,6 +140,20 @@
       animation: bounceIn 0.3s 1;
       animation-fill-mode: forwards;
     }
+
+    &:hover {
+      .textarena-shortcut-hint {
+        display: block;
+      }
+
+      .textarena-shortcut-hint__short {
+        display: none;
+      }
+
+      .textarena-shortcut-hint__full {
+        display: block;
+      }
+    }
   }
 
   &__item-icon {
@@ -163,18 +177,6 @@
 
   &:hover .textarena-shortcut-hint {
     display: none;
-  }
-
-  &__item:hover {
-    .textarena-shortcut-hint {
-      display: block;
-    }
-    .textarena-shortcut-hint__short {
-      display: none;
-    }
-    .textarena-shortcut-hint__full {
-      display: block;
-    }
   }
 }
 

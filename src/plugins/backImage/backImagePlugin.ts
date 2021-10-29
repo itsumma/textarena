@@ -33,7 +33,7 @@ const defaultOptions: BackImagePluginOptions = {
 const backImagePlugin = (opts?: Partial<BackImagePluginOptions>): ArenaPlugin => ({
   register(textarena: Textarena): void {
     const {
-      name, icon, title, tag, attributes, shortcut, hint, command,
+      name, icon, title, tag, attributes, shortcut, command,
       component, componentConstructor, marks, output, allowedAttributes,
       srcset, prepareSrc, upload, izoConfig,
     } = {
@@ -92,7 +92,6 @@ const backImagePlugin = (opts?: Partial<BackImagePluginOptions>): ArenaPlugin =>
             title,
             icon,
             shortcut,
-            hint,
             command,
             checkStatus: (node: AnyArenaNode):
               boolean => node.arena === arena,
@@ -103,7 +102,6 @@ const backImagePlugin = (opts?: Partial<BackImagePluginOptions>): ArenaPlugin =>
           icon,
           title,
           shortcut,
-          hint,
           command,
           canShow: (node: AnyArenaNode) =>
             textarena.isAllowedNode(node, arena),

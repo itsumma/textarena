@@ -19,7 +19,6 @@ const defaultOptions: HeaderOptions = {
     command: 'convert-to-header2',
     shortcut: 'Ctrl + Alt + 2',
     description: 'Заголовок второго уровня',
-    hint: '2',
     marks: [
       {
         tag: 'H2',
@@ -37,7 +36,6 @@ const defaultOptions: HeaderOptions = {
     command: 'convert-to-header3',
     shortcut: 'Ctrl + Alt + 3',
     description: 'Заголовок третьего уровня',
-    hint: '3',
     marks: [
       {
         tag: 'H3',
@@ -55,7 +53,6 @@ const defaultOptions: HeaderOptions = {
     command: 'convert-to-header4',
     shortcut: 'Ctrl + Alt + 4',
     description: 'Заголовок четвёртого уровня',
-    hint: '4',
     marks: [
       {
         tag: 'H4',
@@ -74,7 +71,7 @@ const headersPlugin = (opts?: PartialHeaderOptions): ArenaPlugin => ({
     Object.entries(opts || defaultOptions).forEach(([type, options]) => {
       const {
         name, tag, attributes, allowedAttributes, title,
-        icon, shortcut, hint, command, marks, description,
+        icon, shortcut, command, marks, description,
       } = defaultOptions[type] ? { ...defaultOptions[type], ...options } : options;
       if (name && tag && attributes) {
         const arena = textarena.registerArena(
@@ -149,7 +146,6 @@ const headersPlugin = (opts?: PartialHeaderOptions): ArenaPlugin => ({
               title,
               icon,
               shortcut,
-              hint,
               command,
               checkStatus: (node: AnyArenaNode): boolean =>
                 node.arena === arena,
@@ -161,7 +157,6 @@ const headersPlugin = (opts?: PartialHeaderOptions): ArenaPlugin => ({
               title,
               icon,
               shortcut,
-              hint,
               command,
               canShow: (node: AnyArenaNode) =>
                 textarena.isAllowedNode(node, arena),

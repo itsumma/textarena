@@ -20,7 +20,6 @@ export type CommandPluginOptions = {
   title?: string,
   icon?: string,
   description?: string,
-  hint?: string,
   checkStatus?: ToolCheckStatus;
   canShow?: CreatorCanShow;
 };

@@ -43,7 +43,6 @@ const defaultOptions: EmbedPluginOptions = {
   },
   allowedAttributes: ['embed', 'type', 'ew', 'eh'],
   shortcut: 'Ctrl + Alt + E',
-  hint: 'e',
   command: 'add-embed',
   components: [
     {
@@ -75,7 +74,7 @@ const embedPlugin = (opts?: Partial<EmbedPluginOptions>): ArenaPlugin => ({
   register: (textarena: Textarena) => {
     const {
       name, icon, title, tag, attributes, allowedAttributes,
-      shortcut, hint, command, components, marks, output,
+      shortcut, command, components, marks, output,
     } = { ...defaultOptions, ...(opts || {}) };
     if (components) {
       components.forEach(({ component, componentConstructor }) => {
@@ -117,7 +116,6 @@ const embedPlugin = (opts?: Partial<EmbedPluginOptions>): ArenaPlugin => ({
           icon,
           title,
           shortcut,
-          hint,
           command,
           canShow: (node: AnyArenaNode) =>
             textarena.isAllowedNode(node, arena),
