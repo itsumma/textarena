@@ -149,7 +149,7 @@ context('Actions', () => {
       .contains('<p class="paragraph">Simple paragraph after header3</p>')
       .contains(/<h4[^>]*>Header4<\/h4>/)
       .contains('<p class="paragraph">Simple paragraph after header4</p>')
-      .contains(/<h2[^>]*>Simple paragraph will be a header2<\/h2>/)
+      .contains(/<h2[^>]*>Simple paragraph will be a header2<\/h2>/);
   });
 
   it('Breaking', () => {
