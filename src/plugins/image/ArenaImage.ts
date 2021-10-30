@@ -201,7 +201,7 @@ export default class ArenaImage extends WebComponent {
     }
     return html`
       ${preview}
-      <input class="input" id=input type="file" @change=${this.onChange}/>
+      <input class="input" id=input type="file" accept="image/jpeg,image/png,image/svg+xml,.webp" @change=${this.onChange}/>
     `;
   }
 

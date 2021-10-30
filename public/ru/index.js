@@ -192,6 +192,7 @@
       blockquotePlugin,
       calloutPlugin,
       imagePlugin,
+      videoPlugin,
       figurePlugin,
       embedPlugin,
       linkPlugin,
@@ -267,6 +268,12 @@
           }),
           calloutPlugin(),
           imagePlugin({
+            izoConfig: {
+              url: 'https://izo.itsumma.ru',
+              token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiY2xpZW50IiwidG9rZW5JZCI6ImQyNzRhOTAzLTAyYWMtNGE2MS1hNmNiLTdiOTlkZGQ0YmIyNiIsInVzZXJuYW1lIjoidGVzdCIsImlhdCI6MTYxNDIzMzY4NywiZXhwIjoxNjQ1NzY5Njg3fQ.fEzuI8L9P7z9tcZ7PiocLQrf_gW9CF_JxrpQLxYHDRk',
+            }
+          }),
+          videoPlugin({
             izoConfig: {
               url: 'https://izo.itsumma.ru',
               token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiY2xpZW50IiwidG9rZW5JZCI6ImQyNzRhOTAzLTAyYWMtNGE2MS1hNmNiLTdiOTlkZGQ0YmIyNiIsInVzZXJuYW1lIjoidGVzdCIsImlhdCI6MTYxNDIzMzY4NywiZXhwIjoxNjQ1NzY5Njg3fQ.fEzuI8L9P7z9tcZ7PiocLQrf_gW9CF_JxrpQLxYHDRk',
@@ -404,6 +411,7 @@
             'hr',
             'hr-asterisk',
             'figure',
+            'video',
             'blockquote',
             'embed',
             'aside',
