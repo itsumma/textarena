@@ -340,9 +340,9 @@ class Textarena {
   public registerMiddleware(
     middleware: ArenaMiddleware,
     when: MiddlewareWhenCondition,
-    scope?: AnyArena,
+    opts?: { scope?: AnyArena; priority?: number },
   ): void {
-    this.asm.middlewares.registerMiddleware(middleware, when, scope);
+    this.asm.middlewares.registerMiddleware(middleware, when, opts?.scope, opts?.priority);
   }
 
   public applyMiddlewares(

@@ -100,7 +100,7 @@ const headersPlugin = (opts?: PartialHeaderOptions): ArenaPlugin => ({
             return [false, selection];
           },
           'after',
-          arena,
+          { scope: arena },
         );
         if (command) {
           textarena.registerCommand(

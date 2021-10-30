@@ -133,10 +133,10 @@ const services: EmbedServiceMap = {
     width: 400,
   },
   twitter: {
-    regex: /^https?:\/\/twitter\.com\/(?:#!\/)?(\w+)\/status(?:es)?\/(\d+)(?:\/.*)?$/,
+    regex: /^https?:\/\/twitter\.com\/(?:#!\/)?(\w+)\/status(?:es)?\/(\d+)(?:\/?.*)?$/,
     embedUrl: 'https://twitframe.com/show?url=https://twitter.com/<%= remote_id %>',
-    html: '<iframe width="600" height="600" style="margin: 0 auto;" frameborder="0" scrolling="no" allowtransparency="true"></iframe>',
-    height: 300,
+    html: '<iframe width="100%" height="392" style="margin: 0 auto;" frameborder="0" scrolling="no" allowtransparency="true"></iframe>',
+    height: 392,
     width: 600,
     id: (ids: string[]) => ids.join('/status/'),
   },
