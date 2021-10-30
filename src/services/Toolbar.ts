@@ -114,7 +114,7 @@ export default class Toolbar {
           this.executeTool(tool);
         });
         if (options.icon) {
-          const span = new ElementHelper('DIV', 'textarena-toolbar__item-icon', options.icon);
+          const span = new ElementHelper('DIV', `textarena-toolbar__item-icon ${options.cls}`, options.icon);
           elem.appendChild(span);
         }
         this.list.appendChild(elem);

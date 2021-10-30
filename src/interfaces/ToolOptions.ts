@@ -14,4 +14,5 @@ export default interface ToolOptions {
   hint?: string; // Deprecated
   shortcut?: string;
   checkStatus?: ToolCheckStatus;
+  cls?: string;
 }
