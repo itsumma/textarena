@@ -1,7 +1,7 @@
 /* eslint-disable no-bitwise */
 import {
   ArenaInputEvent, BrowserCommandEvent, CommandEvent, CopyEvent, CutEvent, ModifiersEvent,
-  PasteEvent, RemoveEvent, SelectionEvent,
+  PasteEvent, SelectionEvent,
 } from '../arenaEvents';
 import { ArenaSelection, ElementHelper } from '../helpers';
 import {
@@ -53,15 +53,17 @@ const selectionKeys = {
   down: 40,
 };
 
-const removeKeys = {
-  backspace: 8,
-  delete: 46,
-};
+// const removeKeys = {
+//   backspace: 8,
+//   delete: 46,
+// };
 
 const specialKeys = {
   escape: 27,
   tab: 9,
   enter: 13,
+  backspace: 8,
+  delete: 46,
 };
 
 const reservedKeys = {
@@ -100,7 +102,7 @@ const modifiersCodes = invertObject(modifiersKeys);
 
 const selectionCodes = invertObject(selectionKeys);
 
-const removeCodes = invertObject(removeKeys);
+// const removeCodes = invertObject(removeKeys);
 
 const specialCodes = invertObject(specialKeys);
 
@@ -404,12 +406,12 @@ export class ArenaBrowser {
     if (code === 'ArrowRight' && modifiersSum === Modifiers.Alt) {
       return new SelectionEvent(e);
     }
-    if (removeCodes[keyCode] && modifiersSum <= Modifiers.Shift) {
-      return new RemoveEvent(
-        e,
-        removeCodes[keyCode] === 'delete' ? 'forward' : 'backward',
-      );
-    }
+    // if (removeCodes[keyCode] && modifiersSum <= Modifiers.Shift) {
+    //   return new RemoveEvent(
+    //     e,
+    //     removeCodes[keyCode] === 'delete' ? 'forward' : 'backward',
+    //   );
+    // }
     if (specialCodes[keyCode] || modifiersSum > Modifiers.Shift) {
       this.asm.logger.info(`${prefix} command ${modifiersSum} + ${code}`, e);
       if (code && keyboardKeys.includes(code)) {
@@ -428,7 +430,7 @@ export class ArenaBrowser {
     if (e?.inputType === 'deleteByDrag') {
       const targetSelection = this.asm.view.detectArenaSelection();
       if (targetSelection) {
-        this.asm.model.removeSelection(targetSelection, targetSelection.direction);
+        this.asm.model.removeSelection(targetSelection);
       }
       e.preventDefault();
     }
@@ -532,7 +534,7 @@ export class ArenaBrowser {
       document.execCommand('copy');
       const selection = this.asm.view.getCurrentSelection();
       if (selection) {
-        const newSelection = this.asm.model.removeSelection(selection, selection.direction);
+        const newSelection = this.asm.model.removeSelection(selection);
         this.asm.history.save(newSelection);
         this.asm.eventManager.fire('modelChanged', { selection: newSelection });
       }
@@ -550,14 +552,14 @@ export class ArenaBrowser {
         this.asm.textarena.insertText(selection, event.character);
       }
     }
-    if (event instanceof RemoveEvent) {
-      const selection = this.asm.view.getCurrentSelection();
-      if (selection) {
-        const newSelection = this.asm.model.removeSelection(selection, event.direction);
-        this.asm.history.save(newSelection);
-        this.asm.eventManager.fire('modelChanged', { selection: newSelection });
-      }
-    }
+    // if (event instanceof RemoveEvent) {
+    //   const selection = this.asm.view.getCurrentSelection();
+    //   if (selection) {
+    //     const newSelection = this.asm.model.removeSelection(selection, event.direction);
+    //     this.asm.history.save(newSelection);
+    //     this.asm.eventManager.fire('modelChanged', { selection: newSelection });
+    //   }
+    // }
   }
 
   protected copyListener(e: ClipboardEvent): void {
@@ -604,7 +606,11 @@ export class ArenaBrowser {
 
   protected dropListener(e: DragEvent): void {
     e.preventDefault();
-    const selection = this.asm.view.getCurrentSelection();
+    const elem = e.target as HTMLElement;
+    if (!elem) {
+      return;
+    }
+    const selection = this.asm.view.getSelectionForElem(elem);
     if (!selection) {
       return;
     }

@@ -12,7 +12,7 @@ const defaultOptions: DefaultPluginOptions = {
   title: 'Horizontal rule',
   tag: 'HR',
   attributes: {
-    contenteditable: false,
+    contenteditable: 'false',
   },
   shortcut: 'Ctrl + Alt + H',
   command: 'add-hr',

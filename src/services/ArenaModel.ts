@@ -1,7 +1,6 @@
 import { TemplateResult } from 'lit';
 
 import { ArenaFactory } from '../arenas';
-import { Direction } from '../arenaEvents';
 import { ArenaSelection, NodeRegistry } from '../helpers';
 import {
   AnyArena, AnyArenaNode, ArenaCursorAncestor, ArenaCursorText, ArenaFormating, ArenaFormatings,
@@ -466,7 +465,7 @@ export class ArenaModel {
   public insertHtmlToModel(selection: ArenaSelection, html: string): ArenaSelection {
     let newSelection = selection;
     if (!selection.isCollapsed()) {
-      newSelection = this.removeSelection(selection, 'backward');
+      newSelection = this.removeSelection(selection);
     }
     const [node, offset] = this.asm.parser.insertHtmlToModel(
       html,
@@ -485,7 +484,7 @@ export class ArenaModel {
   ): ArenaSelection {
     let newSelection = selection;
     if (!selection.isCollapsed()) {
-      newSelection = this.removeSelection(selection, 'backward');
+      newSelection = this.removeSelection(selection);
     }
     const { startNode, startOffset } = newSelection;
     if (typing) {
@@ -546,104 +545,8 @@ export class ArenaModel {
    * @param direction
    * @returns
    */
-  public removeSelection(selection: ArenaSelection, direction: Direction): ArenaSelection {
+  public removeSelection(selection: ArenaSelection): ArenaSelection {
     const newSelection = selection;
-    if (selection.isCollapsed()) {
-      const { node, offset } = newSelection.getCursor();
-      if (direction === 'forward') {
-        if (!node.hasText) {
-          //
-        } else if (node.getTextLength() === offset) {
-          // const nextSibling = this.getNextSibling(node);
-          const nextSibling = node.parent.getChild(node.getIndex() + 1);
-          if (!nextSibling) {
-            return newSelection;
-          }
-          if (nextSibling.hasChildren && nextSibling.protected) {
-            const cursor = this.getOrCreateNodeForText(nextSibling, 0);
-            if (cursor) {
-              if (node.getTextLength() === 0) {
-                node.remove();
-              }
-              newSelection.setCursor(cursor);
-            }
-            return newSelection;
-          }
-          if (nextSibling.single) {
-            this.asm.eventManager.fire('removeNode', nextSibling);
-            nextSibling.remove();
-            return newSelection;
-          }
-          const cursor = this.getOrCreateNodeForText(nextSibling, 0);
-          // const cursor = nextSibling.getTextCursor(0);
-          if (cursor) {
-            if (node.getTextLength() === 0) {
-              this.asm.eventManager.fire('removeNode', node);
-              node.remove();
-              newSelection.setCursor(cursor);
-            } else {
-              node.insertText(cursor.node.cutText(0), offset);
-              this.asm.eventManager.fire('removeNode', node);
-              cursor.node.remove();
-            }
-          }
-        } else {
-          node.removeText(offset, offset + 1);
-        }
-      }
-      if (direction === 'backward') {
-        if (!node.hasText) {
-          //
-        } else if (offset === 0) {
-          // At the begining of the text node
-          const newNode = this.getOutFromMediator(node, true);
-          if (newNode) {
-            newSelection.setBoth(newNode, 0);
-          } else {
-            // nowhere to get out
-            const prevSibling = node.parent.getChild(node.getIndex() - 1);
-            if (!prevSibling) {
-              // TODO go to prev parent
-              return newSelection;
-            }
-            if (prevSibling.hasChildren && prevSibling.protected) {
-              const cursor = this.getOrCreateNodeForText(prevSibling);
-              if (cursor) {
-                if (node.getTextLength() === 0) {
-                  node.remove();
-                }
-                newSelection.setCursor(cursor);
-              }
-              return newSelection;
-            }
-            if (prevSibling.single) {
-              this.asm.eventManager.fire('removeNode', prevSibling);
-              prevSibling.remove();
-              return newSelection;
-            }
-            if (prevSibling.hasText && prevSibling.getTextLength() === 0) {
-              this.asm.eventManager.fire('removeNode', prevSibling);
-              prevSibling.remove();
-              return newSelection;
-            }
-            // const cursor = prevSibling.getTextCursor(-1);
-            const cursor = this.getOrCreateNodeForText(prevSibling);
-            if (cursor) {
-              if (node.getTextLength() !== 0) {
-                cursor.node.insertText(node.getText(), cursor.offset);
-              }
-              this.asm.eventManager.fire('removeNode', node);
-              node.remove();
-              newSelection.setCursor(cursor);
-            }
-          }
-        } else {
-          node.removeText(offset - 1, offset);
-          newSelection.setBoth(node, offset - 1);
-        }
-      }
-      return newSelection;
-    }
     const toRemove: ChildArenaNode[] = [];
     utils.modelTree.runThroughSelection(
       newSelection,
@@ -707,70 +610,6 @@ export class ArenaModel {
         newSelection.setBoth(endNode, 0);
       } else {
         newSelection.setBoth(startNode, startOffset);
-      }
-    }
-    return newSelection;
-  }
-
-  /**
-   * Remove selected nodes and split selected node in two nodes.
-   * If current node is empty, try split uprotected parent in two
-   * or get out of protected node, if cursor in the end of parent.
-   * @param selection
-   * @returns
-   */
-  public breakSelection(selection: ArenaSelection): ArenaSelection {
-    let newSelection = selection;
-    if (!selection.isCollapsed()) {
-      newSelection = this.removeSelection(selection, 'backward');
-    }
-    const cursor = newSelection.getCursor();
-    const { node, offset } = cursor;
-    if (!node.hasText) {
-      const textCursor = this.getOrCreateNodeForText(node, offset, false, true);
-      if (textCursor) {
-        newSelection.setCursor(textCursor);
-      }
-      return newSelection;
-    }
-    const { parent, arena } = node;
-    const nextArena = arena.nextArena || arena;
-    if (offset === 0) {
-      // At the begining of the text node
-      if (node.isEmpty()) {
-        // Text is empty. Trying to get out from this node (ex. in a list)
-        const outNode = this.getOutFromMediator(node);
-        if (outNode) {
-          newSelection.setBoth(outNode, 0);
-        } else {
-          // nowhere to get out
-          const newNode = this.createAndInsertNode(nextArena, parent, node.getIndex() + 1);
-          if (newNode) {
-            // const cursor = newNode.getTextCursor(0);
-            const secondCursor = this.getOrCreateNodeForText(newNode, 0);
-            if (secondCursor) {
-              newSelection.setCursor(secondCursor);
-            }
-          }
-        }
-      } else {
-        const newNode = this.createAndInsertNode(nextArena, parent, node.getIndex(), true);
-        if (newNode) {
-          this.getOrCreateNodeForText(newNode, 0);
-        }
-      }
-    } else {
-      // const secondCursor = this.splitTextNode(cursor);
-      // newSelection.setCursor();
-      const newNode = this.createAndInsertNode(nextArena, parent, node.getIndex() + 1);
-      if (newNode) {
-        const newCursor = this.getOrCreateNodeForText(newNode, 0);
-        // const cursor = newNode.getTextCursor(0);
-        if (newCursor) {
-          const text = node.cutText(offset);
-          const cursor2 = newCursor.node.insertText(text, newCursor.offset);
-          newSelection.setCursor({ ...cursor2, offset: 0 });
-        }
       }
     }
     return newSelection;

@@ -112,6 +112,9 @@ li {
   position: relative;
 }
 
+ul li::before {
+  display: none;
+}
 ul {
   list-style-type: disc;
 }
@@ -128,58 +131,42 @@ ol {
   counter-reset: numberList;
   list-style: none;
 }
-
-ol > li {
+ol li {
   position: relative;
   counter-increment: numberList;
 }
-
-ol > li::before {
-  content: counter(numberList) ".";
+ol li::before {
+  content: counter(numberList) '.';
   position: absolute;
   right: 100%;
   padding-right: 1em;
 }
-
-ol > ol {
+ol ol {
   counter-reset: numberList2;
   list-style: none;
 }
-
-ol > ol > li {
+ol ol li {
   position: relative;
   counter-increment: numberList2;
 }
-
-ol > ol > li::before {
-  content: counter(numberList2, lower-alpha) ")";
-  position: absolute;
-  right: 100%;
-  padding-right: 1em;
+ol ol li::before {
+  content: counter(numberList2, lower-alpha) ')';
 }
-
-ol > ol > ol {
+ol ol ol {
   counter-reset: numberList3;
   list-style: none;
 }
-
-ol > ol > ol > li {
+ol ol ol li {
   position: relative;
   counter-increment: numberList3;
 }
-
-ol > ol > ol > li::before {
-  content: counter(numberList3, lower-roman) ".";
-  position: absolute;
-  right: 100%;
-  padding-right: 1em;
+ol ol ol li::before {
+  content: counter(numberList3, lower-roman) '.';
 }
-
-ol > ol > ol > ol {
+ol ol ol ol {
   list-style-type: decimal;
 }
-
-ol > ol > ol > ol > li::before {
+ol ol ol ol li::before {
   display: none;
 }
 
@@ -266,7 +253,9 @@ hr.asterisk::after {
   padding: 1rem;
   margin: 0 0 1em;
 }
-
+.quote-block::before {
+  display: none;
+}
 .quote-block__line {
   display: flex;
   align-items: center;
@@ -432,6 +421,29 @@ arena-image {
   width: 100%;
 }
 
+.place-right {
+  width: 50%;
+  float: right;
+  margin-left: 1em;
+}
+.place-left {
+  width: 50%;
+  float: left;
+  margin-right: 1em;
+}
+@media screen and (max-width: 600px) {
+  .place-right {
+    margin-left: 0;
+    float: none;
+    width: 100%;
+  }
+  .place-left {
+    margin-right: 0;
+    float: none;
+    width: 100%;
+  }
+}
+
 figcaption {
   color: inherit;
   width: 100%;
@@ -496,11 +508,16 @@ arena-two-columns-col {
   width: 50%;
   padding: 1px 1em;
   min-height: 2em;
+}
+arena-two-columns:hover > arena-two-columns-col {
   border-right: 1px solid #ccc;
 }
-
+arena-two-columns-col:first-child {
+  padding-left: 0;
+}
 arena-two-columns-col:last-child {
-  border-right: none;
+  border-right: none !important;
+  padding-right: 0;
 }
 
 arena-two-columns-col > *:last-child {
@@ -516,11 +533,13 @@ arena-two-columns-col > *:last-child {
 .arena-col {
   width: 50%;
   padding: 0 1em;
-  border-right: 1px solid #ccc;
+}
+.arena-col:first-child {
+  padding-left: 0;
 }
 
 .arena-col:last-child {
-  border-right: none;
+  padding-right: 0;
 }
 
 @media screen and (max-width: 600px) {
@@ -645,6 +664,11 @@ arena-back-image,
   margin: 0 auto;
   max-width: 100%;
   max-height: 500px;
+}
+
+.big-text {
+  font-size: 2em;
+  font-style: italic;
 }
 
 @font-face {

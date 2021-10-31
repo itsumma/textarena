@@ -4,7 +4,7 @@ export type ExtendedHTMLElement = HTMLElement & { [key: string]: unknown };
 export class ElementHelper {
   private elem: ExtendedHTMLElement;
 
-  private classes: string[] = [];
+  // private classes: string[] = [];
 
   private observer: MutationObserver | undefined;
 
@@ -24,24 +24,26 @@ export class ElementHelper {
 
   setClass(className: string): ElementHelper {
     this.elem.className = className;
-    this.classes = [className];
+    // this.classes = [className];
     return this;
   }
 
   addClass(className: string): ElementHelper {
-    if (!this.classes.includes(className)) {
-      this.classes.push(className);
-      this.elem.className = this.classes.join(' ');
-    }
+    this.elem.classList.add(className);
+    // if (!this.classes.includes(className)) {
+    //   this.classes.push(className);
+    //   this.elem.className = this.classes.join(' ');
+    // }
     return this;
   }
 
   removeClass(className: string): ElementHelper {
-    const pos = this.classes.indexOf(className);
-    if (pos !== -1) {
-      this.classes.splice(pos, 1);
-      this.elem.className = this.classes.join(' ');
-    }
+    this.elem.classList.remove(className);
+    // const pos = this.classes.indexOf(className);
+    // if (pos !== -1) {
+    //   this.classes.splice(pos, 1);
+    //   this.elem.className = this.classes.join(' ');
+    // }
     return this;
   }
 
@@ -149,5 +151,18 @@ export class ElementHelper {
 
   remove(): void {
     this.elem.remove();
+  }
+
+  querySelectorAll(selectors: string): ElementHelper[] {
+    const result: ElementHelper[] = [];
+    this.elem.querySelectorAll(selectors).forEach((elem) => {
+      result.push(new ElementHelper(elem as HTMLElement));
+    });
+    return result;
+  }
+
+  querySelector(selectors: string): ElementHelper | undefined {
+    const elem = this.elem.querySelector(selectors);
+    return elem ? new ElementHelper(elem as HTMLElement) : undefined;
   }
 }

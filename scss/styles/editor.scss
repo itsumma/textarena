@@ -5,6 +5,18 @@
   border: none;
   padding: 1em 2em 10em;
 
+  ::-moz-selection { /* Code for Firefox */
+    background: #0080ed6b;
+  }
+
+  ::selection {
+    background: #0080ed6b;
+  }
+
+  .textarena-selected ::selection {
+    background: transparent;
+  }
+
   &:hover,
   &:active,
   &:focus {
@@ -15,12 +27,27 @@
   textarena-node {
     display: block;
     position: relative;
-    margin: 0 -2em 1em;
-    padding: 0 2em;
+    margin-left: -2em;
+    margin-right: -2em;
+    padding-left: 2em;
+    padding-right: 2em;
+    // margin: 0 -2em 1em;
+    // padding: 0 2em 0;
+    user-select: none;
 
-    // user-select: none;
+    &.textarena-selected {
+      // position: relative;
 
-    textarena-remove {
+      &::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background-color: #0080ed6b;
+        min-height: 1em;
+      }
+    }
+
+    > textarena-remove {
       user-select: none;
       display: none;
       position: absolute;
@@ -42,12 +69,81 @@
       }
     }
 
+    > textarena-drag {
+      user-select: none;
+      display: none;
+      position: absolute;
+      left: 0.2em;
+      top: 0em;
+      background: white;
+      padding: 0.4em;
+      border-radius: 0.8em;
+      width: 1.4em;
+      height: 1.4em;
+      color: #888;
+      z-index: 100;
+      cursor: move;
+      line-height: 0.5em;
+    }
+
     &:hover {
       // background: #00000012;
 
-      textarena-remove {
+      > textarena-remove {
         display: block;
       }
+
+      > textarena-drag {
+        display: block;
+      }
+    }
+  }
+
+
+  .pseudo-cursor {
+    position: relative;
+    height: 1em;
+    margin-top: -1em;
+    font-size: 1em;
+    line-height: 1em;
+
+    &.ts-drag-entered {
+      background-color: #88d8ff;
+    }
+
+    &:first-child:last-child {
+      margin: 0;
+      min-height: 1.6em;
+      line-height: inherit;
+    }
+
+    &::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      pointer-events: none;
+      height: 0.1em;
+      width: 100%;
+      background: #88d8ff;
+      display: none;
+    }
+
+    &:hover {
+      &::after {
+        // display: block;
+      }
+    }
+  }
+
+  .drag-cursor {
+    height: 1em;
+    margin-top: -0.5em;
+    margin-bottom: -0.5em;
+    font-size: 1em;
+    line-height: 1em;
+
+    &.ts-drag-entered {
+      background-color: #88d8ff;
     }
   }
 }

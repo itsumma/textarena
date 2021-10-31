@@ -2,10 +2,41 @@ import { render } from 'lit';
 
 import { ArenaSelection } from '../helpers';
 import { AnyArenaNode } from '../interfaces';
+import utils from '../utils';
 import { ArenaServiceManager } from './ArenaServiceManager';
 
 export class ArenaView {
   constructor(protected asm: ArenaServiceManager) {
+    this.asm.eventManager.subscribe('moveCursor', () => {
+      this.selectNodes();
+    });
+  }
+
+  public selectNodes() {
+    const editor = this.asm.textarena
+      .getEditorElement();
+    editor.querySelectorAll('.textarena-selected')
+      .map((elem) => elem.removeClass('textarena-selected'));
+    const selection = this.getCurrentSelection();
+    if (selection) {
+      utils.modelTree.runThroughSelection(selection, (node, start, end) => {
+        console.log('SEEELECT', node);
+        if (start === undefined && end === undefined) {
+          const elem = editor.querySelector(`[arena-id="${node.getGlobalIndex()}"]`);
+          if (elem) {
+            elem.addClass('textarena-selected');
+          }
+        } else if (node.hasChildren) {
+          const len = node.children.length;
+          for (let i = start || 0; i < (end || len); i += 1) {
+            const elem = editor.querySelector(`[arena-id="${node.children[i].getGlobalIndex()}"]`);
+            if (elem) {
+              elem.addClass('textarena-selected');
+            }
+          }
+        }
+      });
+    }
   }
 
   public render(selection?: ArenaSelection): void {
@@ -19,6 +50,7 @@ export class ArenaView {
     }
     if (this.currentSelection) {
       this.applyArenaSelection(this.currentSelection);
+      this.selectNodes();
     }
     this.asm.eventManager.fire('rendered');
   }
@@ -80,6 +112,17 @@ export class ArenaView {
           const direction = s.focusNode === range.endContainer ? 'forward' : 'backward';
           return new ArenaSelection(startNode, startId[1], endNode, endId[1], direction);
         }
+      }
+    }
+    return undefined;
+  }
+
+  public getSelectionForElem(elem: HTMLElement): ArenaSelection | undefined {
+    const startId = this.getNodeIdAndOffset(elem, 0, true);
+    if (startId) {
+      const startNode = this.asm.model.getNodeById(startId[0]);
+      if (startNode) {
+        return new ArenaSelection(startNode, startId[1], startNode, startId[1], 'forward');
       }
     }
     return undefined;

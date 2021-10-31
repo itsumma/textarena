@@ -307,6 +307,10 @@ export class CreatorBar {
   }
 
   setPosition(target: HTMLElement): void {
+    if (!target.parentNode) {
+      this.hide();
+      return;
+    }
     const rect = target.getBoundingClientRect();
     const containerRect = this.asm.textarena.getContainerElement().getBoundingClientRect();
     this.buttonWrapper.css({

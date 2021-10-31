@@ -1,13 +1,15 @@
-import Textarena from '../Textarena';
-import { ArenaPlugin } from '../interfaces';
-import { ArenaSelection } from '../helpers';
-import { isMac } from '../utils/navigator';
+import Textarena from '../../Textarena';
+import { ArenaPlugin } from '../../interfaces';
+import { ArenaSelection } from '../../helpers';
+import { isMac } from '../../utils/navigator';
+import { breakSelection } from './breakFunctions';
+import { deleteBackward, deleteForward } from './removeFunctions';
 
 export const commonPlugin: () => ArenaPlugin = () => ({
   register(textarena: Textarena): void {
     textarena.registerCommand(
       'breakSelection',
-      (ta: Textarena, selection: ArenaSelection) => ta.breakSelection(selection),
+      breakSelection,
     );
     textarena.registerShortcut(
       'Enter',
@@ -20,6 +22,22 @@ export const commonPlugin: () => ArenaPlugin = () => ({
     textarena.registerShortcut(
       'Ctrl + Enter',
       'breakSelection',
+    );
+    textarena.registerCommand(
+      'deleteBackward',
+      deleteBackward,
+    );
+    textarena.registerShortcut(
+      'Backspace',
+      'deleteBackward',
+    );
+    textarena.registerCommand(
+      'deleteForward',
+      deleteForward,
+    );
+    textarena.registerShortcut(
+      'Delete',
+      'deleteForward',
     );
     textarena.registerCommand(
       'deleteWordBack',
@@ -36,7 +54,7 @@ export const commonPlugin: () => ArenaPlugin = () => ({
             return selection;
           }
         }
-        return ta.removeSelection(selection, 'backward');
+        return ta.removeSelection(selection);
       },
     );
     textarena.registerShortcut(
@@ -60,7 +78,7 @@ export const commonPlugin: () => ArenaPlugin = () => ({
             return selection;
           }
         }
-        return ta.removeSelection(selection, 'forward');
+        return ta.removeSelection(selection);
       },
     );
     textarena.registerShortcut(

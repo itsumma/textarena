@@ -24,7 +24,7 @@ export class SingleNode
       return this.arena.getTemplate(undefined, id, this.attributes, this);
     }
     const content = this.arena.getTemplate(undefined, '', this.attributes, this);
-    const removeButton = html`<textarena-remove node-id="${id}">
+    const removeButton = html`<textarena-remove node-id="${id}" contenteditable="false">
     <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
     viewBox="0 0 512.001 512.001" xml:space="preserve">
     <g>
@@ -36,7 +36,7 @@ export class SingleNode
     </svg>
     </textarena-remove>`;
     return html`
-      <textarena-node arena-id="${id}" contenteditable="false">${removeButton}${content}</textarena-node>
+      <textarena-node arena-id="${id}" contenteditable="false">${content}${removeButton}</textarena-node>
     `;
   }
 

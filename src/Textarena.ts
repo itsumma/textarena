@@ -1,6 +1,5 @@
 import '../scss/style.scss';
 
-import { Direction } from './arenaEvents';
 import { ArenaSelection, ElementHelper } from './helpers';
 import {
   AnyArena, AnyArenaNode, ArenaFormating, ArenaInlineInterface, ArenaInterval,
@@ -12,13 +11,14 @@ import {
 } from './interfaces';
 import { TextNode } from './models';
 import {
-  asidePlugin, backImagePlugin, blockquotePlugin, calloutPlugin, codePlugin, commonPlugin,
-  contentsPlugin, embedPlugin, figurePlugin, formatingsPlugin, headersPlugin, hrPlugin,
-  imagePlugin, linkPlugin, listsPlugin, nestedlistsPlugin, paragraphPlugin, pastePlugin,
-  quotePlugin, roadmapPlugin, tablePlugin, twoColumnsPlugin, typoSugarPlugin, videoPlugin,
+  asidePlugin, backImagePlugin, blockFormationPlugin, blockquotePlugin, calloutPlugin, codePlugin,
+  commonPlugin, contentsPlugin, dragPlugin, embedPlugin, figurePlugin, formatingsPlugin,
+  headersPlugin, hrPlugin, imagePlugin, linkPlugin, listsPlugin, nestedlistsPlugin,
+  paragraphPlugin, pastePlugin, quotePlugin, roadmapPlugin, tablePlugin, twoColumnsPlugin,
+  typoSugarPlugin, videoPlugin,
 } from './plugins';
 import {
-  ArenaCommandManager, ArenaHandler, ArenaHistory, ArenaModel, ArenaServiceManager,
+  ArenaCommandManager, ArenaHandler, ArenaHistory, ArenaModel, ArenaServiceManager, ArenaView,
   MiddlewareWhenCondition,
 } from './services';
 
@@ -355,12 +355,8 @@ class Textarena {
     return this.asm.model.insertBeforeSelected(selection, arena, replace);
   }
 
-  public breakSelection(selection: ArenaSelection): ArenaSelection {
-    return this.asm.model.breakSelection(selection);
-  }
-
-  public removeSelection(selection: ArenaSelection, direction: Direction): ArenaSelection {
-    return this.asm.model.removeSelection(selection, direction);
+  public removeSelection(selection: ArenaSelection): ArenaSelection {
+    return this.asm.model.removeSelection(selection);
   }
 
   public createAndInsertNode(
@@ -437,6 +433,10 @@ class Textarena {
 
   public getModel(): ArenaModel {
     return this.asm.model;
+  }
+
+  public getView(): ArenaView {
+    return this.asm.view;
   }
 
   public getHistory(): ArenaHistory {
@@ -651,6 +651,7 @@ declare global {
 Textarena.constructor.prototype.getPlugins = () => ({
   commonPlugin,
   pastePlugin,
+  dragPlugin,
   paragraphPlugin,
   formatingsPlugin,
   headersPlugin,
@@ -673,6 +674,7 @@ Textarena.constructor.prototype.getPlugins = () => ({
   tablePlugin,
   contentsPlugin,
   backImagePlugin,
+  blockFormationPlugin,
 });
 
 export default Textarena;
