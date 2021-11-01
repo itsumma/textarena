@@ -100,7 +100,9 @@ const embedPlugin = (opts?: Partial<EmbedPluginOptions>): ArenaPlugin => ({
       textarena.registerCommand(
         command,
         (someTa: Textarena, selection: ArenaSelection) => {
-          const [sel] = someTa.insertBeforeSelected(selection, arena, true);
+          const { node: textNode } = selection.getCursor();
+          const replace = textNode.hasText && textNode.getText().getText().length === 0;
+          const [sel] = someTa.insertBeforeSelected(selection, arena, replace);
           return sel;
         },
       );

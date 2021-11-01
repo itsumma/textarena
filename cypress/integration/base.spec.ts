@@ -20,7 +20,7 @@ context('Actions', () => {
         .focused()
         .type('{selectall}')
         .type('{del}')
-        .type('{ctrl+alt+0}')
+        .type(`{${ctrl}+alt+0}`)
         .type('Test text.');
 
       cy.wait(100);
@@ -63,7 +63,7 @@ context('Actions', () => {
       .focus()
       .type('{selectall}')
       .type('{del}')
-      .type('{ctrl+alt+"}')
+      .type(`{${ctrl}+alt+"}`)
       .type('Blockqoute content')
       .type('{enter}')
       .type('{enter}')
@@ -124,23 +124,23 @@ context('Actions', () => {
       .focus()
       .type('{selectall}')
       .type('{del}')
-      .type('{ctrl+alt+2}')
+      .type(`{${ctrl}+alt+2}`)
       .type('Header2')
       .type('{enter}')
       .type('Simple paragraph after header2')
       .type('{enter}')
-      .type('{ctrl+alt+3}')
+      .type(`{${ctrl}+alt+3}`)
       .type('Header3')
       .type('{enter}')
       .type('Simple paragraph after header3')
       .type('{enter}')
-      .type('{ctrl+alt+4}')
+      .type(`{${ctrl}+alt+4}`)
       .type('Header4')
       .type('{enter}')
       .type('Simple paragraph after header4')
       .type('{enter}')
       .type('Simple paragraph will be a header2')
-      .type('{ctrl+alt+2}');
+      .type(`{${ctrl}+alt+2}`);
     cy.wait(100);
     cy.get('#html')
       .contains(/<h2[^>]*>Header2<\/h2>/)
@@ -149,7 +149,7 @@ context('Actions', () => {
       .contains('<p class="paragraph">Simple paragraph after header3</p>')
       .contains(/<h4[^>]*>Header4<\/h4>/)
       .contains('<p class="paragraph">Simple paragraph after header4</p>')
-      .contains(/<h2[^>]*>Simple paragraph will be a header2<\/h2>/)
+      .contains(/<h2[^>]*>Simple paragraph will be a header2<\/h2>/);
   });
 
   it('Breaking', () => {

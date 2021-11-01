@@ -47,6 +47,7 @@ const pastePlugin = (): ArenaPlugin => ({
         return [false, selection];
       },
       'before',
+      { priority: 9 },
     );
   },
 });

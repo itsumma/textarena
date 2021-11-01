@@ -346,7 +346,7 @@ const nestedlistsPlugin = (opts?: ListsOptions): ArenaPlugin => ({
           return [false, sel];
         },
         'after',
-        paragraph,
+        { scope: paragraph },
       );
       textarena.addSimpleArenas(listArena);
     });

@@ -104,7 +104,9 @@ const figurePlugin = (opts?: Partial<FigurePluginOptions>): ArenaPlugin => ({
       textarena.registerCommand(
         command,
         (ta: Textarena, selection: ArenaSelection) => {
-          const [sel] = ta.insertBeforeSelected(selection, arena);
+          const { node: textNode } = selection.getCursor();
+          const replace = textNode.hasText && textNode.getText().getText().length === 0;
+          const [sel] = ta.insertBeforeSelected(selection, arena, replace);
           return sel;
         },
       );
@@ -134,9 +136,9 @@ const figurePlugin = (opts?: Partial<FigurePluginOptions>): ArenaPlugin => ({
       ): [boolean, ArenaSelection] => {
         if (typeof data === 'object') {
           const types: string[] = [...data.types || []];
-          if (types.includes('Files')) {
+          if (types.includes('Files') && data.items.length) {
             const file = data.files[0];
-            if (file) {
+            if (file && /image\/(?:jpeg|png|webp|svg\+xml)/.test(file.type)) {
               const image = textarena.getArena('image') as ArenaSingleInterface;
               const upload = image?.getAttribute('upload') as UploadProcessor;
               if (upload) {

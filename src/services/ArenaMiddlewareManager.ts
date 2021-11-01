@@ -13,14 +13,18 @@ export default class ArenaMiddlewareManager {
     middleware: ArenaMiddleware,
     when: MiddlewareWhenCondition,
     scope?: AnyArena,
+    priority: number,
   }[] = [];
 
   public registerMiddleware(
     middleware: ArenaMiddleware,
     when: MiddlewareWhenCondition,
     scope?: AnyArena,
+    priority?: number,
   ): void {
-    this.middlewares.push({ middleware, when, scope });
+    this.middlewares.push({
+      middleware, when, scope, priority: priority ?? 1,
+    });
   }
 
   public applyMiddlewares(
@@ -32,8 +36,9 @@ export default class ArenaMiddlewareManager {
     let result = false;
     let newSel = sel;
     const node = sel.startNode;
+    const sorted = this.middlewares.sort((a, b) => a.priority - b.priority);
 
-    for (let i = 0; i < this.middlewares.length; i += 1) {
+    for (let i = 0; i < sorted.length; i += 1) {
       const { middleware, scope, when: whenCondition } = this.middlewares[i];
       let allowExec = when === whenCondition;
       if (scope && (!sel.isSameNode() || scope !== node.arena)) {

@@ -55,6 +55,7 @@ import contentsPlugin from './plugins/contents/contentsPlugin';
 import ArenaMiddleware from './interfaces/ArenaMiddleware';
 import ArenaHistory from './services/ArenaHistory';
 import { MiddlewareWhenCondition } from './services/ArenaMiddlewareManager';
+import videoPlugin from './plugins/video/videoPlugin';
 
 export const defaultOptions: TextarenaOptions = {
   editable: true,
@@ -91,6 +92,7 @@ export const defaultOptions: TextarenaOptions = {
       'ordered-list',
       'hr',
       'figure',
+      'video',
       'blockquote',
       'embed',
       'aside',
@@ -110,6 +112,7 @@ export const defaultOptions: TextarenaOptions = {
     asidePlugin(),
     codePlugin(),
     imagePlugin(),
+    videoPlugin(),
     figurePlugin(),
     embedPlugin(),
   ],
@@ -337,9 +340,9 @@ class Textarena {
   public registerMiddleware(
     middleware: ArenaMiddleware,
     when: MiddlewareWhenCondition,
-    scope?: AnyArena,
+    opts?: { scope?: AnyArena; priority?: number },
   ): void {
-    this.asm.middlewares.registerMiddleware(middleware, when, scope);
+    this.asm.middlewares.registerMiddleware(middleware, when, opts?.scope, opts?.priority);
   }
 
   public applyMiddlewares(
@@ -622,19 +625,6 @@ class Textarena {
 declare global {
   interface Window {
     asm: undefined | ArenaServiceManager,
-    twttr: undefined | {
-      widgets: {
-        createTweet: (id: string, el: HTMLElement) => void,
-      },
-    };
-    FB: undefined | {
-      init: (opts: { xfbml: boolean, version: string }) => void,
-    };
-    instgrm: undefined | {
-      Embeds: {
-        process: () => void,
-      },
-    };
     debugSymbol: unknown;
   }
 }
@@ -651,6 +641,7 @@ Textarena.constructor.prototype.getPlugins = () => ({
   blockquotePlugin,
   calloutPlugin,
   imagePlugin,
+  videoPlugin,
   figurePlugin,
   embedPlugin,
   linkPlugin,

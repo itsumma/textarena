@@ -8,6 +8,8 @@ interface RenderParams {
   amp?: boolean;
 }
 
+const iframeId = (type: string, embed: string | undefined) => `iframe-${type}-${embed?.split('/').pop()?.split('?').pop()}`;
+
 const embedRender = ({
   embedType,
   embed,
@@ -22,7 +24,7 @@ const embedRender = ({
         .replace(/<\s*iframe/, '<amp-iframe')
         .replace(/<\s*\/\s*iframe\s*>/, '</amp-iframe>');
     }
-    res += html.replace(/^<([^>]+?)>/, `<$1 src="${embed}">`);
+    res += html.replace(/^<([^>]+?)>/, `<$1 id="${iframeId(embedType, embed)}" src="${embed}">`);
   }
   res += '</div>';
   return res;

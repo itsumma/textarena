@@ -113,6 +113,11 @@
       width: 60%;
       height: 100%;
     }
+
+    &.offset {
+      position: relative;
+      right: 0.4em;
+    }
   }
 
   &__item_show-hint .textarena-shortcut-hint-short {

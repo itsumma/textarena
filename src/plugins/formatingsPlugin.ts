@@ -16,6 +16,7 @@ type FormatingOptions = {
   tool?: {
     icon: string;
     title: string;
+    cls?: string;
   },
 };
 
@@ -268,6 +269,7 @@ const defaultOptions: FormatingsOptions = {
       tool: {
         title: 'Inline Code',
         icon: '〈&nbsp;〉',
+        cls: 'offset',
       },
     },
   ],
