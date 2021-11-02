@@ -191,7 +191,7 @@
     });
     const onEvent = (e) => {
       if (e.name === 'customEvent') {
-        console.log(e);
+        // console.log(e);
       }
     }
 

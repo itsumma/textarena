@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export default class ArenaLogger {
   private debug = false;
@@ -9,28 +10,27 @@ export default class ArenaLogger {
 
   log(message?: string, ...optionalParams: any[]): void {
     if (this.debug) {
-      // eslint-disable-next-line no-console
+      console.groupCollapsed(message);
       console.log(message, ...optionalParams);
+      console.trace();
+      console.groupEnd();
     }
   }
 
   info(message?: string, ...optionalParams: any[]): void {
     if (this.debug) {
-      // eslint-disable-next-line no-console
       console.info(message, ...optionalParams);
     }
   }
 
   error(message?: string, ...optionalParams: any[]): void {
     if (this.debug) {
-      // eslint-disable-next-line no-console
       console.error(message, ...optionalParams);
     }
   }
 
   warn(message?: string, ...optionalParams: any[]): void {
     if (this.debug) {
-      // eslint-disable-next-line no-console
       console.warn(message, ...optionalParams);
     }
   }

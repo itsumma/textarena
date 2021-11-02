@@ -165,8 +165,9 @@ const quotePlugin = (opts?: Partial<DefaulPluginOptions>): ArenaPlugin => ({
         const [sel] = ta.insertBeforeSelected(selection, arena);
         return sel;
       });
-
-      // textarena.registerShortcut(shortcut, command);
+      if (shortcut) {
+        textarena.registerShortcut(shortcut, command);
+      }
       if (title) {
         textarena.registerCreator({
           name,
