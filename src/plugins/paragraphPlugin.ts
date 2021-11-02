@@ -1,10 +1,10 @@
 import Textarena from '../Textarena';
-import ArenaPlugin, { DefaulPluginOptions } from '../interfaces/ArenaPlugin';
+import ArenaPlugin, { DefaultPluginOptions } from '../interfaces/ArenaPlugin';
 import { ArenaTextInterface } from '../interfaces/Arena';
 import { AnyArenaNode } from '../interfaces/ArenaNode';
 import ArenaSelection from '../helpers/ArenaSelection';
 
-const defaultOptions: DefaulPluginOptions = {
+const defaultOptions: DefaultPluginOptions = {
   name: 'paragraph',
   title: 'Paragraph',
   tag: 'P',
@@ -25,7 +25,7 @@ const defaultOptions: DefaulPluginOptions = {
   ],
 };
 
-const paragraphPlugin = (opts?: Partial<DefaulPluginOptions>): ArenaPlugin => ({
+const paragraphPlugin = (opts?: Partial<DefaultPluginOptions>): ArenaPlugin => ({
   register(textarena: Textarena): void {
     const {
       name, title, tag, attributes, icon, shortcut, command, marks, description,

@@ -477,33 +477,6 @@ arena-embed-simple blockquote {
   border: none;
 }
 
-.embed-youtube {
-  width: 100%;
-  padding-bottom: 56.25%;
-  position: relative;
-  margin: 0 0 1em;
-  background: #ccc;
-  overflow: hidden;
-}
-
-.embed-youtube-iframe {
-  width: 100%;
-  height: 100%;
-  margin: 0;
-  position: absolute;
-  left: 0;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  border: none;
-  min-width: 100%;
-  width: 0;
-  max-width: 100%;
-  min-height: 100%;
-  height: 0;
-  max-height: 100%;
-}
-
 arena-two-columns-col {
   width: 50%;
   padding: 1px 1em;

@@ -1,11 +1,11 @@
 import { ArenaMediatorInterface, ArenaTextInterface, ChildArena } from '../../interfaces/Arena';
-import { DefaulPluginOptions } from '../../interfaces/ArenaPlugin';
+import { DefaultPluginOptions } from '../../interfaces/ArenaPlugin';
 import CommandAction from '../../interfaces/CommandAction';
 import { TagAndAttributes } from '../../interfaces/ArenaFormating';
 import { ToolCheckStatus } from '../../interfaces/ToolOptions';
 import { CreatorCanShow } from '../../interfaces/CreatorOptions';
 
-export type ArenaPluginOptions = DefaulPluginOptions & {
+export type ArenaPluginOptions = DefaultPluginOptions & {
   marks: TagAndAttributes[],
   parentArenas: string[],
   allowedArenas: ChildArena[],
@@ -25,8 +25,8 @@ export type CommandPluginOptions = {
 };
 
 export type TablePluginOptions = {
-  tableOptions: DefaulPluginOptions,
-  rowOptions: DefaulPluginOptions,
-  cellOptions: DefaulPluginOptions,
+  tableOptions: DefaultPluginOptions,
+  rowOptions: DefaultPluginOptions,
+  cellOptions: DefaultPluginOptions,
   commands: CommandPluginOptions[],
 };

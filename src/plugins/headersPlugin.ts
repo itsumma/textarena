@@ -1,12 +1,12 @@
 import Textarena from '../Textarena';
 import ArenaSelection from '../helpers/ArenaSelection';
-import ArenaPlugin, { DefaulPluginOptions } from '../interfaces/ArenaPlugin';
+import ArenaPlugin, { DefaultPluginOptions } from '../interfaces/ArenaPlugin';
 import { ArenaTextInterface } from '../interfaces/Arena';
 import { AnyArenaNode } from '../interfaces/ArenaNode';
 import utils from '../utils';
 
-type HeaderOptions = { [key: string]: DefaulPluginOptions };
-type PartialHeaderOptions = { [key: string]: Partial<DefaulPluginOptions> };
+type HeaderOptions = { [key: string]: DefaultPluginOptions };
+type PartialHeaderOptions = { [key: string]: Partial<DefaultPluginOptions> };
 
 const defaultOptions: HeaderOptions = {
   h2: {

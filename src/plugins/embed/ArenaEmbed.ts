@@ -1,13 +1,14 @@
 import { html, LitElement, TemplateResult } from 'lit';
 import { property } from 'lit/decorators.js';
-import NodeAttributes from '../../interfaces/NodeAttributes';
 import WebComponent from '../../helpers/WebComponent';
+import { getEmbedUrl } from './embedUtils';
+import { GetEmbedProvider } from './types';
 
 export default class ArenaEmbed extends WebComponent {
   @property({
     type: String,
   })
-    type: string | undefined;
+    url: string | undefined;
 
   @property({
     type: String,
@@ -15,26 +16,23 @@ export default class ArenaEmbed extends WebComponent {
     embed: string | undefined;
 
   @property({
-    type: Boolean,
+    type: String,
   })
-    border: boolean | undefined;
-
-  @property({
-    type: Number,
-  })
-    ew: number | undefined;
-
-  @property({
-    type: Number,
-  })
-    eh: number | undefined;
+    html: string | undefined;
 
   createRenderRoot(): LitElement {
     return this;
   }
 
-  handleForm({ detail }: { detail: NodeAttributes }): void {
-    this.fireChangeAttribute(detail);
+  handleForm({ detail: { value } }: { detail: { value: string } }): void {
+    const getEmbedProvider = this.node?.getAttribute('getEmbedProvider') as GetEmbedProvider;
+    const result = getEmbedProvider(value);
+    if (result) {
+      this.fireChangeAttribute({
+        embed: result.provider_name,
+        url: getEmbedUrl(result.endpoint, value, result.opts),
+      });
+    }
   }
 
   onKeydown(e: KeyboardEvent): void {
@@ -48,20 +46,27 @@ export default class ArenaEmbed extends WebComponent {
     }
   }
 
+  handleHtml({ detail: { value } }: { detail: { value: string } }): void {
+    if (value) {
+      this.fireChangeAttribute({
+        html: JSON.stringify(value),
+      });
+    }
+  }
+
   render(): TemplateResult {
-    if (this.type && this.embed) {
+    if (this.url && this.embed) {
       return html`
         <arena-embed-simple
-          type="${this.type}"
+          url="${this.url}"
           embed="${this.embed}"
-          ew="${this.ew}"
-          eh="${this.eh}"
+          @change="${this.handleHtml}"
         ></arena-embed-simple>`;
     }
     return html`
         <arena-embed-form
-            @change="${this.handleForm}"
-            @keydown="${this.onKeydown}">
+          @change="${this.handleForm}"
+          @keydown="${this.onKeydown}">
         </arena-embed-form>`;
   }
 }

@@ -1,4 +1,4 @@
-import { DefaulPluginOptions } from '../../interfaces/ArenaPlugin';
+import { DefaultPluginOptions } from '../../interfaces/ArenaPlugin';
 
 export interface UploadResult {
   src: string;
@@ -13,7 +13,7 @@ export type IzoConfig = {
   token: string,
 };
 
-export type VideoPluginOptions = DefaulPluginOptions & {
+export type VideoPluginOptions = DefaultPluginOptions & {
   classes?: string,
   upload?: UploadProcessor,
   izoConfig?: IzoConfig,

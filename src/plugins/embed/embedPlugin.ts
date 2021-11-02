@@ -8,8 +8,7 @@ import ArenaEmbed from './ArenaEmbed';
 import { EmbedPluginOptions } from './types';
 import ArenaEmbedSimple from './ArenaEmbedSimple';
 import ArenaEmbedForm from './ArenaEmbedForm';
-import embedServices from './embedServices';
-import { createElemEmbed } from './embedUtils';
+import { getEmbedUrl, providerGetter } from './embedUtils';
 
 const defaultOptions: EmbedPluginOptions = {
   name: 'embed',
@@ -41,7 +40,7 @@ const defaultOptions: EmbedPluginOptions = {
   attributes: {
     contenteditable: false,
   },
-  allowedAttributes: ['embed', 'type', 'ew', 'eh'],
+  allowedAttributes: ['embed', 'type'],
   shortcut: 'Ctrl + Alt + E',
   command: 'add-embed',
   components: [
@@ -64,9 +63,6 @@ const defaultOptions: EmbedPluginOptions = {
       attributes: [],
     },
   ],
-  services: {
-    ...embedServices,
-  },
   output: outputEmbed,
 };
 
@@ -74,7 +70,7 @@ const embedPlugin = (opts?: Partial<EmbedPluginOptions>): ArenaPlugin => ({
   register: (textarena: Textarena) => {
     const {
       name, icon, title, tag, attributes, allowedAttributes,
-      shortcut, command, components, marks, output,
+      shortcut, command, components, marks, output, providers, providerOptions,
     } = { ...defaultOptions, ...(opts || {}) };
     if (components) {
       components.forEach(({ component, componentConstructor }) => {
@@ -96,6 +92,9 @@ const embedPlugin = (opts?: Partial<EmbedPluginOptions>): ArenaPlugin => ({
       [textarena.getRootArenaName()],
     ) as ArenaSingleInterface;
     textarena.addSimpleArenas(arena);
+    const getEmbedProvider = providers
+      ? providerGetter(providers, providerOptions)
+      : () => undefined;
     if (command) {
       textarena.registerInsertReplaceCommand(
         command,
@@ -145,15 +144,13 @@ const embedPlugin = (opts?: Partial<EmbedPluginOptions>): ArenaPlugin => ({
       ) => {
         const text = typeof data === 'string' ? data : data.getData('text/plain');
         if (text && sel.isSameNode() && sel.isCollapsed() && sel.getCursor().node.hasText) {
-          const embedElement = createElemEmbed(text);
-          if (embedElement) {
+          const result = getEmbedProvider(text);
+          if (result) {
             const { node: textNode } = sel.getCursor();
             const replace = textNode.hasText && textNode.getText().getText().length === 0;
             const [, node] = ta.insertBeforeSelected(sel, arena, replace);
-            node?.setAttribute('embed', embedElement.embed);
-            node?.setAttribute('type', embedElement.type);
-            node?.setAttribute('ew', embedElement.ew);
-            node?.setAttribute('eh', embedElement.eh);
+            node?.setAttribute('embed', result.provider_name);
+            node?.setAttribute('url', getEmbedUrl(result.endpoint, text, result.opts));
             return [true, sel];
           }
         }

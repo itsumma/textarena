@@ -1,11 +1,11 @@
 import Textarena from '../Textarena';
-import ArenaPlugin, { DefaulPluginOptions } from '../interfaces/ArenaPlugin';
+import ArenaPlugin, { DefaultPluginOptions } from '../interfaces/ArenaPlugin';
 import ArenaSelection from '../helpers/ArenaSelection';
 import { ArenaMediatorInterface, ArenaTextInterface } from '../interfaces/Arena';
 import { AnyArenaNode } from '../interfaces/ArenaNode';
 import utils from '../utils';
 
-const defaultOptions: DefaulPluginOptions = {
+const defaultOptions: DefaultPluginOptions = {
   name: 'aside',
   tag: 'ASIDE',
   attributes: { class: 'aside aside-gray' },
@@ -31,7 +31,7 @@ const defaultOptions: DefaulPluginOptions = {
   ],
 };
 
-const asidePlugin = (opts?: Partial<DefaulPluginOptions>): ArenaPlugin => ({
+const asidePlugin = (opts?: Partial<DefaultPluginOptions>): ArenaPlugin => ({
   register(textarena: Textarena): void {
     const {
       name, tag, attributes, title, icon, shortcut, command, marks,

@@ -1,6 +1,6 @@
 import Textarena from '../Textarena';
 import ArenaSelection from '../helpers/ArenaSelection';
-import ArenaPlugin, { DefaulPluginOptions } from '../interfaces/ArenaPlugin';
+import ArenaPlugin, { DefaultPluginOptions } from '../interfaces/ArenaPlugin';
 import { ArenaMediatorInterface, ArenaTextInterface } from '../interfaces/Arena';
 import {
   ArenaNodeText, AnyArenaNode, ArenaNodeMediator, ChildArenaNode,
@@ -12,7 +12,7 @@ import utils from '../utils';
 
 type PrefixProcessor = (node: ArenaNodeText) => string;
 
-type ListOptions = DefaulPluginOptions & {
+type ListOptions = DefaultPluginOptions & {
   prefix: PrefixProcessor,
   pattern: RegExp,
 };

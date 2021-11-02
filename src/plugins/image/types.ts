@@ -1,4 +1,4 @@
-import { DefaulPluginOptions } from '../../interfaces/ArenaPlugin';
+import { DefaultPluginOptions } from '../../interfaces/ArenaPlugin';
 
 type ImgSize = {
   width: number;
@@ -19,7 +19,7 @@ export type IzoConfig = {
   token: string,
 };
 
-export type ImagePluginOptions = DefaulPluginOptions & {
+export type ImagePluginOptions = DefaultPluginOptions & {
   srcset?: Srcset,
   prepareSrc?: ScrProcessor,
   upload?: UploadProcessor,

@@ -1,15 +1,7 @@
 import { css, html, TemplateResult } from 'lit';
-import { property } from 'lit/decorators.js';
 import WebComponent from '../../helpers/WebComponent';
-import { createElemEmbed } from './embedUtils';
 
 export default class ArenaEmbedForm extends WebComponent {
-  @property({
-    type: String,
-    reflect: true,
-  })
-    embed: string | undefined;
-
   inputValue = '';
 
   static styles = css`
@@ -61,16 +53,15 @@ export default class ArenaEmbedForm extends WebComponent {
   handleSubmit(e: Event): void {
     e.preventDefault();
     if (this.inputValue) {
-      const result = createElemEmbed(this.inputValue);
-      if (result) {
-        this.fireCustomEvent({
-          name: 'embed submit',
-        });
-        const event = new CustomEvent('change', {
-          detail: result,
-        });
-        this.dispatchEvent(event);
-      }
+      const event = new CustomEvent(
+        'change',
+        {
+          detail: {
+            value: this.inputValue,
+          },
+        },
+      );
+      this.dispatchEvent(event);
     }
   }
 
