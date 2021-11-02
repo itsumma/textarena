@@ -1,5 +1,5 @@
 import Textarena from '../../Textarena';
-import { DefaulPluginOptions } from '../../interfaces/ArenaPlugin';
+import { DefaultPluginOptions } from '../../interfaces/ArenaPlugin';
 import { AnyArenaNode } from '../../interfaces/ArenaNode';
 
 export type ContentItem = {
@@ -16,6 +16,6 @@ export type ContentsProcessor = (textarena: Textarena, node: AnyArenaNode) => vo
 
 export type ContentsComponentProcessor = (node: AnyArenaNode) => void;
 
-export type ContentsOptions = DefaulPluginOptions & {
+export type ContentsOptions = DefaultPluginOptions & {
   processor: ContentsProcessor,
 };

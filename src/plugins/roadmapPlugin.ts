@@ -1,10 +1,10 @@
 import Textarena from '../Textarena';
-import ArenaPlugin, { DefaulPluginOptions } from '../interfaces/ArenaPlugin';
+import ArenaPlugin, { DefaultPluginOptions } from '../interfaces/ArenaPlugin';
 import ArenaSelection from '../helpers/ArenaSelection';
 import { ArenaMediatorInterface, ArenaTextInterface } from '../interfaces/Arena';
 import { AnyArenaNode } from '../interfaces/ArenaNode';
 
-const defaultOptions: DefaulPluginOptions = {
+const defaultOptions: DefaultPluginOptions = {
   name: 'roadmap',
   tag: 'ROADMAP',
   attributes: { },
@@ -20,7 +20,7 @@ const defaultOptions: DefaulPluginOptions = {
   ],
 };
 
-const roadmapPlugin = (opts?: Partial<DefaulPluginOptions>): ArenaPlugin => ({
+const roadmapPlugin = (opts?: Partial<DefaultPluginOptions>): ArenaPlugin => ({
   register(textarena: Textarena): void {
     const {
       name, tag, attributes, title, icon, shortcut, command, marks,

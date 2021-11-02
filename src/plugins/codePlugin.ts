@@ -1,11 +1,11 @@
 import Textarena from '../Textarena';
-import ArenaPlugin, { DefaulPluginOptions } from '../interfaces/ArenaPlugin';
+import ArenaPlugin, { DefaultPluginOptions } from '../interfaces/ArenaPlugin';
 import ArenaSelection from '../helpers/ArenaSelection';
 import { ArenaMediatorInterface, ArenaTextInterface } from '../interfaces/Arena';
 import { AnyArenaNode } from '../interfaces/ArenaNode';
 import utils from '../utils';
 
-const defaultOptions: DefaulPluginOptions = {
+const defaultOptions: DefaultPluginOptions = {
   name: 'code',
   tag: 'PRE',
   attributes: {},
@@ -21,7 +21,7 @@ const defaultOptions: DefaulPluginOptions = {
   ],
 };
 
-const codePlugin = (opts?: Partial<DefaulPluginOptions>): ArenaPlugin => ({
+const codePlugin = (opts?: Partial<DefaultPluginOptions>): ArenaPlugin => ({
   register(textarena: Textarena): void {
     const {
       name, tag, attributes, title, icon, shortcut, command, marks,

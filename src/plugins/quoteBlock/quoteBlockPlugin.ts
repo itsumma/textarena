@@ -1,12 +1,12 @@
 import ArenaSelection from '../../helpers/ArenaSelection';
 import { ArenaMediatorInterface, ArenaTextInterface } from '../../interfaces/Arena';
 import { AnyArenaNode } from '../../interfaces/ArenaNode';
-import ArenaPlugin, { DefaulPluginOptions } from '../../interfaces/ArenaPlugin';
+import ArenaPlugin, { DefaultPluginOptions } from '../../interfaces/ArenaPlugin';
 import Textarena from '../../Textarena';
 import ArenaQuoteBlock from './ArenaQuoteBlock';
 import outputQuoteBlock from './outputQuoteBlock';
 
-const defaultOptions: DefaulPluginOptions = {
+const defaultOptions: DefaultPluginOptions = {
   name: 'quote-block',
   // icon: '<b>Q</b>',
   title: 'Блок с цитатой',
@@ -71,7 +71,7 @@ const srcset = [
   },
 ];
 
-const quotePlugin = (opts?: Partial<DefaulPluginOptions>): ArenaPlugin => ({
+const quotePlugin = (opts?: Partial<DefaultPluginOptions>): ArenaPlugin => ({
   register(textarena: Textarena): void {
     const {
       name, icon, title, tag, attributes, shortcut, command,

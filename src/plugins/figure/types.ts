@@ -1,4 +1,4 @@
-import { DefaulPluginOptions } from '../../interfaces/ArenaPlugin';
+import { DefaultPluginOptions } from '../../interfaces/ArenaPlugin';
 import { Srcset } from '../image/types';
 
 export type FigureClass = {
@@ -8,7 +8,7 @@ export type FigureClass = {
   srcset?: Srcset,
 };
 
-export type FigurePluginOptions = DefaulPluginOptions & {
+export type FigurePluginOptions = DefaultPluginOptions & {
   srcset?: Srcset,
   classes?: FigureClass[],
   placeholder: string,
