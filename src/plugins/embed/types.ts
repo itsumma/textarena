@@ -13,22 +13,42 @@ export enum RenderTypes {
   DEFAULT = 'html',
 }
 
+export interface EmbedElem {
+  // Embed type e.g. youtube, twitter etc...
+  type: string;
+  // src tag value for iframe element
+  embed: string;
+}
+export interface EmbedService {
+  regex: RegExp;
+  embedUrl: string;
+  html: string;
+  height?: number;
+  width?: number;
+  id?: ([id, params]: string[]) => string;
+}
+
+export interface EmbedServiceMap {
+  [service: string]: EmbedService;
+}
+
 export type EmbedComponent = {
   component: string,
   componentConstructor: CustomElementConstructor,
 };
 
-export interface EmbedProviderEndpoint {
+export interface OEmbedProviderEndpoint {
   schemes: string[];
   url: string;
   discovery?: boolean;
   formats?: string[];
 }
 
-export interface EmbedProvider {
+// Full description of this structure at https://oembed.com
+export interface OEmbedProvider {
   provider_name: string;
   provider_url: string;
-  endpoints: EmbedProviderEndpoint[];
+  endpoints: OEmbedProviderEndpoint[];
 }
 
 export interface ProviderOptions {
@@ -38,7 +58,7 @@ export interface ProviderOptions {
 }
 
 export interface GetEmbedProviderResult {
-  endpoint: EmbedProviderEndpoint;
+  endpoint: OEmbedProviderEndpoint;
   provider_name: string;
   opts?: ProviderOptions;
 }
@@ -47,8 +67,9 @@ export type GetEmbedProvider = (url: string) => GetEmbedProviderResult | undefin
 
 export type EmbedPluginOptions = DefaultPluginOptions & {
   components: EmbedComponent[],
-  providers?: EmbedProvider[],
+  oEmbedProviders?: OEmbedProvider[],
   providerOptions?: ProviderOptions[],
+  services: EmbedServiceMap,
 };
 
 export type OEmbedType = 'photo' | 'video' | 'link' | 'rich';

@@ -1,14 +1,24 @@
+import embedServices from './embedServices';
 import {
-  EmbedProvider,
-  EmbedProviderEndpoint,
+  EmbedElem,
+  OEmbedProvider,
+  OEmbedProviderEndpoint,
+  EmbedService,
   GetEmbedProvider,
   GetEmbedProviderResult,
   OEmbedVideo,
   ProviderOptions,
 } from './types';
 
+/**
+ * Factory function which returns a method to get OEmbedProviderEndpoint for
+ * specified url, so we could pass it to Embed ArenaNode
+ * @param providers OEmbedProvider[]
+ * @param opts optional ProviderOptions[]
+ * @returns (url: string): GetEmbedProviderResult | undefined
+ */
 export const providerGetter = (
-  providers: EmbedProvider[],
+  providers: OEmbedProvider[],
   opts?: ProviderOptions[],
 ): GetEmbedProvider => (url: string): GetEmbedProviderResult | undefined => {
   for (let i = 0; i < providers.length; i += 1) {
@@ -39,8 +49,15 @@ export const providerGetter = (
   return undefined;
 };
 
+/**
+ * Construct url according to https://oembed.com to fetch embed
+ * @param endpoint OEmbedProviderEndpoint
+ * @param url string - url of the shared resource (post, video, etc...) to embed
+ * @param opts optional ProviderOptions
+ * @returns string
+ */
 export const getEmbedUrl = (
-  endpoint: EmbedProviderEndpoint,
+  endpoint: OEmbedProviderEndpoint,
   url: string,
   opts?: ProviderOptions,
 ) => {
@@ -69,6 +86,16 @@ export const fetchEmbedData = (
   url: string,
 ): Promise<OEmbedVideo> => fetch(url).then((body) => body.json());
 
+/**
+ * This function processes html field of the response from provider endpoint
+ * e.g. https://oembed.com/#section5
+ * The html string can contain <script> elements which won't be processed by
+ * the browser. So here we use a hack to create script element with the same
+ * attributes as were in original html script element. Then we delete the old
+ * script element from the html DOM tree.
+ * @param html string - html field of video response https://oembed.com/#section5
+ * @returns HTMLElement
+ */
 export const processEmbedHtml = (html: string): HTMLElement => {
   const body = document.createElement('div');
   body.innerHTML = html;
@@ -86,4 +113,38 @@ export const processEmbedHtml = (html: string): HTMLElement => {
     body.appendChild(scripts[i]);
   }
   return body;
+};
+
+/**
+ * This function checks if provided utl pattern matches one of embed services
+ * defined at embedServices.ts
+ * @param url string - url of shared post, video etc...
+ * @returns EmbedElem
+ */
+
+export const createElemEmbed = (url: string): EmbedElem | undefined => {
+  const keys = Object.keys(embedServices);
+  let type: string | undefined;
+  let service: EmbedService | undefined;
+  let found = false;
+  for (let i = 0; i < keys.length; i += 1) {
+    type = keys[i];
+    service = embedServices[type];
+    if (service.regex.test(url)) {
+      found = true;
+      break;
+    }
+  }
+  if (!found || !service || !type) return undefined;
+  const {
+    regex,
+    embedUrl,
+    id = (ids: string[]) => ids.shift() as string,
+  } = service;
+  const result = regex.exec(url)?.slice(1) as string[];
+  const embed = embedUrl.replace(/<%= remote_id %>/g, id(result));
+  return {
+    type,
+    embed,
+  };
 };

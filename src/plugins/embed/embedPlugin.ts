@@ -8,7 +8,8 @@ import ArenaEmbed from './ArenaEmbed';
 import { EmbedPluginOptions } from './types';
 import ArenaEmbedSimple from './ArenaEmbedSimple';
 import ArenaEmbedForm from './ArenaEmbedForm';
-import { getEmbedUrl, providerGetter } from './embedUtils';
+import { createElemEmbed, getEmbedUrl, providerGetter } from './embedUtils';
+import services from './embedServices';
 
 const defaultOptions: EmbedPluginOptions = {
   name: 'embed',
@@ -64,13 +65,14 @@ const defaultOptions: EmbedPluginOptions = {
     },
   ],
   output: outputEmbed,
+  services,
 };
 
 const embedPlugin = (opts?: Partial<EmbedPluginOptions>): ArenaPlugin => ({
   register: (textarena: Textarena) => {
     const {
       name, icon, title, tag, attributes, allowedAttributes,
-      shortcut, command, components, marks, output, providers, providerOptions,
+      shortcut, command, components, marks, output, oEmbedProviders: providers, providerOptions,
     } = { ...defaultOptions, ...(opts || {}) };
     if (components) {
       components.forEach(({ component, componentConstructor }) => {
@@ -144,13 +146,27 @@ const embedPlugin = (opts?: Partial<EmbedPluginOptions>): ArenaPlugin => ({
       ) => {
         const text = typeof data === 'string' ? data : data.getData('text/plain');
         if (text && sel.isSameNode() && sel.isCollapsed() && sel.getCursor().node.hasText) {
+          // Check for match in OEmbed providers first
           const result = getEmbedProvider(text);
-          if (result) {
+
+          // if no match were found at provided OEmbed services create embed
+          // element with iframe from ./embedServices.ts
+          const embedElement = result ? undefined : createElemEmbed(text);
+          let node: AnyArenaNode | undefined;
+          if (result || embedElement) {
             const { node: textNode } = sel.getCursor();
             const replace = textNode.hasText && textNode.getText().getText().length === 0;
-            const [, node] = ta.insertBeforeSelected(sel, arena, replace);
+            const [, insertedNode] = ta.insertBeforeSelected(sel, arena, replace);
+            node = insertedNode;
+          }
+          if (result) {
             node?.setAttribute('embed', result.provider_name);
             node?.setAttribute('url', getEmbedUrl(result.endpoint, text, result.opts));
+            return [true, sel];
+          }
+          if (embedElement) {
+            node?.setAttribute('embed', embedElement.embed);
+            node?.setAttribute('type', embedElement.type);
             return [true, sel];
           }
         }
