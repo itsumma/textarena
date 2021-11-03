@@ -10,6 +10,7 @@ import ArenaEmbedSimple from './ArenaEmbedSimple';
 import ArenaEmbedForm from './ArenaEmbedForm';
 import { createElemEmbed, getEmbedUrl, providerGetter } from './embedUtils';
 import services from './embedServices';
+import ArenaEmbedIFrame from './ArenaEmbedIFrame';
 
 const defaultOptions: EmbedPluginOptions = {
   name: 'embed',
@@ -41,7 +42,7 @@ const defaultOptions: EmbedPluginOptions = {
   attributes: {
     contenteditable: false,
   },
-  allowedAttributes: ['embed', 'type'],
+  allowedAttributes: ['embed', 'type', 'url', 'html'],
   shortcut: 'Ctrl + Alt + E',
   command: 'add-embed',
   components: [
@@ -56,6 +57,10 @@ const defaultOptions: EmbedPluginOptions = {
     {
       component: 'arena-embed-form',
       componentConstructor: ArenaEmbedForm,
+    },
+    {
+      component: 'arena-embed-iframe',
+      componentConstructor: ArenaEmbedIFrame,
     },
   ],
   marks: [

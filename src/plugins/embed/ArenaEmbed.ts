@@ -71,14 +71,23 @@ export default class ArenaEmbed extends WebComponent {
   }
 
   render(): TemplateResult {
-    if ((this.url && this.embed) || (this.type && this.embed)) {
+    if (this.url && this.embed) {
       return html`
         <arena-embed-simple
           url="${this.url}"
           embed="${this.embed}"
-          type="${this.type}"
+          html="${this.html}"
           @change="${this.handleHtml}"
-        ></arena-embed-simple>`;
+        ></arena-embed-simple>
+      `;
+    }
+    if (this.type && this.embed) {
+      return html`
+      <arena-embed-iframe
+          embed="${this.embed}"
+          type="${this.type}"
+        ></arena-embed-iframe>
+      `;
     }
     return html`
         <arena-embed-form

@@ -219,7 +219,7 @@ hr.asterisk::after {
   font-size: 2em;
 }
 
-blockquote {
+.textarena-blockquote {
   position: relative;
   margin: 0 0 1em;
   padding-left: 1.5em;
@@ -228,7 +228,7 @@ blockquote {
   font-size: 1.4em;
   font-style: italic;
 }
-blockquote::before {
+.textarena-blockquote::before {
   content: "";
   width: 0.2em;
   /* border-radius: 0.2em; */
@@ -239,7 +239,7 @@ blockquote::before {
   bottom: 0;
 }
 
-blockquote:last-child {
+.textarena-blockquote:last-child {
   margin-bottom: 0;
 }
 
@@ -469,12 +469,6 @@ arena-embed-simple {
   min-height: 1.6em;
   min-height: 10em;
   overflow: hidden;
-}
-
-arena-embed-simple blockquote {
-  padding: 0;
-  margin: 0;
-  border: none;
 }
 
 arena-two-columns-col {
