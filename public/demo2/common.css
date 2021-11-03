@@ -153,7 +153,7 @@ hr {
   height: 1px;
 }
 
-blockquote {
+.textarena-blockquote {
   padding-left: 1.5em;
   margin: 0 0 1em;
   min-height: 1.6em;
@@ -162,7 +162,7 @@ blockquote {
   color: #b688e4;
 }
 
-blockquote:last-child {
+.textarena-blockquote:last-child {
   margin-bottom: 0;
 }
 
