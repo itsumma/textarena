@@ -97,14 +97,9 @@ const embedPlugin = (opts?: Partial<EmbedPluginOptions>): ArenaPlugin => ({
     ) as ArenaSingleInterface;
     textarena.addSimpleArenas(arena);
     if (command) {
-      textarena.registerCommand(
+      textarena.registerInsertReplaceCommand(
         command,
-        (someTa: Textarena, selection: ArenaSelection) => {
-          const { node: textNode } = selection.getCursor();
-          const replace = textNode.hasText && textNode.getText().getText().length === 0;
-          const [sel] = someTa.insertBeforeSelected(selection, arena, replace);
-          return sel;
-        },
+        arena,
       );
       if (shortcut) {
         textarena.registerShortcut(
