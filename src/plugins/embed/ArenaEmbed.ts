@@ -1,7 +1,7 @@
 import { html, LitElement, TemplateResult } from 'lit';
 import { property } from 'lit/decorators.js';
 import WebComponent from '../../helpers/WebComponent';
-import { getEmbedUrl } from './embedUtils';
+import { createElemEmbed, getEmbedUrl } from './embedUtils';
 import { GetEmbedProvider } from './types';
 
 export default class ArenaEmbed extends WebComponent {
@@ -18,6 +18,11 @@ export default class ArenaEmbed extends WebComponent {
   @property({
     type: String,
   })
+    type: string | undefined;
+
+  @property({
+    type: String,
+  })
     html: string | undefined;
 
   createRenderRoot(): LitElement {
@@ -26,11 +31,22 @@ export default class ArenaEmbed extends WebComponent {
 
   handleForm({ detail: { value } }: { detail: { value: string } }): void {
     const getEmbedProvider = this.node?.getAttribute('getEmbedProvider') as GetEmbedProvider;
+    // Check for match in OEmbed providers first
     const result = getEmbedProvider(value);
     if (result) {
       this.fireChangeAttribute({
         embed: result.provider_name,
         url: getEmbedUrl(result.endpoint, value, result.opts),
+      });
+      return;
+    }
+    // if no match were found at provided OEmbed services create embed
+    // element with iframe from ./embedServices.ts
+    const embedElement = createElemEmbed(value);
+    if (embedElement) {
+      this.fireChangeAttribute({
+        embed: embedElement.embed,
+        type: embedElement.type,
       });
     }
   }
@@ -55,11 +71,12 @@ export default class ArenaEmbed extends WebComponent {
   }
 
   render(): TemplateResult {
-    if (this.url && this.embed) {
+    if ((this.url && this.embed) || (this.type && this.embed)) {
       return html`
         <arena-embed-simple
           url="${this.url}"
           embed="${this.embed}"
+          type="${this.type}"
           @change="${this.handleHtml}"
         ></arena-embed-simple>`;
     }
