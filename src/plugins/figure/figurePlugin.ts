@@ -104,9 +104,7 @@ const figurePlugin = (opts?: Partial<FigurePluginOptions>): ArenaPlugin => ({
       textarena.registerCommand(
         command,
         (ta: Textarena, selection: ArenaSelection) => {
-          const { node: textNode } = selection.getCursor();
-          const replace = textNode.hasText && textNode.getText().getText().length === 0;
-          const [sel] = ta.insertBeforeSelected(selection, arena, replace);
+          const [sel] = ta.insertBeforeSelected(selection, arena);
           return sel;
         },
       );

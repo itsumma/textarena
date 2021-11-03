@@ -5,7 +5,11 @@ import ElementHelper from './helpers/ElementHelper';
 
 import {
   AnyArena,
-  ArenaInlineInterface, ArenaMediatorInterface, ArenaTextInterface, ChildArena,
+  ArenaInlineInterface,
+  ArenaMediatorInterface,
+  ArenaSingleInterface,
+  ArenaTextInterface,
+  ChildArena,
 } from './interfaces/Arena';
 import {
   AnyArenaNode, ArenaNodeInline, ArenaNodeRoot, ArenaNodeText, ChildArenaNode, ParentArenaNode,
@@ -619,6 +623,22 @@ class Textarena {
 
   public execCommand(command: string, selection?: ArenaSelection): void {
     this.asm.commandManager.execCommand(command, selection);
+  }
+
+  public registerInsertReplaceCommand(
+    command: string,
+    arena: ArenaMediatorInterface | ArenaSingleInterface,
+  ): ArenaCommandManager {
+    const action = (ta: Textarena, selection: ArenaSelection) => {
+      const { node: textNode } = selection.getCursor();
+      const replace = textNode.hasText
+        && textNode.getTextLength() === 0
+        && !textNode.parent.group
+        && !textNode.parent.protected;
+      const [sel] = ta.insertBeforeSelected(selection, arena, replace);
+      return sel;
+    };
+    return this.registerCommand(command, action);
   }
 }
 
