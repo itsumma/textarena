@@ -254,6 +254,9 @@ blockquote:last-child {
 .aside:last-child {
   margin-bottom: 0;
 }
+.aside > *:last-child {
+  margin-bottom: 0;
+}
 
 .aside-gray {
   border: 1px solid #ccc;
