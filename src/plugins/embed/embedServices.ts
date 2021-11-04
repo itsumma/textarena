@@ -107,7 +107,7 @@ const services: EmbedServiceMap = {
     html: '<iframe frameborder="0" style="border:none;width:540px;height:100px;" style="width:100%;" height="100"></iframe>',
     height: 100,
     width: 540,
-    id: (ids: string[]) => ids.join('/'),
+    id: (ids: string[]) => ids.reverse().join('/'),
   },
   'yandex-music-playlist': {
     regex: /https?:\/\/music\.yandex\.ru\/users\/([^\/\?\&]*)\/playlists\/([0-9]*)/,
