@@ -106,6 +106,7 @@ const embedPlugin = (opts?: Partial<EmbedPluginOptions>): ArenaPlugin => ({
       textarena.registerInsertReplaceCommand(
         command,
         arena,
+        { getEmbedProvider },
       );
       if (shortcut) {
         textarena.registerShortcut(

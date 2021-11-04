@@ -60,6 +60,7 @@ import ArenaMiddleware from './interfaces/ArenaMiddleware';
 import ArenaHistory from './services/ArenaHistory';
 import { MiddlewareWhenCondition } from './services/ArenaMiddlewareManager';
 import videoPlugin from './plugins/video/videoPlugin';
+import NodeAttributes from './interfaces/NodeAttributes';
 
 export const defaultOptions: TextarenaOptions = {
   editable: true,
@@ -628,6 +629,7 @@ class Textarena {
   public registerInsertReplaceCommand(
     command: string,
     arena: ArenaMediatorInterface | ArenaSingleInterface,
+    attrs?: NodeAttributes,
   ): ArenaCommandManager {
     const action = (ta: Textarena, selection: ArenaSelection) => {
       const { node: textNode } = selection.getCursor();
@@ -635,7 +637,14 @@ class Textarena {
         && textNode.getTextLength() === 0
         && !textNode.parent.group
         && !textNode.parent.protected;
-      const [sel] = ta.insertBeforeSelected(selection, arena, replace);
+      const [sel, node] = ta.insertBeforeSelected(selection, arena, replace);
+      if (attrs) {
+        const names = Object.keys(attrs);
+        for (let i = 0; i < names.length; i += 1) {
+          const name = names[i];
+          node?.setAttribute(name, attrs[name]);
+        }
+      }
       return sel;
     };
     return this.registerCommand(command, action);

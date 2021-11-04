@@ -1,3 +1,4 @@
 public
 webpack.config.js
 postcss.config.js
+babel.config.js
