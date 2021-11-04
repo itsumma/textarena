@@ -171,6 +171,11 @@ const services: EmbedServiceMap = {
     html: '<iframe width="100%" height="232" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>',
     id: (ids: string[]) => ids.join('/'),
   },
+  castbox: {
+    regex: /^http[s]?:\/\/castbox\.fm\/channel\/(?:[^\/\?\&]*?)(id\d+)(?:\/?.*)?$/,
+    embedUrl: 'https://castbox.fm/app/castbox/player/<%= remote_id %>?v=8.22.11&autoplay=0',
+    html: '<iframe frameborder="0" width="100%" height="500"></iframe>',
+  },
 };
 
 export default services;
