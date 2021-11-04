@@ -165,6 +165,12 @@ const services: EmbedServiceMap = {
     html: '<iframe allow="autoplay *; encrypted-media *; fullscreen *" frameborder="0" height="450" style="width:100%;overflow:hidden;background:transparent;" sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation"></iframe>',
     id: (ids: string[]) => ids.join('/'),
   },
+  spotify: {
+    regex: /^http[s]?:\/\/open\.spotify\.com\/(show|episode)\/([^\/\?\&]*)(?:\/?.*)?$/,
+    embedUrl: 'https://open.spotify.com/embed/<%= remote_id %>',
+    html: '<iframe width="100%" height="232" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>',
+    id: (ids: string[]) => ids.join('/'),
+  },
 };
 
 export default services;
