@@ -327,7 +327,7 @@
           }),
           embedPlugin({
             // You can fetch full list of providers from https://oembed.com/providers.json
-            oEmbedProviders: JSON.parse('[{"provider_name":"YouTube","provider_url":"https://www.youtube.com/","endpoints":[{"schemes":["https://*.youtube.com/watch*","https://*.youtube.com/v/*","https://youtu.be/*","https://*.youtube.com/playlist?list=*"],"url":"https://www.youtube.com/oembed","discovery":true}]},{"provider_name":"TikTok","provider_url":"http://www.tiktok.com/","endpoints":[{"schemes":["https://www.tiktok.com/*/video/*"],"url":"https://www.tiktok.com/oembed"}]}]'),
+            oEmbedProviders: JSON.parse('[{"provider_name":"YouTube","provider_url":"https://www.youtube.com/","endpoints":[{"schemes":["https://*.youtube.com/watch*","https://*.youtube.com/v/*","https://youtu.be/*","https://*.youtube.com/playlist?list=*"],"url":"https://www.youtube.com/oembed","discovery":true}]},{"provider_name":"TikTok","provider_url":"http://www.tiktok.com/","endpoints":[{"schemes":["https://www.tiktok.com/*/video/*"],"url":"https://www.tiktok.com/oembed"}]},{"provider_name":"SoundCloud","provider_url":"http://soundcloud.com/","endpoints":[{"schemes":["http://soundcloud.com/*","https://soundcloud.com/*","https://soundcloud.app.goog.gl/*"],"url":"https://soundcloud.com/oembed"}]}]'),
             providerOptions: [
               {
                 name: 'YouTube',
