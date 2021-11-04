@@ -159,6 +159,12 @@ const services: EmbedServiceMap = {
     height: 300,
     width: 600,
   },
+  'apple-podcasts': {
+    regex: /^http[s]?:\/\/podcasts\.apple\.com\/us\/podcast\/([^\/\?\&]*)\/(id\d+)(?:\/?.*)?$/,
+    embedUrl: 'https://embed.podcasts.apple.com/us/podcast/<%= remote_id %>',
+    html: '<iframe allow="autoplay *; encrypted-media *; fullscreen *" frameborder="0" height="450" style="width:100%;overflow:hidden;background:transparent;" sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation"></iframe>',
+    id: (ids: string[]) => ids.join('/'),
+  },
 };
 
 export default services;
