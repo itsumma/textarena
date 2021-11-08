@@ -15,7 +15,7 @@ export default class ArenaVideo extends WebComponent {
   @property({
     type: String,
   })
-    mime: string | undefined;
+    type: string | undefined;
 
   @property({
     type: Object,
@@ -114,7 +114,7 @@ export default class ArenaVideo extends WebComponent {
           muted
           playsinline
           src="${this.src}"
-          type="${this.mime ?? 'video/mp4'}"
+          type="${this.type ?? 'video/mp4'}"
           @load="${this.onLoad}"
         >
         </video>

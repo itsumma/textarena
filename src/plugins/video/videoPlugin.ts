@@ -20,7 +20,7 @@ const defaultOptions: VideoPluginOptions = {
   tag: 'ARENA-VIDEO',
   classes: 'video',
   attributes: {},
-  allowedAttributes: ['src', 'mime', 'classes'],
+  allowedAttributes: ['src', 'type', 'classes'],
   command: 'add-video',
   shortcut: 'Ctrl + Alt + V',
   marks: [
@@ -115,7 +115,7 @@ const videoPlugin = (opts?: Partial<VideoPluginOptions>): ArenaPlugin => ({
                 uploadProcessor(file).then(({ src, mime }) => {
                   if (src) {
                     node.setAttribute('src', src);
-                    node.setAttribute('mime', mime);
+                    node.setAttribute('type', mime);
                     const currentSelection = ta.getCurrentSelection();
                     if (currentSelection) {
                       const history = ta.getHistory();

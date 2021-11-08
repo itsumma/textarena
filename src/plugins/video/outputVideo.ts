@@ -10,10 +10,16 @@ const outputVideo = (
   if (!src) {
     return '';
   }
-  const source = `<source src="${src}" type="${mime && mime !== '' ? mime : 'video/mp4'}">`;
   return `
-    <video loop autoplay muted playsinline class="${className}">
-      ${source}
+    <video 
+      loop
+      autoplay
+      muted
+      playsinline
+      class="${className}"
+      src="${src}"
+      type="${mime && mime !== '' ? mime : 'video/mp4'}"
+    >
     </video>
   `;
 };
