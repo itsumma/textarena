@@ -68,6 +68,10 @@ const defaultOptions: EmbedPluginOptions = {
       tag: 'ARENA-EMBED',
       attributes: [],
     },
+    {
+      tag: 'DIV',
+      attributes: ['class="arena-embed"'],
+    },
   ],
   output: outputEmbed,
   services,

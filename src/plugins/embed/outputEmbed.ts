@@ -16,7 +16,7 @@ const embedRender = ({
   amp,
 }: RenderParams): string => {
   const service = embedServices[embedType];
-  let res = `<div embed class="embed embed-${embedType}" type="${embedType}">`;
+  let res = `<div embed="${embed}" class="arena-embed embed-${embedType}" type="${embedType}">`;
   if (service) {
     let { html } = service;
     if (amp) {
@@ -32,11 +32,15 @@ const embedRender = ({
 
 const outputEmbed = (type: string, node: AnyArenaNode): string => {
   const html = node.getAttribute('html') as string | undefined;
+  const url = node.getAttribute('url') as string | undefined;
+  const embed = (node.getAttribute('embed') || '') as string;
   if (html) {
-    return html ? JSON.parse(html) : '';
+    return html ? `
+    <div class="arena-embed" url="${url}" embed="${embed}">
+      ${JSON.parse(html)}
+    </div>` : '';
   }
   const embedType = (node.getAttribute('type') || '') as string;
-  const embed = (node.getAttribute('embed') || '') as string;
   if (embedType && embed) {
     return embedRender({
       embedType, embed, amp: type === RenderTypes.AMP,
