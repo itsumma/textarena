@@ -70,8 +70,8 @@ const linkPlugin = (opts?: Partial<LinkPluginOptions>): ArenaPlugin => ({
         customElements.define(component, componentConstructor);
         customElements.define('arena-link-modal', LinkModal);
       }
-      const linkbar = new ElementHelper(component);
-      linkModal = new ElementHelper('arena-link-modal');
+      const linkbar = new ElementHelper(component, 'textarena-linkbar');
+      linkModal = new ElementHelper('arena-link-modal', 'textarena-link-modal');
       linkbar.setProperty('textarena', textarena);
       linkbar.setProperty('linkModal', linkModal);
       linkModal.setProperty('textarena', textarena);
