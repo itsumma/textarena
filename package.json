@@ -64,7 +64,7 @@
     "lint:eslint": "eslint ./src",
     "lint:types": "tsc --noEmit",
     "lint:css": "stylelint \"scss/**/*.{css,scss}\" --cache --cache-location .cache/.stylelintcache",
-    "clean": "rimraf lib public/style.js public/textarena.{css,js}",
+    "clean": "rimraf lib public/style.js public/textarena.{css,js} cypress/videos/*.spec.ts.mp4",
     "build": "yarn clean && yarn build:types && yarn build:bundle",
     "build:types": "tsc",
     "build:bundle": "yarn webpack",
