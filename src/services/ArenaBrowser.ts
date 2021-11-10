@@ -267,11 +267,37 @@ export default class ArenaBrowser {
     return !!modifiersCodes[e.keyCode];
   }
 
+  /**
+   * In FF pressing ctrl + A selects root container for textarena
+   * the div.textarena-editor contenteditable. And content deletion
+   * does not work. So here we use a hack to change the selection
+   * to all children.
+   */
+  protected changeSelectionToChildren(s: Selection) {
+    if (
+      s.anchorNode
+      && s.anchorNode instanceof HTMLElement
+      && s.anchorNode.getAttribute('contenteditable')
+      && s.anchorNode.getAttribute('class') === 'textarena-editor'
+      && s.anchorNode.children.length > 0
+    ) {
+      const { children } = s.anchorNode;
+      const range = document.createRange();
+      const first = children[0];
+      const last = children[children.length - 1];
+      range.setStart(first, 0);
+      range.setEnd(last, last.childNodes.length);
+      s.removeAllRanges();
+      s.addRange(range);
+    }
+  }
+
   protected checkSelection(): void {
     const s = window.getSelection();
     if (!s || !s.rangeCount) {
       return;
     }
+    this.changeSelectionToChildren(s);
     if (!s.anchorNode || !isDescendant(this.editor, s.anchorNode)) {
       return;
     }
