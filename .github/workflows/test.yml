@@ -3,8 +3,6 @@ name: Test textarena
 on:
   pull_request:
     branches: [master]
-  push:
-    branches: [tests]
 
 jobs:
   test:
@@ -14,6 +12,7 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
         node: [16]
+        browser: [chrome, firefox]
     runs-on: ${{ matrix.os }}
     steps:
       -
@@ -54,3 +53,4 @@ jobs:
         uses: cypress-io/github-action@v2
         with:
           start: yarn serve
+          browser: ${{ matrix.browser }}

@@ -35,8 +35,7 @@ context('Actions', () => {
 
     cy.get('@root')
       .focus()
-      .type('{movetostart}')
-      .type('{rightArrow}')
+      .type('{uparrow}{uparrow}{home}{rightarrow}') // In FF movetostart not working
       .type('First line.')
       .type('{enter}');
 
@@ -52,8 +51,7 @@ context('Actions', () => {
 
     cy.get('@root')
       .focus()
-      .type('{movetostart}')
-      .type('{rightArrow}')
+      .type('{uparrow}{uparrow}{home}{rightarrow}')
       .type('{end}')
       .type('{enter}')
       .type('{enter}');
