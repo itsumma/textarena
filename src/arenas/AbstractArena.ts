@@ -103,8 +103,7 @@ export default abstract class AbstractArena {
     return `<${tag}${attrs.length > 0 ? ` ${attrs}` : ''}>`;
   }
 
-  public getCloseTag(
-  ): string {
+  public getCloseTag(): string {
     if (!this.tag) {
       return '';
     }

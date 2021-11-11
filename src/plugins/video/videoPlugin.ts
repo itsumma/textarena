@@ -95,46 +95,48 @@ const videoPlugin = (opts?: Partial<VideoPluginOptions>): ArenaPlugin => ({
         });
       }
     }
-    textarena.registerMiddleware((
-      ta: Textarena,
-      selection: ArenaSelection,
-      data: string | DataTransfer,
-    ): [boolean, ArenaSelection] => {
-      if (typeof data === 'object') {
-        const types: string[] = [...data.types || []];
-        if (types.includes('Files') && data.items.length) {
-          const file = data.files[0];
-          if (file && /video\/(?:mp4)/.test(file.type)) {
-            const video = textarena.getArena('video') as ArenaSingleInterface;
-            const uploadProcessor = video?.getAttribute('upload') as UploadProcessor;
-            if (uploadProcessor) {
-              const { node: textNode } = selection.getCursor();
-              const replace = textNode.hasText && textNode.getText().getText().length === 0;
-              const [sel, node] = ta.insertBeforeSelected(selection, arena, replace);
-              if (node) {
-                uploadProcessor(file).then(({ src, mime }) => {
-                  if (src) {
-                    node.setAttribute('src', src);
-                    node.setAttribute('type', mime);
-                    const currentSelection = ta.getCurrentSelection();
-                    if (currentSelection) {
-                      const history = ta.getHistory();
-                      history.save(currentSelection);
+    textarena.registerMiddleware(
+      (
+        ta: Textarena,
+        selection: ArenaSelection,
+        data: string | DataTransfer,
+      ): [boolean, ArenaSelection] => {
+        if (typeof data === 'object') {
+          const types: string[] = [...data.types || []];
+          if (types.includes('Files') && data.items.length) {
+            const file = data.files[0];
+            if (file && /video\/(?:mp4)/.test(file.type)) {
+              const video = textarena.getArena('video') as ArenaSingleInterface;
+              const uploadProcessor = video?.getAttribute('upload') as UploadProcessor;
+              if (uploadProcessor) {
+                const { node: textNode } = selection.getCursor();
+                const replace = textNode.hasText && textNode.getText().getText().length === 0;
+                const [sel, node] = ta.insertBeforeSelected(selection, arena, replace);
+                if (node) {
+                  uploadProcessor(file).then(({ src, mime }) => {
+                    if (src) {
+                      node.setAttribute('src', src);
+                      node.setAttribute('type', mime);
+                      const currentSelection = ta.getCurrentSelection();
+                      if (currentSelection) {
+                        const history = ta.getHistory();
+                        history.save(currentSelection);
+                      }
+                      textarena.fire('modelChanged', {
+                        selection: sel,
+                      });
                     }
-                    textarena.fire('modelChanged', {
-                      selection: sel,
-                    });
-                  }
-                });
+                  });
+                }
+                return [true, sel];
               }
-              return [true, sel];
             }
           }
         }
-      }
-      return [false, selection];
-    },
-    'before');
+        return [false, selection];
+      },
+      'before',
+    );
   },
 });
 

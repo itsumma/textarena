@@ -20,7 +20,7 @@ export default class NodeFactory {
   static createChildNode(
     arena: ChildArena,
     registry: NodeRegistry,
-    isNew = false,
+    isNew?: boolean,
     content?: string,
   ): ChildArenaNode {
     if (arena.hasChildren) {

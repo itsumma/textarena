@@ -7,7 +7,8 @@ import { ArenaNodeInline } from '../../interfaces/ArenaNode';
 import TextNode from '../../models/TextNode';
 
 export default function linkCommand(
-  arena: ArenaInlineInterface, linkModal: ElementHelper | undefined,
+  arena: ArenaInlineInterface,
+  linkModal: ElementHelper | undefined,
 ): CommandAction {
   return (ta: Textarena, selection: ArenaSelection) => {
     if (!selection.isSameNode()) {
