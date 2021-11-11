@@ -125,7 +125,6 @@ test(`
         |__node0.3.0 'Fourth text node0.3.0'
         |__node0.3.1 'Fifth text node0.3.1'
   `, () => {
-
   const result: RunResult = [];
   utils.modelTree.runThroughSelection(
     new ArenaSelection(
@@ -150,7 +149,6 @@ test(`
          |__node0.3.0 'Fourth text node0.3.0'
          |__node0.3.1 'Fifth text node0.3.1'
   `, () => {
-
   const result: RunResult = [];
   utils.modelTree.runThroughSelection(
     new ArenaSelection(
@@ -176,7 +174,6 @@ test(`
          |__node0.3.0 'Fourth text node0.3.0'
          |__node0.3.1 'Fifth text node0.3.1'
   `, () => {
-
   const result: RunResult = [];
   utils.modelTree.runThroughSelection(
     new ArenaSelection(
@@ -200,7 +197,6 @@ test(`
          |__node0.3.0 'F→ourth text node0.3.0'
          |__node0.3.1 'Fi←fth text node0.3.1'
   `, () => {
-
   const result: RunResult = [];
   utils.modelTree.runThroughSelection(
     new ArenaSelection(
@@ -226,7 +222,6 @@ test(`
        1 |  ←
          |__node0.3.1 'Fifth text node0.3.1'
   `, () => {
-
   const result: RunResult = [];
   utils.modelTree.runThroughSelection(
     new ArenaSelection(
@@ -255,7 +250,6 @@ test(`
               |__node0.3.2.1 empty block
                  0 | ←
   `, () => {
-
   const result: RunResult = [];
   utils.modelTree.runThroughSelection(
     new ArenaSelection(
@@ -284,7 +278,6 @@ test(`
     |            0 | →
   4 |  ←
   `, () => {
-
   const result: RunResult = [];
   utils.modelTree.runThroughSelection(
     new ArenaSelection(
@@ -312,7 +305,6 @@ test(`
     |         |__node0.3.2.1 empty block
   4 |  ←
   `, () => {
-
   const result: RunResult = [];
   utils.modelTree.runThroughSelection(
     new ArenaSelection(
@@ -340,7 +332,6 @@ test(`
     |         |__node0.3.2.0 'Sixth text node0.3.2.0←'
     |         |__node0.3.2.1 empty block
   `, () => {
-
   const result: RunResult = [];
   utils.modelTree.runThroughSelection(
     new ArenaSelection(
