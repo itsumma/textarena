@@ -30,6 +30,10 @@
  * From https://github.com/netlify/netlify-cms/blob/a4b7481a99f58b9abe85ab5712d27593cde20096/cypress/support/commands.js
  */
 
+import { isMac } from '../../src/utils/navigator';
+
+const ctrl = isMac() ? 'cmd' : 'ctrl';
+
 function getTextNode(el: HTMLElement, match?: string): Text | null {
   const walk = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null);
   if (!match) {
@@ -55,7 +59,7 @@ function setBaseAndExtent(...args: [Node, number, Node, number]) {
 Cypress.Commands.add(
   'selection',
   { prevSubject: true },
-  ((subject: any, fn: (e: JQuery<HTMLElement>) => void) => {
+  ((subject: any, fn: (e: JQuery) => void) => {
     cy.wrap(subject)
       .trigger('mousedown')
       .then(fn)
@@ -67,7 +71,7 @@ Cypress.Commands.add(
 );
 
 Cypress.Commands.add('setSelection', { prevSubject: true }, ((subject: any, query: string, endQuery?: string) =>
-  cy.wrap(subject).selection(($el: JQuery<HTMLElement>) => {
+  cy.wrap(subject).selection(($el: JQuery) => {
     const anchorNode = getTextNode($el[0], query);
     if (!anchorNode) return;
     const focusNode = endQuery ? getTextNode($el[0], endQuery) : anchorNode;
@@ -78,3 +82,23 @@ Cypress.Commands.add('setSelection', { prevSubject: true }, ((subject: any, quer
       : anchorOffset + query.length;
     setBaseAndExtent(anchorNode, anchorOffset, focusNode, focusOffset);
   })) as any);
+
+Cypress.Commands.add('addLink', { prevSubject: true }, ((subject: any, text: string, url: string) =>
+  cy
+    .wrap(subject)
+    .setSelection(text)
+    .type(`{${ctrl}+k}`)
+    .get('.textarena-link-modal')
+    .shadow()
+    .find('.wrapper')
+    .then(($el) => {
+      assert.isTrue(Cypress.dom.isVisible($el));
+    })
+    .get('input#url', { includeShadowDom: true })
+    .type(`${url}{enter}`, { force: true, waitForAnimations: false })
+    .get('.textarena-link-modal')
+    .shadow()
+    .find('.wrapper')
+    .then(($el) => {
+      assert.isFalse(Cypress.dom.isVisible($el));
+    })) as any);
