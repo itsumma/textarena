@@ -14,7 +14,9 @@ context('Actions', () => {
     cy.fixture('example.json').as('example');
     cy.get('@root')
       .focus()
-      .type('{selectall}')
+      .focused()
+      .type('{home}{selectall}')
+      .wait(100)
       .type('{del}');
   });
 
@@ -32,7 +34,7 @@ context('Actions', () => {
       .focus()
       .type('Textarena')
       .type('{selectall}')
-      .wait(100)
+      .wait(500)
       .get('.textarena-toolbar__list > :nth-child(9)')
       .click()
       .wait(500)
@@ -75,7 +77,7 @@ context('Actions', () => {
       .focus()
       .focused()
       .type('{home}')
-      .wait(100)
+      .wait(500)
       .get('.textarena-linkbar')
       .shadow()
       .find('.link  > :nth-child(2)')
@@ -100,7 +102,7 @@ context('Actions', () => {
       .wait(100)
       .get('.textarena-linkbar')
       .shadow()
-      .find('.link  > :nth-child(4)')
+      .find('.link  > :nth-last-child(2)')
       .click()
       .get('@root')
       .contains('Textarena is awesome!');
@@ -116,11 +118,12 @@ context('Actions', () => {
       .get('@root')
       .focus()
       .focused()
+      .setSelection('Textarena')
       .type('{home}')
-      .wait(100)
+      .wait(500)
       .get('.textarena-linkbar')
       .shadow()
-      .find('.link  > :nth-child(5)')
+      .find('.link  > :last-child')
       .click()
       .get('#html')
       .contains(`<a href="${url}">Textarena</a>`);
@@ -192,7 +195,7 @@ context('Actions', () => {
       .get('.textarena-link-modal')
       .shadow()
       .find('.wrapper')
-      .click()
+      .click(10, 10)
       .wait(500)
       .get('.textarena-link-modal')
       .shadow()
