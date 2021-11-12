@@ -61,9 +61,9 @@ Cypress.Commands.add(
   { prevSubject: true },
   ((subject: any, fn: (e: JQuery) => void) => {
     cy.wrap(subject)
-      .trigger('mousedown')
+      .trigger('mousedown', { force: true })
       .then(fn)
-      .trigger('mouseup');
+      .trigger('mouseup', { force: true });
 
     cy.document().trigger('selectionchange');
     return cy.wrap(subject);
