@@ -88,17 +88,7 @@ Cypress.Commands.add('addLink', { prevSubject: true }, ((subject: any, text: str
     .wrap(subject)
     .setSelection(text)
     .type(`{${ctrl}+k}`)
-    .get('.textarena-link-modal')
-    .shadow()
-    .find('.wrapper')
-    .then(($el) => {
-      assert.isTrue(Cypress.dom.isVisible($el));
-    })
+    .wait(500)
     .get('input#url', { includeShadowDom: true })
     .type(`${url}{enter}`, { force: true, waitForAnimations: false })
-    .get('.textarena-link-modal')
-    .shadow()
-    .find('.wrapper')
-    .then(($el) => {
-      assert.isFalse(Cypress.dom.isVisible($el));
-    })) as any);
+  ) as any);
