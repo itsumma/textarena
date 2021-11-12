@@ -78,25 +78,6 @@ context('Actions', () => {
       .contains(`<a href="${itsummaUrl}" target="_blank">Textarena</a>`);
   });
 
-  it('Copy link with link bar', () => {
-    cy.get('@root')
-      .focus()
-      .type('Textarena is awesome!')
-      .addLink('Textarena', url)
-      .get('#html')
-      .contains(`<a href="${url}" target="_blank">Textarena</a>`)
-      .get('@root')
-      .type('{home}')
-      .get('.textarena-linkbar')
-      .shadow()
-      .find('.link  > :nth-child(3)')
-      .click()
-      .window()
-      .its('navigator.clipboard')
-      .invoke('readText')
-      .should('equal', url);
-  });
-
   it('Disable link', () => {
     cy.get('@root')
       .focus()
