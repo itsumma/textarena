@@ -9,8 +9,6 @@ context('Actions', () => {
     cy.visit('http://localhost:8080/');
     cy.get('.textarena-editor').focus();
     cy.get('.textarena-editor').as('root');
-
-    cy.fixture('example.json').as('example');
   });
 
   it('Formatings', () => {
@@ -47,6 +45,12 @@ context('Actions', () => {
       .get('#html')
       .contains(
         '<p class="paragraph">Normal <strong>bold</strong> <em>italic</em> <u>underlined</u> <s>strikethrough</s> <sub>sub</sub> <sup>sup</sup> <mark>marked</mark> <code>code</code> normal2.</p>',
-      );
+      )
+      .get('@root')
+      .focus()
+      .focused()
+      .type(`{selectall}{${ctrl}+/}`)
+      .get('#html')
+      .contains('Normal bold italic underlined strikethrough sub sup marked code normal2.');
   });
 });

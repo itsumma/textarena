@@ -36,6 +36,7 @@
     "autoprefixer": "^10.3.7",
     "babel-loader": "^8.1.0",
     "cypress": "^9.0.0",
+    "cypress-plugin-tab": "^1.0.5",
     "eslint": "^8.0.1",
     "eslint-config-airbnb": "^19.0.0",
     "eslint-import-resolver-typescript": "^2.3.0",

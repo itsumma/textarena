@@ -10,8 +10,6 @@ context('Actions', () => {
     cy.get('.textarena-editor').focus();
     cy.get('.textarena-editor').as('root');
 
-    cy.fixture('example.json').as('example');
-
     cy.get('@root')
       .focus()
       .focused()
