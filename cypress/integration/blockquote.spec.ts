@@ -9,8 +9,6 @@ context('Actions', () => {
     cy.visit('http://localhost:8080/');
     cy.get('.textarena-editor').focus();
     cy.get('.textarena-editor').as('root');
-
-    cy.fixture('example.json').as('example');
   });
 
   it('Blockqoute', () => {
