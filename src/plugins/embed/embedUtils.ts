@@ -27,13 +27,13 @@ export const providerGetter = (
       const endpoint = provider.endpoints[ie];
       for (let j = 0; j < endpoint.schemes.length; j += 1) {
         const scheme = endpoint.schemes[j];
-        const regex = new RegExp(
+        const regex = new RegExp(`^${
           scheme
             .replace(/\./g, '\\.')
             .replace(/\?/g, '\\?')
             .replace(/\//g, '\\/')
-            .replace(/\*/g, '.*'),
-        );
+            .replace(/\*/g, '.*')
+        }$`);
         if (regex.test(url)) {
           return {
             endpoint,
