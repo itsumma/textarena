@@ -450,8 +450,8 @@ Basically, plugins that provide Textarena elements have a configuration object w
 * [blockquotePlugin](./plugins/blockquotePlugin.md)
 * [calloutPlugin](./plugins/calloutPlugin.md)
 * imagePlugin
-* [figurePlugin](./plugins/figurePlugin.md)
-* embedPlugin
+<!-- * [figurePlugin](./plugins/figurePlugin.md) -->
+* [embedPlugin](./plugins/embedPlugin.md)
 * [linkPlugin](./plugins/linkPlugin.md)
 * [asidePlugin](./plugins/asidePlugin.md)
 * [codePlugin](./plugins/codePlugin.md)
@@ -459,4 +459,5 @@ Basically, plugins that provide Textarena elements have a configuration object w
 * [typoSugarPlugin](./plugins/typoSugarPlugin.md)
 * [twoColumnsPlugin](./plugins/twoColumnsPlugin.md)
 * [roadmapPlugin](./plugins/roadmapPlugin.md)
-* tablePlugin
+* [tablePlugin](./plugins/tablePlugin.md)
+* contentsPlugin

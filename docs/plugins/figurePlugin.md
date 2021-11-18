@@ -6,11 +6,15 @@ A figure plugin configuration object is passed to the plugin method parameter. T
 <table>
 <tr>
     <th>Property</th>
+    <th>Required</th>
     <th>Description</th>
 </tr>
 <tr>
     <td> 
         srcset 
+    </td>
+    <td> 
+        no 
     </td>
    <td>
 
@@ -21,6 +25,9 @@ A figure plugin configuration object is passed to the plugin method parameter. T
     <td> 
         classes
     </td>
+    <td> 
+        no 
+    </td>
    <td>
     
    
@@ -30,9 +37,11 @@ A figure plugin configuration object is passed to the plugin method parameter. T
     <td> 
         placeholder
     </td>
-   <td>
-    
-   
-   </td>
+    <td> 
+        yes 
+    </td>
+    <td>
+        A string which value will be set to the image caption by default.
+    </td>
 </tr>
 </table>
