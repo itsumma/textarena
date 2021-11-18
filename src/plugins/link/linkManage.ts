@@ -9,8 +9,6 @@ function hideLinkbar(linkbar: ElementHelper) {
 
 const leftPadding = 15;
 
-const rightPadding = 30;
-
 function showLinkbar(
   inlinePair: [ArenaNodeText, ArenaNodeInline],
   linkbar: ElementHelper,
@@ -66,11 +64,21 @@ function showLinkbar(
   const [parent, node] = inlinePair;
   linkbar.setProperty('node', node);
   linkbar.setProperty('parent', parent);
-  linkbar.css({
-    left: `${leftPadding - containerRect.left}px`,
-    right: `${containerRect.right - window.innerWidth + rightPadding}px`,
-  });
   linkbar.setAttribute('show', '');
+  setTimeout(() => {
+    const linkBarRect = linkbar.getElem().shadowRoot?.children[0].getBoundingClientRect();
+    if (!linkBarRect) return;
+    let left = rect.left - containerRect.left - linkBarRect.width / 2;
+    const right = containerRect.right - window.innerWidth;
+    if (containerRect.left - leftPadding + left < 0) left = -containerRect.left + leftPadding;
+    if (rect.left + linkBarRect.width / 2 + leftPadding > window.innerWidth) {
+      left = window.innerWidth - leftPadding - linkBarRect.width - containerRect.left;
+    }
+    linkbar.css({
+      left: `${left}px`,
+      right: `${right}px`,
+    });
+  });
 }
 
 export default function linkManage(

@@ -3,13 +3,16 @@
   z-index: 1;
   pointer-events: none;
 
+  &:hover .textarena-shortcut-hint-short {
+    display: none;
+  }
+
   &__pointer {
     display: none;
     position: absolute;
     left: 0;
     width: 0.4em;
     height: 0.4em;
-    -webkit-transform: rotate(-45deg);
     transform: rotate(-45deg);
     z-index: -1;
     background-color: #333;
@@ -40,14 +43,16 @@
     pointer-events: all;
     display: flex;
     flex-wrap: wrap;
+
     // transform: translateX(-50%);
     color: #ccc;
-    box-shadow: 0 8px 23px -6px rgba(21, 40, 54, 0.31), 22px -14px 34px -18px rgba(33, 48, 73, 0.26);
+    box-shadow: 0 8px 23px -6px rgb(21 40 54 / 31%), 22px -14px 34px -18px rgb(33 48 73 / 26%);
     border-radius: 0.3em;
     z-index: 2;
+
     // transition: 0.3s;
     user-select: none;
-    background-color: rgb(231, 231, 231);
+    background-color: rgb(231 231 231);
     padding: 0.2em;
 
     @supports ((backdrop-filter: blur(20px))) {
@@ -78,6 +83,10 @@
     &:hover {
       background: white;
       color: black;
+
+      .textarena-shortcut-hint-full {
+        display: block;
+      }
     }
 
     &_active {
@@ -97,6 +106,7 @@
     font-family: monospace;
     line-height: 0.8em;
     font-size: 0.8em;
+
     // display: flex;
     justify-content: center;
     width: 100%;
@@ -105,11 +115,14 @@
       width: 60%;
       height: 100%;
     }
+
+    &.offset {
+      position: relative;
+      right: 0.4em;
+    }
   }
 
-  &__hint { @include key; }
-
-  &__item_show-hint &__hint {
+  &__item_show-hint .textarena-shortcut-hint-short {
     display: block;
   }
 }

@@ -8,7 +8,9 @@ import ArenaEmbed from './ArenaEmbed';
 import { EmbedPluginOptions } from './types';
 import ArenaEmbedSimple from './ArenaEmbedSimple';
 import ArenaEmbedForm from './ArenaEmbedForm';
-import ArenaEmbedYoutube from './ArenaEmbedYoutube';
+import { createElemEmbed, getEmbedUrl, providerGetter } from './embedUtils';
+import services from './embedServices';
+import ArenaEmbedIFrame from './ArenaEmbedIFrame';
 
 const defaultOptions: EmbedPluginOptions = {
   name: 'embed',
@@ -40,9 +42,8 @@ const defaultOptions: EmbedPluginOptions = {
   attributes: {
     contenteditable: false,
   },
-  allowedAttributes: ['href', 'type', 'postid', 'border'],
-  shortcut: 'Alt + KeyE',
-  hint: 'e',
+  allowedAttributes: ['embed', 'type', 'url', 'html'],
+  shortcut: 'Ctrl + Alt + E',
   command: 'add-embed',
   components: [
     {
@@ -58,8 +59,8 @@ const defaultOptions: EmbedPluginOptions = {
       componentConstructor: ArenaEmbedForm,
     },
     {
-      component: 'arena-embed-youtube',
-      componentConstructor: ArenaEmbedYoutube,
+      component: 'arena-embed-iframe',
+      componentConstructor: ArenaEmbedIFrame,
     },
   ],
   marks: [
@@ -67,15 +68,20 @@ const defaultOptions: EmbedPluginOptions = {
       tag: 'ARENA-EMBED',
       attributes: [],
     },
+    {
+      tag: 'DIV',
+      attributes: ['class="arena-embed"'],
+    },
   ],
   output: outputEmbed,
+  services,
 };
 
 const embedPlugin = (opts?: Partial<EmbedPluginOptions>): ArenaPlugin => ({
-  register: (ta: Textarena) => {
+  register: (textarena: Textarena) => {
     const {
       name, icon, title, tag, attributes, allowedAttributes,
-      shortcut, hint, command, components, marks, output,
+      shortcut, command, components, marks, output, oEmbedProviders: providers, providerOptions,
     } = { ...defaultOptions, ...(opts || {}) };
     if (components) {
       components.forEach(({ component, componentConstructor }) => {
@@ -84,7 +90,7 @@ const embedPlugin = (opts?: Partial<EmbedPluginOptions>): ArenaPlugin => ({
         }
       });
     }
-    const arena = ta.registerArena(
+    const arena = textarena.registerArena(
       {
         name,
         tag,
@@ -94,38 +100,38 @@ const embedPlugin = (opts?: Partial<EmbedPluginOptions>): ArenaPlugin => ({
         output,
       },
       marks,
-      [ta.getRootArenaName()],
+      [textarena.getRootArenaName()],
     ) as ArenaSingleInterface;
-    ta.addSimpleArenas(arena);
+    textarena.addSimpleArenas(arena);
+    const getEmbedProvider = providers
+      ? providerGetter(providers, providerOptions)
+      : () => undefined;
     if (command) {
-      ta.registerCommand(
+      textarena.registerInsertReplaceCommand(
         command,
-        (someTa: Textarena, selection: ArenaSelection) => {
-          const sel = someTa.insertBeforeSelected(selection, arena);
-          return sel;
-        },
+        arena,
+        { getEmbedProvider },
       );
       if (shortcut) {
-        ta.registerShortcut(
+        textarena.registerShortcut(
           shortcut,
           command,
         );
       }
       if (title) {
-        ta.registerCreator({
+        textarena.registerCreator({
           name,
           icon,
           title,
           shortcut,
-          hint,
           command,
           canShow: (node: AnyArenaNode) =>
-            ta.isAllowedNode(node, arena),
+            textarena.isAllowedNode(node, arena),
         });
       }
     }
 
-    const simpleArena = ta.registerArena(
+    const simpleArena = textarena.registerArena(
       {
         name: 'simple-embed',
         tag: 'ARENA-EMBED-SIMPLE',
@@ -139,33 +145,45 @@ const embedPlugin = (opts?: Partial<EmbedPluginOptions>): ArenaPlugin => ({
           attributes: [],
         },
       ],
-      [ta.getRootArenaName()],
+      [textarena.getRootArenaName()],
     ) as ArenaSingleInterface;
-    ta.addSimpleArenas(simpleArena);
-    ta.subscribe('rendered', () => {
-      setTimeout(() => {
-        if (typeof window !== 'undefined' && window.twttr) {
-          const items = document.querySelectorAll('.twitter-tweet');
-          items.forEach((el) => {
-            const id = el.getAttribute('postid');
-            const requested = el.getAttribute('requested');
-            if (id && !requested) {
-              el.setAttribute('requested', 'true');
-              window.twttr?.widgets.createTweet(id, el as HTMLElement);
-            }
-          });
+    textarena.addSimpleArenas(simpleArena);
+    textarena.registerMiddleware(
+      (
+        ta: Textarena,
+        sel: ArenaSelection,
+        data: string | DataTransfer,
+      ) => {
+        const text = typeof data === 'string' ? data : data.getData('text/plain');
+        if (text && sel.isSameNode() && sel.isCollapsed() && sel.getCursor().node.hasText) {
+          // Check for match in OEmbed providers first
+          const result = getEmbedProvider(text);
+
+          // if no match were found at provided OEmbed services create embed
+          // element with iframe from ./embedServices.ts
+          const embedElement = result ? undefined : createElemEmbed(text);
+          let node: AnyArenaNode | undefined;
+          if (result || embedElement) {
+            const { node: textNode } = sel.getCursor();
+            const replace = textNode.hasText && textNode.getText().getText().length === 0;
+            const [, insertedNode] = ta.insertBeforeSelected(sel, arena, replace);
+            node = insertedNode;
+          }
+          if (result) {
+            node?.setAttribute('embed', result.provider_name);
+            node?.setAttribute('url', getEmbedUrl(result.endpoint, text, result.opts));
+            return [true, sel];
+          }
+          if (embedElement) {
+            node?.setAttribute('embed', embedElement.embed);
+            node?.setAttribute('type', embedElement.type);
+            return [true, sel];
+          }
         }
-        if (typeof window !== 'undefined' && window.FB) {
-          window.FB.init({
-            xfbml: true,
-            version: 'v10.0',
-          });
-        }
-        if (typeof window !== 'undefined' && window.instgrm) {
-          window.instgrm.Embeds.process();
-        }
-      }, 100);
-    });
+        return [false, sel];
+      },
+      'before',
+    );
   },
 });
 

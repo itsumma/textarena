@@ -154,23 +154,6 @@ export default class ArenaModel {
   public getFormatingMarks(tagName: string): FormatingMark[] | undefined {
     return this.formatingMarks[tagName];
   }
-
-  /** */
-  public applyMiddlewares(sel: ArenaSelection, text: string): [boolean, ArenaSelection] {
-    let success = false;
-    let result = false;
-    let newSel = sel;
-    const node = sel.startNode;
-
-    if (sel.isSameNode() && node.arena.hasText) {
-      const { middlewares } = node.arena;
-      for (let i = 0; i < middlewares.length; i += 1) {
-        [success, newSel] = middlewares[i](this.asm.textarena, newSel, text);
-        result = success || result;
-      }
-    }
-    return [result, newSel];
-  }
   // #endregion
 
   // #region Exporting
@@ -353,6 +336,7 @@ export default class ArenaModel {
     before = false,
     onlyChild = false,
     isNew = false,
+    replace = false,
   ): ChildArenaNode | undefined {
     if (parent.hasText) {
       if (onlyChild) {
@@ -366,6 +350,7 @@ export default class ArenaModel {
         parentOffset === 0,
         false,
         isNew,
+        replace,
       );
     }
     if (parent.single) {
@@ -373,6 +358,9 @@ export default class ArenaModel {
     }
     if (parent.isAllowedNode(arena)) {
       const newNode = this.createChildNode(arena, isNew);
+      if (replace) {
+        parent.removeChild(offset);
+      }
       return parent.insertNode(newNode, offset);
     }
     if (arena.defaultParentArena && parent.isAllowedNode(arena.defaultParentArena)) {
@@ -395,6 +383,7 @@ export default class ArenaModel {
               true,
               true,
               isNew,
+              replace,
             );
             if (node) {
               return node;
@@ -412,6 +401,7 @@ export default class ArenaModel {
               false,
               true,
               isNew,
+              replace,
             );
             if (node) {
               return node;
@@ -434,6 +424,7 @@ export default class ArenaModel {
         before,
         false,
         isNew,
+        replace,
       );
     }
     return undefined;
@@ -473,26 +464,19 @@ export default class ArenaModel {
     return cursor;
   }
 
-  public insertHtml(selection: ArenaSelection, html: string): ArenaSelection {
-    const [result, newSelection] = this.asm.model.applyMiddlewares(
-      selection,
-      html,
-    );
-    if (result) {
-      return newSelection;
-    }
-    let newSelection2 = newSelection;
+  public insertHtmlToModel(selection: ArenaSelection, html: string): ArenaSelection {
+    let newSelection = selection;
     if (!selection.isCollapsed()) {
-      newSelection2 = this.removeSelection(selection, 'backward');
+      newSelection = this.removeSelection(selection, 'backward');
     }
     const [node, offset] = this.asm.parser.insertHtmlToModel(
       html,
-      newSelection2.startNode,
-      newSelection2.startOffset,
+      newSelection.startNode,
+      newSelection.startOffset,
     );
     const cursor = this.getTextCursor(node, offset);
-    newSelection2.setCursor(cursor);
-    return newSelection2;
+    newSelection.setCursor(cursor);
+    return newSelection;
   }
 
   public insertTextToModel(
@@ -671,6 +655,13 @@ export default class ArenaModel {
           }
         } else if (node.hasText) {
           node.removeText(start || 0, end);
+        } else if (node.hasChildren) {
+          const startOffset = start || 0;
+          const endOffset = end || node.children.length;
+          for (let i = startOffset; i < endOffset; i += 1) {
+            const n = node.children[i];
+            toRemove.push(n);
+          }
         }
       },
     );
@@ -861,21 +852,34 @@ export default class ArenaModel {
   }
 
   /** */
-  public insertBeforeSelected(selection: ArenaSelection, arena: ChildArena): ArenaSelection {
+  public insertBeforeSelected(
+    selection: ArenaSelection,
+    arena: ChildArena,
+    replace = false,
+  ): [ArenaSelection, AnyArenaNode | undefined] {
     if (!selection.isSameNode()) {
-      return selection;
+      return [selection, undefined];
     }
     const { node, offset } = selection.getCursor();
+    let insertedNode: AnyArenaNode | undefined;
     if (node.hasText) {
       if (node.parent.isAllowedNode(arena)) {
-        this.createAndInsertNode(arena, node.parent, node.getIndex(), false, false, true);
+        insertedNode = this.createAndInsertNode(
+          arena,
+          node.parent,
+          node.getIndex(),
+          false,
+          false,
+          true,
+          replace,
+        );
       }
     } else if (node.hasChildren) {
       if (node.isAllowedNode(arena)) {
-        this.createAndInsertNode(arena, node, offset, false, false, true);
+        insertedNode = this.createAndInsertNode(arena, node, offset, false, false, true, replace);
       }
     }
-    return selection;
+    return [selection, insertedNode];
   }
 
   /**
@@ -1293,7 +1297,7 @@ export default class ArenaModel {
     const toUnwrap: ArenaNodeMediator[] = [];
     const commonAncestorCursor = utils.modelTree.runThroughSelection(
       selection,
-      (node: AnyArenaNode) => {
+      (node: AnyArenaNode, start, end) => {
         if (node.hasParent
           && node.parent.isAllowedNode(arena)
           && arena.allowedArenas.includes(node.arena)
@@ -1309,7 +1313,10 @@ export default class ArenaModel {
           && node.parent.hasParent) {
           toUnwrap.push(node.parent);
         } else if (node.hasChildren && node.isAllowedNode(arena)) {
-          node.children.forEach((n) => {
+          const startOffset = start || 0;
+          const endOffset = end || node.children.length;
+          for (let i = startOffset; i < endOffset; i += 1) {
+            const n = node.children[i];
             if (n.arena === arena
               && n.hasChildren
             ) {
@@ -1317,7 +1324,7 @@ export default class ArenaModel {
             } else if (arena.allowedArenas.includes(n.arena)) {
               toWrap.push(n);
             }
-          });
+          }
         }
       },
     );
@@ -1385,6 +1392,16 @@ export default class ArenaModel {
         }
       });
     } else if (selection.isCollapsed()) {
+      const { node, offset } = selection.getCursor();
+      if (node.hasText) {
+        if (node.parent.isAllowedNode(arena)) {
+          this.createAndInsertNode(arena, node.parent, node.getIndex(), false, false, true);
+        }
+      } else if (node.hasChildren) {
+        if (node.isAllowedNode(arena)) {
+          this.createAndInsertNode(arena, node, offset, false, false, true);
+        }
+      }
       // const { node, offset } = selection.getCursor();
       // if (node.hasChildren && node.isAllowedNode(arena)) {
       //   const newNode = this.createAndInsertNode(

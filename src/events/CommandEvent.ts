@@ -6,7 +6,7 @@ export default class CommandEvent implements ArenaKeyboardEvent {
 
   constructor(
     public event: KeyboardEvent,
-    public command: KeyboardKey,
+    public key: KeyboardKey,
     public modifiersSum: number,
   ) {
   }

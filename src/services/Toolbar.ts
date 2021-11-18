@@ -85,16 +85,28 @@ export default class Toolbar {
         const options = this.availableTools[toolOptions];
         const elem = new ElementHelper('BUTTON', 'textarena-toolbar__item');
         elem.setAttribute('type', 'button');
-        if (options.title) {
-          elem.setAttribute('title', options.title);
-        }
+        // if (options.title) {
+        //   elem.setAttribute('title', options.title);
+        // }
         const tool: Tool = {
           elem,
           options,
         };
         if (options.shortcut) {
-          const [modifiers] = this.asm.commandManager.parseShortcut(options.shortcut);
+          const [modifiers, key] = this.asm.commandManager.parseShortcut(options.shortcut);
           tool.modifiers = modifiers;
+          if (key) {
+            const humanShortcut = this.asm.commandManager.getHumanShortcut(options.shortcut);
+            const hint = this.asm.commandManager.getHumanKey(key);
+            const shortHintElem = new ElementHelper('DIV', 'textarena-shortcut-hint-short', hint);
+            const fullHintElem = new ElementHelper(
+              'DIV',
+              'textarena-shortcut-hint-full',
+              `${options.title}<i>${humanShortcut}</i>`,
+            );
+            elem.appendChild(shortHintElem);
+            elem.appendChild(fullHintElem);
+          }
         }
         elem.onClick((e: Event) => {
           e.preventDefault();
@@ -102,12 +114,8 @@ export default class Toolbar {
           this.executeTool(tool);
         });
         if (options.icon) {
-          const span = new ElementHelper('DIV', 'textarena-toolbar__item-icon', options.icon);
+          const span = new ElementHelper('DIV', `textarena-toolbar__item-icon ${options.cls}`, options.icon);
           elem.appendChild(span);
-        }
-        if (options.hint) {
-          const keyElem = new ElementHelper('DIV', 'textarena-toolbar__hint', options.hint);
-          elem.appendChild(keyElem);
         }
         this.list.appendChild(elem);
         return tool;

@@ -11,7 +11,7 @@ export default class ArenaView {
     const result = this.asm.model.getTemplate();
     const container = this.asm.textarena.getEditorElement().getElem();
     const offset = selection?.startOffset;
-    this.asm.logger.log('REEEEEEEEEEEEnder', offset);
+    this.asm.logger.log('Render', offset);
     render(result, container);
     if (selection) {
       this.currentSelection = selection;

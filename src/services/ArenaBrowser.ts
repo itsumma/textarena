@@ -19,6 +19,7 @@ import ArenaSelection from '../helpers/ArenaSelection';
 import NodeAttributes from '../interfaces/NodeAttributes';
 import { isMac } from '../utils/navigator';
 import { AnyArenaNode } from '../interfaces/ArenaNode';
+import ArenaCursorAncestor from '../interfaces/ArenaCursorAncestor';
 
 type ArenaChangeAttribute = CustomEvent<{
   attrs: NodeAttributes,
@@ -29,10 +30,13 @@ type ArenaChangeAttribute = CustomEvent<{
 
 type ArenaCustomEvent = CustomEvent<unknown>;
 
+export type ArenaRemoveEvent = CustomEvent<{ node: AnyArenaNode; }>;
+
 declare global {
   interface GlobalEventHandlersEventMap {
     'arena-change-attribute': ArenaChangeAttribute;
     'arena-custom-event': ArenaCustomEvent;
+    'arena-remove-event': ArenaRemoveEvent;
     'beforeinput': InputEvent;
   }
 }
@@ -154,9 +158,13 @@ export default class ArenaBrowser {
 
   protected focusListenerInstance: ((event: FocusEvent) => void);
 
+  protected dropListenerInstance: ((event: DragEvent) => void);
+
   protected changeAttributeListenerInstance: ((event: ArenaChangeAttribute) => void);
 
   protected arenaCustomEventListenerInstance: ((event: ArenaCustomEvent) => void);
+
+  protected arenaRemoveEventListenerInstance: ((event: ArenaRemoveEvent) => void);
 
   protected lastSelectionStatus = false;
 
@@ -181,8 +189,10 @@ export default class ArenaBrowser {
     this.copyListenerInstance = this.copyListener.bind(this);
     this.pasteListenerInstance = this.pasteListener.bind(this);
     this.focusListenerInstance = this.focusListener.bind(this);
+    this.dropListenerInstance = this.dropListener.bind(this);
     this.changeAttributeListenerInstance = this.changeAttributeListener.bind(this);
     this.arenaCustomEventListenerInstance = this.arenaCustomEventListener.bind(this);
+    this.arenaRemoveEventListenerInstance = this.arenaRemoveEventListener.bind(this);
     this.asm.eventManager.subscribe('turnOn', () => {
       this.editor.addEventListener('input', this.inputListenerInstance, false);
       this.editor.addEventListener('beforeinput', this.beforeinputListenerInstance, false);
@@ -196,8 +206,10 @@ export default class ArenaBrowser {
       this.editor.addEventListener('copy', this.copyListenerInstance, false);
       this.editor.addEventListener('paste', this.pasteListenerInstance, false);
       this.editor.addEventListener('focus', this.focusListenerInstance, false);
+      this.editor.addEventListener('drop', this.dropListenerInstance, false);
       this.editor.addEventListener('arena-change-attribute', this.changeAttributeListenerInstance, false);
       this.editor.addEventListener('arena-custom-event', this.arenaCustomEventListenerInstance, false);
+      this.editor.addEventListener('arena-remove-event', this.arenaRemoveEventListenerInstance, false);
       document.addEventListener('selectionchange', this.selectListenerInstance, false);
       this.editor.startObserve(
         () => this.asm.eventManager.fire('editorChanged'),
@@ -221,8 +233,10 @@ export default class ArenaBrowser {
       this.editor.removeEventListener('copy', this.copyListenerInstance);
       this.editor.removeEventListener('paste', this.pasteListenerInstance);
       this.editor.removeEventListener('focus', this.focusListenerInstance);
+      this.editor.removeEventListener('drop', this.dropListenerInstance);
       this.editor.removeEventListener('arena-change-attribute', this.changeAttributeListenerInstance);
       this.editor.removeEventListener('arena-custom-event', this.arenaCustomEventListenerInstance);
+      this.editor.removeEventListener('arena-remove-event', this.arenaRemoveEventListenerInstance);
       document.removeEventListener('selectionchange', this.selectListenerInstance);
       this.editor.stopObserve();
     });
@@ -253,15 +267,42 @@ export default class ArenaBrowser {
     return !!modifiersCodes[e.keyCode];
   }
 
+  /**
+   * In FF pressing ctrl + A selects root container for textarena
+   * the div.textarena-editor contenteditable. And content deletion
+   * does not work. So here we use a hack to change the selection
+   * to all children.
+   */
+  protected changeSelectionToChildren(s: Selection) {
+    if (
+      s.anchorNode
+      && s.anchorNode instanceof HTMLElement
+      && s.anchorNode.getAttribute('contenteditable')
+      && s.anchorNode.getAttribute('class') === 'textarena-editor'
+      && s.anchorNode.children.length > 0
+    ) {
+      const { children } = s.anchorNode;
+      const range = document.createRange();
+      const first = children[0];
+      const last = children[children.length - 1];
+      range.setStart(first, 0);
+      range.setEnd(last, last.childNodes.length);
+      s.removeAllRanges();
+      s.addRange(range);
+    }
+  }
+
   protected checkSelection(): void {
-    this.asm.view.resetCurrentSelection();
     const s = window.getSelection();
     if (!s || !s.rangeCount) {
       return;
     }
+    this.changeSelectionToChildren(s);
     if (!s.anchorNode || !isDescendant(this.editor, s.anchorNode)) {
       return;
     }
+
+    this.asm.view.resetCurrentSelection();
 
     this.asm.eventManager.fire('moveCursor');
 
@@ -406,7 +447,7 @@ export default class ArenaBrowser {
       if (data) {
         const targetSelection = this.asm.view.detectArenaSelection();
         if (targetSelection) {
-          this.insertData(data, targetSelection);
+          this.asm.textarena.insertData(targetSelection, data);
         }
       }
       e.preventDefault();
@@ -432,54 +473,29 @@ export default class ArenaBrowser {
     if (data) {
       const selection = this.asm.view.getCurrentSelection();
       if (selection) {
-        const newSelection = this.asm.model.insertTextToModel(selection, data, true);
-        this.asm.history.save(newSelection, false);
-        const [result, newSel] = this.asm.model.applyMiddlewares(
-          newSelection,
-          data,
-        );
-        if (result) {
-          this.asm.history.save(newSel);
-        }
-        this.asm.eventManager.fire('modelChanged', { selection: newSel });
+        this.asm.textarena.insertText(selection, data);
       }
     }
   }
 
   protected mouseUpListener(e: MouseEvent): void {
     this.asm.logger.log('MouseUp event', e);
-    const event = e as unknown as { path: ChildNode[] };
-    if (e.button === 0 && Array.isArray(event.path)) {
-      const { path } = event;
-      for (let i = 0; i < path.length; i += 1) {
-        const elem = path[i];
-        if (elem.nodeType === Node.ELEMENT_NODE
-        && (elem as HTMLElement).tagName === 'TEXTARENA-REMOVE') {
-          const id = (elem as HTMLElement).getAttribute('node-id');
-          if (id) {
-            e.preventDefault();
-            let sel;
-            const cursor = this.asm.model.removeNodeById(id);
-            if (cursor) {
-              const textCursor = this.asm.model.getTextCursor(cursor.node, cursor.offset);
-              sel = new ArenaSelection(
-                textCursor.node,
-                textCursor.offset,
-                textCursor.node,
-                textCursor.offset,
-                'forward',
-              );
-            }
-            if (!sel) {
-              sel = this.asm.view.getCurrentSelection();
-            }
-            if (sel) {
-              this.asm.history.save(sel);
-            }
-            this.asm.eventManager.fire('modelChanged', { selection: sel });
-          }
-          break;
+    const event = e as unknown as { target: Node };
+    if (e.button === 0 && event.target && event.target.parentNode) {
+      let elem: Node | null = event.target;
+      while (elem.parentNode) {
+        elem = elem.parentNode;
+        if (elem.nodeType !== Node.ELEMENT_NODE
+          || (elem as HTMLElement).tagName !== 'TEXTARENA-REMOVE') {
+          // eslint-disable-next-line no-continue
+          continue;
         }
+        const id = (elem as HTMLElement).getAttribute('node-id');
+        if (!id) break;
+        e.preventDefault();
+        const cursor = this.asm.model.removeNodeById(id);
+        this.resetCursor(cursor);
+        break;
       }
     }
     this.asm.history.resetTyped();
@@ -532,25 +548,16 @@ export default class ArenaBrowser {
       }
     }
     if (event instanceof CommandEvent) {
-      const { command, modifiersSum } = event;
+      const { key, modifiersSum } = event;
       const selection = this.asm.view.getCurrentSelection();
       if (selection) {
-        this.asm.commandManager.execShortcut(selection, modifiersSum, command);
+        this.asm.commandManager.execShortcut(selection, modifiersSum, key.toLowerCase());
       }
     }
     if (event instanceof ArenaInputEvent) {
       const selection = this.asm.view.getCurrentSelection();
       if (selection) {
-        const newSelection = this.asm.model.insertTextToModel(selection, event.character, true);
-        this.asm.history.save(newSelection, /[a-zа-яА-Я0-9]/i.test(event.character));
-        const [result, newSel] = this.asm.model.applyMiddlewares(
-          newSelection,
-          event.character,
-        );
-        if (result) {
-          this.asm.history.save(newSel);
-        }
-        this.asm.eventManager.fire('modelChanged', { selection: newSel });
+        this.asm.textarena.insertText(selection, event.character);
       }
     }
     if (event instanceof RemoveEvent) {
@@ -592,7 +599,7 @@ export default class ArenaBrowser {
     if (!selection) {
       return;
     }
-    this.insertData(clipboardData, selection);
+    this.asm.textarena.insertData(selection, clipboardData);
   }
 
   protected focusListener(e: FocusEvent): void {
@@ -600,47 +607,21 @@ export default class ArenaBrowser {
     this.asm.creatorBar.closeList();
   }
 
-  protected insertData(data: DataTransfer, selection: ArenaSelection): void {
-    const types: string[] = [...data.types || []];
-    if (types.includes('text/html')) {
-      let html = data.getData('text/html');
-      if (!html) {
-        return;
-      }
-      const matchStart = /(<!--StartFragment-->)|(<meta charset=['"][^'"]+['"]>)/.exec(html);
-      if (matchStart) {
-        html = html.slice(matchStart.index + matchStart[0].length);
-        html = html.trimLeft();
-      }
-      const matchEnd = /<!--EndFragment-->/.exec(html);
-      if (matchEnd) {
-        html = html.slice(0, matchEnd.index);
-        html = html.trimRight();
-      }
-      // html = html.replace(/\u00A0/, ' ');
-      this.asm.logger.log(`Insert html: «${html}»`);
-      const newSelection = this.asm.model.insertHtml(selection, html);
-      this.asm.history.save(newSelection);
-      this.asm.eventManager.fire('modelChanged', { selection: newSelection });
-    } else if (types.includes('text/plain')) {
-      const text = data.getData('text/plain');
-      if (!text) {
-        return;
-      }
-      this.asm.logger.log(`Insert text: «${text}»`);
-      const [result, newSel] = this.asm.model.applyMiddlewares(
-        selection,
-        text,
-      );
-      const newSelection = result ? newSel : this.asm.model.insertTextToModel(selection, text);
-      this.asm.history.save(newSelection);
-      this.asm.eventManager.fire('modelChanged', { selection: newSelection });
-    }
-  }
-
   protected selectListener(e: Event): void {
     this.asm.logger.log('Select event', e);
     this.checkSelection();
+  }
+
+  protected dropListener(e: DragEvent): void {
+    e.preventDefault();
+    const selection = this.asm.view.getCurrentSelection();
+    if (!selection) {
+      return;
+    }
+    const { dataTransfer } = e;
+    if (dataTransfer) {
+      this.asm.textarena.insertData(selection, dataTransfer);
+    }
   }
 
   protected getIdOfTarget(target: HTMLElement): string | undefined {
@@ -673,5 +654,31 @@ export default class ArenaBrowser {
 
   protected arenaCustomEventListener(e: ArenaCustomEvent): void {
     this.asm.eventManager.fire('customEvent', e.detail);
+  }
+
+  private resetCursor(cursor: ArenaCursorAncestor | undefined): void {
+    let sel;
+    if (cursor) {
+      const textCursor = this.asm.model.getTextCursor(cursor.node, cursor.offset);
+      sel = new ArenaSelection(
+        textCursor.node,
+        textCursor.offset,
+        textCursor.node,
+        textCursor.offset,
+        'forward',
+      );
+    }
+    if (!sel) {
+      sel = this.asm.view.getCurrentSelection();
+    }
+    if (sel) {
+      this.asm.history.save(sel);
+    }
+    this.asm.eventManager.fire('modelChanged', { selection: sel });
+  }
+
+  protected arenaRemoveEventListener({ detail: { node } }: ArenaRemoveEvent): void {
+    const cursor = this.asm.model.removeNodeById(node.getGlobalIndex());
+    this.resetCursor(cursor);
   }
 }

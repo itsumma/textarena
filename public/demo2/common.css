@@ -153,7 +153,7 @@ hr {
   height: 1px;
 }
 
-blockquote {
+.textarena-blockquote {
   padding-left: 1.5em;
   margin: 0 0 1em;
   min-height: 1.6em;
@@ -162,7 +162,7 @@ blockquote {
   color: #b688e4;
 }
 
-blockquote:last-child {
+.textarena-blockquote:last-child {
   margin-bottom: 0;
 }
 
@@ -339,12 +339,6 @@ figcaption {
   opacity: .7;
 }
 
-.embed > blockquote {
-  padding: 0;
-  margin: 0;
-  border: none;
-}
-
 mark {
   display: inline-flex;
   border-radius: 4px;
@@ -394,27 +388,15 @@ arena-embed-simple {
   pointer-events: none;
 }
 
-arena-embed-simple blockquote {
-  padding: 0;
-  margin: 0;
-  border: none;
-}
-
-.embed__content {
-  background: white;
-  border: 1px solid #ccc;
-  border-radius: 1re;
-  padding: 1re;
-  margin: 0 0 1em;
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 0;
-  bottom: 0;
-  max-width: 550px;
-}
-
 .twitter-tweet-rendered {
   position: relative;
   margin: 0 !important;
 }
+
+.video {
+  display: block;
+  margin: 0 auto;
+  max-width: 100%;
+  max-height: 500px;
+}
+

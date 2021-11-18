@@ -14,20 +14,7 @@ const outputContents = (
     if (list.length === 0) {
       return '';
     }
-    return `
-      <div class="contents">
-        <h3 class="contents__title">
-          Содержание
-        </h3>
-        <ul>
-          ${list.map((c) => `
-            <li>
-              <a href="#${c.slug}">${c.title || c.originalTitle}</a>
-            </li>
-          `).join('')}
-        </ul>
-      </div>
-    `;
+    return `<div class="contents"><h3 class="contents__title">Содержание</h3><ul>${list.map((c) => `<li><a href="#${c.slug}">${c.title || c.originalTitle}</a></li>`).join('\n')}</ul></div>`;
   }
   return '';
 };

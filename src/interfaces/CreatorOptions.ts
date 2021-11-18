@@ -7,7 +7,7 @@ export default interface CreatorOptions {
   icon?: string;
   title: string;
   command: string;
-  hint?: string;
+  hint?: string; // Deprecated
   shortcut?: string;
   canShow: CreatorCanShow;
 }

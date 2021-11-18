@@ -1,20 +1,19 @@
 import ArenaSelection from '../../helpers/ArenaSelection';
 import { ArenaMediatorInterface, ArenaTextInterface } from '../../interfaces/Arena';
 import { AnyArenaNode } from '../../interfaces/ArenaNode';
-import ArenaPlugin, { DefaulPluginOptions } from '../../interfaces/ArenaPlugin';
+import ArenaPlugin, { DefaultPluginOptions } from '../../interfaces/ArenaPlugin';
 import Textarena from '../../Textarena';
 import ArenaTwoColumns from './ArenaTwoColumns';
 import twoColumnsOutput from './twoColumnsOutput';
 
-const defaultOptions: DefaulPluginOptions = {
+const defaultOptions: DefaultPluginOptions = {
   name: 'two-columns',
   icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 14.06 13.69" fill="currentColor"><g ><g ><path d="M5.68,13.69h-5A.71.71,0,0,1,0,13V.71A.71.71,0,0,1,.71,0h5a.71.71,0,0,1,.71.71V13A.71.71,0,0,1,5.68,13.69ZM1.42,12.28H5V1.42H1.42Z"/><path d="M13.35,13.69h-5A.71.71,0,0,1,7.67,13V.71A.71.71,0,0,1,8.38,0h5a.71.71,0,0,1,.71.71V13A.71.71,0,0,1,13.35,13.69ZM9.09,12.28h3.55V1.42H9.09Z"/></g></g></svg>',
   title: 'Две колонки',
   tag: 'ARENA-TWO-COLUMNS',
   attributes: {},
   command: 'add-two-columns',
-  shortcut: 'Alt + Digit5',
-  hint: '5',
+  shortcut: 'Ctrl + Alt + 6',
   component: 'arena-two-columns',
   componentConstructor: ArenaTwoColumns,
   marks: [
@@ -30,10 +29,10 @@ const defaultOptions: DefaulPluginOptions = {
   output: twoColumnsOutput,
 };
 
-const twoColumnsPlugin = (opts?: Partial<DefaulPluginOptions>): ArenaPlugin => ({
+const twoColumnsPlugin = (opts?: Partial<DefaultPluginOptions>): ArenaPlugin => ({
   register(textarena: Textarena): void {
     const {
-      name, icon, title, tag, attributes, shortcut, hint, command,
+      name, icon, title, tag, attributes, shortcut, command,
       component, componentConstructor, marks, output,
     } = {
       ...defaultOptions,
@@ -47,6 +46,7 @@ const twoColumnsPlugin = (opts?: Partial<DefaulPluginOptions>): ArenaPlugin => (
       throw new Error('Default Arena for text not found');
     }
     const allowedArenas = textarena.getSimpleArenas();
+    const middleArenas = textarena.getMiddleArenas();
     const bodyContainer = textarena.registerArena(
       {
         name: `${name}-col`,
@@ -80,12 +80,12 @@ const twoColumnsPlugin = (opts?: Partial<DefaulPluginOptions>): ArenaPlugin => (
         output,
       },
       marks,
-      [textarena.getRootArenaName()],
+      [textarena.getRootArenaName(), ...middleArenas.map((a) => a.name)],
     ) as ArenaMediatorInterface;
 
     if (command) {
       textarena.registerCommand(command, (ta: Textarena, selection: ArenaSelection) => {
-        const sel = ta.insertBeforeSelected(selection, arena);
+        const [sel] = ta.insertBeforeSelected(selection, arena);
         return sel;
       });
       if (shortcut) {
@@ -101,7 +101,6 @@ const twoColumnsPlugin = (opts?: Partial<DefaulPluginOptions>): ArenaPlugin => (
             title,
             icon,
             shortcut,
-            hint,
             command,
             checkStatus: (node: AnyArenaNode):
               boolean => node.arena === arena,
@@ -112,7 +111,6 @@ const twoColumnsPlugin = (opts?: Partial<DefaulPluginOptions>): ArenaPlugin => (
           icon,
           title,
           shortcut,
-          hint,
           command,
           canShow: (node: AnyArenaNode) =>
             textarena.isAllowedNode(node, arena),

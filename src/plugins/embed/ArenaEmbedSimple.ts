@@ -1,65 +1,59 @@
-import { html, LitElement, TemplateResult } from 'lit';
+import { LitElement, TemplateResult } from 'lit';
 import { property } from 'lit/decorators.js';
+import { fetchEmbedData, processEmbedHtml } from './embedUtils';
 
 export default class ArenaEmbedSimple extends LitElement {
-  protected currentHref = '';
-
+  // URL to fetch embed data according to https://oembed.com/
   @property({
     type: String,
   })
-    type: string | undefined;
+    url = '';
 
+  // Name of the OEmbed provider - `provider_name` value
   @property({
     type: String,
   })
-    postid: string | undefined;
+    embed = '';
 
+  // Html content encoded as JSON string
   @property({
     type: String,
   })
-    href: string | undefined;
+    html = '';
 
-  createRenderRoot(): LitElement {
+  htmlPlain = '';
+
+  connectedCallback() {
+    super.connectedCallback();
+    if (this.html) {
+      this.htmlPlain = JSON.parse(this.html);
+      return;
+    }
+    if (this.url) {
+      fetchEmbedData(this.url).then((data) => {
+        if (data.html) {
+          this.htmlPlain = data.html;
+          this.requestUpdate();
+          const event = new CustomEvent(
+            'change',
+            {
+              detail: {
+                value: data.html,
+              },
+            },
+          );
+          this.dispatchEvent(event);
+        }
+      });
+    }
+  }
+
+  createRenderRoot() {
     return this;
   }
 
-  // Render element DOM by returning a `lit-html` template.
   render(): TemplateResult | undefined {
-    if (this.href) {
-      const loading = html`<p class="embed__content">
-        Грузится ембед… <a href="${this.href || ''}">${this.href}</a>
-      </p>`;
-      if (this.type === 'facebook') {
-        return html`
-          <div
-            class="fb-post"
-            data-href="${this.href}"
-            data-width="auto"
-            data-show-captions="false"
-          ></div>
-        `;
-      }
-      if (this.type === 'instagram') {
-        return html`
-          <blockquote
-            class="instagram-media"
-            data-instgrm-version="13"
-            postid=${this.postid || ''}
-            style="background:#FFF; border:0; border-radius:3px; box-shadow:0 0 1px 0 rgba(0,0,0,0.5),0 1px 10px 0 rgba(0,0,0,0.15); margin: 1px; max-width:540px; min-width:326px; padding:0; width:99.375%; width:-webkit-calc(100% - 2px); width:calc(100% - 2px);"
-            data-lang="ru"
-          >
-            ${loading}
-          </blockquote>`;
-      }
-      if (this.type === 'twitter') {
-        return html`
-          <blockquote class="twitter-tweet" postid=${this.postid || ''} data-lang="ru">
-            <p class="embed__content">
-              Грузится ембед… <a href="${this.href}">${this.href}</a>
-            </p>
-          </blockquote>`;
-      }
-    }
-    return undefined;
+    const body = processEmbedHtml(this.htmlPlain);
+    return body as unknown as TemplateResult;
   }
 }

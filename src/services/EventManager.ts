@@ -15,7 +15,7 @@ export default class EventManager {
 
   fire(name: string, detail?: unknown): void {
     const event = new ArenaEvent(name, detail);
-    this.asm.logger.log('fire', event);
+    this.asm.logger.log(`Fire ${name}`, event);
     if (this.handlers[name]) {
       this.handlers[name].map((handler) => handler(event));
     }

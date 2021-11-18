@@ -86,7 +86,7 @@ export default class CreatorBar {
       this.handleChangeSelection();
     });
     this.asm.eventManager.subscribe('editorChanged', () => {
-      this.reposition();
+      setTimeout(() => this.reposition(), 0);
     });
     this.asm.eventManager.subscribe('customEvent', (e) => {
       if (e.detail === 'contentResize') {
@@ -127,17 +127,29 @@ export default class CreatorBar {
         const options = this.availableCreators[name];
         const elem = new ElementHelper('BUTTON', 'textarena-creator__item');
         elem.setAttribute('type', 'button');
-        if (options.title) {
-          elem.setAttribute('title', options.title);
-        }
+        // if (options.title) {
+        //   elem.setAttribute('title', options.title);
+        // }
         const creator: Creator = {
           elem,
           options,
           show: true,
         };
         if (options.shortcut) {
-          const [modifiers] = this.asm.commandManager.parseShortcut(options.shortcut);
+          const [modifiers, key] = this.asm.commandManager.parseShortcut(options.shortcut);
           creator.modifiers = modifiers;
+          if (key) {
+            const humanShortcut = this.asm.commandManager.getHumanShortcut(options.shortcut);
+            const hint = this.asm.commandManager.getHumanKey(key);
+            const shortHintElem = new ElementHelper('DIV', 'textarena-shortcut-hint-short', hint);
+            const fullHintElem = new ElementHelper(
+              'DIV',
+              'textarena-shortcut-hint-full',
+              `${options.title}<i>${humanShortcut}</i>`,
+            );
+            elem.appendChild(shortHintElem);
+            elem.appendChild(fullHintElem);
+          }
         }
         elem.onClick((e) => {
           e.preventDefault();
@@ -151,10 +163,6 @@ export default class CreatorBar {
             options.icon || options.title,
           );
           elem.appendChild(icon);
-        }
-        if (options.hint) {
-          const keyElem = new ElementHelper('DIV', 'textarena-creator__hint', options.hint);
-          elem.appendChild(keyElem);
         }
         this.list.append(elem);
         this.creators.push(creator);

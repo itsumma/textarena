@@ -11,15 +11,15 @@ import utils from '../../utils';
 
 const defaultOptions: ContentsOptions = {
   name: 'contents',
-  title: 'Содержание',
+  title: 'Contents',
   tag: 'ARENA-CONTENTS',
   attributes: {},
   allowedAttributes: ['list'],
-  shortcut: 'Alt + KeyU',
-  hint: 'u',
+  shortcut: 'Ctrl + Alt + C',
   command: 'add-contents',
   component: 'arena-contents',
   componentConstructor: ArenaContents,
+  description: 'Contents',
   marks: [
     {
       tag: 'ARENA-CONTENTS',
@@ -33,8 +33,8 @@ const defaultOptions: ContentsOptions = {
 const contentsPlugin = (opts?: Partial<ContentsOptions>): ArenaPlugin => ({
   register(textarena: Textarena): void {
     const {
-      name, icon, title, tag, attributes, allowedAttributes, shortcut, hint, command,
-      component, componentConstructor, marks, output, processor,
+      name, icon, title, tag, attributes, allowedAttributes, shortcut, command,
+      component, componentConstructor, marks, output, processor, description,
     } = { ...defaultOptions, ...(opts || {}) };
     if (component && componentConstructor && !customElements.get(component)) {
       customElements.define(component, componentConstructor);
@@ -58,7 +58,7 @@ const contentsPlugin = (opts?: Partial<ContentsOptions>): ArenaPlugin => ({
       textarena.registerCommand(
         command,
         (ta: Textarena, selection: ArenaSelection) => {
-          const sel = ta.insertBeforeSelected(selection, arena);
+          const [sel] = ta.insertBeforeSelected(selection, arena);
           return sel;
         },
       );
@@ -66,6 +66,7 @@ const contentsPlugin = (opts?: Partial<ContentsOptions>): ArenaPlugin => ({
         textarena.registerShortcut(
           shortcut,
           command,
+          description,
         );
       }
       if (title) {
@@ -74,7 +75,6 @@ const contentsPlugin = (opts?: Partial<ContentsOptions>): ArenaPlugin => ({
           icon,
           title,
           shortcut,
-          hint,
           command,
           canShow: (node: AnyArenaNode) =>
             textarena.isAllowedNode(node, arena),
@@ -89,7 +89,7 @@ const contentsPlugin = (opts?: Partial<ContentsOptions>): ArenaPlugin => ({
       });
     };
     textarena.subscribe('ready', updateAllContents);
-    textarena.subscribe('modelChanged', utils.debounce(updateAllContents, 1000));
+    textarena.subscribe('modelChanged', updateAllContents);
   },
 });
 

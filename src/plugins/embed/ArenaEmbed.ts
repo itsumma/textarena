@@ -1,8 +1,20 @@
 import { html, LitElement, TemplateResult } from 'lit';
 import { property } from 'lit/decorators.js';
-import NodeAttributes from '../../interfaces/NodeAttributes';
+import WebComponent from '../../helpers/WebComponent';
+import { createElemEmbed, getEmbedUrl } from './embedUtils';
+import { GetEmbedProvider } from './types';
 
-export default class ArenaEmbed extends LitElement {
+export default class ArenaEmbed extends WebComponent {
+  @property({
+    type: String,
+  })
+    url: string | undefined;
+
+  @property({
+    type: String,
+  })
+    embed: string | undefined;
+
   @property({
     type: String,
   })
@@ -11,60 +23,76 @@ export default class ArenaEmbed extends LitElement {
   @property({
     type: String,
   })
-    href: string | undefined;
-
-  @property({
-    type: String,
-  })
-    postid: string | undefined;
-
-  @property({
-    type: Boolean,
-  })
-    border: boolean | undefined;
+    html: string | undefined;
 
   createRenderRoot(): LitElement {
     return this;
   }
 
-  handleToggle({ detail }: { detail: boolean }): void {
-    this.fireChangeAttribute({
-      border: detail,
-    });
+  handleForm({ detail: { value } }: { detail: { value: string } }): void {
+    const getEmbedProvider = this.node?.getAttribute('getEmbedProvider') as GetEmbedProvider;
+    // Check for match in OEmbed providers first
+    const result = getEmbedProvider(value);
+    if (result) {
+      this.fireChangeAttribute({
+        embed: result.provider_name,
+        url: getEmbedUrl(result.endpoint, value, result.opts),
+      });
+      return;
+    }
+    // if no match were found at provided OEmbed services create embed
+    // element with iframe from ./embedServices.ts
+    const embedElement = createElemEmbed(value);
+    if (embedElement) {
+      this.fireChangeAttribute({
+        embed: embedElement.embed,
+        type: embedElement.type,
+      });
+    }
   }
 
-  handleForm({ detail }: { detail: NodeAttributes }): void {
-    this.fireChangeAttribute(detail);
+  onKeydown(e: KeyboardEvent): void {
+    switch (e.key) {
+      case 'Escape':
+        e.preventDefault();
+        this.fireRemoveEvent();
+        break;
+      default:
+        break;
+    }
   }
 
-  fireChangeAttribute(attrs: NodeAttributes): void {
-    const event = new CustomEvent('arena-change-attribute', {
-      bubbles: true,
-      detail: {
-        attrs,
-        target: this,
-      },
-    });
-    this.dispatchEvent(event);
+  handleHtml({ detail: { value } }: { detail: { value: string } }): void {
+    if (value) {
+      this.fireChangeAttribute({
+        html: JSON.stringify(value),
+      });
+    }
   }
 
   render(): TemplateResult {
-    if (this.type === 'youtube' && this.href) {
-      return html`
-        <arena-embed-youtube
-          ?border=${this.border}
-          @toggle=${this.handleToggle}
-          href="${this.href}"
-        ></arena-embed-youtube>`;
-    }
-    if (this.type && this.href) {
+    if (this.url && this.embed) {
       return html`
         <arena-embed-simple
-          type="${this.type}"
-          href="${this.href}"
-          postid="${this.postid || ''}"
-        ></arena-embed-simple>`;
+          url="${this.url}"
+          embed="${this.embed}"
+          html="${this.html}"
+          @change="${this.handleHtml}"
+        ></arena-embed-simple>
+      `;
     }
-    return html`<arena-embed-form @change="${this.handleForm}"></arena-embed-form>`;
+    if (this.type && this.embed) {
+      return html`
+      <arena-embed-iframe
+          embed="${this.embed}"
+          type="${this.type}"
+        ></arena-embed-iframe>
+      `;
+    }
+    return html`
+        <arena-embed-form
+          @change="${this.handleForm}"
+          @keydown="${this.onKeydown}">
+        </arena-embed-form>`;
   }
 }

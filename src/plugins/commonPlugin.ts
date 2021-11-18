@@ -14,6 +14,10 @@ const commonPlugin: () => ArenaPlugin = () => ({
       'breakSelection',
     );
     textarena.registerShortcut(
+      'NumpadEnter',
+      'breakSelection',
+    );
+    textarena.registerShortcut(
       'Ctrl + Enter',
       'breakSelection',
     );

@@ -18,7 +18,7 @@
 
   if (elem && (typeof Textarena !== 'undefined')) {
     let dataHtml;
-    const storedData = localStorage.getItem('dataHtml');
+    // const storedData = localStorage.getItem('dataHtml');
     try {
       if (storedData) {
         data = JSON.parse(storedData);
@@ -32,7 +32,7 @@
       <h2><s>Simple</s> Cool text editor</h2>
       <p class="paragraph"><strong>Textarena</strong> is adapted for quick work with text. In addition, it is easily expanded with plugins.</p>
       <p class="paragraph">When the text is selected, the formatting panel will appear.</p>
-      <p class="paragraph">On the open panel, hold down Ctrl (⌘ for Mac) or Alt (⌥ for Mac) and you will see keyboard shortcuts hints.</p>
+      <p class="paragraph">On the open panel, hold down Ctrl (⌘ for Mac) or Ctrl + Alt (⌘ + ⌥ for Mac) and you will see keyboard shortcuts hints.</p>
       <figure class="">
         <picture>
           <img src="https://d3qc8znfr3ejm3.cloudfront.net/images/781b832a-2fe6-46f0-b561-08b81799f809.png" alt="true" class="">
@@ -50,16 +50,16 @@
         <li>H4 — fourth.</li>
       </ul>
       <p class="paragraph">Why is there no first level? First of all, which headers are available in the editor is configurable. Secondly, it is not recommended to use more than one first-level heading on the page. This page already has a title - "TEXTARENA" - at the top of the page.</p>
-      <p class="paragraph">To turn the text into a heading, you can press Alt (⌥) + 2 or 3 or 4.</p>
-      <p class="paragraph">To return a paragraph — Alt (⌥) + 0.</p>
+      <p class="paragraph">To turn the text into a heading, you can press Ctrl + Alt (⌘ + ⌥) + 2 or 3 or 4.</p>
+      <p class="paragraph">To return a paragraph — Ctrl + Alt (⌘ + ⌥) + 0.</p>
 
       <h3>Lists</h3>
       <p class="paragraph">To start the list:</p>
       <ol><li>type at the beginning of the line "1." and a space or "-" with a space;</li>
-      <li>нpress Alt (⌥) + O or Alt (⌥) + L for ordered or bullet list, respectively.</li></ol>
+      <li>press Ctrl + Alt (⌘ + ⌥) + O or Ctrl + Alt (⌘ + ⌥) + L for ordered or bullet list, respectively.</li></ol>
 
       <h3>Simple text blocks</h3>
-      <blockquote><p class="paragraph">To make a simple quote block, press Alt (⌥) + &quot;.</p></blockquote>
+      <blockquote><p class="paragraph">To make a simple quote block, press Ctrl + Alt (⌘ + ⌥) + &quot;.</p></blockquote>
       <p class="paragraph">Or press the plus button on an empty line.</p>
       <figure class="">
         <picture>
@@ -174,15 +174,30 @@
       if (renderElem) {
         renderElem.innerHTML = data.html;
       }
+      const twitterFrames = document.querySelectorAll('iframe[id^="iframe-twitter"]');
+      for (const frame of twitterFrames) {
+        frame.addEventListener('load', () => {
+          frame.contentWindow.postMessage({ element: frame.id, query: 'height' }, 'https://twitframe.com');
+        });
+      }
     }, 500);
+    window.addEventListener('message', (e) => {
+      if (e.origin === 'https://twitframe.com' && e.data.element.match(/^iframe-twitter/)) {
+        const element = document.getElementById(e.data.element);
+        if (element) {
+          element.height = e.data.height;
+        }
+      }
+    });
     const onEvent = (e) => {
       if (e.name === 'customEvent') {
-        console.log(e);
+        // console.log(e);
       }
     }
 
     const {
       commonPlugin,
+      pastePlugin,
       paragraphPlugin,
       formatingsPlugin,
       headersPlugin,
@@ -192,6 +207,7 @@
       calloutPlugin,
       imagePlugin,
       figurePlugin,
+      videoPlugin,
       embedPlugin,
       linkPlugin,
       asidePlugin,
@@ -202,6 +218,7 @@
       roadmapPlugin,
       tablePlugin,
       contentsPlugin,
+      backImagePlugin,
     } = Textarena.getPlugins();
 
     const textarena = new Textarena(
@@ -217,38 +234,14 @@
         placeholder: 'Type or Tab…',
         plugins: [
           commonPlugin(),
+          pastePlugin(),
           formatingsPlugin(),
           paragraphPlugin(),
           headersPlugin(),
           hrPlugin({
-            marks: [
-              {
-                tag: 'HR',
-                attributes: [],
-              },
-              {
-                tag: 'DIV',
-                attributes: [
-                  'class=separator',
-                ],
-              },
-            ],
-          }),
-          hrPlugin({
-            name: 'hr-asterisk',
             icon: '***',
-            title: '***',
-            tag: 'HR',
+            title: 'Separator',
             attributes: { class: 'asterisk' },
-            command: 'add-hr-asterisk',
-            marks: [
-              {
-                tag: 'HR',
-                attributes: [
-                  'class=asterisk'
-                ],
-              },
-            ],
           }),
           nestedlistsPlugin(),
           blockquotePlugin({
@@ -265,6 +258,12 @@
           }),
           calloutPlugin(),
           imagePlugin({
+            izoConfig: {
+              url: 'https://izo.itsumma.ru',
+              token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiY2xpZW50IiwidG9rZW5JZCI6ImQyNzRhOTAzLTAyYWMtNGE2MS1hNmNiLTdiOTlkZGQ0YmIyNiIsInVzZXJuYW1lIjoidGVzdCIsImlhdCI6MTYxNDIzMzY4NywiZXhwIjoxNjQ1NzY5Njg3fQ.fEzuI8L9P7z9tcZ7PiocLQrf_gW9CF_JxrpQLxYHDRk',
+            }
+          }),
+          videoPlugin({
             izoConfig: {
               url: 'https://izo.itsumma.ru',
               token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiY2xpZW50IiwidG9rZW5JZCI6ImQyNzRhOTAzLTAyYWMtNGE2MS1hNmNiLTdiOTlkZGQ0YmIyNiIsInVzZXJuYW1lIjoidGVzdCIsImlhdCI6MTYxNDIzMzY4NywiZXhwIjoxNjQ1NzY5Njg3fQ.fEzuI8L9P7z9tcZ7PiocLQrf_gW9CF_JxrpQLxYHDRk',
@@ -323,44 +322,35 @@
                 className: 'image place-wide',
                 ratio: 1.84,
                 icon: `<svg viewBox="0 0 25 25" fill="currentColor"><path d="M3 17.004V9.01a.4.4 0 0 1 .145-.31.476.476 0 0 1 .328-.13h17.74c.12 0 .23.043.327.13a.4.4 0 0 1 .145.31v7.994a.404.404 0 0 1-.145.313.48.48 0 0 1-.328.13H3.472a.483.483 0 0 1-.327-.13.402.402 0 0 1-.145-.313zm2.212 3.554v-.87c0-.13.05-.243.145-.334a.472.472 0 0 1 .328-.137H19c.124 0 .23.045.322.137a.457.457 0 0 1 .138.335v.86c0 .12-.046.22-.138.31a.478.478 0 0 1-.32.13H5.684a.514.514 0 0 1-.328-.13.415.415 0 0 1-.145-.32zm0-14.246v-.84c0-.132.05-.243.145-.334A.477.477 0 0 1 5.685 5H19a.44.44 0 0 1 .322.138.455.455 0 0 1 .138.335v.84a.451.451 0 0 1-.138.334.446.446 0 0 1-.32.138H5.684a.466.466 0 0 1-.328-.138.447.447 0 0 1-.145-.335z"></path></svg>`,
-                srcset: [
-                  {
-                    media: '(max-width: 1441px)',
-                    rations: [
-                      {
-                        ratio: 1,
-                        width: 721,
-                        height: 392,
-                      },
-                      {
-                        ratio: 2,
-                        width: 1442,
-                        height: 784,
-                      },
-                    ],
-                  },
-                  {
-                    media: '',
-                    rations: [
-                      {
-                        ratio: 1,
-                        width: 1161,
-                        height: 631,
-                      },
-                      {
-                        ratio: 2,
-                        width: 2322,
-                        height: 1262,
-                      },
-                    ],
-                  },
-                ],
               },
             ],
           }),
-          embedPlugin(),
+          embedPlugin({
+            // You can fetch full list of providers from https://oembed.com/providers.json
+            oEmbedProviders: JSON.parse('[{"provider_name":"YouTube","provider_url":"https://www.youtube.com/","endpoints":[{"schemes":["https://*.youtube.com/watch*","https://*.youtube.com/v/*","https://youtu.be/*","https://*.youtube.com/playlist?list=*"],"url":"https://www.youtube.com/oembed","discovery":true}]},{"provider_name":"TikTok","provider_url":"http://www.tiktok.com/","endpoints":[{"schemes":["https://www.tiktok.com/*/video/*"],"url":"https://www.tiktok.com/oembed"}]},{"provider_name":"SoundCloud","provider_url":"http://soundcloud.com/","endpoints":[{"schemes":["http://soundcloud.com/*","https://soundcloud.com/*","https://soundcloud.app.goog.gl/*"],"url":"https://soundcloud.com/oembed"}]}]'),
+            providerOptions: [
+              {
+                name: 'YouTube',
+                maxwidth: 760,
+                maxheight: 760,
+              }
+            ]
+          }),
           linkPlugin(),
           asidePlugin(),
+          // asidePlugin({
+          //   name: 'black-back',
+          //   tag: 'ASIDE',
+          //   attributes: { class: 'black-back' },
+          //   title: 'Черная подложка',
+          //   command: 'convert-to-black-back',
+          //   marks: [
+          //     {
+          //       tag: 'ASIDE',
+          //       attributes: ['class="black-back"'],
+          //     },
+          //   ],
+          // }),
           codePlugin(),
           quotePlugin(),
           typoSugarPlugin(),
@@ -368,6 +358,7 @@
           twoColumnsPlugin(),
           tablePlugin(),
           contentsPlugin(),
+          backImagePlugin(),
         ],
         toolbar: {
           enabled: true,
@@ -398,8 +389,8 @@
             'unordered-list',
             'ordered-list',
             'hr',
-            'hr-asterisk',
             'figure',
+            'video',
             'blockquote',
             'embed',
             'aside',

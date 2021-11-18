@@ -24,10 +24,10 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-yarn-
       -
-        name: Use Node.js 14.18.1
+        name: Use Node.js 16
         uses: actions/setup-node@v2
         with:
-          node-version: 14.18.1
+          node-version: 16
           cache: 'yarn'
       -
         name: Install

@@ -72,17 +72,16 @@ export const defaultTableOptions: TablePluginOptions = {
   commands: [
     {
       command: 'add-table',
-      shortcut: 'Alt + Digit6',
+      shortcut: 'Ctrl + Alt + T',
       action: (ta: Textarena, selection: ArenaSelection): ArenaSelection => {
         const arena = ta.getArena('table') as ArenaMediatorInterface;
         if (arena) {
-          const sel = ta.insertBeforeSelected(selection, arena);
+          const [sel] = ta.insertBeforeSelected(selection, arena);
           return sel;
         }
         return selection;
       },
       icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 14.06 13.69" fill="currentColor"><g ><g ><path d="M5.68,13.69h-5A.71.71,0,0,1,0,13V.71A.71.71,0,0,1,.71,0h5a.71.71,0,0,1,.71.71V13A.71.71,0,0,1,5.68,13.69ZM1.42,12.28H5V1.42H1.42Z"/><path d="M13.35,13.69h-5A.71.71,0,0,1,7.67,13V.71A.71.71,0,0,1,8.38,0h5a.71.71,0,0,1,.71.71V13A.71.71,0,0,1,13.35,13.69ZM9.09,12.28h3.55V1.42H9.09Z"/></g></g></svg>',
-      hint: '6',
       title: 'Таблица',
       checkStatus: (node: AnyArenaNode): boolean => node.arena.name === 'table',
       canShow: (node: AnyArenaNode) =>

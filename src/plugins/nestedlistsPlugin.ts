@@ -1,6 +1,6 @@
 import Textarena from '../Textarena';
 import ArenaSelection from '../helpers/ArenaSelection';
-import ArenaPlugin, { DefaulPluginOptions } from '../interfaces/ArenaPlugin';
+import ArenaPlugin, { DefaultPluginOptions } from '../interfaces/ArenaPlugin';
 import { ArenaMediatorInterface, ArenaTextInterface } from '../interfaces/Arena';
 import {
   ArenaNodeText, AnyArenaNode, ArenaNodeMediator, ChildArenaNode,
@@ -12,7 +12,7 @@ import utils from '../utils';
 
 type PrefixProcessor = (node: ArenaNodeText) => string;
 
-type ListOptions = DefaulPluginOptions & {
+type ListOptions = DefaultPluginOptions & {
   prefix: PrefixProcessor,
   pattern: RegExp,
 };
@@ -156,9 +156,8 @@ const defaultOptions: ListsOptions = {
           </g>
       </g>
   </svg>`,
-      shortcut: 'Alt + KeyL',
+      shortcut: 'Ctrl + Alt + L',
       command: 'convert-to-unordered-list',
-      hint: 'l',
       pattern: /^(-\s+).*$/,
       marks: [
         {
@@ -188,9 +187,8 @@ const defaultOptions: ListsOptions = {
           </g>
       </g>
   </svg>`,
-      shortcut: 'Alt + KeyO',
+      shortcut: 'Ctrl + Alt + O',
       command: 'convert-to-ordered-list',
-      hint: 'o',
       pattern: /^(\d+(?:\.|\))\s+).*$/,
       marks: [
         {
@@ -262,7 +260,6 @@ const nestedlistsPlugin = (opts?: ListsOptions): ArenaPlugin => ({
       icon,
       shortcut,
       command,
-      hint,
       marks,
       pattern,
     }) => {
@@ -313,7 +310,6 @@ const nestedlistsPlugin = (opts?: ListsOptions): ArenaPlugin => ({
               icon,
               shortcut,
               command,
-              hint,
               checkStatus: (node: AnyArenaNode):
                 boolean => node.hasParent && node.parent.arena === listArena,
             });
@@ -324,14 +320,13 @@ const nestedlistsPlugin = (opts?: ListsOptions): ArenaPlugin => ({
             icon,
             shortcut,
             command,
-            hint,
             canShow: (node: AnyArenaNode) =>
               textarena.isAllowedNode(node, listArena),
           });
         }
       }
-      if (paragraph.hasText) {
-        paragraph.registerMiddleware((ta: Textarena, sel: ArenaSelection, text: string) => {
+      textarena.registerMiddleware(
+        (ta: Textarena, sel: ArenaSelection, text: string | DataTransfer) => {
           if (sel.isCollapsed() && text === ' ') {
             const { node, offset } = sel.getCursor();
             if (node.hasText) {
@@ -349,8 +344,10 @@ const nestedlistsPlugin = (opts?: ListsOptions): ArenaPlugin => ({
             }
           }
           return [false, sel];
-        });
-      }
+        },
+        'after',
+        { scope: paragraph },
+      );
       textarena.addSimpleArenas(listArena);
     });
 

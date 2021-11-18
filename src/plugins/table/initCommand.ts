@@ -11,7 +11,6 @@ export function initCommand(
     shortcut,
     icon,
     title,
-    hint,
     checkStatus,
     canShow,
   } = opts;
@@ -28,7 +27,6 @@ export function initCommand(
       icon,
       title,
       shortcut,
-      hint,
       command,
       canShow,
     });
@@ -38,7 +36,6 @@ export function initCommand(
         title,
         icon,
         shortcut,
-        hint,
         command,
         checkStatus,
       });

@@ -1,8 +1,10 @@
 .textarena-creator {
   position: absolute;
+
   // bottom: 0;
   left: 0;
   z-index: 20;
+
   // width: 1.2em;
   // height: 1.6em;
   flex-direction: row;
@@ -11,8 +13,13 @@
   width: 100%;
   pointer-events: none;
   align-items: center;
+
   // overflow-x: hidden;
   // overflow-y: visible;
+
+  &:hover .textarena-shortcut-hint-short {
+    display: none;
+  }
 
   &_active {
     width: 100%;
@@ -50,11 +57,14 @@
     &:active {
       outline: none;
       color: black;
+      background: white;
+
       // border: 0.05em solid #000;
     }
 
     svg {
       width: 100%;
+
       // fill: #888;
     }
   }
@@ -77,16 +87,15 @@
 
   &_active &__placeholder {
     // left: 60px;
-    opacity: 0;
+    opacity: 0%;
   }
 
   &__list {
     padding-left: 0.5em;
     display: flex;
-    flex-wrap: wrap;
+    flex-flow: row wrap;
     transition: 0.3s;
-    opacity: 0;
-    flex-direction: row;
+    opacity: 0%;
     margin-left: -100vw;
     font-size: 1em;
   }
@@ -94,13 +103,13 @@
   &_active &__list {
     margin-left: 0;
     flex-direction: row;
-    opacity: 1;
+    opacity: 100%;
     padding: 0.2em;
     border-radius: 0.7em;
     background: white;
 
-    @supports ((-webkit-backdrop-filter: none) or (backdrop-filter: none)) {
-      background: rgba(255, 255, 255, 0.45);
+    @supports (backdrop-filter: none) {
+      background: rgb(255 255 255 / 72%);
       backdrop-filter: blur(20px);
     }
   }
@@ -119,7 +128,7 @@
     cursor: pointer;
     background: none;
     font-size: 1em;
-    color: #888;
+    color: #4e4e4e;
     border: 0;
     border-radius: 0.5em;
     outline: none;
@@ -135,8 +144,14 @@
 
     &:focus,
     &:active {
-      animation: bounceIn 0.3s 1;
+      animation: bounce-in 0.3s 1;
       animation-fill-mode: forwards;
+    }
+
+    &:hover {
+      .textarena-shortcut-hint-full {
+        display: block;
+      }
     }
   }
 
@@ -155,21 +170,19 @@
     margin-right: 0.2em;
   }
 
-  &__hint { @include key; }
-
-  &__item_show-hint &__hint {
+  &__item_show-hint .textarena-shortcut-hint-short {
     display: block;
   }
 }
 
-@keyframes bounceIn {
+@keyframes bounce-in {
   0% {
-    opacity: 1;
+    opacity: 100%;
     transform: scale(1);
   }
 
   50% {
-    opacity: 1;
+    opacity: 100%;
     transform: scale(1.1);
   }
 

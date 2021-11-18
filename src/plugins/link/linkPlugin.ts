@@ -33,8 +33,7 @@ const defaultOptions: LinkPluginOptions = {
   attributes: {
   },
   allowedAttributes: ['href', 'target'],
-  shortcut: 'Ctrl + KeyK',
-  hint: 'k',
+  shortcut: 'Ctrl + K',
   command: 'add-link',
   commandFunction: linkCommand,
   component: 'arena-linkbar',
@@ -51,7 +50,7 @@ const defaultOptions: LinkPluginOptions = {
 const linkPlugin = (opts?: Partial<LinkPluginOptions>): ArenaPlugin => ({
   register(textarena: Textarena): void {
     const {
-      name, icon, title, tag, attributes, allowedAttributes, shortcut, hint,
+      name, icon, title, tag, attributes, allowedAttributes, shortcut,
       command, commandFunction,
       component, componentConstructor, moveCursorHandler, marks,
     } = { ...defaultOptions, ...(opts || {}) };
@@ -71,8 +70,8 @@ const linkPlugin = (opts?: Partial<LinkPluginOptions>): ArenaPlugin => ({
         customElements.define(component, componentConstructor);
         customElements.define('arena-link-modal', LinkModal);
       }
-      const linkbar = new ElementHelper(component);
-      linkModal = new ElementHelper('arena-link-modal');
+      const linkbar = new ElementHelper(component, 'textarena-linkbar');
+      linkModal = new ElementHelper('arena-link-modal', 'textarena-link-modal');
       linkbar.setProperty('textarena', textarena);
       linkbar.setProperty('linkModal', linkModal);
       linkModal.setProperty('textarena', textarena);
@@ -101,7 +100,6 @@ const linkPlugin = (opts?: Partial<LinkPluginOptions>): ArenaPlugin => ({
           icon,
           title,
           command,
-          hint,
           shortcut,
         });
       }
@@ -111,9 +109,14 @@ const linkPlugin = (opts?: Partial<LinkPluginOptions>): ArenaPlugin => ({
     if (!paragraph) {
       throw new Error('Default Arena for text not found');
     }
-    if (paragraph.hasText) {
-      paragraph.registerMiddleware((ta: Textarena, sel: ArenaSelection, text: string) => {
-        if (sel.isSameNode() && !sel.isCollapsed()) {
+    textarena.registerMiddleware(
+      (
+        ta: Textarena,
+        sel: ArenaSelection,
+        data: string | DataTransfer,
+      ) => {
+        const text = typeof data === 'string' ? data : data.getData('text/plain');
+        if (text && sel.isSameNode() && !sel.isCollapsed() && sel.getCursor().node.hasText) {
           const trimmed = text.trim();
           let href = '';
           if (urlPattern.test(trimmed)) {
@@ -136,8 +139,9 @@ const linkPlugin = (opts?: Partial<LinkPluginOptions>): ArenaPlugin => ({
           }
         }
         return [false, sel];
-      });
-    }
+      },
+      'before',
+    );
   },
 });
 

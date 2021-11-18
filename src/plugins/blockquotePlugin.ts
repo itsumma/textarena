@@ -1,14 +1,14 @@
 import Textarena from '../Textarena';
-import ArenaPlugin, { DefaulPluginOptions } from '../interfaces/ArenaPlugin';
+import ArenaPlugin, { DefaultPluginOptions } from '../interfaces/ArenaPlugin';
 import ArenaSelection from '../helpers/ArenaSelection';
 import { ArenaMediatorInterface, ArenaTextInterface } from '../interfaces/Arena';
 import { AnyArenaNode } from '../interfaces/ArenaNode';
 import utils from '../utils';
 
-const defaultOptions: DefaulPluginOptions = {
+const defaultOptions: DefaultPluginOptions = {
   name: 'blockquote',
   tag: 'BLOCKQUOTE',
-  attributes: {},
+  attributes: { class: 'textarena-blockquote' },
   title: 'Blockquote',
   icon: `<svg width="16px" height="10px" viewBox="0 0 16 10" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
   <g id="Icons" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
@@ -24,8 +24,7 @@ const defaultOptions: DefaulPluginOptions = {
       </g>
   </g>
 </svg>`,
-  shortcut: 'Alt + Quote',
-  hint: '"',
+  shortcut: 'Ctrl + Alt + "',
   command: 'convert-to-blockquote',
   marks: [
     {
@@ -35,10 +34,10 @@ const defaultOptions: DefaulPluginOptions = {
   ],
 };
 
-const blockquotePlugin = (opts?: Partial<DefaulPluginOptions>): ArenaPlugin => ({
+const blockquotePlugin = (opts?: Partial<DefaultPluginOptions>): ArenaPlugin => ({
   register(textarena: Textarena): void {
     const {
-      name, tag, attributes, title, icon, shortcut, hint, command, marks,
+      name, tag, attributes, title, icon, shortcut, command, marks,
     } = { ...defaultOptions, ...(opts || {}) };
     const paragraph = textarena.getDefaultTextArena();
     if (!paragraph) {
@@ -77,7 +76,6 @@ const blockquotePlugin = (opts?: Partial<DefaulPluginOptions>): ArenaPlugin => (
             title,
             icon,
             shortcut,
-            hint,
             command,
             checkStatus: (node: AnyArenaNode):
               boolean => !!utils.modelTree.findNodeUp(node, (n) => n.arena === arena),
@@ -88,7 +86,6 @@ const blockquotePlugin = (opts?: Partial<DefaulPluginOptions>): ArenaPlugin => (
           title,
           icon,
           shortcut,
-          hint,
           command,
           canShow: (node: AnyArenaNode) =>
             textarena.isAllowedNode(node, arena),

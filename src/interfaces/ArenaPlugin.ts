@@ -8,7 +8,7 @@ export default interface ArenaPlugin {
   register: (textarena: Textarena) => void;
 }
 
-export type DefaulPluginOptions = {
+export type DefaultPluginOptions = {
   name: string,
   tag: string,
   attributes: ArenaAttributes,
@@ -18,7 +18,7 @@ export type DefaulPluginOptions = {
   icon?: string,
   shortcut?: string,
   description?: string,
-  hint?: string,
+  hint?: string, // Deprecated
   command?: string,
   component?: string,
   componentConstructor?: CustomElementConstructor,

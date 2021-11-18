@@ -15,7 +15,7 @@
 /**
  * @type {Cypress.PluginConfig}
  */
-export default (on, config) => {
+export default () => {
   // `on` is used to hook into various events Cypress emits
   // `config` is the resolved Cypress config
 };

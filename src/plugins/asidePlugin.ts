@@ -1,11 +1,11 @@
 import Textarena from '../Textarena';
-import ArenaPlugin, { DefaulPluginOptions } from '../interfaces/ArenaPlugin';
+import ArenaPlugin, { DefaultPluginOptions } from '../interfaces/ArenaPlugin';
 import ArenaSelection from '../helpers/ArenaSelection';
 import { ArenaMediatorInterface, ArenaTextInterface } from '../interfaces/Arena';
 import { AnyArenaNode } from '../interfaces/ArenaNode';
 import utils from '../utils';
 
-const defaultOptions: DefaulPluginOptions = {
+const defaultOptions: DefaultPluginOptions = {
   name: 'aside',
   tag: 'ASIDE',
   attributes: { class: 'aside aside-gray' },
@@ -21,8 +21,7 @@ const defaultOptions: DefaulPluginOptions = {
     <path d="m18.5 19h-2c-.276 0-.5-.224-.5-.5s.224-.5.5-.5h2c.827 0 1.5-.673
     1.5-1.5v-2c0-.276.224-.5.5-.5s.5.224.5.5v2c0 1.379-1.122 2.5-2.5 2.5z"
     fill="currentColor"/></g></svg>`,
-  shortcut: 'Alt + KeyA',
-  hint: 'a',
+  shortcut: 'Ctrl + Alt + 5',
   command: 'convert-to-aside',
   marks: [
     {
@@ -32,10 +31,10 @@ const defaultOptions: DefaulPluginOptions = {
   ],
 };
 
-const asidePlugin = (opts?: Partial<DefaulPluginOptions>): ArenaPlugin => ({
+const asidePlugin = (opts?: Partial<DefaultPluginOptions>): ArenaPlugin => ({
   register(textarena: Textarena): void {
     const {
-      name, tag, attributes, title, icon, shortcut, hint, command, marks,
+      name, tag, attributes, title, icon, shortcut, command, marks,
     } = { ...defaultOptions, ...(opts || {}) };
     const paragraph = textarena.getDefaultTextArena();
     if (!paragraph) {
@@ -55,6 +54,7 @@ const asidePlugin = (opts?: Partial<DefaulPluginOptions>): ArenaPlugin => ({
       marks,
       [textarena.getRootArenaName()],
     ) as ArenaMediatorInterface;
+    textarena.addMiddleArenas(arena);
     if (command) {
       textarena.registerCommand(
         command,
@@ -74,7 +74,6 @@ const asidePlugin = (opts?: Partial<DefaulPluginOptions>): ArenaPlugin => ({
             title,
             icon,
             shortcut,
-            hint,
             command,
             checkStatus: (node: AnyArenaNode):
               boolean => !!utils.modelTree.findNodeUp(node, (n) => n.arena === arena),
@@ -85,7 +84,6 @@ const asidePlugin = (opts?: Partial<DefaulPluginOptions>): ArenaPlugin => ({
           title,
           icon,
           shortcut,
-          hint,
           command,
           canShow: (node: AnyArenaNode) =>
             textarena.isAllowedNode(node, arena),

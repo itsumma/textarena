@@ -1,12 +1,12 @@
 import Textarena from '../Textarena';
 import ArenaSelection from '../helpers/ArenaSelection';
-import ArenaPlugin, { DefaulPluginOptions } from '../interfaces/ArenaPlugin';
+import ArenaPlugin, { DefaultPluginOptions } from '../interfaces/ArenaPlugin';
 import { ArenaTextInterface } from '../interfaces/Arena';
 import { AnyArenaNode } from '../interfaces/ArenaNode';
 import utils from '../utils';
 
-type HeaderOptions = { [key: string]: DefaulPluginOptions };
-type PartialHeaderOptions = { [key: string]: Partial<DefaulPluginOptions> };
+type HeaderOptions = { [key: string]: DefaultPluginOptions };
+type PartialHeaderOptions = { [key: string]: Partial<DefaultPluginOptions> };
 
 const defaultOptions: HeaderOptions = {
   h2: {
@@ -17,9 +17,8 @@ const defaultOptions: HeaderOptions = {
     title: 'Header 2',
     icon: '<b>H2</b>',
     command: 'convert-to-header2',
-    shortcut: 'Alt + Digit2',
+    shortcut: 'Ctrl + Alt + 2',
     description: 'Заголовок второго уровня',
-    hint: '2',
     marks: [
       {
         tag: 'H2',
@@ -35,9 +34,8 @@ const defaultOptions: HeaderOptions = {
     title: 'Header 3',
     icon: '<b>H3</b>',
     command: 'convert-to-header3',
-    shortcut: 'Alt + Digit3',
+    shortcut: 'Ctrl + Alt + 3',
     description: 'Заголовок третьего уровня',
-    hint: '3',
     marks: [
       {
         tag: 'H3',
@@ -53,9 +51,8 @@ const defaultOptions: HeaderOptions = {
     title: 'Header 4',
     icon: '<b>H4</b>',
     command: 'convert-to-header4',
-    shortcut: 'Alt + Digit4',
+    shortcut: 'Ctrl + Alt + 4',
     description: 'Заголовок четвёртого уровня',
-    hint: '4',
     marks: [
       {
         tag: 'H4',
@@ -74,7 +71,7 @@ const headersPlugin = (opts?: PartialHeaderOptions): ArenaPlugin => ({
     Object.entries(opts || defaultOptions).forEach(([type, options]) => {
       const {
         name, tag, attributes, allowedAttributes, title,
-        icon, shortcut, hint, command, marks, description,
+        icon, shortcut, command, marks, description,
       } = defaultOptions[type] ? { ...defaultOptions[type], ...options } : options;
       if (name && tag && attributes) {
         const arena = textarena.registerArena(
@@ -90,17 +87,21 @@ const headersPlugin = (opts?: PartialHeaderOptions): ArenaPlugin => ({
           [textarena.getRootArenaName()],
         ) as ArenaTextInterface;
         textarena.addSimpleArenas(arena);
-        arena.registerMiddleware((ta: Textarena, selection: ArenaSelection) => {
-          if (selection.isCollapsed()) {
-            const cursor = selection.getCursor();
-            if (cursor.node.hasText) {
-              const text = cursor.node.getRawText();
-              const slug = utils.str.prepareForAttribute(text.toLowerCase().trim());
-              cursor.node.setAttribute('id', slug);
+        textarena.registerMiddleware(
+          (ta: Textarena, selection: ArenaSelection) => {
+            if (selection.isCollapsed()) {
+              const cursor = selection.getCursor();
+              if (cursor.node.hasText) {
+                const text = cursor.node.getRawText();
+                const slug = utils.str.prepareForAttribute(text.toLowerCase().trim());
+                cursor.node.setAttribute('id', slug);
+              }
             }
-          }
-          return [false, selection];
-        });
+            return [false, selection];
+          },
+          'after',
+          { scope: arena },
+        );
         if (command) {
           textarena.registerCommand(
             command,
@@ -145,7 +146,6 @@ const headersPlugin = (opts?: PartialHeaderOptions): ArenaPlugin => ({
               title,
               icon,
               shortcut,
-              hint,
               command,
               checkStatus: (node: AnyArenaNode): boolean =>
                 node.arena === arena,
@@ -157,7 +157,6 @@ const headersPlugin = (opts?: PartialHeaderOptions): ArenaPlugin => ({
               title,
               icon,
               shortcut,
-              hint,
               command,
               canShow: (node: AnyArenaNode) =>
                 textarena.isAllowedNode(node, arena),

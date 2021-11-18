@@ -18,7 +18,7 @@
 
   if (elem && (typeof Textarena !== 'undefined')) {
     let dataHtml;
-    const storedData = localStorage.getItem('dataHtml');
+    // const storedData = localStorage.getItem('dataHtml');
     try {
       if (storedData) {
         data = JSON.parse(storedData);
@@ -70,15 +70,30 @@
       if (renderElem) {
         renderElem.innerHTML = data.html;
       }
+      const twitterFrames = document.querySelectorAll('iframe[id^="iframe-twitter"]');
+      for (const frame of twitterFrames) {
+        frame.addEventListener('load', () => {
+          frame.contentWindow.postMessage({ element: frame.id, query: 'height' }, 'https://twitframe.com');
+        });
+      }
     }, 500);
+    window.addEventListener('message', (e) => {
+      if (e.origin === 'https://twitframe.com' && e.data.element.match(/^iframe-twitter/)) {
+        const element = document.getElementById(e.data.element);
+        if (element) {
+          element.height = e.data.height;
+        }
+      }
+    });
     const onEvent = (e) => {
       if (e.name === 'customEvent') {
-        console.log(e);
+        // console.log(e);
       }
     }
 
     const {
       commonPlugin,
+      pastePlugin,
       paragraphPlugin,
       formatingsPlugin,
       headersPlugin,
@@ -87,6 +102,7 @@
       blockquotePlugin,
       calloutPlugin,
       imagePlugin,
+      videoPlugin,
       figurePlugin,
       embedPlugin,
       linkPlugin,
@@ -109,6 +125,7 @@
         placeholder: 'Введите текст…',
         plugins: [
           commonPlugin(),
+          pastePlugin(),
           formatingsPlugin(),
           paragraphPlugin(),
           headersPlugin(),
@@ -141,6 +158,12 @@
           }),
           calloutPlugin(),
           imagePlugin({
+            izoConfig: {
+              url: 'https://izo.itsumma.ru',
+              token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiY2xpZW50IiwidG9rZW5JZCI6ImQyNzRhOTAzLTAyYWMtNGE2MS1hNmNiLTdiOTlkZGQ0YmIyNiIsInVzZXJuYW1lIjoidGVzdCIsImlhdCI6MTYxNDIzMzY4NywiZXhwIjoxNjQ1NzY5Njg3fQ.fEzuI8L9P7z9tcZ7PiocLQrf_gW9CF_JxrpQLxYHDRk',
+            }
+          }),
+          videoPlugin({
             izoConfig: {
               url: 'https://izo.itsumma.ru',
               token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiY2xpZW50IiwidG9rZW5JZCI6ImQyNzRhOTAzLTAyYWMtNGE2MS1hNmNiLTdiOTlkZGQ0YmIyNiIsInVzZXJuYW1lIjoidGVzdCIsImlhdCI6MTYxNDIzMzY4NywiZXhwIjoxNjQ1NzY5Njg3fQ.fEzuI8L9P7z9tcZ7PiocLQrf_gW9CF_JxrpQLxYHDRk',
@@ -234,7 +257,17 @@
               },
             ],
           }),
-          embedPlugin(),
+          embedPlugin({
+            // You can fetch full list of providers from https://oembed.com/providers.json
+            oEmbedProviders: JSON.parse('[{"provider_name":"YouTube","provider_url":"https://www.youtube.com/","endpoints":[{"schemes":["https://*.youtube.com/watch*","https://*.youtube.com/v/*","https://youtu.be/*","https://*.youtube.com/playlist?list=*"],"url":"https://www.youtube.com/oembed","discovery":true}]},{"provider_name":"TikTok","provider_url":"http://www.tiktok.com/","endpoints":[{"schemes":["https://www.tiktok.com/*/video/*"],"url":"https://www.tiktok.com/oembed"}]},{"provider_name":"SoundCloud","provider_url":"http://soundcloud.com/","endpoints":[{"schemes":["http://soundcloud.com/*","https://soundcloud.com/*","https://soundcloud.app.goog.gl/*"],"url":"https://soundcloud.com/oembed"}]}]'),
+            providerOptions: [
+              {
+                name: 'YouTube',
+                maxwidth: 760,
+                maxheight: 760,
+              }
+            ]
+          }),
           linkPlugin(),
           asidePlugin({
             name: 'asideColoredGrey',
@@ -245,8 +278,7 @@
               height="24px" viewBox="0 0 24 24" width="24px" fill="currentColor"><path d="M0 0h24v24H0z" fill="none"/>
               <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
               </svg>`,
-            shortcut: 'Alt + Digit7',
-            hint: '7',
+            shortcut: 'Ctrl + Alt + Digit7',
             command: 'convert-to-aside-colored-grey',
             marks: [
               {
@@ -268,8 +300,7 @@
               height="24px" viewBox="0 0 24 24" width="24px" fill="#b460ff"><path d="M0 0h24v24H0z" fill="none"/>
               <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
               </svg>`,
-            shortcut: 'Alt + Digit8',
-            hint: '8',
+            shortcut: 'Ctrl + Alt + Digit8',
             command: 'convert-to-aside-colored-purple',
             marks: [
               {
@@ -291,8 +322,7 @@
               height="24px" viewBox="0 0 24 24" width="24px" fill="#ffb09a"><path d="M0 0h24v24H0z" fill="none"/>
               <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
               </svg>`,
-            shortcut: 'Alt + Digit9',
-            hint: '9',
+            shortcut: 'Ctrl + Alt + Digit9',
             command: 'convert-to-aside-colored-orange',
             marks: [
               {
@@ -344,6 +374,7 @@
             'ordered-list',
             'hr',
             'figure',
+            'video',
             'blockquote',
             'embed',
             'asideColoredGrey',

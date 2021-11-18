@@ -1,18 +1,17 @@
 import Textarena from '../Textarena';
-import ArenaPlugin, { DefaulPluginOptions } from '../interfaces/ArenaPlugin';
+import ArenaPlugin, { DefaultPluginOptions } from '../interfaces/ArenaPlugin';
 import { ArenaTextInterface } from '../interfaces/Arena';
 import { AnyArenaNode } from '../interfaces/ArenaNode';
 import ArenaSelection from '../helpers/ArenaSelection';
 
-const defaultOptions: DefaulPluginOptions = {
+const defaultOptions: DefaultPluginOptions = {
   name: 'paragraph',
   title: 'Paragraph',
   tag: 'P',
   attributes: { class: 'paragraph' },
   icon: '<b>¶</b>',
-  shortcut: 'Alt + Digit0',
+  shortcut: 'Ctrl + Alt + 0',
   description: 'Параграф',
-  hint: '0',
   command: 'convert-to-paragraph',
   marks: [
     {
@@ -26,10 +25,10 @@ const defaultOptions: DefaulPluginOptions = {
   ],
 };
 
-const paragraphPlugin = (opts?: Partial<DefaulPluginOptions>): ArenaPlugin => ({
+const paragraphPlugin = (opts?: Partial<DefaultPluginOptions>): ArenaPlugin => ({
   register(textarena: Textarena): void {
     const {
-      name, title, tag, attributes, icon, shortcut, hint, command, marks, description,
+      name, title, tag, attributes, icon, shortcut, command, marks, description,
     } = { ...defaultOptions, ...(opts || {}) };
     const arena = textarena.registerArena(
       {
@@ -62,7 +61,6 @@ const paragraphPlugin = (opts?: Partial<DefaulPluginOptions>): ArenaPlugin => ({
           title,
           icon,
           shortcut,
-          hint,
           command,
           checkStatus: (node: AnyArenaNode):
             boolean => node.arena === arena,

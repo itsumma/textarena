@@ -1,0 +1,58 @@
+.textarena-shortcut-hint-full {
+  display: none;
+  position: absolute;
+  font-family: monospace;
+  background-color: #777;
+  text-align: center;
+  line-height: 1.2em;
+  color: #fff;
+  border-radius: 0.2em;
+  z-index: 1;
+  padding: 0.1em 0.3em;
+  min-width: 1.4em;
+  white-space: nowrap;
+  font-size: 0.6em;
+
+  // top: -0.9em;
+  // right: -0.3em;
+  bottom: calc(100% + 0.3em);
+  left: 50%;
+  transform: translateX(-50%);
+
+  &::before {
+    content: "";
+    position: absolute;
+    bottom: -0.1em;
+    left: 50%;
+    width: 0.4em;
+    height: 0.4em;
+    transform: rotate(-45deg) translateX(-50%);
+    z-index: -1;
+    background-color: #777;
+  }
+
+  i {
+    font-style: normal;
+    color: #d7d7d7;
+    font-size: 0.8em;
+    display: block;
+  }
+}
+
+.textarena-shortcut-hint-short {
+  display: none;
+  position: absolute;
+  font-family: monospace;
+  background-color: #777;
+  text-align: center;
+  line-height: 1.2em;
+  color: #fff;
+  border-radius: 0.2em;
+  z-index: 1;
+  padding: 0.1em 0.3em;
+  min-width: 1.4em;
+  white-space: nowrap;
+  font-size: 0.6em;
+  top: -0.7em;
+  right: -0.3em;
+}

@@ -1,18 +1,17 @@
 import Textarena from '../../Textarena';
 import ArenaSelection from '../../helpers/ArenaSelection';
-import ArenaPlugin, { DefaulPluginOptions } from '../../interfaces/ArenaPlugin';
+import ArenaPlugin, { DefaultPluginOptions } from '../../interfaces/ArenaPlugin';
 import { ArenaMediatorInterface, ArenaTextInterface } from '../../interfaces/Arena';
 import { AnyArenaNode } from '../../interfaces/ArenaNode';
 import defaultOutputCallout from './defaultOutputCallout';
 import ArenaCallout from './ArenaCallout';
 
-const defaultOptions: DefaulPluginOptions = {
+const defaultOptions: DefaultPluginOptions = {
   name: 'callout',
   title: 'Внимание',
   tag: 'ARENA-CALLOUT',
   attributes: {},
   // shortcut: 'Alt + KeyC',
-  // hint: 'c',
   command: 'add-callout',
   component: 'arena-callout',
   componentConstructor: ArenaCallout,
@@ -25,10 +24,10 @@ const defaultOptions: DefaulPluginOptions = {
   output: defaultOutputCallout,
 };
 
-const calloutPlugin = (opts?: Partial<DefaulPluginOptions>): ArenaPlugin => ({
+const calloutPlugin = (opts?: Partial<DefaultPluginOptions>): ArenaPlugin => ({
   register(textarena: Textarena): void {
     const {
-      name, icon, title, tag, attributes, shortcut, hint, command,
+      name, icon, title, tag, attributes, shortcut, command,
       component, componentConstructor, marks, output,
     } = { ...defaultOptions, ...(opts || {}) };
     if (component && componentConstructor && !customElements.get(component)) {
@@ -93,7 +92,6 @@ const calloutPlugin = (opts?: Partial<DefaulPluginOptions>): ArenaPlugin => ({
           icon,
           title,
           shortcut,
-          hint,
           command,
           canShow: (node: AnyArenaNode) =>
             textarena.isAllowedNode(node, arena),

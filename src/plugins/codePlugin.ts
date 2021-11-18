@@ -1,18 +1,17 @@
 import Textarena from '../Textarena';
-import ArenaPlugin, { DefaulPluginOptions } from '../interfaces/ArenaPlugin';
+import ArenaPlugin, { DefaultPluginOptions } from '../interfaces/ArenaPlugin';
 import ArenaSelection from '../helpers/ArenaSelection';
 import { ArenaMediatorInterface, ArenaTextInterface } from '../interfaces/Arena';
 import { AnyArenaNode } from '../interfaces/ArenaNode';
 import utils from '../utils';
 
-const defaultOptions: DefaulPluginOptions = {
+const defaultOptions: DefaultPluginOptions = {
   name: 'code',
   tag: 'PRE',
   attributes: {},
   title: 'Моноширный',
   icon: 'pre',
-  shortcut: 'Alt + KeyP',
-  hint: 'p',
+  shortcut: 'Ctrl + Alt + P',
   command: 'convert-to-code',
   marks: [
     {
@@ -22,10 +21,10 @@ const defaultOptions: DefaulPluginOptions = {
   ],
 };
 
-const codePlugin = (opts?: Partial<DefaulPluginOptions>): ArenaPlugin => ({
+const codePlugin = (opts?: Partial<DefaultPluginOptions>): ArenaPlugin => ({
   register(textarena: Textarena): void {
     const {
-      name, tag, attributes, title, icon, shortcut, hint, command, marks,
+      name, tag, attributes, title, icon, shortcut, command, marks,
     } = { ...defaultOptions, ...(opts || {}) };
     const paragraph = textarena.getDefaultTextArena();
     if (!paragraph) {
@@ -64,7 +63,6 @@ const codePlugin = (opts?: Partial<DefaulPluginOptions>): ArenaPlugin => ({
             title,
             icon,
             shortcut,
-            hint,
             command,
             checkStatus: (node: AnyArenaNode):
               boolean => !!utils.modelTree.findNodeUp(node, (n) => n.arena === arena),
@@ -75,7 +73,6 @@ const codePlugin = (opts?: Partial<DefaulPluginOptions>): ArenaPlugin => ({
           title,
           icon,
           shortcut,
-          hint,
           command,
           canShow: (node: AnyArenaNode) =>
             textarena.isAllowedNode(node, arena),

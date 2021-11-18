@@ -1,19 +1,18 @@
 import ArenaSelection from '../../helpers/ArenaSelection';
 import { ArenaMediatorInterface, ArenaTextInterface } from '../../interfaces/Arena';
 import { AnyArenaNode } from '../../interfaces/ArenaNode';
-import ArenaPlugin, { DefaulPluginOptions } from '../../interfaces/ArenaPlugin';
+import ArenaPlugin, { DefaultPluginOptions } from '../../interfaces/ArenaPlugin';
 import Textarena from '../../Textarena';
 import ArenaQuoteBlock from './ArenaQuoteBlock';
 import outputQuoteBlock from './outputQuoteBlock';
 
-const defaultOptions: DefaulPluginOptions = {
+const defaultOptions: DefaultPluginOptions = {
   name: 'quote-block',
   // icon: '<b>Q</b>',
   title: 'Блок с цитатой',
   tag: 'ARENA-QUOTE-BLOCK',
   attributes: { class: 'quote-block' },
-  shortcut: 'Alt + KeyB',
-  hint: 'q',
+  shortcut: 'Ctrl + Alt + 8',
   command: 'add-quote-block',
   component: 'arena-quote-block',
   componentConstructor: ArenaQuoteBlock,
@@ -72,10 +71,10 @@ const srcset = [
   },
 ];
 
-const quotePlugin = (opts?: Partial<DefaulPluginOptions>): ArenaPlugin => ({
+const quotePlugin = (opts?: Partial<DefaultPluginOptions>): ArenaPlugin => ({
   register(textarena: Textarena): void {
     const {
-      name, icon, title, tag, attributes, shortcut, hint, command,
+      name, icon, title, tag, attributes, shortcut, command,
       component, componentConstructor, marks, output,
     } = {
       ...defaultOptions,
@@ -163,18 +162,18 @@ const quotePlugin = (opts?: Partial<DefaulPluginOptions>): ArenaPlugin => ({
 
     if (command) {
       textarena.registerCommand(command, (ta: Textarena, selection: ArenaSelection) => {
-        const sel = ta.insertBeforeSelected(selection, arena);
+        const [sel] = ta.insertBeforeSelected(selection, arena);
         return sel;
       });
-
-      // textarena.registerShortcut(shortcut, command);
+      if (shortcut) {
+        textarena.registerShortcut(shortcut, command);
+      }
       if (title) {
         textarena.registerCreator({
           name,
           icon,
           title,
           shortcut,
-          hint,
           command,
           canShow: (node: AnyArenaNode) =>
             textarena.isAllowedNode(node, arena),
