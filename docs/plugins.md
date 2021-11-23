@@ -445,12 +445,8 @@ Basically, plugins that provide Textarena elements have a configuration object w
 * [formatingsPlugin](./plugins/formatingsPlugin.md)
 * [headersPlugin](./plugins/headersPlugin.md)
 * [hrPlugin](./plugins/hrPlugin.md)
-* [listsPlugin](./plugins/listsPlugin.md)
-* [nestedlistsPlugin](./plugins/nestedlistsPlugin.md)
 * [blockquotePlugin](./plugins/blockquotePlugin.md)
 * [calloutPlugin](./plugins/calloutPlugin.md)
-* imagePlugin
-<!-- * [figurePlugin](./plugins/figurePlugin.md) -->
 * [embedPlugin](./plugins/embedPlugin.md)
 * [linkPlugin](./plugins/linkPlugin.md)
 * [asidePlugin](./plugins/asidePlugin.md)
@@ -459,5 +455,12 @@ Basically, plugins that provide Textarena elements have a configuration object w
 * [typoSugarPlugin](./plugins/typoSugarPlugin.md)
 * [twoColumnsPlugin](./plugins/twoColumnsPlugin.md)
 * [roadmapPlugin](./plugins/roadmapPlugin.md)
-* [tablePlugin](./plugins/tablePlugin.md)
-* contentsPlugin
+<!-- * [tablePlugin](./plugins/tablePlugin.md) -->
+<!-- * [listsPlugin](./plugins/listsPlugin.md) -->
+<!-- * [nestedlistsPlugin](./plugins/nestedlistsPlugin.md) -->
+<!-- * [figurePlugin](./plugins/figurePlugin.md) -->
+<!-- * [imagePlugin](./plugins/imagePlugin.md) -->
+<!-- * [contentsPlugin](./plugins/contentsPlugin.md) -->
+<!-- * [pastePlugin](./plugins/pastePlugin.md) -->
+<!-- * [videoPlugin](./plugins/videoPlugin.md) -->
+<!-- * [backImagePlugin](./plugins/backImagePlugin.md) -->
