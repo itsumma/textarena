@@ -9,6 +9,7 @@
       "ignoreAtRules": ["function", "if", "each", "include", "mixin"]
     }],
     "selector-type-no-unknown": null,
-    "no-descending-specificity": null
+    "no-descending-specificity": null,
+    "alpha-value-notation": null
   }
 }
