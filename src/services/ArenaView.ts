@@ -20,7 +20,6 @@ export class ArenaView {
     const selection = this.getCurrentSelection();
     if (selection) {
       utils.modelTree.runThroughSelection(selection, (node, start, end) => {
-        console.log('SEEELECT', node);
         if (start === undefined && end === undefined) {
           const elem = editor.querySelector(`[arena-id="${node.getGlobalIndex()}"]`);
           if (elem) {

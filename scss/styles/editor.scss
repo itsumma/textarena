@@ -5,10 +5,6 @@
   border: none;
   padding: 1em 2em 10em;
 
-  ::-moz-selection { /* Code for Firefox */
-    background: #0080ed6b;
-  }
-
   ::selection {
     background: #0080ed6b;
   }
@@ -31,8 +27,6 @@
     margin-right: -2em;
     padding-left: 2em;
     padding-right: 2em;
-    // margin: 0 -2em 1em;
-    // padding: 0 2em 0;
     user-select: none;
 
     &.textarena-selected {
@@ -74,7 +68,7 @@
       display: none;
       position: absolute;
       left: 0.2em;
-      top: 0em;
+      top: 0;
       background: white;
       padding: 0.4em;
       border-radius: 0.8em;
@@ -98,7 +92,6 @@
       }
     }
   }
-
 
   .pseudo-cursor {
     position: relative;
@@ -128,22 +121,22 @@
       display: none;
     }
 
-    &:hover {
-      &::after {
-        // display: block;
-      }
-    }
+    // &:hover {
+    //   &::after {
+    //     display: block;
+    //   }
+    // }
   }
 
   .drag-cursor {
+    display: block;
     height: 1em;
     margin-top: -0.5em;
     margin-bottom: -0.5em;
     font-size: 1em;
     line-height: 1em;
-
-    &.ts-drag-entered {
-      background-color: #88d8ff;
-    }
+  }
+  .ts-drag-entered .drag-cursor {
+    background-color: #88d8ff;
   }
 }

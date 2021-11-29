@@ -37,7 +37,7 @@ export const dragPlugin = (): ArenaPlugin => ({
       const { target } = event;
       if (target && event.dataTransfer) {
         const elem = target as HTMLElement;
-        const nodeId = elem.getAttribute('arena-id');
+        const nodeId = elem.getAttribute('node-id');
         if (nodeId) {
           const node = model.getNodeById(nodeId);
           if (node) {
@@ -147,7 +147,7 @@ export const dragPlugin = (): ArenaPlugin => ({
             if (targetNode.parent === node && targetOffset <= offset) {
               offset -= 1;
             }
-            node.insertChildren([targetNode], offset);
+            node.insertChildren([targetNode], offset + 1);
             newSelection.setBoth(targetNode, targetNode.getIndex());
             return [true, newSelection];
           }

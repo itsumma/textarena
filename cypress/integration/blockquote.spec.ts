@@ -26,6 +26,7 @@ context('Actions', () => {
       .type('Simple paragraph');
 
     cy.get('@root')
+      .children('textarena-node')
       .children('blockquote')
       .contains('p', 'Blockquote content');
 
@@ -44,11 +45,13 @@ context('Actions', () => {
       .type('{enter}');
 
     cy.get('@root')
+      .children('textarena-node')
       .children('blockquote')
       .eq(0)
       .contains('p', 'First line.');
 
     cy.get('@root')
+      .children('textarena-node')
       .children('blockquote')
       .eq(0)
       .contains('p', 'Blockquote content');
@@ -64,18 +67,21 @@ context('Actions', () => {
       .type('{enter}');
 
     cy.get('@root')
+      .children('textarena-node')
       .children('blockquote')
       .eq(0)
       .contains('p', 'First line.');
 
     cy.get('@root')
-      .children('blockquote')
-      .eq(1)
+      .children('textarena-node')
+      .eq(3)
+      .get('@root')
+      .get('textarena-node:nth-child(4) blockquote')
       .contains('p', 'Blockquote content');
 
     cy.get('@root')
-      .children()
-      .eq(3)
+      .children('textarena-node')
+      .get('textarena-node:nth-child(5)')
       .contains('p', 'Simple paragraph');
 
     cy.get('#html')

@@ -67,21 +67,22 @@ export abstract class AbstractArena {
       </svg>
       </textarena-remove>`;
     const dragButton = html`<textarena-drag draggable="true" node-id="${id}" contenteditable="false">::</textarena-drag>`;
-    const dropCursor = html`<div
+    const dropCursor = html`<textarena-drop
       contenteditable="false"
       cursor-id="${id}"
       class="drag-cursor"
-    ></div>`;
+    ></textarena-drop>`;
     return html`
-    <textarena-node arena-id="${id}">
-      ${dropCursor}
+    <textarena-node
+      arena-id="${id}"
+      cursor-id="${id}"
+    >
       ${result}
+      ${dropCursor}
       ${removeButton}
       ${dragButton}
     </textarena-node>
     `;
-    return html``;
-    // return html`<${tag} ${attrs} .arena="${this}" .node="${node}">${children}</${tag}>`;
   }
 
   public getDataHtml(

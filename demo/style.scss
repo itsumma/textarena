@@ -579,12 +579,10 @@ roadmap p.paragraph::before {
   left: 0;
   bottom: 0;
 }
-
-roadmap p.paragraph:first-child::before {
+roadmap textarena-node:first-child p.paragraph::before {
   top: 50%;
 }
-
-roadmap p.paragraph:last-child::before {
+roadmap textarena-node:last-child p.paragraph::before {
   bottom: 50%;
 }
 
