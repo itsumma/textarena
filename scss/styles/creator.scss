@@ -87,7 +87,7 @@
 
   &_active &__placeholder {
     // left: 60px;
-    opacity: 0%;
+    opacity: 0;
   }
 
   &__list {
@@ -95,7 +95,7 @@
     display: flex;
     flex-flow: row wrap;
     transition: 0.3s;
-    opacity: 0%;
+    opacity: 0;
     margin-left: -100vw;
     font-size: 1em;
   }
@@ -103,7 +103,7 @@
   &_active &__list {
     margin-left: 0;
     flex-direction: row;
-    opacity: 100%;
+    opacity: 1;
     padding: 0.2em;
     border-radius: 0.7em;
     background: white;
@@ -177,12 +177,12 @@
 
 @keyframes bounce-in {
   0% {
-    opacity: 100%;
+    opacity: 1;
     transform: scale(1);
   }
 
   50% {
-    opacity: 100%;
+    opacity: 1;
     transform: scale(1.1);
   }
 
