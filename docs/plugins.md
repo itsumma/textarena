@@ -395,6 +395,8 @@ Basically, plugins that provide Textarena elements have a configuration object w
    ```js
     output: outputQuoteBlock
    ```
+
+   Output method code:
    ```js
     import { ArenaFormatings } from '@itsumma/textarena/src/interfaces/ArenaFormating';
     import { AnyArenaNode } from '@itsumma/textarena/src//interfaces/ArenaNode';
