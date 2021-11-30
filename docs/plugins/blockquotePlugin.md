@@ -15,6 +15,7 @@ This plugin has the following common default options:
   tag: 'BLOCKQUOTE',
   attributes: {},
   title: 'Blockquote',
+  icon: '/*svg tag*/',
   shortcut: 'Alt + Quote',
   hint: '"',
   command: 'convert-to-blockquote',
@@ -26,3 +27,5 @@ This plugin has the following common default options:
   ],
 }
 ```
+
+**[Return to plugins list.](../plugins.md#list-of-standard-plugins)**

@@ -176,7 +176,7 @@ Basically, plugins that provide Textarena elements have a configuration object w
         icon
     </td>
     <td> 
-        The icon of the plugin that is displayed in the bars. Can be text or svg.
+        HTML that defines how the element will be displayed in the bars.
     </td>
 </tr>
 <tr>
@@ -184,9 +184,9 @@ Basically, plugins that provide Textarena elements have a configuration object w
 
    Example code:
    ```js
-    icon: `<svg viewBox="0 8 18 2" width="18" height="2">
-                <path d="M 4 13 L 20 13 C 20.55 13 21 12.55 21 12 C 21 11.45 20.55 11 20 11 L 4 11 C 3.45 11 3 11.45 3 12 C 3 12.55 3.45 13 4 13 Z" id="🔹-Icon-Color" fill="currentColor" transform="matrix(1, 0, 0, 1, -3, -3)"></path>
-        </svg>`
+    icon: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M22 7L12 17L2 7" stroke="#303030" stroke-width="2"/>
+    </svg>`
    ```
    </td>
 </tr>
@@ -440,27 +440,46 @@ Basically, plugins that provide Textarena elements have a configuration object w
 
 ## List of standard plugins:
 
-* [paragraphPlugin](./plugins/paragraphPlugin.md)
-* [commonPlugin](./plugins/commonPlugin.md)
-* [formatingsPlugin](./plugins/formatingsPlugin.md)
-* [headersPlugin](./plugins/headersPlugin.md)
-* [hrPlugin](./plugins/hrPlugin.md)
-* [blockquotePlugin](./plugins/blockquotePlugin.md)
-* [calloutPlugin](./plugins/calloutPlugin.md)
-* [embedPlugin](./plugins/embedPlugin.md)
-* [linkPlugin](./plugins/linkPlugin.md)
-* [asidePlugin](./plugins/asidePlugin.md)
-* [codePlugin](./plugins/codePlugin.md)
-* [quotePlugin](./plugins/quotePlugin.md)
-* [typoSugarPlugin](./plugins/typoSugarPlugin.md)
-* [twoColumnsPlugin](./plugins/twoColumnsPlugin.md)
-* [roadmapPlugin](./plugins/roadmapPlugin.md)
-<!-- * [tablePlugin](./plugins/tablePlugin.md) -->
+* [paragraphPlugin](./plugins/paragraphPlugin.md)  
+is the common plugin wich provides simple text paragraph.
+* [commonPlugin](./plugins/commonPlugin.md)  
+registers common commands and their keyboard shortcuts.
+* [formatingsPlugin](./plugins/formatingsPlugin.md)  
+registers elements of inline text formatting.
+* [headersPlugin](./plugins/headersPlugin.md)  
+registers headings elements.
+* [hrPlugin](./plugins/hrPlugin.md)  
+registers a horizontal rule - a line that goes across the Textarena area.
+* [blockquotePlugin](./plugins/blockquotePlugin.md)  
+registers simple qoute element.
+* [calloutPlugin](./plugins/calloutPlugin.md)  
+registers a block for displaying important information inside which you can add other elements of the Textarena.
+* [embedPlugin](./plugins/embedPlugin.md)  
+registers element that allows you to embed external content.
+* [linkPlugin](./plugins/linkPlugin.md)  
+registers inline link element.
+* [asidePlugin](./plugins/asidePlugin.md)  
+registers a block with a frame inside which you can add other elements of the Textarena.
+* [codePlugin](./plugins/codePlugin.md)  
+registers element where text is displayed in a fixed-width font, and the text preserves both spaces and line breaks.
+* [quotePlugin](./plugins/quotePlugin.md)  
+registers complex qoute element.
+* [typoSugarPlugin](./plugins/typoSugarPlugin.md)  
+registers some special characters and their keyboard shortcuts.
+* [twoColumnsPlugin](./plugins/twoColumnsPlugin.md)  
+registers a two cloumn block.
+* [roadmapPlugin](./plugins/roadmapPlugin.md)  
+registers a roadmap element.
+* [imagePlugin](./plugins/imagePlugin.md)  
+registers element of the image.
+* [contentsPlugin](./plugins/contentsPlugin.md)  
+registers element of the table of contents.
+* [videoPlugin](./plugins/videoPlugin.md)  
+registers video element.
+* [backImagePlugin](./plugins/backImagePlugin.md)  
+registers an element with a background image in which you can add other elements of the Textarena.
+<!-- * [figurePlugin](./plugins/figurePlugin.md) -->
 <!-- * [listsPlugin](./plugins/listsPlugin.md) -->
 <!-- * [nestedlistsPlugin](./plugins/nestedlistsPlugin.md) -->
-<!-- * [figurePlugin](./plugins/figurePlugin.md) -->
-<!-- * [imagePlugin](./plugins/imagePlugin.md) -->
-<!-- * [contentsPlugin](./plugins/contentsPlugin.md) -->
+<!-- * [tablePlugin](./plugins/tablePlugin.md) -->
 <!-- * [pastePlugin](./plugins/pastePlugin.md) -->
-<!-- * [videoPlugin](./plugins/videoPlugin.md) -->
-<!-- * [backImagePlugin](./plugins/backImagePlugin.md) -->

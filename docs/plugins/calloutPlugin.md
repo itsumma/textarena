@@ -27,3 +27,5 @@ This plugin has the following common default options:
   output: defaultOutputCallout,
 }
 ```
+
+**[Return to plugins list.](../plugins.md#list-of-standard-plugins)**

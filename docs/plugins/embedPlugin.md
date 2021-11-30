@@ -18,6 +18,7 @@ This plugin has the following common default options:
 {
   name: 'embed',
   title: 'Embed',
+  icon: '/*svg tag*/',
   tag: 'ARENA-EMBED',
   attributes: {
     contenteditable: false,
@@ -53,3 +54,5 @@ This plugin has the following common default options:
   output: outputEmbed,
 }
 ```
+
+**[Return to plugins list.](../plugins.md#list-of-standard-plugins)**

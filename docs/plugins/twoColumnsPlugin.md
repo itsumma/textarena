@@ -12,7 +12,8 @@ This plugin has the following common default options:
 ```js
 {
   name: 'two-columns',
-  title: 'Две колонки',
+  icon: '/*svg tag*/',
+  title: 'Two columns',
   tag: 'ARENA-TWO-COLUMNS',
   attributes: {},
   command: 'add-two-columns',
@@ -33,3 +34,5 @@ This plugin has the following common default options:
   output: twoColumnsOutput,
 }
 ```
+
+**[Return to plugins list.](../plugins.md#list-of-standard-plugins)**

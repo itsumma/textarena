@@ -19,7 +19,7 @@ This plugin has the following common default options:
     icon: '<b>H2</b>',
     command: 'convert-to-header2',
     shortcut: 'Alt + Digit2',
-    description: 'Заголовок второго уровня',
+    description: 'Heading level 2',
     hint: '2',
     marks: [
       {
@@ -36,7 +36,7 @@ This plugin has the following common default options:
     icon: '<b>H3</b>',
     command: 'convert-to-header3',
     shortcut: 'Alt + Digit3',
-    description: 'Заголовок третьего уровня',
+    description: 'Heading level 3',
     hint: '3',
     marks: [
       {
@@ -53,7 +53,7 @@ This plugin has the following common default options:
     icon: '<b>H4</b>',
     command: 'convert-to-header4',
     shortcut: 'Alt + Digit4',
-    description: 'Заголовок четвёртого уровня',
+    description: 'Heading level 4',
     hint: '4',
     marks: [
       {
@@ -64,3 +64,5 @@ This plugin has the following common default options:
   },
 }
 ```
+
+**[Return to plugins list.](../plugins.md#list-of-standard-plugins)**

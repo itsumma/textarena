@@ -1,5 +1,5 @@
 # quotePlugin
-The blockquotePlugin registers complex qoute element. It consists of the author name of the quote, his role, the quote itself and the image.
+The quotePlugin registers complex qoute element. It consists of the author name of the quote, his role, the quote itself and the image.
 
 A default plugin configuration object is passed to the plugin method parameter. You can view all the properties at [the table of default plugin options](../plugins.md#default-plugin-options).
 
@@ -37,3 +37,5 @@ This plugin has the following common default options:
   output: outputQuoteBlock,
 }
 ```
+
+**[Return to plugins list.](../plugins.md#list-of-standard-plugins)**

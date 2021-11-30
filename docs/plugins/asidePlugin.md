@@ -15,6 +15,7 @@ This plugin has the following common default options:
   tag: 'ASIDE',
   attributes: { class: 'aside aside-gray' },
   title: 'Block with a frame',
+  icon: '/*svg tag*/',
   shortcut: 'Alt + KeyA',
   hint: 'a',
   command: 'convert-to-aside',
@@ -26,3 +27,5 @@ This plugin has the following common default options:
   ],
 }
 ```
+
+**[Return to plugins list.](../plugins.md#list-of-standard-plugins)**

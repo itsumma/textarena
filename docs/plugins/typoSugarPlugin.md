@@ -33,3 +33,5 @@ The plugin registers own:
 Creator | Tool
 --- | ---
 no | no
+
+**[Return to plugins list.](../plugins.md#list-of-standard-plugins)**

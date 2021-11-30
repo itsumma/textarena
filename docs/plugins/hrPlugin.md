@@ -12,6 +12,7 @@ This plugin has the following common default options:
 ```js
 {
   name: 'hr',
+  icon: '/*svg tag*/',
   title: 'Horizontal rule',
   tag: 'HR',
   attributes: {},
@@ -26,3 +27,5 @@ This plugin has the following common default options:
   ],
 }
 ```
+
+**[Return to plugins list.](../plugins.md#list-of-standard-plugins)**

@@ -51,6 +51,7 @@ This plugin has the following common default options:
 ```js
 {
   name: 'link',
+  icon: '/*svg tag*/',
   title: 'Link',
   tag: 'A',
   attributes: {
@@ -71,3 +72,5 @@ This plugin has the following common default options:
   moveCursorHandler: linkManage,
 }
 ```
+
+**[Return to plugins list.](../plugins.md#list-of-standard-plugins)**

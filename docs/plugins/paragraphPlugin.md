@@ -15,6 +15,7 @@ This plugin has the following common default options:
   title: 'Paragraph',
   tag: 'P',
   attributes: { class: 'paragraph' },
+  icon: '<b>¶</b>',
   shortcut: 'Alt + Digit0',
   hint: '0',
   marks: [
@@ -29,3 +30,5 @@ This plugin has the following common default options:
   ],
 };
 ```
+
+**[Return to plugins list.](../plugins.md#list-of-standard-plugins)**

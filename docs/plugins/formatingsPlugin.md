@@ -342,7 +342,7 @@ This plugin has the following common default options:
       ],
       tool: {
         title: 'Colored',
-        // svg icon
+        icon: '/*svg tag*/',
       },
     },
     {
@@ -360,7 +360,7 @@ This plugin has the following common default options:
       ],
       tool: {
         title: 'Mark',
-        // svg icon
+        icon: '/*svg tag*/',
       },
     },
     {
@@ -384,3 +384,5 @@ This plugin has the following common default options:
   ],
 }
 ```
+
+**[Return to plugins list.](../plugins.md#list-of-standard-plugins)**

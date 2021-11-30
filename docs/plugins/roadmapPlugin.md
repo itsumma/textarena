@@ -15,6 +15,7 @@ This plugin has the following common default options:
   tag: 'ROADMAP',
   attributes: { },
   title: 'Roadmap',
+  icon: '/*svg tag*/',
   shortcut: 'Alt + KeyU',
   hint: 'u',
   command: 'convert-to-roadmap',
@@ -26,3 +27,5 @@ This plugin has the following common default options:
   ],
 }
 ```
+
+**[Return to plugins list.](../plugins.md#list-of-standard-plugins)**
