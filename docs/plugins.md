@@ -440,46 +440,74 @@ Basically, plugins that provide Textarena elements have a configuration object w
 
 ## List of standard plugins:
 
+* pastePlugin  
+is necessary for correct paste of text from third-party sources.
+
 * [paragraphPlugin](./plugins/paragraphPlugin.md)  
 is the common plugin wich provides simple text paragraph.
+
 * [commonPlugin](./plugins/commonPlugin.md)  
 registers common commands and their keyboard shortcuts.
+
 * [formatingsPlugin](./plugins/formatingsPlugin.md)  
 registers elements of inline text formatting.
+
 * [headersPlugin](./plugins/headersPlugin.md)  
 registers headings elements.
+
 * [hrPlugin](./plugins/hrPlugin.md)  
 registers a horizontal rule - a line that goes across the Textarena area.
+
 * [blockquotePlugin](./plugins/blockquotePlugin.md)  
 registers simple qoute element.
+
 * [calloutPlugin](./plugins/calloutPlugin.md)  
 registers a block for displaying important information inside which you can add other elements of the Textarena.
+
 * [embedPlugin](./plugins/embedPlugin.md)  
 registers element that allows you to embed external content.
+
 * [linkPlugin](./plugins/linkPlugin.md)  
 registers inline link element.
+
 * [asidePlugin](./plugins/asidePlugin.md)  
 registers a block with a frame inside which you can add other elements of the Textarena.
+
 * [codePlugin](./plugins/codePlugin.md)  
 registers element where text is displayed in a fixed-width font, and the text preserves both spaces and line breaks.
+
 * [quotePlugin](./plugins/quotePlugin.md)  
 registers complex qoute element.
+
 * [typoSugarPlugin](./plugins/typoSugarPlugin.md)  
 registers some special characters and their keyboard shortcuts.
+
+* [listsPlugin](./plugins/listsPlugin.md)  
+registers list elements.
+
+* [nestedlistsPlugin (Alpha version)](./plugins/nestedlistsPlugin.md)  
+registers multilevel list elements.
+
 * [twoColumnsPlugin](./plugins/twoColumnsPlugin.md)  
 registers a two cloumn block.
+
 * [roadmapPlugin](./plugins/roadmapPlugin.md)  
 registers a roadmap element.
+
 * [imagePlugin](./plugins/imagePlugin.md)  
 registers element of the image.
+
+* [figurePlugin](./plugins/figurePlugin.md)  
+registers element of the image with caption.
+
 * [contentsPlugin](./plugins/contentsPlugin.md)  
 registers element of the table of contents.
+
 * [videoPlugin](./plugins/videoPlugin.md)  
 registers video element.
+
 * [backImagePlugin](./plugins/backImagePlugin.md)  
 registers an element with a background image in which you can add other elements of the Textarena.
-<!-- * [figurePlugin](./plugins/figurePlugin.md) -->
-<!-- * [listsPlugin](./plugins/listsPlugin.md) -->
-<!-- * [nestedlistsPlugin](./plugins/nestedlistsPlugin.md) -->
-<!-- * [tablePlugin](./plugins/tablePlugin.md) -->
-<!-- * [pastePlugin](./plugins/pastePlugin.md) -->
+
+* [tablePlugin (Alpha version)](./plugins/tablePlugin.md)  
+registers table element.
