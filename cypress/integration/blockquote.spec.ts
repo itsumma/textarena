@@ -7,24 +7,30 @@ const ctrl = isMac() ? 'cmd' : 'ctrl';
 context('Actions', () => {
   beforeEach(() => {
     cy.visit('http://localhost:8080/');
-    cy.get('.textarena-editor').focus();
-    cy.get('.textarena-editor').as('root');
+    cy
+      .get('.textarena-editor')
+      .as('root')
+      .focus()
+      .type('{selectAll}')
+      .type('{del}')
+      .type(`{${ctrl}+/}`);
   });
 
-  it('Blockqoute', () => {
+  it('Blockquote', () => {
     cy.get('@root')
       .focus()
-      .type('{selectall}')
-      .type('{del}')
       .type(`{${ctrl}+alt+"}`)
-      .type('Blockqoute content')
+      .type('Blockquote content')
       .type('{enter}')
       .type('{enter}')
       .type('Simple paragraph');
 
     cy.get('@root')
       .children('blockquote')
-      .contains('p', 'Blockqoute content');
+      .contains('p', 'Blockquote content');
+
+    cy.get('#html')
+      .contains('<blockquote class="textarena-blockquote"><p class="paragraph">Blockquote content</p></blockquote><p class="paragraph">Simple paragraph</p>');
 
     cy.get('@root')
       .children()
@@ -33,7 +39,7 @@ context('Actions', () => {
 
     cy.get('@root')
       .focus()
-      .type('{uparrow}{uparrow}{home}{rightarrow}') // In FF movetostart not working
+      .type('{upArrow}{home}') // In FF movetostart not working
       .type('First line.')
       .type('{enter}');
 
@@ -45,11 +51,14 @@ context('Actions', () => {
     cy.get('@root')
       .children('blockquote')
       .eq(0)
-      .contains('p', 'Blockqoute content');
+      .contains('p', 'Blockquote content');
+
+    cy.get('#html')
+      .contains('<blockquote class="textarena-blockquote"><p class="paragraph">First line.</p><p class="paragraph">Blockquote content</p></blockquote><p class="paragraph">Simple paragraph</p>');
 
     cy.get('@root')
       .focus()
-      .type('{uparrow}{uparrow}{home}{rightarrow}')
+      .type('{upArrow}{upArrow}{home}{rightArrow}')
       .type('{end}')
       .type('{enter}')
       .type('{enter}');
@@ -62,11 +71,14 @@ context('Actions', () => {
     cy.get('@root')
       .children('blockquote')
       .eq(1)
-      .contains('p', 'Blockqoute content');
+      .contains('p', 'Blockquote content');
 
     cy.get('@root')
       .children()
       .eq(4)
       .contains('p', 'Simple paragraph');
+
+    cy.get('#html')
+      .contains('<blockquote class="textarena-blockquote"><p class="paragraph">First line.</p></blockquote><blockquote class="textarena-blockquote"><p class="paragraph">Blockquote content</p></blockquote><p class="paragraph">Simple paragraph</p>');
   });
 });

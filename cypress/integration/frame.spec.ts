@@ -7,12 +7,13 @@ const ctrl = isMac() ? 'cmd' : 'ctrl';
 context('Actions', () => {
   beforeEach(() => {
     cy.visit('http://localhost:8080/');
-    cy.get('.textarena-editor').focus();
-    cy.get('.textarena-editor')
+    cy
+      .get('.textarena-editor')
       .as('root')
       .focus()
-      .type('{selectall}')
-      .type('{del}');
+      .type('{selectAll}')
+      .type('{del}')
+      .type(`{${ctrl}+/}`);
   });
 
   it('Frame with multiple elements', () => {
@@ -46,12 +47,14 @@ context('Actions', () => {
       .focus()
       .type('Two columns{enter}')
       .type(`{${ctrl}+alt+6}`)
-      .type('{downArrow}{upArrow}{leftArrow}{leftArrow}')
+      .get('@root')
+      .setSelection('Two columns')
+      .type('{end}{rightArrow}')
       .type(`{${ctrl}+alt+3}`)
       .type('Unordered list{enter}')
       .type(`{${ctrl}+alt+L}`)
       .type('item{enter}')
-      .type('another item{rightArrow}{rightArrow}')
+      .type('another item{rightArrow}')
       .wait(100)
       .get('.textarena-creator__create-button')
       .click()

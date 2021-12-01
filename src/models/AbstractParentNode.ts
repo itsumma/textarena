@@ -309,7 +309,7 @@ export default abstract class AbstractParentNode<
   protected getPseudoCursor(index: number): [string, TemplateResult] {
     return [
       `b${index}`,
-      html`<div cursor-id="${`${this.getGlobalIndex()}.${index}`}" class="pseudo-cursor"><br/></div>`,
+      html`<div cursor-id="${`${this.getGlobalIndex()}.${index}`}" class="pseudo-cursor" contenteditable="false"><br/></div>`,
     ];
   }
 }
