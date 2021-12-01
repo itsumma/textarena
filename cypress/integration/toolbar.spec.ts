@@ -7,14 +7,13 @@ const ctrl = isMac() ? 'cmd' : 'ctrl';
 context('Actions', () => {
   beforeEach(() => {
     cy.visit('http://localhost:8080/');
-    cy.get('.textarena-editor').focus();
-    cy.get('.textarena-editor').as('root');
-
-    cy.get('@root')
+    cy
+      .get('.textarena-editor')
+      .as('root')
       .focus()
-      .focused()
-      .type('{selectall}')
-      .type('{del}');
+      .type('{selectAll}')
+      .type('{del}')
+      .type(`{${ctrl}+/}`);
   });
 
   it('Formatings toggle', () => {
@@ -190,7 +189,7 @@ context('Actions', () => {
       .focus()
       .focused()
       .type('Test text.')
-      .type('{selectall}')
+      .type('{selectAll}')
       .type(`{${ctrl}}`, { release: false })
       .get('.textarena-toolbar__list > :nth-child(1) > .textarena-shortcut-hint-short')
       .then(($el) => {
@@ -203,7 +202,7 @@ context('Actions', () => {
       .focus()
       .focused()
       .type('Test text.')
-      .type('{selectall}')
+      .type('{selectAll}')
       .type(`{${ctrl}}`, { release: false })
       .type('{alt}', { release: false })
       .get('.textarena-toolbar__list > :nth-child(10) > .textarena-shortcut-hint-short')

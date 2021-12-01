@@ -7,15 +7,18 @@ const ctrl = isMac() ? 'cmd' : 'ctrl';
 context('Actions', () => {
   beforeEach(() => {
     cy.visit('http://localhost:8080/');
-    cy.get('.textarena-editor').focus();
-    cy.get('.textarena-editor').as('root');
+    cy
+      .get('.textarena-editor')
+      .as('root')
+      .focus()
+      .type('{selectAll}')
+      .type('{del}')
+      .type(`{${ctrl}+/}`);
   });
 
   it('Formatings', () => {
     cy.get('@root')
       .focus()
-      .type('{selectall}')
-      .type('{del}')
       .type('Normal ')
       .type(`{${ctrl}+b}`)
       .type('bold')
@@ -49,7 +52,7 @@ context('Actions', () => {
       .get('@root')
       .focus()
       .focused()
-      .type(`{selectall}{${ctrl}+/}`)
+      .type(`{selectAll}{${ctrl}+/}`)
       .get('#html')
       .contains('Normal bold italic underlined strikethrough sub sup marked code normal2.');
   });

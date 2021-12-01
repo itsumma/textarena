@@ -8,15 +8,13 @@ const ctrl = isMac() ? 'cmd' : 'ctrl';
 context('Actions', () => {
   beforeEach(() => {
     cy.visit('http://localhost:8080/');
-    cy.get('.textarena-editor').focus();
-    cy.get('.textarena-editor').as('root');
-
-    cy.get('@root')
+    cy
+      .get('.textarena-editor')
+      .as('root')
       .focus()
-      .focused()
-      .type('{home}{selectall}')
-      .wait(100)
-      .type('{del}');
+      .type('{selectAll}')
+      .type('{del}')
+      .type(`{${ctrl}+/}`);
   });
 
   it('Keyboard shortcut link', () => {
@@ -32,7 +30,7 @@ context('Actions', () => {
     cy.get('@root')
       .focus()
       .type('Textarena')
-      .type('{selectall}')
+      .type('{selectAll}')
       .wait(500)
       .get('.textarena-toolbar__list > :nth-child(9)')
       .click()

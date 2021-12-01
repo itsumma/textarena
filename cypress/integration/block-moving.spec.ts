@@ -2,26 +2,31 @@
 
 import { isMac } from '../../src/utils/navigator';
 
+const ctrl = isMac() ? 'cmd' : 'ctrl';
+
 context('Actions', () => {
   beforeEach(() => {
     cy.visit('http://localhost:8080/');
-    cy.get('.textarena-editor').focus();
-    cy.get('.textarena-editor').as('root');
+    cy
+      .get('.textarena-editor')
+      .as('root')
+      .focus()
+      .type('{selectAll}')
+      .type('{del}')
+      .type(`{${ctrl}+/}`);
   });
   it('Block moving', () => {
     cy.get('@root')
       .focus()
-      .type('{selectall}')
-      .type('{del}')
       .type('Line 1')
       .type('{enter}')
       .type('Line 2')
       .type('{enter}')
       .type('Line 3')
-      .type(`{shift+${isMac() ? 'ctrl' : 'alt'}+uparrow}`)
-      .type('{uparrow}')
-      .type(`{shift+${isMac() ? 'ctrl' : 'alt'}+downarrow}`)
-      .type(`{shift+${isMac() ? 'ctrl' : 'alt'}+downarrow}`);
+      .type(`{shift+${isMac() ? 'ctrl' : 'alt'}+upArrow}`)
+      .type('{upArrow}')
+      .type(`{shift+${isMac() ? 'ctrl' : 'alt'}+downArrow}`)
+      .type(`{shift+${isMac() ? 'ctrl' : 'alt'}+downArrow}`);
     cy.wait(10);
     cy.get('#html')
       .contains(

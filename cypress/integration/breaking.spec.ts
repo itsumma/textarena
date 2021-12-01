@@ -1,16 +1,23 @@
 /// <reference types="cypress" />
 
+import { isMac } from '../../src/utils/navigator';
+
+const ctrl = isMac() ? 'cmd' : 'ctrl';
+
 context('Actions', () => {
   beforeEach(() => {
     cy.visit('http://localhost:8080/');
-    cy.get('.textarena-editor').focus();
-    cy.get('.textarena-editor').as('root');
+    cy
+      .get('.textarena-editor')
+      .as('root')
+      .focus()
+      .type('{selectAll}')
+      .type('{del}')
+      .type(`{${ctrl}+/}`);
   });
   it('Breaking', () => {
     cy.get('@root')
       .focus()
-      .type('{selectall}')
-      .type('{del}')
       .type('Single line text.')
       .type('{home}')
       .type('{rightArrow}{rightArrow}{rightArrow}{rightArrow}{rightArrow}{rightArrow}')

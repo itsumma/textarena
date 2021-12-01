@@ -7,11 +7,13 @@ const ctrl = isMac() ? 'cmd' : 'ctrl';
 context('Actions', () => {
   beforeEach(() => {
     cy.visit('http://localhost:8080/');
-    cy.get('.textarena-editor')
+    cy
+      .get('.textarena-editor')
       .as('root')
       .focus()
-      .type('{selectall}')
-      .type('{del}');
+      .type('{selectAll}')
+      .type('{del}')
+      .type(`{${ctrl}+/}`);
   });
 
   it('Headers with shortcuts', () => {
