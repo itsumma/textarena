@@ -52,18 +52,9 @@ export default abstract class AbstractParentNode<
   public getTemplate(frms: ArenaFormatings): TemplateResult | string {
     const id = this.getGlobalIndex();
     const result: Array<[string, TemplateResult | string]> = [];
-    let noText = true;
-    const noCursor = this.protected || this.arena.noPseudoCursor;
-    this.children.forEach((child, index) => {
-      if (!noCursor && noText && !child.hasText) {
-        result.push(this.getPseudoCursor(index));
-      }
-      noText = !child.hasText;
+    this.children.forEach((child) => {
       result.push([child.getId(), child.getTemplate(frms)]);
     });
-    if (!noCursor && noText) {
-      result.push(this.getPseudoCursor(this.children.length));
-    }
     const content = this.arena.getTemplate(
       html`
         ${repeat(result, (c) => c[0], (c) => c[1])}

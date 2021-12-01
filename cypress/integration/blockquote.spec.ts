@@ -34,7 +34,7 @@ context('Actions', () => {
 
     cy.get('@root')
       .children()
-      .eq(2)
+      .eq(1)
       .contains('p', 'Simple paragraph');
 
     cy.get('@root')
@@ -75,7 +75,7 @@ context('Actions', () => {
 
     cy.get('@root')
       .children()
-      .eq(4)
+      .eq(3)
       .contains('p', 'Simple paragraph');
 
     cy.get('#html')
