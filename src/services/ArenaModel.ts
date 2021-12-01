@@ -3,13 +3,21 @@ import ArenaFactory from '../arenas/ArenaFactory';
 import { Direction } from '../events/RemoveEvent';
 import ArenaSelection from '../helpers/ArenaSelection';
 import {
-  AnyArena, ArenaInlineInterface, ArenaMediatorInterface,
-  ArenaRootInterface, ArenaTextInterface, ChildArena,
+  AnyArena,
+  ArenaInlineInterface,
+  ArenaMediatorInterface,
+  ArenaRootInterface,
+  ArenaTextInterface,
+  ChildArena,
 } from '../interfaces/Arena';
 import {
-  AnyArenaNode, ArenaNodeRoot, ArenaNodeText,
-  ArenaNodeInline, ArenaNodeMediator,
-  ChildArenaNode, ParentArenaNode,
+  AnyArenaNode,
+  ArenaNodeInline,
+  ArenaNodeMediator,
+  ArenaNodeRoot,
+  ArenaNodeText,
+  ChildArenaNode,
+  ParentArenaNode,
 } from '../interfaces/ArenaNode';
 import ArenaCursorText from '../interfaces/ArenaCursorText';
 import ArenaCursorAncestor from '../interfaces/ArenaCursorAncestor';
@@ -230,14 +238,12 @@ export default class ArenaModel {
 
   /** */
   public createChildNode(arena: ChildArena, isNew = false): ChildArenaNode {
-    const node = NodeFactory.createChildNode(arena, this.registry, isNew);
-    return node;
+    return NodeFactory.createChildNode(arena, this.registry, isNew);
   }
 
   /** */
   public createInlineNode(arena: ArenaInlineInterface): ArenaNodeInline {
-    const node = NodeFactory.createInlineNode(arena);
-    return node;
+    return NodeFactory.createInlineNode(arena);
   }
 
   /** */
@@ -272,6 +278,8 @@ export default class ArenaModel {
    * Find or create text node in children or ancestors.
    * @param node AnyArenaNode
    * @param offset number
+   * @param onlyChild boolean
+   * @param forceCreate boolean
    * @returns ArenaCursorText | undefined
    */
   public getOrCreateNodeForText(
@@ -327,6 +335,10 @@ export default class ArenaModel {
    * @param arena ChildArena
    * @param parent ParentArenaNode
    * @param offset number
+   * @param before boolean
+   * @param onlyChild boolean
+   * @param isNew boolean
+   * @param replace boolean
    * @returns ChildArenaNode | undefined
    */
   public createAndInsertNode(

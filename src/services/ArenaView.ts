@@ -159,10 +159,7 @@ export default class ArenaView {
       return !/\u00A0/.test(text) && /^[\s\n]*$/.test(text);
     }
     if (node.nodeType === Node.ELEMENT_NODE) {
-      if ((node as HTMLElement).tagName === 'BR') {
-        return true;
-      }
-      return false;
+      return (node as HTMLElement).tagName === 'BR';
     }
     return true;
   }
