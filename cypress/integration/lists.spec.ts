@@ -87,7 +87,7 @@ context('Actions', () => {
       .focus()
       .type('First item{enter}')
       .type('Second item{enter}')
-      .type('Third item{selectall}')
+      .type('Third item{selectAll}')
       .wait(100)
       .get('.textarena-toolbar__list > :nth-child(13)')
       .click()

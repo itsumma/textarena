@@ -27,7 +27,7 @@ export class ArenaView {
           }
         } else if (node.hasChildren) {
           const len = node.children.length;
-          for (let i = start || 0; i < (end || len); i += 1) {
+          for (let i = start || 0; i < (end && end < len ? end : len); i += 1) {
             const elem = editor.querySelector(`[arena-id="${node.children[i].getGlobalIndex()}"]`);
             if (elem) {
               elem.addClass('textarena-selected');

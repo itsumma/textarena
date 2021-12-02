@@ -7,39 +7,4 @@
   * {
     box-sizing: border-box;
   }
-
-  .pseudo-cursor {
-    position: relative;
-    height: 1em;
-    margin-top: -1em;
-    font-size: 1em;
-    line-height: 1em;
-
-    &:last-child {
-      margin-bottom: -1em;
-    }
-
-    &:first-child:last-child {
-      margin: 0;
-      min-height: 1.6em;
-      line-height: inherit;
-    }
-
-    &::after {
-      content: "";
-      position: absolute;
-      top: 50%;
-      pointer-events: none;
-      height: 0.1em;
-      width: 100%;
-      background: #88d8ff;
-      display: none;
-    }
-
-    &:hover {
-      &::after {
-        // display: block;
-      }
-    }
-  }
 }

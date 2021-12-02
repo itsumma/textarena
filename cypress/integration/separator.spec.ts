@@ -22,12 +22,16 @@ context('Actions', () => {
       .type('Text before separator{enter}')
       .type(`{${ctrl}+alt+H}`)
       .get('#html')
-      .contains('<p class="paragraph">Text before separator</p><hr class="asterisk"></hr>')
+      .contains('<p class="paragraph">Text before separator</p><hr contenteditable="false" class="asterisk"></hr>')
       .get('@root')
       .focus()
-      .type('{backspace}')
+      .type('{backspace}{backspace}')
       .get('#html')
       .contains('<p class="paragraph">Text before separator</p>')
+      .get('@root')
+      .focus()
+      .type('{enter}')
+      .wait(100)
       .get('.textarena-creator__create-button')
       .click()
       .wait(100)
@@ -37,6 +41,6 @@ context('Actions', () => {
       .focus()
       .type('Text after separator')
       .get('#html')
-      .contains('<p class="paragraph">Text before separator</p><hr class="asterisk"></hr><p class="paragraph">Text after separator</p>');
+      .contains('<p class="paragraph">Text before separator</p><hr contenteditable="false" class="asterisk"></hr><p class="paragraph">Text after separator</p>');
   });
 });

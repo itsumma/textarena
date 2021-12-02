@@ -27,7 +27,6 @@
     margin-right: -2em;
     padding-left: 2em;
     padding-right: 2em;
-    user-select: none;
 
     &.textarena-selected {
       // position: relative;
@@ -93,50 +92,16 @@
     }
   }
 
-  .pseudo-cursor {
-    position: relative;
+  .ts-drag-entered::after {
+    content: "";
+    position: absolute;
+    width: 100%;
     height: 1em;
-    margin-top: -1em;
+    margin-bottom: -1em;
     font-size: 1em;
     line-height: 1em;
-
-    &.ts-drag-entered {
-      background-color: #88d8ff;
-    }
-
-    &:first-child:last-child {
-      margin: 0;
-      min-height: 1.6em;
-      line-height: inherit;
-    }
-
-    &::after {
-      content: "";
-      position: absolute;
-      top: 50%;
-      pointer-events: none;
-      height: 0.1em;
-      width: 100%;
-      background: #88d8ff;
-      display: none;
-    }
-
-    // &:hover {
-    //   &::after {
-    //     display: block;
-    //   }
-    // }
-  }
-
-  .drag-cursor {
-    display: block;
-    height: 1em;
-    margin-top: -0.5em;
-    margin-bottom: -0.5em;
-    font-size: 1em;
-    line-height: 1em;
-  }
-  .ts-drag-entered .drag-cursor {
+    left: 0;
+    bottom: 0;
     background-color: #88d8ff;
   }
 }

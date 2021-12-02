@@ -67,18 +67,12 @@ export abstract class AbstractArena {
       </svg>
       </textarena-remove>`;
     const dragButton = html`<textarena-drag draggable="true" node-id="${id}" contenteditable="false">::</textarena-drag>`;
-    const dropCursor = html`<textarena-drop
-      contenteditable="false"
-      cursor-id="${id}"
-      class="drag-cursor"
-    ></textarena-drop>`;
     return html`
     <textarena-node
       arena-id="${id}"
       cursor-id="${id}"
     >
       ${result}
-      ${dropCursor}
       ${removeButton}
       ${dragButton}
     </textarena-node>

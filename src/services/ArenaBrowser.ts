@@ -260,7 +260,7 @@ export class ArenaBrowser {
   }
 
   /**
-   * In FF pressing ctrl + A selects root container for textarena
+   * In Firefox pressing ctrl + A selects root container for textarena
    * the div.textarena-editor contenteditable. And content deletion
    * does not work. So here we use a hack to change the selection
    * to all children.
@@ -268,6 +268,7 @@ export class ArenaBrowser {
   protected changeSelectionToChildren(s: Selection) {
     if (
       s.anchorNode
+      && s.type === 'Range'
       && s.anchorNode instanceof HTMLElement
       && s.anchorNode.getAttribute('contenteditable')
       && s.anchorNode.getAttribute('class') === 'textarena-editor'

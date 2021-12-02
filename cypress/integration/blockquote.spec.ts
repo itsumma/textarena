@@ -76,12 +76,12 @@ context('Actions', () => {
       .children('textarena-node')
       .eq(3)
       .get('@root')
-      .get('textarena-node:nth-child(4) blockquote')
+      .get('textarena-node:nth-child(3) blockquote')
       .contains('p', 'Blockquote content');
 
     cy.get('@root')
       .children('textarena-node')
-      .get('textarena-node:nth-child(5)')
+      .get('textarena-node:nth-child(4)')
       .contains('p', 'Simple paragraph');
 
     cy.get('#html')
