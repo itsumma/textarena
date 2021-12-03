@@ -551,6 +551,7 @@ export class ArenaModel {
     utils.modelTree.runThroughSelection(
       newSelection,
       (node: AnyArenaNode, start?: number, end?: number) => {
+        if (!node) return;
         if (start === undefined && end === undefined) {
           if (node.hasParent) {
             toRemove.push(node);
@@ -559,7 +560,8 @@ export class ArenaModel {
           node.removeText(start || 0, end);
         } else if (node.hasChildren) {
           const startOffset = start || 0;
-          const endOffset = end || node.children.length;
+          const len = node.children.length;
+          const endOffset = end && end < len ? end : len;
           for (let i = startOffset; i < endOffset; i += 1) {
             const n = node.children[i];
             toRemove.push(n);
@@ -571,6 +573,14 @@ export class ArenaModel {
       this.asm.eventManager.fire('removeNode', node);
       node.remove();
     });
+    // Fix for Firefox: sometimes after selecting everything and deleting it
+    // root nodes is left with empty children array and cursor gets stuck
+    if (!this.model.children.length && this.rootArena && this.rootNode) {
+      const node = this.createAndInsertNode(this.rootArena.arenaForText, this.rootNode, 0);
+      if (node) {
+        return new ArenaSelection(node, 0, node, 0, 'forward');
+      }
+    }
     const {
       startNode,
       startOffset,

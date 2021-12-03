@@ -5,6 +5,7 @@ import {
 } from '../interfaces';
 import Textarena from '../Textarena';
 import utils from '../utils';
+import RootNode from '../models/RootNode';
 
 // Icons https://freeicons.io/icon-list/material-icons-editor-2
 
@@ -39,7 +40,13 @@ const toggleListForSelection = (
     selection,
     (node: AnyArenaNode) => {
       if (node.arena === arena && node.hasParent) {
-        toUnwrap.push(node);
+        if (node.parent instanceof RootNode && node.hasChildren) {
+          for (let i = 0; i < node.children.length; i += 1) {
+            toUnwrap.push(node.children[i]);
+          }
+        } else {
+          toUnwrap.push(node);
+        }
       } else if (node.hasParent && node.parent.arena === arena) {
         toUnwrap.push(node);
       } else if (node.hasChildren
