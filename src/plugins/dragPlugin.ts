@@ -3,11 +3,23 @@ import { ArenaPlugin, ChildArena, ChildArenaNode } from '../interfaces';
 /* eslint-disable no-param-reassign */
 import Textarena from '../Textarena';
 
+declare global {
+  interface DragEvent {
+    layerY: number;
+  }
+}
+
+const clearElementClasses = (elem: HTMLElement): HTMLElement => {
+  elem.classList.remove('ts-drag-entered', 'ts-drag-over-before', 'ts-drag-over-after');
+  return elem;
+};
+
 export const dragPlugin = (): ArenaPlugin => ({
   register(textarena: Textarena): void {
     const model = textarena.getModel();
-    // const view = textarena.getView();
+    let enteredElement: HTMLElement | undefined;
     const editor = textarena.getEditorElement();
+    const editorHtmlElement = editor.getElem();
 
     const dragstartListener = (event: DragEvent): void => {
       const { target } = event;
@@ -31,9 +43,41 @@ export const dragPlugin = (): ArenaPlugin => ({
       event.preventDefault();
     };
 
+    const getElementWithCursorId = (elem: HTMLElement): HTMLElement | undefined => {
+      let currentElement = elem;
+      while (
+        currentElement !== editorHtmlElement
+        || currentElement !== editorHtmlElement.parentElement
+      ) {
+        if (currentElement.hasAttribute && currentElement.hasAttribute('cursor-id')) return currentElement;
+        if (!currentElement.parentElement) return undefined;
+        currentElement = currentElement.parentElement;
+      }
+      return undefined;
+    };
+
+    const handleDragEvent = (event: DragEvent) => {
+      const elem = getElementWithCursorId(event.target as HTMLElement);
+      if (elem) {
+        enteredElement = elem;
+        event.preventDefault();
+        const { layerY } = event;
+        elem.classList.add('ts-drag-entered');
+        if (layerY < elem.clientHeight / 2) {
+          elem.classList.add('ts-drag-over-before');
+          elem.classList.remove('ts-drag-over-after');
+        } else {
+          elem.classList.add('ts-drag-over-after');
+          elem.classList.remove('ts-drag-over-before');
+        }
+      }
+    };
+
     const dragendListener = (event: DragEvent): void => {
-      editor.querySelectorAll('.ts-drag-entered')
-        .map((elem) => elem.removeClass('ts-drag-entered'));
+      if (enteredElement) {
+        clearElementClasses(enteredElement);
+        enteredElement = undefined;
+      }
       const { target } = event;
       if (target && event.dataTransfer) {
         const elem = target as HTMLElement;
@@ -48,57 +92,23 @@ export const dragPlugin = (): ArenaPlugin => ({
     };
 
     const dragoverListener = (event: DragEvent): void => {
-      if (!event.target || !event.dataTransfer) {
+      if (!event.target) {
         return;
       }
-      const { dataTransfer } = event;
-      const types: string[] = [...dataTransfer.types || []];
-      if (!types.includes('textarena')) {
-        return;
-      }
-      const elem = event.target as HTMLElement;
-      if (elem.hasAttribute('cursor-id')) {
-        event.preventDefault();
-      }
 
-      // const selection = view.getSelectionForElem(elem);
-      // if (!selection) {
-      //   return;
-      // }
-      // const { node } = selection.getCursor();
-
-      // try {
-      //   const data = dataTransfer.getData('textarena');
-      //   const { nodeId, arenaName } = JSON.parse(data);
-      //   if (!arenaName) {
-      //     return;
-      //   }
-      //   const arena = textarena.getArena(arenaName) as ChildArena;
-      //   if (!arena) {
-      //     return;
-      //   }
-      //   if (textarena.isAllowedNode(node, arena)) {
-      //     event.preventDefault();
-      //   }
-      // } catch (e) {
-      //   event.preventDefault();
-      // }
+      handleDragEvent(event);
     };
 
     const dragenterListener = (event: DragEvent): void => {
-      const elem = event.target as HTMLElement;
-      if (!elem.hasAttribute('cursor-id')) {
+      const elem = getElementWithCursorId(event.target as HTMLElement);
+      if (!elem) {
         return;
+      }
+      if (enteredElement) {
+        clearElementClasses(enteredElement);
       }
       elem.classList.add('ts-drag-entered');
-    };
-
-    const dragleaveListener = (event: DragEvent): void => {
-      const elem = event.target as HTMLElement;
-      if (!elem.hasAttribute('cursor-id')) {
-        return;
-      }
-      elem.classList.remove('ts-drag-entered');
+      handleDragEvent(event);
     };
 
     textarena.subscribe('turnOn', () => {
@@ -106,14 +116,12 @@ export const dragPlugin = (): ArenaPlugin => ({
       editor.addEventListener('dragend', dragendListener, false);
       editor.addEventListener('dragover', dragoverListener, false);
       editor.addEventListener('dragenter', dragenterListener, false);
-      editor.addEventListener('dragleave', dragleaveListener, false);
     });
     textarena.subscribe('turnOff', () => {
       editor.removeEventListener('dragstart', dragstartListener);
       editor.removeEventListener('dragend', dragendListener);
       editor.removeEventListener('dragover', dragoverListener);
       editor.removeEventListener('dragenter', dragenterListener);
-      editor.removeEventListener('dragleave', dragleaveListener);
     });
     textarena.registerMiddleware(
       (
@@ -124,8 +132,10 @@ export const dragPlugin = (): ArenaPlugin => ({
         if (typeof data === 'object') {
           const types: string[] = [...data.types || []];
           if (types.includes('textarena')) {
-            editor.querySelectorAll('.ts-drag-entered')
-              .map((elem) => elem.removeClass('ts-drag-entered'));
+            const before: boolean = enteredElement?.classList.value.includes('before') ?? false;
+            if (enteredElement) {
+              clearElementClasses(enteredElement);
+            }
             let { node, offset } = selection.getCursor();
             const { nodeId, arenaName } = JSON.parse(data.getData('textarena'));
             const targetNode = model.getNodeById(nodeId) as ChildArenaNode;
@@ -147,7 +157,7 @@ export const dragPlugin = (): ArenaPlugin => ({
             if (targetNode.parent === node && targetOffset <= offset) {
               offset -= 1;
             }
-            node.insertChildren([targetNode], offset + 1);
+            node.insertChildren([targetNode], before ? offset : (offset + 1));
             newSelection.setBoth(targetNode, targetNode.getIndex());
             return [true, newSelection];
           }
