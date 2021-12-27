@@ -17,11 +17,13 @@ export interface EmbedElem {
   // Embed type e.g. youtube, twitter etc...
   type: string;
   // src tag value for iframe element
-  embed: string;
+  embed?: string;
+  // html template
+  html?: string;
 }
 export interface EmbedService {
   regex: RegExp;
-  embedUrl: string;
+  embedUrl?: string;
   html: string;
   height?: number;
   width?: number;

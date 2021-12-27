@@ -655,6 +655,14 @@ declare global {
   interface Window {
     asm: undefined | ArenaServiceManager,
     debugSymbol: unknown;
+    FB: undefined | {
+      init: (opts: { xfbml: boolean, version: string }) => void,
+    };
+    instgrm: undefined | {
+      Embeds: {
+        process: () => void,
+      },
+    };
   }
 }
 

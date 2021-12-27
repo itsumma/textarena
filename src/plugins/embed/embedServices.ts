@@ -120,10 +120,9 @@ const services: EmbedServiceMap = {
   },
   instagram: {
     regex: /^https?:\/\/www\.instagram\.com\/p\/([^\/\?\&]+)\/?(?:\?.*)?$/,
-    embedUrl: 'https://www.instagram.com/p/<%= remote_id %>/embed',
-    html: '<iframe width="400" height="600" style="margin: 0 auto;" frameborder="0" scrolling="no" allowtransparency="true"></iframe>',
-    height: 600,
-    width: 400,
+    html: JSON.stringify(
+      '<blockquote class="instagram-media" data-instgrm-version="10" data-instgrm-captioned data-instgrm-permalink="<%= remote_href %>" data-lang="ru"></blockquote>',
+    ),
   },
   twitter: {
     regex: /^https?:\/\/twitter\.com\/(?:#!\/)?(\w+)\/status(?:es)?\/(\d+)\/?(?:\?.*)?$/,
@@ -141,9 +140,9 @@ const services: EmbedServiceMap = {
   },
   facebook: {
     regex: /^https?:\/\/(?:www.)?facebook.com\/([^\/\?\&]*)\/(.*)$/,
-    embedUrl: 'https://www.facebook.com/plugins/post.php?href=https://www.facebook.com/<%= remote_id %>&width=500',
-    html: "<iframe scrolling='no' frameborder='no' allowtransparency='true' allowfullscreen='true' style='width: 100%; min-height: 800px; max-height: 1000px;'></iframe>",
-    id: (ids: string[]) => ids.join('/'),
+    html: JSON.stringify(
+      '<div class="fb-post" data-href="<%= remote_href %>" data-width="auto" data-show-captions="false"></div>',
+    ),
   },
   aparat: {
     regex: /^(?:http[s]?:\/\/)?(?:www.)?aparat\.com\/v\/([^\/\?\&]+)\/?$/,
