@@ -153,6 +153,7 @@ export const createElemEmbed = (url: string): EmbedElem | undefined => {
   if (html) {
     return {
       type,
+      url,
       html: html.replace(/<%= remote_href %>/g, url),
     };
   }

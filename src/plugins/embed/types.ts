@@ -20,6 +20,8 @@ export interface EmbedElem {
   embed?: string;
   // html template
   html?: string;
+  // url of the post
+  url?: string;
 }
 export interface EmbedService {
   regex: RegExp;

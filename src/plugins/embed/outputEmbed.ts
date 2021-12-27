@@ -34,17 +34,17 @@ const outputEmbed = (type: string, node: AnyArenaNode): string => {
   const html = node.getAttribute('html') as string | undefined;
   const url = node.getAttribute('url') as string | undefined;
   const embed = (node.getAttribute('embed') || '') as string;
-  if (html) {
-    return html ? `
-    <div class="arena-embed" url="${url}" embed="${embed}">
-      ${JSON.parse(html)}
-    </div>` : '';
-  }
   const embedType = (node.getAttribute('type') || '') as string;
   if (embedType && embed) {
     return embedRender({
       embedType, embed, amp: type === RenderTypes.AMP,
     });
+  }
+  if (html) {
+    return html ? `
+    <div class="arena-embed" url="${url}" ${embedType ? `type="${embedType}"` : ''} ${embed ? `embed="${embed}"` : ''}>
+      ${JSON.parse(html)}
+    </div>` : '';
   }
   return '';
 };

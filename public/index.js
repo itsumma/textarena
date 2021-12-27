@@ -174,6 +174,15 @@
       if (renderElem) {
         renderElem.innerHTML = data.html;
       }
+      if (typeof window !== 'undefined' && window.FB) {
+        window.FB.init({
+          xfbml: true,
+          version: 'v10.0',
+        });
+      }
+      if (typeof window !== 'undefined' && window.instgrm) {
+        window.instgrm.Embeds.process();
+      }
       const twitterFrames = document.querySelectorAll('iframe[id^="iframe-twitter"]');
       for (const frame of twitterFrames) {
         frame.addEventListener('load', () => {
