@@ -1,6 +1,6 @@
 import { LitElement, TemplateResult } from 'lit';
 import { property } from 'lit/decorators.js';
-import { fetchEmbedData, processEmbedHtml } from './embedUtils';
+import { createElemEmbed, fetchEmbedData, processEmbedHtml } from './embedUtils';
 
 export default class ArenaEmbedSimple extends LitElement {
   // URL to fetch embed data according to https://oembed.com/
@@ -21,7 +21,27 @@ export default class ArenaEmbedSimple extends LitElement {
   })
     html = '';
 
+  // key of the EmbedServiceMap in ./embedServices.ts
+  @property({
+    type: String,
+  })
+    type = '';
+
   htmlPlain = '';
+
+  processHtml(html: string) {
+    this.htmlPlain = html;
+    this.requestUpdate();
+    const event = new CustomEvent(
+      'change',
+      {
+        detail: {
+          value: html,
+        },
+      },
+    );
+    this.dispatchEvent(event);
+  }
 
   connectedCallback() {
     super.connectedCallback();
@@ -29,20 +49,17 @@ export default class ArenaEmbedSimple extends LitElement {
       this.htmlPlain = JSON.parse(this.html);
       return;
     }
+    if (this.type && this.url) {
+      const embedElem = createElemEmbed(this.url);
+      if (embedElem && embedElem.html) {
+        this.processHtml(JSON.parse(embedElem.html));
+      }
+      return;
+    }
     if (this.url) {
       fetchEmbedData(this.url).then((data) => {
         if (data.html) {
-          this.htmlPlain = data.html;
-          this.requestUpdate();
-          const event = new CustomEvent(
-            'change',
-            {
-              detail: {
-                value: data.html,
-              },
-            },
-          );
-          this.dispatchEvent(event);
+          this.processHtml(data.html);
         }
       });
     }

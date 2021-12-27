@@ -45,6 +45,7 @@ export default class ArenaEmbed extends WebComponent {
     const embedElement = createElemEmbed(value);
     if (embedElement) {
       this.fireChangeAttribute({
+        url: embedElement.url,
         embed: embedElement.embed,
         type: embedElement.type,
         html: embedElement.html,
@@ -72,11 +73,12 @@ export default class ArenaEmbed extends WebComponent {
   }
 
   render(): TemplateResult {
-    if ((this.type && this.html) || (this.url && this.embed)) {
+    if (this.url && (this.embed || this.type)) {
       return html`
         <arena-embed-simple
           url="${this.url}"
           embed="${this.embed}"
+          type="${this.type}"
           html="${this.html}"
           @change="${this.handleHtml}"
         ></arena-embed-simple>

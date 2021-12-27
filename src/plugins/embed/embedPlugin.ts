@@ -178,6 +178,7 @@ const embedPlugin = (opts?: Partial<EmbedPluginOptions>): ArenaPlugin => ({
             node?.setAttribute('embed', embedElement.embed);
             node?.setAttribute('type', embedElement.type);
             node?.setAttribute('html', embedElement.html);
+            node?.setAttribute('url', embedElement.url);
             return [true, sel];
           }
         }
