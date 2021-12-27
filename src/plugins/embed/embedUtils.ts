@@ -139,12 +139,22 @@ export const createElemEmbed = (url: string): EmbedElem | undefined => {
   const {
     regex,
     embedUrl,
+    html,
     id = (ids: string[]) => ids.shift() as string,
   } = service;
-  const result = regex.exec(url)?.slice(1) as string[];
-  const embed = embedUrl.replace(/<%= remote_id %>/g, id(result));
-  return {
-    type,
-    embed,
-  };
+  if (embedUrl) {
+    const result = regex.exec(url)?.slice(1) as string[];
+    const embed = embedUrl.replace(/<%= remote_id %>/g, id(result));
+    return {
+      type,
+      embed,
+    };
+  }
+  if (html) {
+    return {
+      type,
+      html: html.replace(/<%= remote_href %>/g, url),
+    };
+  }
+  return undefined;
 };

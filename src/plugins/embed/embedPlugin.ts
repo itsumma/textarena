@@ -177,6 +177,7 @@ const embedPlugin = (opts?: Partial<EmbedPluginOptions>): ArenaPlugin => ({
           if (embedElement) {
             node?.setAttribute('embed', embedElement.embed);
             node?.setAttribute('type', embedElement.type);
+            node?.setAttribute('html', embedElement.html);
             return [true, sel];
           }
         }
@@ -184,6 +185,19 @@ const embedPlugin = (opts?: Partial<EmbedPluginOptions>): ArenaPlugin => ({
       },
       'before',
     );
+    textarena.subscribe('rendered', () => {
+      setTimeout(() => {
+        if (typeof window !== 'undefined' && window.FB) {
+          window.FB.init({
+            xfbml: true,
+            version: 'v10.0',
+          });
+        }
+        if (typeof window !== 'undefined' && window.instgrm) {
+          window.instgrm.Embeds.process();
+        }
+      }, 100);
+    });
   },
 });
 
