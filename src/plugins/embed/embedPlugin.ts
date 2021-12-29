@@ -186,19 +186,6 @@ const embedPlugin = (opts?: Partial<EmbedPluginOptions>): ArenaPlugin => ({
       },
       'before',
     );
-    textarena.subscribe('rendered', () => {
-      setTimeout(() => {
-        if (typeof window !== 'undefined' && window.FB) {
-          window.FB.init({
-            xfbml: true,
-            version: 'v10.0',
-          });
-        }
-        if (typeof window !== 'undefined' && window.instgrm) {
-          window.instgrm.Embeds.process();
-        }
-      }, 100);
-    });
   },
 });
 
