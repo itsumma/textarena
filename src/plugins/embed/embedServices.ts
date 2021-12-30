@@ -121,9 +121,8 @@ const services: EmbedServiceMap = {
   instagram: {
     regex: /^https?:\/\/www\.instagram\.com\/p\/([^\/\?\&]+)\/?(?:\?.*)?$/,
     embedUrl: 'https://www.instagram.com/p/<%= remote_id %>/embed',
-    html: '<iframe width="400" height="600" style="margin: 0 auto;" frameborder="0" scrolling="no" allowtransparency="true"></iframe>',
-    height: 600,
-    width: 400,
+    html: '<iframe frameborder="0" scrolling="no" allowtransparency="true"></iframe>',
+    resizable: true,
   },
   twitter: {
     regex: /^https?:\/\/twitter\.com\/(?:#!\/)?(\w+)\/status(?:es)?\/(\d+)\/?(?:\?.*)?$/,
@@ -142,8 +141,9 @@ const services: EmbedServiceMap = {
   facebook: {
     regex: /^https?:\/\/(?:www.)?facebook.com\/([^\/\?\&]*)\/(.*)$/,
     embedUrl: 'https://www.facebook.com/plugins/post.php?href=https://www.facebook.com/<%= remote_id %>&width=500',
-    html: "<iframe scrolling='no' frameborder='no' allowtransparency='true' allowfullscreen='true' style='width: 100%; min-height: 800px; max-height: 1000px;'></iframe>",
+    html: "<iframe scrolling='no' frameborder='no' allowtransparency='true' allowfullscreen='true'></iframe>",
     id: (ids: string[]) => ids.join('/'),
+    resizable: true,
   },
   aparat: {
     regex: /^(?:http[s]?:\/\/)?(?:www.)?aparat\.com\/v\/([^\/\?\&]+)\/?$/,

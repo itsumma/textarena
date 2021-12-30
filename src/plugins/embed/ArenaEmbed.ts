@@ -25,6 +25,21 @@ export default class ArenaEmbed extends WebComponent {
   })
     html: string | undefined;
 
+  @property({
+    type: String,
+  })
+    iframewidth = '600px';
+
+  @property({
+    type: String,
+  })
+    iframeheight = '400px';
+
+  @property({
+    type: Boolean,
+  })
+    resizable = false;
+
   createRenderRoot(): LitElement {
     return this;
   }
@@ -49,6 +64,7 @@ export default class ArenaEmbed extends WebComponent {
         embed: embedElement.embed,
         type: embedElement.type,
         html: embedElement.html,
+        resizable: embedElement.resizable,
       });
     }
   }
@@ -72,6 +88,16 @@ export default class ArenaEmbed extends WebComponent {
     }
   }
 
+  handleResize(
+    { detail: { iframewidth, iframeheight } }
+    : { detail: { iframewidth: string; iframeheight: string } },
+  ): void {
+    this.fireChangeAttribute({
+      iframewidth,
+      iframeheight,
+    });
+  }
+
   render(): TemplateResult {
     if (this.url && (this.embed || this.type)) {
       return html`
@@ -85,6 +111,17 @@ export default class ArenaEmbed extends WebComponent {
       `;
     }
     if (this.type && this.embed) {
+      if (this.resizable) {
+        return html`
+        <arena-embed-iframe-resizable
+            embed="${this.embed}"
+            type="${this.type}"
+            iframewidth=${this.iframewidth}
+            iframeheight=${this.iframeheight}
+            @change="${this.handleResize}"
+          ></arena-embed-iframe-resizable>
+        `;
+      }
       return html`
       <arena-embed-iframe
           embed="${this.embed}"

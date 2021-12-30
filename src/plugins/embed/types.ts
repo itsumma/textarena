@@ -22,6 +22,7 @@ export interface EmbedElem {
   html?: string;
   // url of the post
   url?: string;
+  resizable?: boolean;
 }
 export interface EmbedService {
   regex: RegExp;
@@ -30,6 +31,7 @@ export interface EmbedService {
   height?: number;
   width?: number;
   id?: ([id, params]: string[]) => string;
+  resizable?: boolean;
 }
 
 export interface EmbedServiceMap {

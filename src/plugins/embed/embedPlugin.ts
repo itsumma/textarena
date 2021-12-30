@@ -11,6 +11,7 @@ import ArenaEmbedForm from './ArenaEmbedForm';
 import { createElemEmbed, getEmbedUrl, providerGetter } from './embedUtils';
 import services from './embedServices';
 import ArenaEmbedIFrame from './ArenaEmbedIFrame';
+import ArenaEmbedIFrameResizable from './ArenaEmbedIFrameResizable';
 
 const defaultOptions: EmbedPluginOptions = {
   name: 'embed',
@@ -42,7 +43,7 @@ const defaultOptions: EmbedPluginOptions = {
   attributes: {
     contenteditable: false,
   },
-  allowedAttributes: ['embed', 'type', 'url', 'html'],
+  allowedAttributes: ['embed', 'type', 'url', 'html', 'iframewidth', 'iframeheight', 'resizable'],
   shortcut: 'Ctrl + Alt + E',
   command: 'add-embed',
   components: [
@@ -61,6 +62,10 @@ const defaultOptions: EmbedPluginOptions = {
     {
       component: 'arena-embed-iframe',
       componentConstructor: ArenaEmbedIFrame,
+    },
+    {
+      component: 'arena-embed-iframe-resizable',
+      componentConstructor: ArenaEmbedIFrameResizable,
     },
   ],
   marks: [
@@ -179,6 +184,7 @@ const embedPlugin = (opts?: Partial<EmbedPluginOptions>): ArenaPlugin => ({
             node?.setAttribute('type', embedElement.type);
             node?.setAttribute('html', embedElement.html);
             node?.setAttribute('url', embedElement.url);
+            node?.setAttribute('resizable', embedElement.resizable);
             return [true, sel];
           }
         }

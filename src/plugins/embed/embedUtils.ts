@@ -141,6 +141,7 @@ export const createElemEmbed = (url: string): EmbedElem | undefined => {
     embedUrl,
     html,
     id = (ids: string[]) => ids.shift() as string,
+    resizable,
   } = service;
   if (embedUrl) {
     const result = regex.exec(url)?.slice(1) as string[];
@@ -148,6 +149,7 @@ export const createElemEmbed = (url: string): EmbedElem | undefined => {
     return {
       type,
       embed,
+      resizable,
     };
   }
   if (html) {
@@ -155,6 +157,7 @@ export const createElemEmbed = (url: string): EmbedElem | undefined => {
       type,
       url,
       html: html.replace(/<%= remote_href %>/g, url),
+      resizable,
     };
   }
   return undefined;
