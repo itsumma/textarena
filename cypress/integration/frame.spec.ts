@@ -71,7 +71,7 @@ context('Actions', () => {
       .type('{backspace}') // Finish columns
       .type('{backspace}') // Finish list
       .type('{downArrow}{downArrow}') // Move cursor to the bottom of frame
-      .type('{backspace}') // Finish first frame
+      .type('{backspace}{backspace}') // Finish first frame
       .type(`{${ctrl}+alt+3}`)
       .type('Second frame{enter}')
       .type(`{${ctrl}+alt+5}`)

@@ -61,6 +61,7 @@ import ArenaHistory from './services/ArenaHistory';
 import { MiddlewareWhenCondition } from './services/ArenaMiddlewareManager';
 import videoPlugin from './plugins/video/videoPlugin';
 import NodeAttributes from './interfaces/NodeAttributes';
+import TextNode from './models/TextNode';
 
 export const defaultOptions: TextarenaOptions = {
   editable: true,
@@ -220,6 +221,7 @@ class Textarena {
     this.asm.model.createNewRoot();
     const sel = this.asm.parser.insertHtmlToRoot(html);
     this.asm.history.reset(sel);
+    this.ensureLastChildIsText();
     this.asm.view.render();
     this.checkPlaceholder();
   }
@@ -566,6 +568,7 @@ class Textarena {
 
   protected start(): void {
     this.asm.eventManager.subscribe('modelChanged', (e) => {
+      this.ensureLastChildIsText();
       if (typeof e.detail === 'object') {
         const { selection, stopRender } = e.detail as {
           selection: ArenaSelection,
@@ -592,6 +595,20 @@ class Textarena {
     if (this.debug) {
       window.asm = this.asm;
     }
+  }
+
+  public ensureLastChildIsText() {
+    const { children } = this.asm.model.model;
+    const lastChildIndex = children.length - 1;
+    const lastChild = children[lastChildIndex];
+    if (lastChild instanceof TextNode) return;
+    const arenaForText = this.getDefaultTextArena();
+    if (!arenaForText) return;
+    this.createAndInsertNode(
+      arenaForText,
+      this.getRootModel(),
+      children.length,
+    );
   }
 
   public checkPlaceholder(): void {
