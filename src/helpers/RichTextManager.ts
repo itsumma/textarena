@@ -157,6 +157,10 @@ export default class RichTextManager {
     this.inlines = new InlineIntervaler();
   }
 
+  public isEmpty(): boolean {
+    return this.getTextLength() === 0;
+  }
+
   public cutText(start: number, end?: number): RichTextManager {
     let text;
     if (end === undefined) {

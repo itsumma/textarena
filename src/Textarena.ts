@@ -601,7 +601,9 @@ class Textarena {
     const { children } = this.asm.model.model;
     const lastChildIndex = children.length - 1;
     const lastChild = children[lastChildIndex];
-    if (lastChild instanceof TextNode) return;
+    if (lastChild instanceof TextNode && lastChild.getText().isEmpty()) {
+      return;
+    }
     const arenaForText = this.getDefaultTextArena();
     if (!arenaForText) return;
     this.createAndInsertNode(

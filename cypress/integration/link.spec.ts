@@ -30,7 +30,7 @@ context('Actions', () => {
     cy.get('@root')
       .focus()
       .type('Textarena')
-      .type('{selectAll}')
+      .setSelection('Textarena')
       .wait(500)
       .get('.textarena-toolbar__list > :nth-child(9)')
       .click()
