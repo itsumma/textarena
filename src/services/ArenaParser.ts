@@ -17,8 +17,9 @@ export default class ArenaParser {
     htmlString: string,
   ): ArenaSelection | undefined {
     this.asm.logger.log(htmlString);
+    const resultHtml = this.clearText(htmlString);
     this.insertHtmlToModel(
-      htmlString,
+      resultHtml,
       this.asm.model.model,
       0,
     );
@@ -340,7 +341,7 @@ export default class ArenaParser {
     return formatings;
   }
 
-  protected clearText(
+  public clearText(
     text: string | null,
     ignoreEmpty = false,
   ): string {
@@ -357,7 +358,8 @@ export default class ArenaParser {
     }
     result = result.replace(/\n/g, ' ')
       .replace(/ {2,}/g, ' ')
-      .replace(/\u00A0/, ' ');
+      .replace(/\u00A0/, ' ')
+      .replace(/<(\S*?)[^>]*>\s+?<\/\1>/g, ' ');
     // if (first) {
     //   result = result.replace(/^[\s\n]+/, '');
     // }

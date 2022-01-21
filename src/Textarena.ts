@@ -668,6 +668,10 @@ class Textarena {
     };
     return this.registerCommand(command, action);
   }
+
+  public clearHtml(html: string): string {
+    return this.asm.parser.clearText(html);
+  }
 }
 
 declare global {

@@ -17,6 +17,7 @@ const pastePlugin = (): ArenaPlugin => ({
             if (!html) {
               return [false, selection];
             }
+            html = ta.clearHtml(html);
             const matchStart = /(<!--StartFragment-->)|(<meta charset=['"][^'"]+['"]>)/.exec(html);
             if (matchStart) {
               html = html.slice(matchStart.index + matchStart[0].length);
