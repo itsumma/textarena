@@ -356,10 +356,27 @@ export default class ArenaParser {
       // console.log('\tDont insert');
       return '';
     }
+
+    // We have to clear html from this empty tags because they mess up the
+    // cursor movements and actions
+    // TODO: Why?
+    const tags = [
+      'strong',
+      'em',
+      'u',
+      's',
+      'sub',
+      'sup',
+      'font',
+      'mark',
+      'code',
+    ];
+    const reg = new RegExp(`<(${tags.join('|')})[^>]*>\\s*?<\\/\\1>`, 'gi');
+
     result = result.replace(/\n/g, ' ')
       .replace(/ {2,}/g, ' ')
       .replace(/\u00A0/, ' ')
-      .replace(/<(\S*?)[^>]*>\s+?<\/\1>/g, ' ');
+      .replace(reg, ' ');
     // if (first) {
     //   result = result.replace(/^[\s\n]+/, '');
     // }

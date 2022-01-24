@@ -39,6 +39,9 @@ export function toggleFormating(
   const startOffset = start || 0;
   const endOffset = end || node.getTextLength();
   const [trimStartOffset, trimEndOffset] = getTrimmedOffsets(node, start, end);
+  if (trimStartOffset >= trimEndOffset) {
+    return;
+  }
 
   if (node.hasFormating(formating, trimStartOffset, trimEndOffset)) {
     node.removeFormating(formating, startOffset, endOffset);
