@@ -136,7 +136,11 @@ export default class ArenaParser {
       }
       if (arena && !arena.inline) {
         if (firstNode && arena.hasText && arenaNode.hasText) {
-          if (arenaNode.isEmpty() && arenaNode.hasParent && !arenaNode.parent.protected) {
+          if (
+            arenaNode.isEmpty()
+            && arenaNode.hasParent
+            && arenaNode.parent.root
+          ) {
             const cursor = arenaNode.remove();
             return this.insertChild(
               htmlNode,
