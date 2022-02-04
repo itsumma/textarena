@@ -351,6 +351,10 @@ export default class ArenaModel {
     replace = false,
   ): ChildArenaNode | undefined {
     if (parent.hasText) {
+      // Do not allow to insert block inside block
+      if (parent.hasParent && parent.parent.arena === arena) {
+        return undefined;
+      }
       if (onlyChild) {
         return undefined;
       }
