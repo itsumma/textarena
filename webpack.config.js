@@ -21,6 +21,7 @@ const config = {
     extensions: ['.ts', '.js', '.json', 'scss'],
     modules: [path.resolve(__dirname, 'src'), 'node_modules'],
   },
+  devtool: 'inline-source-map',
   module: {
     rules: [
       {
