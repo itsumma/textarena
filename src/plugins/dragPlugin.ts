@@ -70,6 +70,8 @@ export const dragPlugin = (): ArenaPlugin => ({
           elem.classList.add('ts-drag-over-after');
           elem.classList.remove('ts-drag-over-before');
         }
+      } else if (enteredElement) {
+        clearElementClasses(enteredElement);
       }
     };
 
@@ -92,10 +94,8 @@ export const dragPlugin = (): ArenaPlugin => ({
     };
 
     const dragoverListener = (event: DragEvent): void => {
-      if (!event.target) {
-        return;
-      }
-
+      event.preventDefault();
+      if (!event.target) return;
       handleDragEvent(event);
     };
 
