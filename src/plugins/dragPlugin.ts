@@ -154,10 +154,15 @@ export const dragPlugin = (): ArenaPlugin => ({
             }
             const newSelection = selection;
             targetNode.parent.cutChildren(targetOffset, 1);
-            if (targetNode.parent === node && targetOffset <= offset) {
-              offset -= 1;
+            let insertIndex: number;
+            if (targetOffset > offset) {
+              insertIndex = before ? offset : (offset + 1);
+            } else if (targetOffset === offset) {
+              insertIndex = offset;
+            } else {
+              insertIndex = before ? (offset - 1) : offset;
             }
-            node.insertChildren([targetNode], before ? offset : (offset + 1));
+            node.insertChildren([targetNode], insertIndex);
             newSelection.setBoth(targetNode, targetNode.getIndex());
             return [true, newSelection];
           }

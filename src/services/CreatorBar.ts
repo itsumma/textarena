@@ -314,7 +314,7 @@ export class CreatorBar {
     const rect = target.getBoundingClientRect();
     const containerRect = this.asm.textarena.getContainerElement().getBoundingClientRect();
     this.buttonWrapper.css({
-      paddingLeft: `${rect.x - containerRect.x}px`,
+      paddingLeft: `calc(${rect.x - containerRect.x}px + 2rem)`,
     });
     this.elem.css({
       height: `${target.offsetHeight}px`,
