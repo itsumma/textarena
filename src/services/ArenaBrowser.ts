@@ -477,9 +477,9 @@ export class ArenaBrowser {
     if (e.button === 0 && event.target && event.target.parentNode) {
       let elem: Node | null = event.target;
       while (elem.parentNode) {
-        elem = elem.parentNode;
         if (elem.nodeType !== Node.ELEMENT_NODE
           || (elem as HTMLElement).tagName !== 'TEXTARENA-REMOVE') {
+          elem = elem.parentNode;
           // eslint-disable-next-line no-continue
           continue;
         }
