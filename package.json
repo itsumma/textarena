@@ -59,7 +59,7 @@
     "webpack-dev-server": "^4.6.0"
   },
   "scripts": {
-    "start": "webpack-dev-server",
+    "start": "webpack serve --mode development",
     "serve": "http-server ./public",
     "lint": "yarn lint:eslint && yarn lint:types && yarn lint:css",
     "lint:eslint": "eslint ./src ./cypress ./tests",
@@ -68,10 +68,10 @@
     "lint:types:cypress": "tsc --project ./cypress/tsconfig.json --noEmit",
     "lint:types:tests": "tsc --project ./tests/tsconfig.json --noEmit",
     "lint:css": "stylelint \"scss/**/*.{css,scss}\" --cache --cache-location .cache/.stylelintcache",
-    "clean": "rimraf lib public/style.js public/textarena.{css,js} cypress/videos/*.spec.ts.mp4",
+    "clean": "rimraf lib public/style.js* public/textarena.{css,js}* cypress/videos/*.spec.ts.mp4",
     "build": "yarn clean && yarn build:types && yarn build:bundle",
     "build:types": "tsc",
-    "build:bundle": "yarn webpack",
+    "build:bundle": "webpack --mode production",
     "test": "yarn lint && yarn test:jest && yarn test:cypress",
     "test:jest": "jest ./test",
     "test:cypress": "cypress run",

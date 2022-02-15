@@ -1,19 +1,7 @@
 const path = require('path');
 const webpack = require('webpack');
-const pkg = require('./package.json');
 
-const bannerPack = new webpack.BannerPlugin({
-  banner: [
-    `Some v${pkg.version}`,
-  ].join('\n'),
-  entryOnly: true,
-});
-const constantPack = new webpack.DefinePlugin({
-  SOME_VERSION: JSON.stringify(pkg.version),
-});
-
-module.exports = {
-  mode: 'development',
+const config = {
   context: path.resolve(__dirname, './src'),
   entry: {
     textarena: ['./Textarena.ts'],
@@ -44,28 +32,12 @@ module.exports = {
         exclude: /node_modules/,
         type: 'asset/resource',
         use: [
-          // MiniCssExtractPlugin.loader,
-          {
-            loader: 'postcss-loader',
-            options: {
-              postcssOptions: {
-                plugins: [
-                  [
-                    'autoprefixer',
-                  ],
-                ],
-              }
-            }
-          },
+          'postcss-loader',
           'sass-loader',
         ],
       },
     ],
   },
-  plugins: [
-    bannerPack,
-    constantPack,
-  ],
   devServer: {
     hot: false,
     static: {
@@ -73,4 +45,23 @@ module.exports = {
     },
     host: '0.0.0.0',
   },
+};
+
+module.exports = (env, argv) => {
+  if (argv.mode == 'production') {
+    config.mode = 'production';
+    config.plugins = [
+      new webpack.BannerPlugin({
+        banner: [
+          '@license',
+          'Copyright 2022 © ITSumma Ltd.',
+          'SPDX-License-Identifier: AGPL-3.0-only',
+        ].join('\n'),
+      }),
+    ];
+  } else {
+    config.devtool = 'inline-source-map';
+    config.mode = 'development';
+  }
+  return config;
 };
