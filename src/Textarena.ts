@@ -1,3 +1,4 @@
+import '../scss/style.scss';
 import { Direction } from './events/RemoveEvent';
 
 import ArenaSelection from './helpers/ArenaSelection';

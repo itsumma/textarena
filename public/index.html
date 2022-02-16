@@ -5,214 +5,17 @@
 	<meta charset="utf-8" />
 	<title>Textarena</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="textarena.css">
   <link rel="stylesheet" href="common.css">
   <link rel="preconnect" href="https://fonts.gstatic.com">
   <link href="https://fonts.googleapis.com/css2?family=Bitter:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
-	<style>
-    @font-face {
-      font-family: 'Amstelvar';
-      src: url('Amstelvar-Roman.ttf') format('opentype');
-      font-style: normal;
-      font-weight: 300 900;
-    }
-
-    @font-face {
-      font-family: 'Amstelvar';
-      src: url('Amstelvar-Italic.ttf') format('opentype');
-      font-style: italic;
-      font-weight: 300 900;
-    }
-
-    @keyframes width-animation {
-      0% { font-variation-settings: "GRAD" -0.5; }
-      10% { font-variation-settings: "GRAD" 1; }
-      20% { font-variation-settings: "GRAD" -0.5; }
-    }
-
-    html,
-    body {
-      margin: 0;
-      padding: 0;
-      font-family: 'Bitter', sans-serif;
-      font-kerning: none;
-      font-size: 20px;
-      line-height: 1.6;
-    }
-    @media screen and (max-width: 600px) {
-      html,
-      body {
-        font-size: 16px;
-      }
-    }
-
-    * {
-      box-sizing: border-box;
-    }
-
-    .demo-h1 {
-      font-family: 'Amstelvar', serif;
-      font-size: 3rem;
-      font-weight: 600;
-      font-variation-settings: "GRAD" -0.5;
-      text-align: center;
-      font-kerning: none;
-      padding-top: 1em;
-    }
-    @media screen and (max-width: 400px) {
-      .demo-h1 {
-        font-size: 2rem;
-      }
-    }
-
-    .demo-h1 span {
-      animation-name: width-animation;
-      animation-duration: 6s;
-      animation-iteration-count: infinite;
-      animation-timing-function: linear;
-    }
-
-    .demo-h1 span:nth-child(1) {
-      animation-delay: 0ms;
-    }
-
-    .demo-h1 span:nth-child(2) {
-      animation-delay: 500ms;
-    }
-
-    .demo-h1 span:nth-child(3) {
-      animation-delay: 1000ms;
-    }
-
-    .demo-h1 span:nth-child(4) {
-      animation-delay: 1500ms;
-    }
-
-    .demo-h1 span:nth-child(5) {
-      animation-delay: 2000ms;
-    }
-
-    .demo-h1 span:nth-child(6) {
-      animation-delay: 2500ms;
-    }
-
-    .demo-h1 span:nth-child(7) {
-      animation-delay: 3000ms;
-    }
-
-    .demo-h1 span:nth-child(8) {
-      animation-delay: 3500ms;
-    }
-
-    .demo-h1 span:nth-child(9) {
-      animation-delay: 4000ms;
-    }
-
-    .textarena-container {
-      max-width: 43rem;
-      margin: 0 auto;
-      padding-bottom: 10rem;
-      /* border: 1px solid rgb(182, 182, 182);
-      border-radius: 2px; */
-      /* max-width: 721px; */
-      /* margin: 0 auto; */
-    }
-    @media screen and (max-width: 600px) {
-      .textarena-container {
-        border: 0;
-      }
-    }
-
-    .textarena-container:hover {
-      border-color:  black;
-    }
-
-
-    .textarena-editor {
-      padding: 2rem;
-      border-radius: 1rem;
-      box-shadow: 0 0 1em 0.1em rgb(32 68 122 / 12%);
-
-      min-height: 50vh;
-    }
-    .textarena-placeholder {
-      padding: 2rem;
-    }
-    .textarena-creator {
-      padding: 0 0.3em;
-    }
-    @media screen and (max-width: 900px) {
-      .textarena-editor {
-        padding: 1.2rem 2rem 10rem;
-      }
-      .textarena-placeholder {
-        padding: 1.2rem 2rem 0;
-      }
-      .textarena-creator {
-        padding: 0;
-      }
-    }
-
-    .textarena-counter {
-      position: fixed;
-      box-shadow: 0 0.1em 1.5em 0rem rgb(0 0 0 / 20%);
-    }
-
-    .render-preview {
-      max-width: calc(721px + 2rem);
-      margin: 0 auto;
-      padding: 1rem;
-    }
-    .html-preview {
-      white-space: pre-wrap;
-      padding: 0 1rem;
-    }
-
-    .menu {
-      padding: 0 2em;
-      display: flex;
-      justify-content: center;
-    }
-
-    .toggler {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 1rem 0;
-      flex-wrap: wrap;
-      position: sticky;
-      top: 0;
-      z-index: 1;
-    }
-    .toggler > * {
-      margin: 0 1rem 0.5rem;
-    }
-    .toggler-btn {
-      border: 1px solid black;
-      background: white;
-      padding: 0.2rem 1rem;
-      font-size: 1rem;
-      color: black;
-    }
-    .toggler-btn[pressed] {
-      background: rgb(133, 133, 133);
-      color: white;
-    }
-    .tab {
-      display: none;
-    }
-    .tab[show] {
-      display: block;
-    }
-	</style>
 </head>
 
 <body>
 	<h1 class="demo-h1"><span>T</span><span>E</span><span>X</span><span>T</span><span>A</span><span>R</span><span>E</span><span>N</span><span>A</span></h1>
   <div class="menu">
-    <span>English version</span>
+    <span class="active menu-item">English version</span>
     <span>&nbsp;|&nbsp;</span>
-    <a href="ru">Russian version</a>
+    <span class="menu-item">Russian version</span>
   </div>
   <div class="toggler">
     <button class="toggler-btn" data-tab="tab-editor" pressed>Editor</button>
@@ -229,17 +32,8 @@
     <div id="html" class="html-preview"></div>
   </div>
 
-  <script>
-    document.querySelectorAll("[data-tab]").forEach((elem) => elem.addEventListener('click', function(event) {
-      document.querySelectorAll("[data-tab]").forEach((other) => other.removeAttribute('pressed'));
-      event.currentTarget.setAttribute('pressed', true);
-      const tab = event.currentTarget.getAttribute('data-tab');
-      document.querySelectorAll(".tab").forEach((other) => other.removeAttribute('show'));
-      document.querySelector("#" + tab).setAttribute('show', true);
-    }));
-  </script>
 	<script src="textarena.js"></script>
-  <script src="index.js"></script>
+  <script src="demo.js"></script>
 </body>
 
 </html>
