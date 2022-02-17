@@ -810,6 +810,24 @@ body {
   padding: 0 2em;
   display: flex;
   justify-content: center;
+
+  .menu-item {
+    color: #00e;
+    text-decoration: underline;
+
+    &:hover {
+      cursor: pointer;
+    }
+
+    &.active {
+      color: initial;
+      text-decoration: none;
+
+      &:hover {
+        cursor: initial;
+      }
+    }
+  }
 }
 
 .toggler {
@@ -846,21 +864,4 @@ body {
 
 .tab[show] {
   display: block;
-}
-
-.menu {
-  .menu-item {
-    color: #0000ee;
-    text-decoration: underline;
-    &:hover {
-      cursor: pointer;
-    }
-    &.active {
-      color: initial;
-      text-decoration: none;
-      &:hover {
-        cursor: initial;
-      }
-    }
-  }
 }

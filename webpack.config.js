@@ -1,11 +1,12 @@
 const path = require('path');
 const webpack = require('webpack');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
 const config = {
-  context: path.resolve(__dirname, './src'),
   entry: {
-    textarena: ['./Textarena.ts'],
-    demo: ['../demo/main.ts'],
+    textarena: ['./src/Textarena.ts'],
+    demo: ['./demo/index.ts'],
   },
   output: {
     filename: '[name].js',
@@ -39,6 +40,14 @@ const config = {
         type: 'asset/resource',
       },      
       {
+        test: /\.(png|jpg|jpeg|gif)$/i,
+        type: 'asset/resource',
+      },
+      {
+        test: /\.(svg)$/i,
+        type: 'asset/source',
+      },
+      {
         test: /\.s[ac]ss$/i,
         use: [
           'style-loader',
@@ -49,6 +58,13 @@ const config = {
       },
     ],
   },
+  plugins: [
+    new HtmlWebpackPlugin({
+      template: './demo/index.html',
+      filename: 'index.html',
+    }),
+    new CleanWebpackPlugin(),
+  ],
   devServer: {
     hot: false,
     static: {
@@ -61,7 +77,7 @@ const config = {
 module.exports = (env, argv) => {
   if (argv.mode == 'production') {
     config.mode = 'production';
-    config.plugins = [
+    config.plugins.push(
       new webpack.BannerPlugin({
         banner: [
           '@license',
@@ -69,7 +85,7 @@ module.exports = (env, argv) => {
           'SPDX-License-Identifier: AGPL-3.0-only',
         ].join('\n'),
       }),
-    ];
+    );
   } else {
     config.devtool = 'inline-source-map';
     config.mode = 'development';

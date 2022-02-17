@@ -4,11 +4,7 @@
 /cypress/videos
 /cypress/screenshots
 /dist
-/.idea
 /lib
 /node_modules
 yarn-error.log
-public/style.js*
-public/textarena.css
-public/textarena.js*
-public/demo.js*
+public
