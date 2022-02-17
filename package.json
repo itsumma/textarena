@@ -22,7 +22,7 @@
   "sass": "scss/style.scss",
   "files": [
     "/lib",
-    "/public",
+    "/public/textarena.js",
     "/scss"
   ],
   "devDependencies": {
@@ -41,7 +41,7 @@
     "babel-loader": "^8.1.0",
     "clean-webpack-plugin": "^4.0.0",
     "css-loader": "^6.6.0",
-    "cypress": "^9.3.0",
+    "cypress": "^9.5.0",
     "cypress-plugin-tab": "^1.0.5",
     "eslint": "^8.3.0",
     "eslint-config-airbnb": "^19.0.1",
