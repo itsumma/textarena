@@ -7,4 +7,4 @@
 /lib
 /node_modules
 yarn-error.log
-public
+/public
