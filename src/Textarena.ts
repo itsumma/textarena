@@ -1,6 +1,6 @@
 import '../scss/style.scss';
 
-import { Direction } from './events';
+import { Direction } from './arenaEvents';
 import { ArenaSelection, ElementHelper } from './helpers';
 import {
   AnyArena, AnyArenaNode, ArenaFormating, ArenaInlineInterface, ArenaInterval,

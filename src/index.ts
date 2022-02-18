@@ -1,7 +1,7 @@
 import Textarena from './Textarena';
 
 export * from './arenas';
-export * from './events';
+export * from './arenaEvents';
 export * from './helpers';
 export * from './interfaces';
 export * from './models';

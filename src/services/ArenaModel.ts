@@ -1,7 +1,7 @@
 import { TemplateResult } from 'lit';
 
 import { ArenaFactory } from '../arenas';
-import { Direction } from '../events';
+import { Direction } from '../arenaEvents';
 import { ArenaSelection, NodeRegistry } from '../helpers';
 import {
   AnyArena, AnyArenaNode, ArenaCursorAncestor, ArenaCursorText, ArenaFormating, ArenaFormatings,

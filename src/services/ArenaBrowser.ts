@@ -2,7 +2,7 @@
 import {
   ArenaInputEvent, BrowserCommandEvent, CommandEvent, CopyEvent, CutEvent, ModifiersEvent,
   PasteEvent, RemoveEvent, SelectionEvent,
-} from '../events';
+} from '../arenaEvents';
 import { ArenaSelection, ElementHelper } from '../helpers';
 import {
   AnyArenaNode, ArenaCursorAncestor, ArenaKeyboardEvent, NodeAttributes,
