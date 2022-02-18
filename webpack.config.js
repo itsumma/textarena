@@ -10,9 +10,11 @@ const config = {
   },
   output: {
     filename: '[name].js',
-    library: 'Textarena',
-    libraryExport: 'default',
-    libraryTarget: 'umd',
+    library: {
+      name: 'Textarena',
+      type: 'umd',
+      export: 'default',
+    },
     path: path.resolve(__dirname, 'public'),
   },
   resolve: {
@@ -61,6 +63,7 @@ const config = {
   plugins: [
     new HtmlWebpackPlugin({
       template: './demo/index.html',
+      inject: false,
       filename: 'index.html',
     }),
     new CleanWebpackPlugin(),
