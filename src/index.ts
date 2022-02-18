@@ -9,5 +9,6 @@ export * from './plugins';
 export * from './services';
 export * from './utils';
 export * from './helpTextRu';
+export * from './Textarena';
 
 export default Textarena;
