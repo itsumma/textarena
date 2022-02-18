@@ -1,3 +1,6 @@
+/**
+ * @jest-environment jsdom
+ */
 import { Intervaler } from '../src/helpers';
 
 test('simple add', () => {
