@@ -1,14 +1,10 @@
 /**
  * @jest-environment jsdom
  */
-import ArenaFactory from '../src/arenas/ArenaFactory';
-import ArenaText from '../src/arenas/ArenaText';
-import ArenaSelection from '../src/helpers/ArenaSelection';
-import NodeRegistry from '../src/helpers/NodeRegistry';
-import { ArenaNodeMediator, ArenaNodeText } from '../src/interfaces/ArenaNode';
-import { ParentArena } from '../src/interfaces/Arena';
-import NodeFactory from '../src/models/NodeFactory';
-import RootNode from '../src/models/RootNode';
+import { ArenaFactory, ArenaText } from '../src/arenas';
+import { ArenaSelection, NodeRegistry } from '../src/helpers';
+import { ArenaNodeMediator, ArenaNodeText, ParentArena } from '../src/interfaces';
+import { NodeFactory, RootNode } from '../src/models';
 import utils from '../src/utils';
 
 const registry = new NodeRegistry();
