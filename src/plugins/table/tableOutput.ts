@@ -1,5 +1,4 @@
-import { ArenaFormatings } from '../../interfaces/ArenaFormating';
-import { AnyArenaNode } from '../../interfaces/ArenaNode';
+import { AnyArenaNode, ArenaFormatings } from '../../interfaces';
 
 export function tableOutput(
   type: string,

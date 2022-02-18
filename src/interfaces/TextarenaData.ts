@@ -1,4 +1,4 @@
-export default interface TextarenaData {
+export interface TextarenaData {
   html: string;
   dataHtml: string;
   json: string;

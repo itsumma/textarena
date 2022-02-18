@@ -1,13 +1,7 @@
-import embedServices from './embedServices';
+import { embedServices } from './embedServices';
 import {
-  EmbedElem,
-  OEmbedProvider,
-  OEmbedProviderEndpoint,
-  EmbedService,
-  GetEmbedProvider,
-  GetEmbedProviderResult,
-  OEmbedVideo,
-  ProviderOptions,
+  EmbedElem, EmbedService, GetEmbedProvider, GetEmbedProviderResult, OEmbedProvider,
+  OEmbedProviderEndpoint, OEmbedVideo, ProviderOptions,
 } from './types';
 
 /**

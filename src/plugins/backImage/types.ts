@@ -1,7 +1,7 @@
-import { DefaultPluginOptions } from '../../interfaces/ArenaPlugin';
+import { DefaultPluginOptions } from '../../interfaces';
 import {
   IzoConfig, ScrProcessor, Srcset, UploadProcessor,
-} from '../image/types';
+} from '../image';
 
 export type BackImagePluginOptions = DefaultPluginOptions & {
   srcset?: Srcset,

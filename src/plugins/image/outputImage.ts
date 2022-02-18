@@ -1,10 +1,8 @@
-import { ArenaFormatings } from '../../interfaces/ArenaFormating';
-import { AnyArenaNode } from '../../interfaces/ArenaNode';
+import { AnyArenaNode, ArenaAttributes, ArenaFormatings } from '../../interfaces';
 import { ScrProcessor, Srcset } from './types';
-import ArenaAttributes from '../../interfaces/ArenaAttributes';
 
 // TODO webp
-const outputImage = (
+export const outputImage = (
   type: string,
   node: AnyArenaNode,
   frms: ArenaFormatings,
@@ -34,5 +32,3 @@ const outputImage = (
     </picture>
   `;
 };
-
-export default outputImage;

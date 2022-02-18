@@ -1,6 +1,6 @@
 import {
   ArenaNodeText,
-} from '../interfaces/ArenaNode';
+} from '../interfaces';
 
 function getTrimmedOffsets(
   node: ArenaNodeText,

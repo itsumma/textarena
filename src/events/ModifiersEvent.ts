@@ -1,6 +1,6 @@
-import ArenaKeyboardEvent from '../interfaces/ArenaKeyboardEvent';
+import { ArenaKeyboardEvent } from '../interfaces';
 
-export default class ModifiersEvent implements ArenaKeyboardEvent {
+export class ModifiersEvent implements ArenaKeyboardEvent {
   static type = 'modifiers';
 
   constructor(

@@ -1,8 +1,8 @@
 import { ChildArena } from '../Arena';
-import ArenaCursorAncestor from '../ArenaCursorAncestor';
+import { ArenaCursorAncestor } from '../ArenaCursorAncestor';
 import { ChildArenaNode } from '../ArenaNode';
 
-export default interface ArenaNodeAncestorPart {
+export interface ArenaNodeAncestorPart {
   readonly hasParent: boolean;
   readonly hasChildren: true;
   readonly hasText: false;

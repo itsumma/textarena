@@ -1,15 +1,12 @@
-import ArenaFormating from '../interfaces/ArenaFormating';
-
-import RichTextManager from '../helpers/RichTextManager';
-
-import ArenaServiceManager from './ArenaServiceManager';
-import { AnyArenaNode, ArenaNodeText } from '../interfaces/ArenaNode';
-import { AnyArena } from '../interfaces/Arena';
-import ArenaSelection from '../helpers/ArenaSelection';
-import { ArenaMark, FormatingMark } from './ArenaModel';
+import { ArenaSelection, RichTextManager } from '../helpers';
+import {
+  AnyArena, AnyArenaNode, ArenaFormating, ArenaNodeText,
+} from '../interfaces';
 import utils from '../utils';
+import { ArenaMark, FormatingMark } from './ArenaModel';
+import { ArenaServiceManager } from './ArenaServiceManager';
 
-export default class ArenaParser {
+export class ArenaParser {
   constructor(protected asm: ArenaServiceManager) {
   }
 

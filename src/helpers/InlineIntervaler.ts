@@ -1,4 +1,4 @@
-import { ArenaNodeInline } from '../interfaces/ArenaNode';
+import { ArenaNodeInline } from '../interfaces';
 
 type Interval = {
   node: ArenaNodeInline,
@@ -6,7 +6,7 @@ type Interval = {
   end: number,
 };
 
-export default class InlineIntervaler {
+export class InlineIntervaler {
   private intervals: Interval[] = [];
 
   constructor(intervals?: Interval[]) {

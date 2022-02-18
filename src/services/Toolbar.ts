@@ -1,10 +1,7 @@
-import ToolbarOptions from '../interfaces/ToolbarOptions';
-import ToolOptions from '../interfaces/ToolOptions';
-import ElementHelper from '../helpers/ElementHelper';
-import ArenaServiceManager from './ArenaServiceManager';
-import { AnyArenaNode } from '../interfaces/ArenaNode';
+import { ArenaEvent, ElementHelper } from '../helpers';
+import { AnyArenaNode, ToolbarOptions, ToolOptions } from '../interfaces';
 import utils from '../utils';
-import ArenaEvent from '../helpers/ArenaEvent';
+import { ArenaServiceManager } from './ArenaServiceManager';
 
 function getFocusElement(): HTMLElement | undefined {
   const s = window.getSelection();
@@ -24,7 +21,7 @@ type Tool = {
   modifiers?: number;
 };
 
-export default class Toolbar {
+export class Toolbar {
   enabled = false;
 
   showed = false;

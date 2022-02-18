@@ -1,7 +1,6 @@
-import { ArenaFormatings } from '../../interfaces/ArenaFormating';
-import { AnyArenaNode } from '../../interfaces/ArenaNode';
+import { AnyArenaNode, ArenaFormatings } from '../../interfaces';
 
-const outputQuoteBlock = (
+export const outputQuoteBlock = (
   type: string,
   node: AnyArenaNode,
   frms: ArenaFormatings,
@@ -33,5 +32,3 @@ const outputQuoteBlock = (
   }
   return '';
 };
-
-export default outputQuoteBlock;

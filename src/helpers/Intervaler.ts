@@ -3,7 +3,7 @@ type Interval = {
   end: number,
 };
 
-export default class Intervaler {
+export class Intervaler {
   private intervals: Interval[];
 
   constructor(intervals?: Interval[]) {

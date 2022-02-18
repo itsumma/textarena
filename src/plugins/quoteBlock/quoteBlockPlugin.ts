@@ -1,10 +1,10 @@
-import ArenaSelection from '../../helpers/ArenaSelection';
-import { ArenaMediatorInterface, ArenaTextInterface } from '../../interfaces/Arena';
-import { AnyArenaNode } from '../../interfaces/ArenaNode';
-import ArenaPlugin, { DefaultPluginOptions } from '../../interfaces/ArenaPlugin';
+import { ArenaSelection } from '../../helpers';
+import {
+  AnyArenaNode, ArenaMediatorInterface, ArenaPlugin, ArenaTextInterface, DefaultPluginOptions,
+} from '../../interfaces';
 import Textarena from '../../Textarena';
-import ArenaQuoteBlock from './ArenaQuoteBlock';
-import outputQuoteBlock from './outputQuoteBlock';
+import { ArenaQuoteBlock } from './ArenaQuoteBlock';
+import { outputQuoteBlock } from './outputQuoteBlock';
 
 const defaultOptions: DefaultPluginOptions = {
   name: 'quote-block',
@@ -71,7 +71,7 @@ const srcset = [
   },
 ];
 
-const quotePlugin = (opts?: Partial<DefaultPluginOptions>): ArenaPlugin => ({
+export const quotePlugin = (opts?: Partial<DefaultPluginOptions>): ArenaPlugin => ({
   register(textarena: Textarena): void {
     const {
       name, icon, title, tag, attributes, shortcut, command,
@@ -182,5 +182,3 @@ const quotePlugin = (opts?: Partial<DefaultPluginOptions>): ArenaPlugin => ({
     }
   },
 });
-
-export default quotePlugin;

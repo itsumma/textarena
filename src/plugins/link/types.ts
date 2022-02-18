@@ -1,7 +1,5 @@
-import ElementHelper from '../../helpers/ElementHelper';
-import { ArenaInlineInterface } from '../../interfaces/Arena';
-import { DefaultPluginOptions } from '../../interfaces/ArenaPlugin';
-import CommandAction from '../../interfaces/CommandAction';
+import { ElementHelper } from '../../helpers';
+import { ArenaInlineInterface, CommandAction, DefaultPluginOptions } from '../../interfaces';
 import Textarena from '../../Textarena';
 
 type LinkManage = (

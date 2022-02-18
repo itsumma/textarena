@@ -18,7 +18,7 @@
   },
   "main": "public/textarena.js",
   "module": "lib/Textarena.js",
-  "typings": "lib/Textarena.d.ts",
+  "typings": "lib/index.d.ts",
   "sass": "scss/style.scss",
   "files": [
     "/lib",

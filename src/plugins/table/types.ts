@@ -1,9 +1,7 @@
-import { ArenaMediatorInterface, ArenaTextInterface, ChildArena } from '../../interfaces/Arena';
-import { DefaultPluginOptions } from '../../interfaces/ArenaPlugin';
-import CommandAction from '../../interfaces/CommandAction';
-import { TagAndAttributes } from '../../interfaces/ArenaFormating';
-import { ToolCheckStatus } from '../../interfaces/ToolOptions';
-import { CreatorCanShow } from '../../interfaces/CreatorOptions';
+import {
+  ArenaMediatorInterface, ArenaTextInterface, ChildArena, CommandAction, CreatorCanShow,
+  DefaultPluginOptions, TagAndAttributes, ToolCheckStatus,
+} from '../../interfaces';
 
 export type ArenaPluginOptions = DefaultPluginOptions & {
   marks: TagAndAttributes[],

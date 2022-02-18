@@ -1,10 +1,8 @@
-import { TreeArena } from '../interfaces/Arena';
-import NodeAttributes from '../interfaces/NodeAttributes';
-import ArenaCursorAncestor from '../interfaces/ArenaCursorAncestor';
-import { ChildArenaNode, ParentArenaNode } from '../interfaces/ArenaNode';
-import ArenaAttribute from '../interfaces/ArenaAttribute';
+import {
+  ArenaAttribute, ArenaCursorAncestor, ChildArenaNode, NodeAttributes, ParentArenaNode, TreeArena,
+} from '../interfaces';
 
-export default abstract class AbstractNode<
+export abstract class AbstractNode<
   TArena extends TreeArena
 > {
   readonly hasParent: boolean = false;

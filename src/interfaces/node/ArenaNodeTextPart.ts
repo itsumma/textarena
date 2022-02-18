@@ -1,11 +1,11 @@
-import RichTextManager from '../../helpers/RichTextManager';
-import ArenaFormating from '../ArenaFormating';
-import ArenaCursorText from '../ArenaCursorText';
+import { RichTextManager } from '../../helpers/RichTextManager';
 import { ArenaInlineInterface, ArenaTextInterface } from '../Arena';
-import { ArenaNodeInline } from '../ArenaNode';
+import { ArenaCursorText } from '../ArenaCursorText';
+import { ArenaFormating } from '../ArenaFormating';
 import { ArenaInterval } from '../ArenaInterval';
+import { ArenaNodeInline } from '../ArenaNode';
 
-export default interface ArenaNodeTextPart {
+export interface ArenaNodeTextPart {
   readonly arena: ArenaTextInterface;
 
   readonly hasParent: true;

@@ -1,68 +1,26 @@
 import '../scss/style.scss';
-import { Direction } from './events/RemoveEvent';
 
-import ArenaSelection from './helpers/ArenaSelection';
-import ElementHelper from './helpers/ElementHelper';
-
+import { Direction } from './events';
+import { ArenaSelection, ElementHelper } from './helpers';
 import {
-  AnyArena,
-  ArenaInlineInterface,
-  ArenaMediatorInterface,
-  ArenaSingleInterface,
-  ArenaTextInterface,
-  ChildArena,
-} from './interfaces/Arena';
+  AnyArena, AnyArenaNode, ArenaFormating, ArenaInlineInterface, ArenaInterval,
+  ArenaMediatorInterface, ArenaMiddleware, ArenaNodeInline, ArenaNodeRoot, ArenaNodeText,
+  ArenaOptionsChild, ArenaPlugin, ArenaSingleInterface, ArenaTextInterface, ChangeDataListener,
+  ChildArena, ChildArenaNode, CommandAction, CreatorBarOptions, CreatorOptions, MetaData,
+  NodeAttributes, ParentArenaNode, TagAndAttributes, TextarenaData, TextarenaOptions,
+  ToolbarOptions, ToolOptions,
+} from './interfaces';
+import { TextNode } from './models';
 import {
-  AnyArenaNode, ArenaNodeInline, ArenaNodeRoot, ArenaNodeText, ChildArenaNode, ParentArenaNode,
-} from './interfaces/ArenaNode';
-import ArenaFormating, { TagAndAttributes } from './interfaces/ArenaFormating';
-import ArenaOptionsChild from './interfaces/ArenaOptions';
-import ArenaPlugin from './interfaces/ArenaPlugin';
-import ChangeDataListener from './interfaces/ChangeHandler';
-import CommandAction from './interfaces/CommandAction';
-import CreatorBarOptions from './interfaces/CreatorBarOptions';
-import CreatorOptions from './interfaces/CreatorOptions';
-import MetaData from './interfaces/MetaData';
-import TextarenaData from './interfaces/TextarenaData';
-import TextarenaOptions from './interfaces/TextarenaOptions';
-import ToolbarOptions from './interfaces/ToolbarOptions';
-import ToolOptions from './interfaces/ToolOptions';
-
-import blockquotePlugin from './plugins/blockquotePlugin';
-import calloutPlugin from './plugins/callout/calloutPlugin';
-import commonPlugin from './plugins/commonPlugin';
-import pastePlugin from './plugins/pastePlugin';
-import embedPlugin from './plugins/embed/embedPlugin';
-import formatingsPlugin from './plugins/formatingsPlugin';
-import headersPlugin from './plugins/headersPlugin';
-import hrPlugin from './plugins/hrPlugin';
-import imagePlugin from './plugins/image/imagePlugin';
-import linkPlugin from './plugins/link/linkPlugin';
-import listsPlugin from './plugins/listsPlugin';
-import nestedlistsPlugin from './plugins/nestedlistsPlugin';
-import paragraphPlugin from './plugins/paragraphPlugin';
-import backImagePlugin from './plugins/backImage/backImagePlugin';
-
-import ArenaCommandManager from './services/ArenaCommandManager';
-import ArenaServiceManager from './services/ArenaServiceManager';
-import ArenaModel from './services/ArenaModel';
-import { ArenaHandler } from './services/EventManager';
-import asidePlugin from './plugins/asidePlugin';
-import quotePlugin from './plugins/quoteBlock/quoteBlockPlugin';
-import figurePlugin from './plugins/figure/figurePlugin';
-import typoSugarPlugin from './plugins/typoSugarPlugin';
-import codePlugin from './plugins/codePlugin';
-import twoColumnsPlugin from './plugins/twoColumns/twoColumnsPlugin';
-import roadmapPlugin from './plugins/roadmapPlugin';
-import tablePlugin from './plugins/table/tablePlugin';
-import { ArenaInterval } from './interfaces/ArenaInterval';
-import contentsPlugin from './plugins/contents/contentsPlugin';
-import ArenaMiddleware from './interfaces/ArenaMiddleware';
-import ArenaHistory from './services/ArenaHistory';
-import { MiddlewareWhenCondition } from './services/ArenaMiddlewareManager';
-import videoPlugin from './plugins/video/videoPlugin';
-import NodeAttributes from './interfaces/NodeAttributes';
-import TextNode from './models/TextNode';
+  asidePlugin, backImagePlugin, blockquotePlugin, calloutPlugin, codePlugin, commonPlugin,
+  contentsPlugin, embedPlugin, figurePlugin, formatingsPlugin, headersPlugin, hrPlugin,
+  imagePlugin, linkPlugin, listsPlugin, nestedlistsPlugin, paragraphPlugin, pastePlugin,
+  quotePlugin, roadmapPlugin, tablePlugin, twoColumnsPlugin, typoSugarPlugin, videoPlugin,
+} from './plugins';
+import {
+  ArenaCommandManager, ArenaHandler, ArenaHistory, ArenaModel, ArenaServiceManager,
+  MiddlewareWhenCondition,
+} from './services';
 
 export const defaultOptions: TextarenaOptions = {
   editable: true,

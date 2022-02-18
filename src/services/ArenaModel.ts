@@ -1,34 +1,17 @@
 import { TemplateResult } from 'lit';
-import ArenaFactory from '../arenas/ArenaFactory';
-import { Direction } from '../events/RemoveEvent';
-import ArenaSelection from '../helpers/ArenaSelection';
-import {
-  AnyArena,
-  ArenaInlineInterface,
-  ArenaMediatorInterface,
-  ArenaRootInterface,
-  ArenaTextInterface,
-  ChildArena,
-} from '../interfaces/Arena';
-import {
-  AnyArenaNode,
-  ArenaNodeInline,
-  ArenaNodeMediator,
-  ArenaNodeRoot,
-  ArenaNodeText,
-  ChildArenaNode,
-  ParentArenaNode,
-} from '../interfaces/ArenaNode';
-import ArenaCursorText from '../interfaces/ArenaCursorText';
-import ArenaCursorAncestor from '../interfaces/ArenaCursorAncestor';
-import ArenaFormating, { ArenaFormatings, TagAndAttributes } from '../interfaces/ArenaFormating';
-import ArenaOptionsChild from '../interfaces/ArenaOptions';
-import NodeFactory from '../models/NodeFactory';
 
-import ArenaServiceManager from './ArenaServiceManager';
-import NodeRegistry from '../helpers/NodeRegistry';
+import { ArenaFactory } from '../arenas';
+import { Direction } from '../events';
+import { ArenaSelection, NodeRegistry } from '../helpers';
+import {
+  AnyArena, AnyArenaNode, ArenaCursorAncestor, ArenaCursorText, ArenaFormating, ArenaFormatings,
+  ArenaInlineInterface, ArenaInterval, ArenaMediatorInterface, ArenaNodeInline, ArenaNodeMediator,
+  ArenaNodeRoot, ArenaNodeText, ArenaOptionsChild, ArenaRootInterface, ArenaTextInterface,
+  ChildArena, ChildArenaNode, ParentArenaNode, TagAndAttributes,
+} from '../interfaces';
+import { NodeFactory } from '../models';
 import utils from '../utils';
-import { ArenaInterval } from '../interfaces/ArenaInterval';
+import { ArenaServiceManager } from './ArenaServiceManager';
 
 export type ArenaMark = {
   attributes: string[],
@@ -42,7 +25,7 @@ export type FormatingMark = {
   formating: ArenaFormating
 };
 
-export default class ArenaModel {
+export class ArenaModel {
   public readonly rootArenaName = '__ROOT__';
 
   constructor(protected asm: ArenaServiceManager) {

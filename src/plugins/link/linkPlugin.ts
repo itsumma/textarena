@@ -1,13 +1,11 @@
+import { ArenaSelection, ElementHelper } from '../../helpers';
+import { ArenaInlineInterface, ArenaPlugin } from '../../interfaces';
 import Textarena from '../../Textarena';
-import ArenaPlugin from '../../interfaces/ArenaPlugin';
-import { ArenaInlineInterface } from '../../interfaces/Arena';
-import ElementHelper from '../../helpers/ElementHelper';
-import ArenaLinkbar from './ArenaLinkbar';
-import linkManage from './linkManage';
+import { ArenaLinkbar } from './ArenaLinkbar';
+import { linkCommand } from './linkCommand';
+import { linkManage } from './linkManage';
+import { LinkModal } from './LinkModal';
 import { LinkPluginOptions } from './types';
-import linkCommand from './linkCommand';
-import ArenaSelection from '../../helpers/ArenaSelection';
-import LinkModal from './LinkModal';
 
 const urlPattern = /^https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&/=;]*)$/;
 const htmlUrlPattern = /^<a[ _-a-zA-Z0-9="\\]* href="(https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_+.~#?&/=;]*))"(?: [ _-a-zA-Z0-9="\\]*)?>.*< ?\/a>$/;
@@ -47,7 +45,7 @@ const defaultOptions: LinkPluginOptions = {
   moveCursorHandler: linkManage,
 };
 
-const linkPlugin = (opts?: Partial<LinkPluginOptions>): ArenaPlugin => ({
+export const linkPlugin = (opts?: Partial<LinkPluginOptions>): ArenaPlugin => ({
   register(textarena: Textarena): void {
     const {
       name, icon, title, tag, attributes, allowedAttributes, shortcut,
@@ -144,5 +142,3 @@ const linkPlugin = (opts?: Partial<LinkPluginOptions>): ArenaPlugin => ({
     );
   },
 });
-
-export default linkPlugin;

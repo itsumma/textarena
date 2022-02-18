@@ -1,9 +1,9 @@
 /* eslint-disable no-lonely-if */
-import ArenaFormating, { ArenaFormatings } from '../interfaces/ArenaFormating';
-import Intervaler from './Intervaler';
-import InlineIntervaler from './InlineIntervaler';
-import { ArenaInlineInterface } from '../interfaces/Arena';
-import { ArenaNodeInline } from '../interfaces/ArenaNode';
+import {
+  ArenaFormating, ArenaFormatings, ArenaInlineInterface, ArenaNodeInline,
+} from '../interfaces';
+import { InlineIntervaler } from './InlineIntervaler';
+import { Intervaler } from './Intervaler';
 
 export type Formatings = {
   [name: string]: Intervaler
@@ -83,7 +83,7 @@ const insertInNodes = (
   }
 };
 
-export default class RichTextManager {
+export class RichTextManager {
   constructor(
     text?: string,
     formatings?: Formatings,

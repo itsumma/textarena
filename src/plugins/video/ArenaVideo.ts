@@ -1,12 +1,13 @@
 import {
-  CSSResult, css, TemplateResult, html,
+  css, CSSResult, html, TemplateResult,
 } from 'lit';
 import { property } from 'lit/decorators.js';
-import WebComponent from '../../helpers/WebComponent';
-import { AnyArena } from '../../interfaces/Arena';
-import { UploadProcessor } from './types';
 
-export default class ArenaVideo extends WebComponent {
+import { WebComponent } from '../../helpers';
+import { AnyArena } from '../../interfaces';
+import { UploadVideoProcessor } from './types';
+
+export class ArenaVideo extends WebComponent {
   @property({
     type: String,
   })
@@ -179,7 +180,7 @@ export default class ArenaVideo extends WebComponent {
     this.loading = true;
     this.requestUpdate();
     if (this.arena) {
-      const upload = this.arena.getAttribute('upload') as UploadProcessor;
+      const upload = this.arena.getAttribute('upload') as UploadVideoProcessor;
       if (upload) {
         try {
           upload(file).then(({ src, mime }) => {

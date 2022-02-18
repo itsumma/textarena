@@ -1,9 +1,9 @@
-import { AnyArenaNode } from '../../interfaces/ArenaNode';
+import { AnyArenaNode } from '../../interfaces';
 import Textarena from '../../Textarena';
 import utils from '../../utils';
 import { ContentItem, Contents } from './types';
 
-export default function contentsProcessor(textarena: Textarena, node: AnyArenaNode): void {
+export function contentsProcessor(textarena: Textarena, node: AnyArenaNode): void {
   const data: ContentItem[] = [];
   const bySlug: { [key: string]: ContentItem } = {};
   const byId: { [key: string]: ContentItem } = {};

@@ -2,11 +2,12 @@ import {
   css, html, LitElement, TemplateResult,
 } from 'lit';
 import { property } from 'lit/decorators.js';
-import { ArenaNodeInline, ArenaNodeText } from '../../interfaces/ArenaNode';
-import Textarena from '../../Textarena';
-import ElementHelper from '../../helpers/ElementHelper';
 
-export default class ArenaLinkbar extends LitElement {
+import { ElementHelper } from '../../helpers';
+import { ArenaNodeInline, ArenaNodeText } from '../../interfaces';
+import Textarena from '../../Textarena';
+
+export class ArenaLinkbar extends LitElement {
   static styles = css`
     :host {
       display: flex;

@@ -1,4 +1,4 @@
-import { ArenaMediatorInterface } from '../../interfaces/Arena';
+import { ArenaMediatorInterface } from '../../interfaces';
 import Textarena from '../../Textarena';
 import { ArenaPluginOptions } from './types';
 

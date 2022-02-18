@@ -2,11 +2,11 @@ import {
   html, css, TemplateResult,
 } from 'lit';
 import { property } from 'lit/decorators.js';
-import WebComponent from '../../helpers/WebComponent';
-import { AnyArena } from '../../interfaces/Arena';
-import { ScrProcessor, UploadProcessor } from '../image/types';
+import { WebComponent } from '../../helpers';
+import { AnyArena } from '../../interfaces';
+import { ScrProcessor, UploadProcessor } from '../image';
 
-export default class ArenaBackImage extends WebComponent {
+export class ArenaBackImage extends WebComponent {
   @property({
     type: String,
   })

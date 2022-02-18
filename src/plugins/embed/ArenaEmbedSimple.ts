@@ -2,7 +2,7 @@ import { LitElement, TemplateResult } from 'lit';
 import { property } from 'lit/decorators.js';
 import { createElemEmbed, fetchEmbedData, processEmbedHtml } from './embedUtils';
 
-export default class ArenaEmbedSimple extends LitElement {
+export class ArenaEmbedSimple extends LitElement {
   // URL to fetch embed data according to https://oembed.com/
   @property({
     type: String,

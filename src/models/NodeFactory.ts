@@ -1,18 +1,15 @@
-import MediatorNode from './MediatorNode';
-import TextNode from './TextNode';
-import RootNode from './RootNode';
-import SingleNode from './SingleNode';
+import { NodeRegistry } from '../helpers';
 import {
-  ArenaInlineInterface, ArenaRootInterface, ChildArena,
-} from '../interfaces/Arena';
-import {
-  ArenaNodeInline, ArenaNodeRoot, ChildArenaNode,
-} from '../interfaces/ArenaNode';
-import InlineNode from './InlineNode';
-import NodeRegistry from '../helpers/NodeRegistry';
-import NodeAttributes from '../interfaces/NodeAttributes';
+  ArenaInlineInterface, ArenaNodeInline, ArenaNodeRoot, ArenaRootInterface, ChildArena,
+  ChildArenaNode, NodeAttributes,
+} from '../interfaces';
+import { InlineNode } from './InlineNode';
+import { MediatorNode } from './MediatorNode';
+import { RootNode } from './RootNode';
+import { SingleNode } from './SingleNode';
+import { TextNode } from './TextNode';
 
-export default class NodeFactory {
+export class NodeFactory {
   static createRootNode(arena: ArenaRootInterface): ArenaNodeRoot {
     return new RootNode(arena);
   }

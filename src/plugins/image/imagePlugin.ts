@@ -1,12 +1,10 @@
+import { ArenaSelection } from '../../helpers';
+import { AnyArenaNode, ArenaPlugin, ArenaSingleInterface } from '../../interfaces';
 import Textarena from '../../Textarena';
-import ArenaSelection from '../../helpers/ArenaSelection';
-import ArenaPlugin from '../../interfaces/ArenaPlugin';
-import { ArenaSingleInterface } from '../../interfaces/Arena';
-import { AnyArenaNode } from '../../interfaces/ArenaNode';
-import outputImage from './outputImage';
-import { ImagePluginOptions } from './types';
-import ArenaImage from './ArenaImage';
+import { ArenaImage } from './ArenaImage';
 import { izoUpload } from './izoUpload';
+import { outputImage } from './outputImage';
+import { ImagePluginOptions } from './types';
 
 export const prepareImageSrc = (src: string, width?: number, height?: number): string => {
   if (!width && !height) {
@@ -59,7 +57,7 @@ const defaultOptions: ImagePluginOptions = {
   output: outputImage,
 };
 
-const imagePlugin = (opts?: Partial<ImagePluginOptions>): ArenaPlugin => ({
+export const imagePlugin = (opts?: Partial<ImagePluginOptions>): ArenaPlugin => ({
   register(textarena: Textarena): void {
     const {
       name, icon, title, tag, attributes, allowedAttributes,
@@ -120,5 +118,3 @@ const imagePlugin = (opts?: Partial<ImagePluginOptions>): ArenaPlugin => ({
     }
   },
 });
-
-export default imagePlugin;

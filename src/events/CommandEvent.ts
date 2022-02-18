@@ -1,7 +1,7 @@
-import ArenaKeyboardEvent from '../interfaces/ArenaKeyboardEvent';
-import { KeyboardKey } from '../services/ArenaCommandManager';
+import { ArenaKeyboardEvent } from '../interfaces';
+import { KeyboardKey } from '../services';
 
-export default class CommandEvent implements ArenaKeyboardEvent {
+export class CommandEvent implements ArenaKeyboardEvent {
   static type = 'shortcut';
 
   constructor(

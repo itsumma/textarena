@@ -1,10 +1,11 @@
 import { TemplateResult } from 'lit';
-import ArenaAttribute from '../ArenaAttribute';
-import ArenaCursorText from '../ArenaCursorText';
-import { ArenaFormatings } from '../ArenaFormating';
-import NodeAttributes from '../NodeAttributes';
 
-export default interface ArenaNodeCorePart<T> {
+import { ArenaAttribute } from '../ArenaAttribute';
+import { ArenaCursorText } from '../ArenaCursorText';
+import { ArenaFormatings } from '../ArenaFormating';
+import { NodeAttributes } from '../NodeAttributes';
+
+export interface ArenaNodeCorePart<T> {
   readonly id: string;
 
   readonly hasParent: boolean;

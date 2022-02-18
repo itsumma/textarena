@@ -2,7 +2,7 @@ import { AnyArenaNode } from './ArenaNode';
 
 export type CreatorCanShow = (node: AnyArenaNode) => boolean;
 
-export default interface CreatorOptions {
+export interface CreatorOptions {
   name: string;
   icon?: string;
   title: string;

@@ -1,5 +1,3 @@
-import ArenaAttribute from './ArenaAttribute';
+import { ArenaAttribute } from './ArenaAttribute';
 
-type ArenaAttributes = { [key: string]: ArenaAttribute };
-
-export default ArenaAttributes;
+export type ArenaAttributes = { [key: string]: ArenaAttribute };

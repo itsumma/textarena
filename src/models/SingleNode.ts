@@ -1,11 +1,11 @@
 import { html, TemplateResult } from 'lit';
-import ArenaCursorText from '../interfaces/ArenaCursorText';
-import { ArenaFormatings } from '../interfaces/ArenaFormating';
-import AbstractNode from './AbstractNode';
-import { ArenaSingleInterface } from '../interfaces/Arena';
-import { ArenaNodeSingle } from '../interfaces/ArenaNode';
 
-export default class SingleNode
+import {
+  ArenaCursorText, ArenaFormatings, ArenaNodeSingle, ArenaSingleInterface,
+} from '../interfaces';
+import { AbstractNode } from './AbstractNode';
+
+export class SingleNode
   extends AbstractNode<ArenaSingleInterface>
   implements ArenaNodeSingle {
   readonly hasParent: true = true;

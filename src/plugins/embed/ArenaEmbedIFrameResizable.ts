@@ -3,9 +3,9 @@ import {
 } from 'lit';
 import { property } from 'lit/decorators.js';
 import { unsafeHTML } from 'lit/directives/unsafe-html.js';
-import embedServices from './embedServices';
+import { embedServices } from './embedServices';
 
-export default class ArenaEmbedIFrameResizable extends LitElement {
+export class ArenaEmbedIFrameResizable extends LitElement {
   // The src attribute for iframe element if type property is set
   @property({
     type: String,

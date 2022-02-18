@@ -1,4 +1,4 @@
-const helpTextRu = `
+export const helpTextRu = `
 <h2>Горячие клавиши</h2>
 <p>
 <table>
@@ -77,5 +77,3 @@ const helpTextRu = `
 </table>
 </p>
 `;
-
-export default helpTextRu;

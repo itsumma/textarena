@@ -1,17 +1,15 @@
+import { ArenaSelection } from '../../helpers';
+import { AnyArenaNode, ArenaPlugin, ArenaSingleInterface } from '../../interfaces';
 import Textarena from '../../Textarena';
-import ArenaPlugin from '../../interfaces/ArenaPlugin';
-import ArenaSelection from '../../helpers/ArenaSelection';
-import { AnyArenaNode } from '../../interfaces/ArenaNode';
-import { ArenaSingleInterface } from '../../interfaces/Arena';
-import outputEmbed from './outputEmbed';
-import ArenaEmbed from './ArenaEmbed';
-import { EmbedPluginOptions } from './types';
-import ArenaEmbedSimple from './ArenaEmbedSimple';
-import ArenaEmbedForm from './ArenaEmbedForm';
+import { ArenaEmbed } from './ArenaEmbed';
+import { ArenaEmbedForm } from './ArenaEmbedForm';
+import { ArenaEmbedIFrame } from './ArenaEmbedIFrame';
+import { ArenaEmbedIFrameResizable } from './ArenaEmbedIFrameResizable';
+import { ArenaEmbedSimple } from './ArenaEmbedSimple';
+import { embedServices as services } from './embedServices';
 import { createElemEmbed, getEmbedUrl, providerGetter } from './embedUtils';
-import services from './embedServices';
-import ArenaEmbedIFrame from './ArenaEmbedIFrame';
-import ArenaEmbedIFrameResizable from './ArenaEmbedIFrameResizable';
+import { outputEmbed } from './outputEmbed';
+import { EmbedPluginOptions } from './types';
 
 const defaultOptions: EmbedPluginOptions = {
   name: 'embed',
@@ -82,7 +80,7 @@ const defaultOptions: EmbedPluginOptions = {
   services,
 };
 
-const embedPlugin = (opts?: Partial<EmbedPluginOptions>): ArenaPlugin => ({
+export const embedPlugin = (opts?: Partial<EmbedPluginOptions>): ArenaPlugin => ({
   register: (textarena: Textarena) => {
     const {
       name, icon, title, tag, attributes, allowedAttributes,
@@ -194,5 +192,3 @@ const embedPlugin = (opts?: Partial<EmbedPluginOptions>): ArenaPlugin => ({
     );
   },
 });
-
-export default embedPlugin;

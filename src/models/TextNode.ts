@@ -1,17 +1,14 @@
 import { html, TemplateResult } from 'lit';
 import { unsafeHTML } from 'lit/directives/unsafe-html.js';
-import RichTextManager from '../helpers/RichTextManager';
-import { ArenaInlineInterface, ArenaTextInterface } from '../interfaces/Arena';
-import NodeAttributes from '../interfaces/NodeAttributes';
-import ArenaCursorText from '../interfaces/ArenaCursorText';
-import ArenaFormating, { ArenaFormatings } from '../interfaces/ArenaFormating';
-import {
-  ArenaNodeInline, ArenaNodeText,
-} from '../interfaces/ArenaNode';
-import AbstractNode from './AbstractNode';
-import { ArenaInterval } from '../interfaces/ArenaInterval';
 
-export default class TextNode
+import { RichTextManager } from '../helpers';
+import {
+  ArenaCursorText, ArenaFormating, ArenaFormatings, ArenaInlineInterface, ArenaInterval,
+  ArenaNodeInline, ArenaNodeText, ArenaTextInterface, NodeAttributes,
+} from '../interfaces';
+import { AbstractNode } from './AbstractNode';
+
+export class TextNode
   extends AbstractNode<ArenaTextInterface>
   implements ArenaNodeText {
   readonly hasParent: true = true;

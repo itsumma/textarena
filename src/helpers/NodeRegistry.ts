@@ -1,4 +1,4 @@
-import { AnyArenaNode, ArenaNodeInline } from '../interfaces/ArenaNode';
+import { AnyArenaNode, ArenaNodeInline } from '../interfaces';
 
 const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-';
 const charactersLength = characters.length;
@@ -11,7 +11,7 @@ const makeId = (length: number): string => {
   return result;
 };
 
-export default class NodeRegistry {
+export class NodeRegistry {
   generateId(): string {
     let id = makeId(this.idLength);
     let count = 0;

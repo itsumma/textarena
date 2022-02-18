@@ -1,11 +1,9 @@
-import Textarena from '../Textarena';
-import ArenaSelection from '../helpers/ArenaSelection';
-import ArenaPlugin, { DefaultPluginOptions } from '../interfaces/ArenaPlugin';
-import { ArenaMediatorInterface, ArenaTextInterface } from '../interfaces/Arena';
+import { ArenaSelection } from '../helpers';
 import {
-  ArenaNodeText, AnyArenaNode, ArenaNodeMediator, ChildArenaNode,
-} from '../interfaces/ArenaNode';
-import ArenaAttributes from '../interfaces/ArenaAttributes';
+  AnyArenaNode, ArenaAttributes, ArenaMediatorInterface, ArenaNodeMediator, ArenaNodeText,
+  ArenaPlugin, ArenaTextInterface, ChildArenaNode, DefaultPluginOptions,
+} from '../interfaces';
+import Textarena from '../Textarena';
 import utils from '../utils';
 
 // Icons https://freeicons.io/icon-list/material-icons-editor-2
@@ -200,7 +198,7 @@ const defaultOptions: ListsOptions = {
   ],
 };
 
-const listsPlugin = (opts?: ListsOptions): ArenaPlugin => ({
+export const listsPlugin = (opts?: ListsOptions): ArenaPlugin => ({
   register(textarena: Textarena): void {
     const paragraph = textarena.getDefaultTextArena();
     if (!paragraph) {
@@ -324,5 +322,3 @@ const listsPlugin = (opts?: ListsOptions): ArenaPlugin => ({
     });
   },
 });
-
-export default listsPlugin;

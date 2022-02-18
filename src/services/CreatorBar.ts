@@ -1,10 +1,7 @@
+import { ArenaSelection, ElementHelper } from '../helpers';
+import { AnyArenaNode, CreatorBarOptions, CreatorOptions } from '../interfaces';
 import Textarena from '../Textarena';
-import ArenaSelection from '../helpers/ArenaSelection';
-import ElementHelper from '../helpers/ElementHelper';
-import CreatorBarOptions from '../interfaces/CreatorBarOptions';
-import CreatorOptions from '../interfaces/CreatorOptions';
-import ArenaServiceManager from './ArenaServiceManager';
-import { AnyArenaNode } from '../interfaces/ArenaNode';
+import { ArenaServiceManager } from './ArenaServiceManager';
 
 type Creator = {
   elem: ElementHelper;
@@ -13,7 +10,7 @@ type Creator = {
   show: boolean;
 };
 
-export default class CreatorBar {
+export class CreatorBar {
   enabled = false;
 
   elem: ElementHelper;

@@ -1,11 +1,10 @@
-import ArenaSelection from '../helpers/ArenaSelection';
-import { AnyArena } from '../interfaces/Arena';
-import ArenaMiddleware from '../interfaces/ArenaMiddleware';
-import ArenaServiceManager from './ArenaServiceManager';
+import { ArenaSelection } from '../helpers';
+import { AnyArena, ArenaMiddleware } from '../interfaces';
+import { ArenaServiceManager } from './ArenaServiceManager';
 
 export type MiddlewareWhenCondition = 'before' | 'after';
 
-export default class ArenaMiddlewareManager {
+export class ArenaMiddlewareManager {
   constructor(protected asm: ArenaServiceManager) {
   }
 

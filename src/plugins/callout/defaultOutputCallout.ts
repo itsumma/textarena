@@ -1,7 +1,6 @@
-import { ArenaFormatings } from '../../interfaces/ArenaFormating';
-import { AnyArenaNode } from '../../interfaces/ArenaNode';
+import { AnyArenaNode, ArenaFormatings } from '../../interfaces';
 
-const defaultOutputCallout = (
+export const defaultOutputCallout = (
   type: string,
   node: AnyArenaNode,
   frms: ArenaFormatings,
@@ -21,5 +20,3 @@ const defaultOutputCallout = (
   }
   return '';
 };
-
-export default defaultOutputCallout;

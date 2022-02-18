@@ -1,10 +1,10 @@
 import { html, LitElement, TemplateResult } from 'lit';
 import { property } from 'lit/decorators.js';
-import WebComponent from '../../helpers/WebComponent';
+import { WebComponent } from '../../helpers';
 import { createElemEmbed, getEmbedUrl } from './embedUtils';
 import { GetEmbedProvider } from './types';
 
-export default class ArenaEmbed extends WebComponent {
+export class ArenaEmbed extends WebComponent {
   @property({
     type: String,
   })

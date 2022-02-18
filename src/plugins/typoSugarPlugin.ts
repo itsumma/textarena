@@ -1,6 +1,6 @@
+import { ArenaSelection } from '../helpers';
+import { ArenaPlugin } from '../interfaces';
 import Textarena from '../Textarena';
-import ArenaPlugin from '../interfaces/ArenaPlugin';
-import ArenaSelection from '../helpers/ArenaSelection';
 
 const typings = [
   {
@@ -105,7 +105,7 @@ const typings = [
   },
 ];
 
-const typoSugarPlugin = (): ArenaPlugin => ({
+export const typoSugarPlugin = (): ArenaPlugin => ({
   register(textarena: Textarena): void {
     textarena.registerMiddleware(
       (
@@ -146,5 +146,3 @@ const typoSugarPlugin = (): ArenaPlugin => ({
     });
   },
 });
-
-export default typoSugarPlugin;

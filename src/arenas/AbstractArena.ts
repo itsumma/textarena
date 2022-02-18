@@ -1,15 +1,13 @@
 import { TemplateResult } from 'lit';
 import { html, unsafeStatic } from 'lit/static-html.js';
-import NodeAttributes from '../interfaces/NodeAttributes';
-import { ArenaFormatings } from '../interfaces/ArenaFormating';
-import { AnyArenaNode } from '../interfaces/ArenaNode';
-import { ArenaMediatorInterface } from '../interfaces/Arena';
-import ArenaOptions, { OutputProcessor } from '../interfaces/ArenaOptions';
-import ArenaAttributes from '../interfaces/ArenaAttributes';
-import utils from '../utils';
-import ArenaAttribute from '../interfaces/ArenaAttribute';
 
-export default abstract class AbstractArena {
+import {
+  AnyArenaNode, ArenaAttribute, ArenaAttributes, ArenaFormatings, ArenaMediatorInterface,
+  ArenaOptions, NodeAttributes, OutputProcessor,
+} from '../interfaces';
+import utils from '../utils';
+
+export abstract class AbstractArena {
   readonly name: string;
 
   readonly tag: string;

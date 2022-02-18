@@ -1,9 +1,9 @@
-import ArenaCore from './ArenaCore';
 import {
   ArenaMediatorInterface, ArenaTextInterface, ChildArena, ProtectedArenas,
 } from '../Arena';
+import { ArenaCore } from './ArenaCore';
 
-interface ArenaAncestorCore extends ArenaCore {
+export interface ArenaAncestorCore extends ArenaCore {
   readonly root: boolean;
   readonly hasParent: boolean;
   readonly hasChildren: true;
@@ -21,5 +21,3 @@ interface ArenaAncestorCore extends ArenaCore {
   setArenaForText(arena: ArenaMediatorInterface | ArenaTextInterface): void;
   getArenaForText(): ArenaMediatorInterface | ArenaTextInterface | undefined;
 }
-
-export default ArenaAncestorCore;

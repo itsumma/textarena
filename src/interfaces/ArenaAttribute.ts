@@ -1,3 +1,1 @@
-type ArenaAttribute = string | number | boolean | unknown;
-
-export default ArenaAttribute;
+export type ArenaAttribute = string | number | boolean | unknown;

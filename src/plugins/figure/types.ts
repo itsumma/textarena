@@ -1,5 +1,5 @@
-import { DefaultPluginOptions } from '../../interfaces/ArenaPlugin';
-import { Srcset } from '../image/types';
+import { DefaultPluginOptions } from '../../interfaces';
+import { Srcset } from '../image';
 
 export type FigureClass = {
   className: string,

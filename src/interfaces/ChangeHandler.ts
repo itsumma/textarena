@@ -1,4 +1,3 @@
-import TextarenaData from './TextarenaData';
+import { TextarenaData } from './TextarenaData';
 
-type ChangeDataListener = (data: TextarenaData) => void;
-export default ChangeDataListener;
+export type ChangeDataListener = (data: TextarenaData) => void;

@@ -1,7 +1,7 @@
 import { ArenaSingleInterface } from '../interfaces/Arena';
-import AbstractArena from './AbstractArena';
+import { AbstractArena } from './AbstractArena';
 
-export default class ArenaSingle
+export class ArenaSingle
   extends AbstractArena
   implements ArenaSingleInterface {
   readonly hasParent: true = true;

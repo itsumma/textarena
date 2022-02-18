@@ -1,9 +1,9 @@
 import Textarena from '../Textarena';
-import ArenaPlugin from '../interfaces/ArenaPlugin';
-import ArenaSelection from '../helpers/ArenaSelection';
+import { ArenaPlugin } from '../interfaces';
+import { ArenaSelection } from '../helpers';
 import { isMac } from '../utils/navigator';
 
-const commonPlugin: () => ArenaPlugin = () => ({
+export const commonPlugin: () => ArenaPlugin = () => ({
   register(textarena: Textarena): void {
     textarena.registerCommand(
       'breakSelection',
@@ -91,5 +91,3 @@ const commonPlugin: () => ArenaPlugin = () => ({
     );
   },
 });
-
-export default commonPlugin;

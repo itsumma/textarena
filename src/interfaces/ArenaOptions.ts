@@ -1,7 +1,7 @@
 import {
   ArenaMediatorInterface, ArenaTextInterface, ChildArena, ProtectedArenas,
 } from './Arena';
-import ArenaAttributes from './ArenaAttributes';
+import { ArenaAttributes } from './ArenaAttributes';
 import { ArenaFormatings } from './ArenaFormating';
 import { AnyArenaNode, ArenaNodeText } from './ArenaNode';
 
@@ -89,6 +89,4 @@ export type ArenaOptionsChild = ArenaOptionsInline |
                     ArenaOptionsWithText |
                     ArenaOptionsMediator;
 
-type ArenaOptions = ArenaOptionsRoot | ArenaOptionsChild;
-
-export default ArenaOptions;
+export type ArenaOptions = ArenaOptionsRoot | ArenaOptionsChild;

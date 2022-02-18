@@ -1,11 +1,11 @@
-import ArenaSelection from '../../helpers/ArenaSelection';
-import { ArenaMediatorInterface, ArenaSingleInterface, ArenaTextInterface } from '../../interfaces/Arena';
-import { AnyArenaNode } from '../../interfaces/ArenaNode';
-import ArenaPlugin from '../../interfaces/ArenaPlugin';
+import { ArenaSelection } from '../../helpers';
+import {
+  AnyArenaNode, ArenaMediatorInterface, ArenaPlugin, ArenaSingleInterface, ArenaTextInterface,
+} from '../../interfaces';
 import Textarena from '../../Textarena';
 import { izoUpload } from '../image/izoUpload';
-import ArenaBackImage from './ArenaBackImage';
-import backImageOutput from './backImageOutput';
+import { ArenaBackImage } from './ArenaBackImage';
+import { backImageOutput } from './backImageOutput';
 import { BackImagePluginOptions } from './types';
 
 const defaultOptions: BackImagePluginOptions = {
@@ -30,7 +30,7 @@ const defaultOptions: BackImagePluginOptions = {
   output: backImageOutput,
 };
 
-const backImagePlugin = (opts?: Partial<BackImagePluginOptions>): ArenaPlugin => ({
+export const backImagePlugin = (opts?: Partial<BackImagePluginOptions>): ArenaPlugin => ({
   register(textarena: Textarena): void {
     const {
       name, icon, title, tag, attributes, shortcut, command,
@@ -110,5 +110,3 @@ const backImagePlugin = (opts?: Partial<BackImagePluginOptions>): ArenaPlugin =>
     }
   },
 });
-
-export default backImagePlugin;

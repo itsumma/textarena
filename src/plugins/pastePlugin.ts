@@ -1,8 +1,8 @@
+import { ArenaSelection } from '../helpers';
+import { ArenaPlugin } from '../interfaces';
 import Textarena from '../Textarena';
-import ArenaPlugin from '../interfaces/ArenaPlugin';
-import ArenaSelection from '../helpers/ArenaSelection';
 
-const pastePlugin = (): ArenaPlugin => ({
+export const pastePlugin = (): ArenaPlugin => ({
   register(textarena: Textarena): void {
     textarena.registerMiddleware(
       (
@@ -52,5 +52,3 @@ const pastePlugin = (): ArenaPlugin => ({
     );
   },
 });
-
-export default pastePlugin;

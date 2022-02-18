@@ -1,9 +1,10 @@
 import { render } from 'lit';
-import ArenaSelection from '../helpers/ArenaSelection';
-import { AnyArenaNode } from '../interfaces/ArenaNode';
-import ArenaServiceManager from './ArenaServiceManager';
 
-export default class ArenaView {
+import { ArenaSelection } from '../helpers';
+import { AnyArenaNode } from '../interfaces';
+import { ArenaServiceManager } from './ArenaServiceManager';
+
+export class ArenaView {
   constructor(protected asm: ArenaServiceManager) {
   }
 

@@ -1,5 +1,5 @@
 import Textarena from '../Textarena';
 
-export default interface CreatorPlugin {
+export interface CreatorPlugin {
   register(textarena: Textarena): void;
 }

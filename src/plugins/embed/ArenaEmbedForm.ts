@@ -1,7 +1,7 @@
 import { css, html, TemplateResult } from 'lit';
-import WebComponent from '../../helpers/WebComponent';
+import { WebComponent } from '../../helpers';
 
-export default class ArenaEmbedForm extends WebComponent {
+export class ArenaEmbedForm extends WebComponent {
   inputValue = '';
 
   static styles = css`

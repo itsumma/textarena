@@ -1,8 +1,8 @@
+import { ArenaSelection } from '../helpers';
+import {
+  AnyArenaNode, ArenaPlugin, ArenaTextInterface, DefaultPluginOptions,
+} from '../interfaces';
 import Textarena from '../Textarena';
-import ArenaSelection from '../helpers/ArenaSelection';
-import ArenaPlugin, { DefaultPluginOptions } from '../interfaces/ArenaPlugin';
-import { ArenaTextInterface } from '../interfaces/Arena';
-import { AnyArenaNode } from '../interfaces/ArenaNode';
 import utils from '../utils';
 
 type HeaderOptions = { [key: string]: DefaultPluginOptions };
@@ -62,7 +62,7 @@ const defaultOptions: HeaderOptions = {
   },
 };
 
-const headersPlugin = (opts?: PartialHeaderOptions): ArenaPlugin => ({
+export const headersPlugin = (opts?: PartialHeaderOptions): ArenaPlugin => ({
   register(textarena: Textarena): void {
     const paragraph = textarena.getDefaultTextArena();
     if (!paragraph) {
@@ -167,5 +167,3 @@ const headersPlugin = (opts?: PartialHeaderOptions): ArenaPlugin => ({
     });
   },
 });
-
-export default headersPlugin;

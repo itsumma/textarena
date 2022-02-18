@@ -1,14 +1,13 @@
 import { html, TemplateResult } from 'lit';
 import { repeat } from 'lit/directives/repeat.js';
-import { ChildArena, ParentArena } from '../interfaces/Arena';
-import ArenaCursorText from '../interfaces/ArenaCursorText';
-import ArenaCursorAncestor from '../interfaces/ArenaCursorAncestor';
-import { ArenaFormatings } from '../interfaces/ArenaFormating';
-import { ChildArenaNode, ParentArenaNode } from '../interfaces/ArenaNode';
-import NodeAttributes from '../interfaces/NodeAttributes';
-import AbstractNode from './AbstractNode';
 
-export default abstract class AbstractParentNode<
+import {
+  ArenaCursorAncestor, ArenaCursorText, ArenaFormatings, ChildArena, ChildArenaNode,
+  NodeAttributes, ParentArena, ParentArenaNode,
+} from '../interfaces';
+import { AbstractNode } from './AbstractNode';
+
+export abstract class AbstractParentNode<
   TArena extends ParentArena
 >
   extends AbstractNode<TArena> {

@@ -1,7 +1,6 @@
-import ArenaAncestorCore from './arena/ArenaAncestorCore';
-import ArenaCore from './arena/ArenaCore';
-import NodeAttributes from './NodeAttributes';
+import { ArenaAncestorCore, ArenaCore } from './arena';
 import { ArenaNodeText } from './ArenaNode';
+import { NodeAttributes } from './NodeAttributes';
 
 export interface ArenaRootInterface extends ArenaAncestorCore {
   readonly root: true;

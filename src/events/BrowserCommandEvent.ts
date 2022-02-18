@@ -1,6 +1,6 @@
-import ArenaKeyboardEvent from '../interfaces/ArenaKeyboardEvent';
+import { ArenaKeyboardEvent } from '../interfaces';
 
-export default class BrowserCommandEvent implements ArenaKeyboardEvent {
+export class BrowserCommandEvent implements ArenaKeyboardEvent {
   static type = 'browserommand';
 
   constructor(

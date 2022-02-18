@@ -1,7 +1,7 @@
 import { ArenaMediatorInterface } from '../interfaces/Arena';
-import AbstractAncestorArena from './AbstractAncestorArena';
+import { AbstractAncestorArena } from './AbstractAncestorArena';
 
-export default class ArenaMediator
+export class ArenaMediator
   extends AbstractAncestorArena
   implements ArenaMediatorInterface {
   readonly root: boolean = true;

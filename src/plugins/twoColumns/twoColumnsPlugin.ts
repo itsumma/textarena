@@ -1,10 +1,10 @@
-import ArenaSelection from '../../helpers/ArenaSelection';
-import { ArenaMediatorInterface, ArenaTextInterface } from '../../interfaces/Arena';
-import { AnyArenaNode } from '../../interfaces/ArenaNode';
-import ArenaPlugin, { DefaultPluginOptions } from '../../interfaces/ArenaPlugin';
+import { ArenaSelection } from '../../helpers';
+import {
+  AnyArenaNode, ArenaMediatorInterface, ArenaPlugin, ArenaTextInterface, DefaultPluginOptions,
+} from '../../interfaces';
 import Textarena from '../../Textarena';
-import ArenaTwoColumns from './ArenaTwoColumns';
-import twoColumnsOutput from './twoColumnsOutput';
+import { ArenaTwoColumns } from './ArenaTwoColumns';
+import { twoColumnsOutput } from './twoColumnsOutput';
 
 const defaultOptions: DefaultPluginOptions = {
   name: 'two-columns',
@@ -29,7 +29,7 @@ const defaultOptions: DefaultPluginOptions = {
   output: twoColumnsOutput,
 };
 
-const twoColumnsPlugin = (opts?: Partial<DefaultPluginOptions>): ArenaPlugin => ({
+export const twoColumnsPlugin = (opts?: Partial<DefaultPluginOptions>): ArenaPlugin => ({
   register(textarena: Textarena): void {
     const {
       name, icon, title, tag, attributes, shortcut, command,
@@ -119,5 +119,3 @@ const twoColumnsPlugin = (opts?: Partial<DefaultPluginOptions>): ArenaPlugin => 
     }
   },
 });
-
-export default twoColumnsPlugin;

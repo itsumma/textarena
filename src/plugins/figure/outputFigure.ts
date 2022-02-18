@@ -1,6 +1,5 @@
-import { ArenaFormatings } from '../../interfaces/ArenaFormating';
-import { AnyArenaNode, ArenaNodeMediator } from '../../interfaces/ArenaNode';
-import { ScrProcessor, Srcset } from '../image/types';
+import { AnyArenaNode, ArenaFormatings, ArenaNodeMediator } from '../../interfaces';
+import { ScrProcessor, Srcset } from '../image';
 import { FigureClass } from './types';
 
 type Unpacked<T> = T extends (infer U)[]
@@ -58,7 +57,7 @@ const outputImage = (
   return img;
 };
 
-const outputFigure = (
+export const outputFigure = (
   type: string,
   node: AnyArenaNode,
   frms: ArenaFormatings,
@@ -80,5 +79,3 @@ const outputFigure = (
     </figure>
   `;
 };
-
-export default outputFigure;

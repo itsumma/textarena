@@ -1,8 +1,8 @@
+import { ArenaSelection } from '../helpers';
+import {
+  AnyArenaNode, ArenaPlugin, ArenaSingleInterface, DefaultPluginOptions,
+} from '../interfaces';
 import Textarena from '../Textarena';
-import ArenaPlugin, { DefaultPluginOptions } from '../interfaces/ArenaPlugin';
-import ArenaSelection from '../helpers/ArenaSelection';
-import { ArenaSingleInterface } from '../interfaces/Arena';
-import { AnyArenaNode } from '../interfaces/ArenaNode';
 
 const defaultOptions: DefaultPluginOptions = {
   name: 'hr',
@@ -24,7 +24,7 @@ const defaultOptions: DefaultPluginOptions = {
   ],
 };
 
-const hrPlugin = (opts?: Partial<DefaultPluginOptions>): ArenaPlugin => ({
+export const hrPlugin = (opts?: Partial<DefaultPluginOptions>): ArenaPlugin => ({
   register(textarena: Textarena): void {
     const {
       name, icon, title, tag, attributes, shortcut, command, marks,
@@ -69,5 +69,3 @@ const hrPlugin = (opts?: Partial<DefaultPluginOptions>): ArenaPlugin => ({
     textarena.addSimpleArenas(arena);
   },
 });
-
-export default hrPlugin;

@@ -1,9 +1,8 @@
-import ArenaCursor from '../interfaces/ArenaCursor';
-import { AnyArenaNode } from '../interfaces/ArenaNode';
+import { AnyArenaNode, ArenaCursor } from '../interfaces';
 
 export type ArenaSelectionDiection = 'forward' | 'backward';
 
-export default class ArenaSelection {
+export class ArenaSelection {
   constructor(
     public startNode: AnyArenaNode,
     public startOffset: number,

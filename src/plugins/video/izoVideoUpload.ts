@@ -1,7 +1,8 @@
-import { IzoConfig, UploadResult } from './types';
+import { IzoConfig } from '../image';
+import { UploadVideoResult } from './types';
 
-export function izoUpload(config: IzoConfig) {
-  return function upload(file: File): Promise<UploadResult> {
+export function izoVideoUpload(config: IzoConfig) {
+  return function upload(file: File): Promise<UploadVideoResult> {
     return new Promise((accept, reject) => {
       const data = new FormData();
       data.append('file', file);

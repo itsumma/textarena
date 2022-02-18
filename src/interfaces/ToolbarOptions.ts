@@ -1,4 +1,4 @@
-export default interface ToolbarOptions {
+export interface ToolbarOptions {
   enabled?: boolean;
   tools: string[];
 }

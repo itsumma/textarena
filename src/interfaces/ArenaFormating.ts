@@ -1,4 +1,4 @@
-type ArenaFormating = {
+export type ArenaFormating = {
   name: string,
   tag: string,
   attributes: string[],
@@ -13,5 +13,3 @@ export type TagAndAttributes = {
   attributes: string[],
   excludeAttributes?: string[],
 };
-
-export default ArenaFormating;

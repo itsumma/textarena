@@ -1,8 +1,6 @@
 import Textarena from '../Textarena';
-import ArenaPlugin from '../interfaces/ArenaPlugin';
-import ArenaSelection from '../helpers/ArenaSelection';
-import { AnyArenaNode } from '../interfaces/ArenaNode';
-import { TagAndAttributes } from '../interfaces/ArenaFormating';
+import { TagAndAttributes, AnyArenaNode, ArenaPlugin } from '../interfaces';
+import { ArenaSelection } from '../helpers';
 import utils from '../utils';
 
 type FormatingOptions = {
@@ -275,7 +273,7 @@ const defaultOptions: FormatingsOptions = {
   ],
 };
 
-const formatingsPlugin = (opts?: FormatingsOptions): ArenaPlugin => ({
+export const formatingsPlugin = (opts?: FormatingsOptions): ArenaPlugin => ({
   register(textarena: Textarena): void {
     const options = { ...defaultOptions, ...(opts || {}) };
     options.formatings.forEach(({
@@ -360,5 +358,3 @@ const formatingsPlugin = (opts?: FormatingsOptions): ArenaPlugin => ({
     });
   },
 });
-
-export default formatingsPlugin;

@@ -1,13 +1,13 @@
+import { ArenaSingle } from '../../arenas';
+import { ArenaSelection } from '../../helpers';
+import {
+  AnyArenaNode, ArenaMediatorInterface, ArenaPlugin, ArenaSingleInterface, ArenaTextInterface,
+} from '../../interfaces';
 import Textarena from '../../Textarena';
-import ArenaSelection from '../../helpers/ArenaSelection';
-import ArenaPlugin from '../../interfaces/ArenaPlugin';
-import { ArenaMediatorInterface, ArenaSingleInterface, ArenaTextInterface } from '../../interfaces/Arena';
-import { AnyArenaNode } from '../../interfaces/ArenaNode';
-import ArenaFigure from './ArenaFigure';
-import outputFigure from './outputFigure';
+import { UploadProcessor } from '../image';
+import { ArenaFigure } from './ArenaFigure';
+import { outputFigure } from './outputFigure';
 import { FigurePluginOptions } from './types';
-import ArenaSingle from '../../arenas/ArenaSingle';
-import { UploadProcessor } from '../image/types';
 
 const defaultOptions: FigurePluginOptions = {
   name: 'figure',
@@ -46,7 +46,7 @@ const defaultOptions: FigurePluginOptions = {
   placeholder: '',
 };
 
-const figurePlugin = (opts?: Partial<FigurePluginOptions>): ArenaPlugin => ({
+export const figurePlugin = (opts?: Partial<FigurePluginOptions>): ArenaPlugin => ({
   register(textarena: Textarena): void {
     const {
       name, icon, title, tag, attributes, allowedAttributes, classes, shortcut,
@@ -170,5 +170,3 @@ const figurePlugin = (opts?: Partial<FigurePluginOptions>): ArenaPlugin => ({
     );
   },
 });
-
-export default figurePlugin;

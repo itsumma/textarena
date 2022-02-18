@@ -3,7 +3,7 @@ import {
 } from 'lit';
 import { property } from 'lit/decorators.js';
 
-export default class LinkModal extends LitElement {
+export class LinkModal extends LitElement {
   static styles = css`
   .wrapper {
     opacity: 0;

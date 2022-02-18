@@ -2,7 +2,7 @@ import {
   LitElement, css, TemplateResult, html,
 } from 'lit';
 
-export default class ArenaTwoColumns extends LitElement {
+export class ArenaTwoColumns extends LitElement {
   static styles = css`
     :host {
       display: flex;

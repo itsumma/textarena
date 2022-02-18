@@ -1,5 +1,5 @@
-import { AnyArenaNode } from '../../interfaces/ArenaNode';
-import embedServices from './embedServices';
+import { AnyArenaNode } from '../../interfaces';
+import { embedServices } from './embedServices';
 import { RenderTypes } from './types';
 
 interface RenderParams {
@@ -39,7 +39,7 @@ const embedRender = ({
   return res;
 };
 
-const outputEmbed = (type: string, node: AnyArenaNode): string => {
+export const outputEmbed = (type: string, node: AnyArenaNode): string => {
   const html = node.getAttribute('html') as string | undefined;
   const url = node.getAttribute('url') as string | undefined;
   const embed = (node.getAttribute('embed') || '') as string;
@@ -60,5 +60,3 @@ const outputEmbed = (type: string, node: AnyArenaNode): string => {
   }
   return '';
 };
-
-export default outputEmbed;

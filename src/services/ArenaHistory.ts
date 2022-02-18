@@ -1,12 +1,12 @@
 /* eslint-disable no-bitwise */
-import ArenaSelection from '../helpers/ArenaSelection';
-import { ArenaNodeRoot } from '../interfaces/ArenaNode';
+import { ArenaSelection } from '../helpers';
+import { ArenaNodeRoot } from '../interfaces';
 import Textarena from '../Textarena';
-import ArenaServiceManager from './ArenaServiceManager';
+import { ArenaServiceManager } from './ArenaServiceManager';
 
 type SelectionIndexes = [string, number, string, number, 'forward' | 'backward'];
 
-export default class ArenaHistory {
+export class ArenaHistory {
   constructor(protected asm: ArenaServiceManager) {
     this.asm.commandManager.registerCommand(
       'undo',

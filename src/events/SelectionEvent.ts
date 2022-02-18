@@ -1,6 +1,6 @@
-import ArenaKeyboardEvent from '../interfaces/ArenaKeyboardEvent';
+import { ArenaKeyboardEvent } from '../interfaces';
 
-export default class SelectionEvent implements ArenaKeyboardEvent {
+export class SelectionEvent implements ArenaKeyboardEvent {
   static type = 'selection';
 
   constructor(

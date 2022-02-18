@@ -3,7 +3,7 @@ import {
 } from 'lit';
 import { property } from 'lit/decorators.js';
 
-export default class ArenaCallout extends LitElement {
+export class ArenaCallout extends LitElement {
   // This decorator creates a property accessor that triggers rendering and
   // an observed attribute.
   @property()

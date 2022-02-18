@@ -1,6 +1,6 @@
-import ArenaKeyboardEvent from '../interfaces/ArenaKeyboardEvent';
+import { ArenaKeyboardEvent } from '../interfaces';
 
-export default class PasteEvent implements ArenaKeyboardEvent {
+export class PasteEvent implements ArenaKeyboardEvent {
   static type = 'paste';
 
   constructor(

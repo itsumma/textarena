@@ -1,7 +1,7 @@
 /* eslint-disable no-useless-escape */
 import { EmbedServiceMap } from './types';
 
-const services: EmbedServiceMap = {
+export const embedServices: EmbedServiceMap = {
   vimeo: {
     regex: /^(?:http[s]?:\/\/)?(?:www.)?(?:player.)?vimeo\.co(?:.+\/([^\/]\d+)(?:#t=[\d]+)?s?$)$/,
     embedUrl: 'https://player.vimeo.com/video/<%= remote_id %>?title=0&byline=0',
@@ -170,5 +170,3 @@ const services: EmbedServiceMap = {
     html: '<iframe frameborder="0" width="100%" height="500"></iframe>',
   },
 };
-
-export default services;

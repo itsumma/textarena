@@ -1,9 +1,7 @@
-import ArenaAttributes from '../../interfaces/ArenaAttributes';
-import { ArenaFormatings } from '../../interfaces/ArenaFormating';
-import { AnyArenaNode } from '../../interfaces/ArenaNode';
-import outputImage from '../image/outputImage';
+import { AnyArenaNode, ArenaAttributes, ArenaFormatings } from '../../interfaces';
+import { outputImage } from '../image';
 
-const backImageOutput = (
+export const backImageOutput = (
   type: string,
   node: AnyArenaNode,
   frms: ArenaFormatings,
@@ -24,5 +22,3 @@ const backImageOutput = (
   }
   return '';
 };
-
-export default backImageOutput;

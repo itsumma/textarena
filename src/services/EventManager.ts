@@ -1,5 +1,5 @@
-import ArenaServiceManager from './ArenaServiceManager';
-import ArenaEvent from '../helpers/ArenaEvent';
+import { ArenaEvent } from '../helpers';
+import { ArenaServiceManager } from './ArenaServiceManager';
 
 export type ArenaHandler = (event: ArenaEvent) => void;
 
@@ -7,7 +7,7 @@ type Handlers = {
   [key: string]: ArenaHandler[];
 };
 
-export default class EventManager {
+export class EventManager {
   handlers: Handlers = {};
 
   constructor(private asm: ArenaServiceManager) {

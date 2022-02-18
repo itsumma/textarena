@@ -3,11 +3,11 @@ import {
 } from 'lit';
 import { property } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';
-import WebComponent from '../../helpers/WebComponent';
-import { AnyArenaNode } from '../../interfaces/ArenaNode';
+import { WebComponent } from '../../helpers';
+import { AnyArenaNode } from '../../interfaces';
 import { ContentItem, Contents, ContentsComponentProcessor } from './types';
 
-export default class ArenaContents extends WebComponent {
+export class ArenaContents extends WebComponent {
   @property({ type: String })
     list: string | undefined;
 

@@ -1,7 +1,6 @@
+import { ElementHelper } from '../../helpers';
+import { ArenaInlineInterface, ArenaNodeInline, ArenaNodeText } from '../../interfaces';
 import Textarena from '../../Textarena';
-import { ArenaInlineInterface } from '../../interfaces/Arena';
-import { ArenaNodeInline, ArenaNodeText } from '../../interfaces/ArenaNode';
-import ElementHelper from '../../helpers/ElementHelper';
 
 function hideLinkbar(linkbar: ElementHelper) {
   linkbar.removeAttribute('show');
@@ -81,7 +80,7 @@ function showLinkbar(
   });
 }
 
-export default function linkManage(
+export function linkManage(
   ta: Textarena,
   arena: ArenaInlineInterface,
   linkbar: ElementHelper,

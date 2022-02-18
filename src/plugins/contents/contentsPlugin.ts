@@ -1,13 +1,11 @@
+import { ArenaSelection } from '../../helpers';
+import { AnyArenaNode, ArenaMediatorInterface, ArenaPlugin } from '../../interfaces';
 import Textarena from '../../Textarena';
-import ArenaSelection from '../../helpers/ArenaSelection';
-import ArenaPlugin from '../../interfaces/ArenaPlugin';
-import { ArenaMediatorInterface } from '../../interfaces/Arena';
-import { AnyArenaNode } from '../../interfaces/ArenaNode';
-import outputContents from './outputContents';
-import ArenaContents from './ArenaContents';
-import contentsProcessor from './contentsProcessor';
-import { ContentsOptions } from './types';
 import utils from '../../utils';
+import { ArenaContents } from './ArenaContents';
+import { contentsProcessor } from './contentsProcessor';
+import { outputContents } from './outputContents';
+import { ContentsOptions } from './types';
 
 const defaultOptions: ContentsOptions = {
   name: 'contents',
@@ -30,7 +28,7 @@ const defaultOptions: ContentsOptions = {
   processor: contentsProcessor,
 };
 
-const contentsPlugin = (opts?: Partial<ContentsOptions>): ArenaPlugin => ({
+export const contentsPlugin = (opts?: Partial<ContentsOptions>): ArenaPlugin => ({
   register(textarena: Textarena): void {
     const {
       name, icon, title, tag, attributes, allowedAttributes, shortcut, command,

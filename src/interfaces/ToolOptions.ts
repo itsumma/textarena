@@ -6,7 +6,7 @@ export type ToolCheckStatus = (
   end?: number
 ) => boolean | undefined;
 
-export default interface ToolOptions {
+export interface ToolOptions {
   name: string;
   icon: string;
   title: string;

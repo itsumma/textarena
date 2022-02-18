@@ -1,11 +1,12 @@
 import { TemplateResult } from 'lit';
-import NodeAttributes from '../NodeAttributes';
+
+import { ArenaAttribute } from '../ArenaAttribute';
+import { ArenaAttributes } from '../ArenaAttributes';
 import { ArenaFormatings } from '../ArenaFormating';
 import { AnyArenaNode } from '../ArenaNode';
-import ArenaAttributes from '../ArenaAttributes';
-import ArenaAttribute from '../ArenaAttribute';
+import { NodeAttributes } from '../NodeAttributes';
 
-interface ArenaCore {
+export interface ArenaCore {
   readonly name: string;
   readonly tag: string;
   readonly attributes: ArenaAttributes;
@@ -46,5 +47,3 @@ interface ArenaCore {
 
   getAttribute(name: string): ArenaAttribute;
 }
-
-export default ArenaCore;

@@ -1,11 +1,11 @@
 import { TemplateResult } from 'lit';
-import { ArenaInlineInterface } from '../interfaces/Arena';
-import NodeAttributes from '../interfaces/NodeAttributes';
-import { ArenaNodeInline } from '../interfaces/ArenaNode';
-import utils from '../utils';
-import ArenaAttribute from '../interfaces/ArenaAttribute';
 
-export default class InlineNode
+import {
+  ArenaAttribute, ArenaInlineInterface, ArenaNodeInline, NodeAttributes,
+} from '../interfaces';
+import utils from '../utils';
+
+export class InlineNode
 implements ArenaNodeInline {
   readonly hasParent: false = false;
 

@@ -1,10 +1,9 @@
 import {
-  ArenaMediatorInterface, ArenaTextInterface, ChildArena, ProtectedArenas,
-} from '../interfaces/Arena';
-import { ArenaOptionsAncestor } from '../interfaces/ArenaOptions';
-import AbstractArena from './AbstractArena';
+  ArenaMediatorInterface, ArenaOptionsAncestor, ArenaTextInterface, ChildArena, ProtectedArenas,
+} from '../interfaces';
+import { AbstractArena } from './AbstractArena';
 
-export default abstract class AbstractAncestorArena
+export abstract class AbstractAncestorArena
   extends AbstractArena {
   readonly root: boolean = false;
 

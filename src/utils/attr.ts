@@ -1,5 +1,4 @@
-import ArenaAttribute from '../interfaces/ArenaAttribute';
-import ArenaAttributes from '../interfaces/ArenaAttributes';
+import { ArenaAttribute, ArenaAttributes } from '../interfaces';
 
 export function getStringFromAttribute(name: string, value: ArenaAttribute): string {
   if (typeof value === 'boolean') {

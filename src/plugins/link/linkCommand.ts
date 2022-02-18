@@ -1,12 +1,9 @@
-import ArenaSelection from '../../helpers/ArenaSelection';
-import { ArenaInlineInterface } from '../../interfaces/Arena';
-import CommandAction from '../../interfaces/CommandAction';
+import { ArenaSelection, ElementHelper } from '../../helpers';
+import { ArenaInlineInterface, ArenaNodeInline, CommandAction } from '../../interfaces';
+import { TextNode } from '../../models';
 import Textarena from '../../Textarena';
-import ElementHelper from '../../helpers/ElementHelper';
-import { ArenaNodeInline } from '../../interfaces/ArenaNode';
-import TextNode from '../../models/TextNode';
 
-export default function linkCommand(
+export function linkCommand(
   arena: ArenaInlineInterface,
   linkModal: ElementHelper | undefined,
 ): CommandAction {

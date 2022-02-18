@@ -1,7 +1,7 @@
-type CSSStyles = Partial<Omit<CSSStyleDeclaration, 'length'|'parentRule'|'getPropertyPriority'|'getPropertyValue'|'item'|'removeProperty'|'setProperty'>>;
+export type CSSStyles = Partial<Omit<CSSStyleDeclaration, 'length'|'parentRule'|'getPropertyPriority'|'getPropertyValue'|'item'|'removeProperty'|'setProperty'>>;
 
-type ExtendedHTMLElement = HTMLElement & { [key: string]: unknown };
-class ElementHelper {
+export type ExtendedHTMLElement = HTMLElement & { [key: string]: unknown };
+export class ElementHelper {
   private elem: ExtendedHTMLElement;
 
   private classes: string[] = [];
@@ -151,5 +151,3 @@ class ElementHelper {
     this.elem.remove();
   }
 }
-
-export default ElementHelper;

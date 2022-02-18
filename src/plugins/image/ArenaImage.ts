@@ -1,12 +1,13 @@
 import {
-  CSSResult, css, TemplateResult, html,
+  css, CSSResult, html, TemplateResult,
 } from 'lit';
 import { property } from 'lit/decorators.js';
-import WebComponent from '../../helpers/WebComponent';
-import { AnyArena } from '../../interfaces/Arena';
+
+import { WebComponent } from '../../helpers';
+import { AnyArena } from '../../interfaces';
 import { ScrProcessor, UploadProcessor } from './types';
 
-export default class ArenaImage extends WebComponent {
+export class ArenaImage extends WebComponent {
   @property({
     type: String,
   })

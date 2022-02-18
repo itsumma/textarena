@@ -1,20 +1,16 @@
-import { DefaultPluginOptions } from '../../interfaces/ArenaPlugin';
+import { DefaultPluginOptions } from '../../interfaces';
+import { IzoConfig } from '../image';
 
-export interface UploadResult {
+export interface UploadVideoResult {
   src: string;
   mime?: string;
   [key: string]: unknown;
 }
 
-export type UploadProcessor = (file: File) => Promise<UploadResult>;
-
-export type IzoConfig = {
-  url: string,
-  token: string,
-};
+export type UploadVideoProcessor = (file: File) => Promise<UploadVideoResult>;
 
 export type VideoPluginOptions = DefaultPluginOptions & {
   classes?: string,
-  upload?: UploadProcessor,
+  upload?: UploadVideoProcessor,
   izoConfig?: IzoConfig,
 };

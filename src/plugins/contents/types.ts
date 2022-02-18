@@ -1,6 +1,5 @@
+import { AnyArenaNode, DefaultPluginOptions } from '../../interfaces';
 import Textarena from '../../Textarena';
-import { DefaultPluginOptions } from '../../interfaces/ArenaPlugin';
-import { AnyArenaNode } from '../../interfaces/ArenaNode';
 
 export type ContentItem = {
   id: string,

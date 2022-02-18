@@ -1,8 +1,8 @@
+import { ArenaSelection } from '../helpers';
+import {
+  AnyArenaNode, ArenaMediatorInterface, ArenaPlugin, ArenaTextInterface, DefaultPluginOptions,
+} from '../interfaces';
 import Textarena from '../Textarena';
-import ArenaPlugin, { DefaultPluginOptions } from '../interfaces/ArenaPlugin';
-import ArenaSelection from '../helpers/ArenaSelection';
-import { ArenaMediatorInterface, ArenaTextInterface } from '../interfaces/Arena';
-import { AnyArenaNode } from '../interfaces/ArenaNode';
 import utils from '../utils';
 
 const defaultOptions: DefaultPluginOptions = {
@@ -21,7 +21,7 @@ const defaultOptions: DefaultPluginOptions = {
   ],
 };
 
-const codePlugin = (opts?: Partial<DefaultPluginOptions>): ArenaPlugin => ({
+export const codePlugin = (opts?: Partial<DefaultPluginOptions>): ArenaPlugin => ({
   register(textarena: Textarena): void {
     const {
       name, tag, attributes, title, icon, shortcut, command, marks,
@@ -81,5 +81,3 @@ const codePlugin = (opts?: Partial<DefaultPluginOptions>): ArenaPlugin => ({
     }
   },
 });
-
-export default codePlugin;

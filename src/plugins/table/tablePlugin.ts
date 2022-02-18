@@ -1,15 +1,15 @@
-import ArenaSelection from '../../helpers/ArenaSelection';
-import { ArenaMediatorInterface, ArenaTextInterface } from '../../interfaces/Arena';
-import { AnyArenaNode, ArenaNodeMediator } from '../../interfaces/ArenaNode';
-import ArenaPlugin from '../../interfaces/ArenaPlugin';
+import { ArenaSelection } from '../../helpers';
+import {
+  AnyArenaNode, ArenaMediatorInterface, ArenaNodeMediator, ArenaPlugin, ArenaTextInterface,
+} from '../../interfaces';
 import Textarena from '../../Textarena';
-import ArenaTable from './ArenaTable';
-import ArenaTd from './ArenaTd';
-import ArenaTr from './ArenaTr';
-import { tableOutput, tdOutput, trOutput } from './tableOutput';
-import { TablePluginOptions } from './types';
+import { ArenaTable } from './ArenaTable';
+import { ArenaTd } from './ArenaTd';
+import { ArenaTr } from './ArenaTr';
 import { initArena } from './initArena';
 import { initCommand } from './initCommand';
+import { tableOutput, tdOutput, trOutput } from './tableOutput';
+import { TablePluginOptions } from './types';
 
 export const defaultTableOptions: TablePluginOptions = {
   tableOptions: {
@@ -227,7 +227,7 @@ export const defaultTableOptions: TablePluginOptions = {
   ],
 };
 
-const tablePlugin = (opts?: Partial<TablePluginOptions>): ArenaPlugin => ({
+export const tablePlugin = (opts?: Partial<TablePluginOptions>): ArenaPlugin => ({
   register(textarena: Textarena): void {
     const {
       tableOptions, rowOptions, cellOptions, commands,
@@ -262,5 +262,3 @@ const tablePlugin = (opts?: Partial<TablePluginOptions>): ArenaPlugin => ({
     commands.forEach((commandOptions) => initCommand(textarena, commandOptions));
   },
 });
-
-export default tablePlugin;

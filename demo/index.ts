@@ -1,5 +1,5 @@
-import TextarenaData from '../src/interfaces/TextarenaData';
-import Textarena from '../src/Textarena';
+import { TextarenaData } from '../src/interfaces';
+import Textarena from '../src';
 import { debounce } from './debounce';
 import './style.scss';
 import oEmbedProviders from './oembed-providers.json';
@@ -7,7 +7,7 @@ import izoConfig from './izo-config.json';
 import PlaceCenterIcon from './place-center-icon.svg';
 import PlaceFillIcon from './place-fill-icon.svg';
 import PlaceWideIcon from './place-wide-icon.svg';
-import ArenaEvent from '../src/helpers/ArenaEvent';
+import { ArenaEvent } from '../src/helpers';
 
 function initTextarena(html: string): Textarena | undefined {
   const elem = document.getElementById('textarena-container');

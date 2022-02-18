@@ -1,4 +1,4 @@
-import { DefaultPluginOptions } from '../../interfaces/ArenaPlugin';
+import { DefaultPluginOptions } from '../../interfaces';
 
 export enum EmbedTypes {
   twitter = 'twitter',

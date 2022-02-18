@@ -1,12 +1,12 @@
-import ChangeDataListener from './ChangeHandler';
-import ReadyDataListener from './ReadyHandler';
-import CreatorBarOptions from './CreatorBarOptions';
-import TextarenaData from './TextarenaData';
-import ToolbarOptions from './ToolbarOptions';
-import ArenaPlugin from './ArenaPlugin';
-import { ArenaHandler } from '../services/EventManager';
+import { ArenaHandler } from '../services';
+import { ArenaPlugin } from './ArenaPlugin';
+import { ChangeDataListener } from './ChangeHandler';
+import { CreatorBarOptions } from './CreatorBarOptions';
+import { ReadyDataListener } from './ReadyHandler';
+import { TextarenaData } from './TextarenaData';
+import { ToolbarOptions } from './ToolbarOptions';
 
-type TextarenaOptions = {
+export type TextarenaOptions = {
   editable?: boolean,
   debug?: boolean,
   onChange?: ChangeDataListener,
@@ -19,5 +19,3 @@ type TextarenaOptions = {
   creatorBar?: CreatorBarOptions,
   outputTypes?: string[],
 };
-
-export default TextarenaOptions;

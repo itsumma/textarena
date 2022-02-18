@@ -1,3 +1,3 @@
-export default interface MetaData {
+export interface MetaData {
   [key: string]: unknown;
 }

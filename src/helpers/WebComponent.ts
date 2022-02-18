@@ -1,12 +1,10 @@
 import { LitElement } from 'lit';
-import {
-  property,
-} from 'lit/decorators.js';
-import { AnyArenaNode } from '../interfaces/ArenaNode';
-import NodeAttributes from '../interfaces/NodeAttributes';
-import { ArenaRemoveEvent } from '../services/ArenaBrowser';
+import { property } from 'lit/decorators.js';
 
-export default class WebComponent extends LitElement {
+import { AnyArenaNode, NodeAttributes } from '../interfaces';
+import { ArenaRemoveEvent } from '../services';
+
+export class WebComponent extends LitElement {
   @property({ type: Object })
     node: AnyArenaNode | undefined;
 

@@ -1,6 +1,5 @@
-import ArenaSelection from '../helpers/ArenaSelection';
-import ArenaCursor from '../interfaces/ArenaCursor';
-import { AnyArenaNode } from '../interfaces/ArenaNode';
+import { ArenaSelection } from '../helpers';
+import { AnyArenaNode, ArenaCursor } from '../interfaces';
 
 export function getAncestors(cursor: ArenaCursor): ArenaCursor[] {
   const { node } = cursor;

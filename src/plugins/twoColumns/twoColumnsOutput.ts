@@ -1,5 +1,4 @@
-import { ArenaFormatings } from '../../interfaces/ArenaFormating';
-import { AnyArenaNode, ArenaNodeMediator } from '../../interfaces/ArenaNode';
+import { AnyArenaNode, ArenaFormatings, ArenaNodeMediator } from '../../interfaces';
 
 const colOutput = (
   type: string,
@@ -8,7 +7,7 @@ const colOutput = (
 ): string =>
   node.children.map((child) => child.getOutput(type, frms)).join('');
 
-const twoColumnsOutput = (
+export const twoColumnsOutput = (
   type: string,
   node: AnyArenaNode,
   frms: ArenaFormatings,
@@ -22,5 +21,3 @@ const twoColumnsOutput = (
   }
   return '';
 };
-
-export default twoColumnsOutput;

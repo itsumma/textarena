@@ -1,10 +1,9 @@
-import { ArenaRootInterface } from '../interfaces/Arena';
-import { ArenaNodeRoot, ChildArenaNode } from '../interfaces/ArenaNode';
-import AbstractParentNode from './AbstractParentNode';
+import { ArenaNodeRoot, ArenaRootInterface, ChildArenaNode } from '../interfaces';
+import { AbstractParentNode } from './AbstractParentNode';
 
 // У корневого может быть разрешены либо параграфы (заголовки), либо секции (и большие картинки)
 
-export default class RootNode
+export class RootNode
   extends AbstractParentNode<ArenaRootInterface>
   implements ArenaNodeRoot {
   readonly root: true = true;

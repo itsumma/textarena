@@ -1,8 +1,8 @@
-import ArenaKeyboardEvent from '../interfaces/ArenaKeyboardEvent';
+import { ArenaKeyboardEvent } from '../interfaces';
 
 export type Direction = 'backward' | 'forward';
 
-export default class RemoveEvent implements ArenaKeyboardEvent {
+export class RemoveEvent implements ArenaKeyboardEvent {
   static type = 'remove';
 
   constructor(

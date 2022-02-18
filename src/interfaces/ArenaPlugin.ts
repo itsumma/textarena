@@ -1,10 +1,10 @@
 import Textarena from '../Textarena';
-import ArenaAttributes from './ArenaAttributes';
+import { ArenaMediatorInterface } from './Arena';
+import { ArenaAttributes } from './ArenaAttributes';
 import { TagAndAttributes } from './ArenaFormating';
 import { OutputProcessor } from './ArenaOptions';
-import { ArenaMediatorInterface } from './Arena';
 
-export default interface ArenaPlugin {
+export interface ArenaPlugin {
   register: (textarena: Textarena) => void;
 }
 

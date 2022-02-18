@@ -1,14 +1,14 @@
 /* eslint-disable max-classes-per-file */
 import { ArenaOptionsChild, ArenaOptionsRoot } from '../interfaces/ArenaOptions';
 
-import ArenaRoot from './ArenaRoot';
-import ArenaSingle from './ArenaSingle';
-import ArenaText from './ArenaText';
-import ArenaInline from './ArenaInline';
-import ArenaMediator from './ArenaMediator';
+import { ArenaRoot } from './ArenaRoot';
+import { ArenaSingle } from './ArenaSingle';
+import { ArenaText } from './ArenaText';
+import { ArenaInline } from './ArenaInline';
+import { ArenaMediator } from './ArenaMediator';
 import { ArenaInlineInterface, ArenaRootInterface, ChildArena } from '../interfaces/Arena';
 
-export default class ArenaFactory {
+export class ArenaFactory {
   static createRoot(arenaOptions: ArenaOptionsRoot): ArenaRootInterface {
     return new ArenaRoot(arenaOptions);
   }

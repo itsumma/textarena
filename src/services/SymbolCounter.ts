@@ -1,11 +1,12 @@
 import Typograf from 'typograf';
-import ArenaServiceManager from './ArenaServiceManager';
-import ElementHelper from '../helpers/ElementHelper';
-import { AnyArenaNode } from '../interfaces/ArenaNode';
-import helpTextRu from '../helpTextRu';
-import utils from '../utils';
 
-export default class SymbolCounter {
+import { ElementHelper } from '../helpers';
+import { helpTextRu } from '../helpTextRu';
+import { AnyArenaNode } from '../interfaces';
+import utils from '../utils';
+import { ArenaServiceManager } from './ArenaServiceManager';
+
+export class SymbolCounter {
   elem: ElementHelper;
 
   container: ElementHelper;

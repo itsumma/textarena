@@ -1,6 +1,6 @@
-import { AnyArenaNode } from '../../interfaces/ArenaNode';
+import { AnyArenaNode } from '../../interfaces';
 
-const outputVideo = (
+export const outputVideo = (
   type: string,
   node: AnyArenaNode,
 ): string => {
@@ -23,5 +23,3 @@ const outputVideo = (
     </video>
   `;
 };
-
-export default outputVideo;

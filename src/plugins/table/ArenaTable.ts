@@ -1,8 +1,8 @@
 import {
-  LitElement, css, TemplateResult, html,
+  css, html, LitElement, TemplateResult,
 } from 'lit';
 
-export default class ArenaTable extends LitElement {
+export class ArenaTable extends LitElement {
   static styles = css`
     :host {
       display: table;

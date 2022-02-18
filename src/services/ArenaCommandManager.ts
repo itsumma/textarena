@@ -1,8 +1,8 @@
 /* eslint-disable no-bitwise */
-import ArenaSelection from '../helpers/ArenaSelection';
-import CommandAction from '../interfaces/CommandAction';
-import ArenaServiceManager from './ArenaServiceManager';
+import { ArenaSelection } from '../helpers';
+import { CommandAction } from '../interfaces';
 import { isMac } from '../utils/navigator';
+import { ArenaServiceManager } from './ArenaServiceManager';
 
 export const keyboardKeys = [
   'Escape', 'F1', 'F2', 'F3', 'F4', 'F5', 'F6', 'F7', 'F8', 'F9', 'F10', 'F11', 'F12', 'Insert', 'Delete',
@@ -128,7 +128,7 @@ type Shortcuts = {
   [key: string]: ShortcutOptions[],
 };
 
-export default class ArenaCommandManager {
+export class ArenaCommandManager {
   commands: Commands = {};
 
   shortcuts: Shortcuts = {};

@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-export default class ArenaLogger {
+export class ArenaLogger {
   private debug = false;
 
   setDebug(debug: boolean): ArenaLogger {

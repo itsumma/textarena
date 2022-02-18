@@ -1,3 +1,3 @@
-export default interface ArenaKeyboardEvent {
+export interface ArenaKeyboardEvent {
   event: KeyboardEvent;
 }

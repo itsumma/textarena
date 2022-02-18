@@ -1,10 +1,9 @@
-import { ArenaOptionsWithText, TextProcessor } from '../interfaces/ArenaOptions';
+import {
+  ArenaMediatorInterface, ArenaNodeText, ArenaOptionsWithText, ArenaTextInterface, TextProcessor,
+} from '../interfaces';
+import { AbstractArena } from './AbstractArena';
 
-import AbstractArena from './AbstractArena';
-import { ArenaMediatorInterface, ArenaTextInterface } from '../interfaces/Arena';
-import { ArenaNodeText } from '../interfaces/ArenaNode';
-
-export default class ArenaText
+export class ArenaText
   extends AbstractArena
   implements ArenaTextInterface {
   readonly hasParent: true = true;

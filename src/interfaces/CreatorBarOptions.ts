@@ -1,4 +1,4 @@
-export default interface CreatorBarOptions {
+export interface CreatorBarOptions {
   creators: string[];
   enabled?: boolean;
   placeholder?: string;

@@ -1,8 +1,7 @@
-import AbstractParentNode from './AbstractParentNode';
-import { ArenaMediatorInterface } from '../interfaces/Arena';
-import { ArenaNodeMediator } from '../interfaces/ArenaNode';
+import { ArenaMediatorInterface, ArenaNodeMediator } from '../interfaces';
+import { AbstractParentNode } from './AbstractParentNode';
 
-export default class MediatorNode
+export class MediatorNode
   extends AbstractParentNode<ArenaMediatorInterface>
   implements ArenaNodeMediator {
   readonly root: false = false;

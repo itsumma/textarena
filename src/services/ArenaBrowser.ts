@@ -1,25 +1,15 @@
 /* eslint-disable no-bitwise */
-import ArenaKeyboardEvent from '../interfaces/ArenaKeyboardEvent';
-
-import BrowserCommandEvent from '../events/BrowserCommandEvent';
-import CommandEvent from '../events/CommandEvent';
-import CopyEvent from '../events/CopyEvent';
-import CutEvent from '../events/CutEvent';
-import ArenaInputEvent from '../events/ArenaInputEvent';
-import ModifiersEvent from '../events/ModifiersEvent';
-import PasteEvent from '../events/PasteEvent';
-import RemoveEvent from '../events/RemoveEvent';
-import SelectionEvent from '../events/SelectionEvent';
-
-import ElementHelper from '../helpers/ElementHelper';
-
-import { keyboardKeys, Modifiers } from './ArenaCommandManager';
-import ArenaServiceManager from './ArenaServiceManager';
-import ArenaSelection from '../helpers/ArenaSelection';
-import NodeAttributes from '../interfaces/NodeAttributes';
+import {
+  ArenaInputEvent, BrowserCommandEvent, CommandEvent, CopyEvent, CutEvent, ModifiersEvent,
+  PasteEvent, RemoveEvent, SelectionEvent,
+} from '../events';
+import { ArenaSelection, ElementHelper } from '../helpers';
+import {
+  AnyArenaNode, ArenaCursorAncestor, ArenaKeyboardEvent, NodeAttributes,
+} from '../interfaces';
 import { isMac } from '../utils/navigator';
-import { AnyArenaNode } from '../interfaces/ArenaNode';
-import ArenaCursorAncestor from '../interfaces/ArenaCursorAncestor';
+import { keyboardKeys, Modifiers } from './ArenaCommandManager';
+import { ArenaServiceManager } from './ArenaServiceManager';
 
 type ArenaChangeAttribute = CustomEvent<{
   attrs: NodeAttributes,
@@ -131,7 +121,7 @@ function isDescendant(
   return false;
 }
 
-export default class ArenaBrowser {
+export class ArenaBrowser {
   protected inputListenerInstance: ((e: Event) => void);
 
   protected beforeinputListenerInstance: ((e: InputEvent) => void);

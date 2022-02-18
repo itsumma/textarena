@@ -1,4 +1,3 @@
-import TextarenaData from './TextarenaData';
+import { TextarenaData } from './TextarenaData';
 
-type ReadyDataListener = (data: TextarenaData) => void;
-export default ReadyDataListener;
+export type ReadyDataListener = (data: TextarenaData) => void;

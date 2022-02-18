@@ -1,13 +1,11 @@
+import { ArenaSelection } from '../../helpers';
+import { AnyArenaNode, ArenaPlugin, ArenaSingleInterface } from '../../interfaces';
 import Textarena from '../../Textarena';
-import ArenaSelection from '../../helpers/ArenaSelection';
-import ArenaPlugin from '../../interfaces/ArenaPlugin';
-import { ArenaSingleInterface } from '../../interfaces/Arena';
-import { AnyArenaNode } from '../../interfaces/ArenaNode';
-import { izoUpload } from './izoUpload';
+import { UploadProcessor } from '../image';
+import { ArenaVideo } from './ArenaVideo';
+import { izoVideoUpload } from './izoVideoUpload';
+import { outputVideo } from './outputVideo';
 import { VideoPluginOptions } from './types';
-import ArenaVideo from './ArenaVideo';
-import outputVideo from './outputVideo';
-import { UploadProcessor } from '../image/types';
 
 const defaultOptions: VideoPluginOptions = {
   name: 'video',
@@ -38,7 +36,7 @@ const defaultOptions: VideoPluginOptions = {
   output: outputVideo,
 };
 
-const videoPlugin = (opts?: Partial<VideoPluginOptions>): ArenaPlugin => ({
+export const videoPlugin = (opts?: Partial<VideoPluginOptions>): ArenaPlugin => ({
   register(textarena: Textarena): void {
     const {
       name, icon, title, tag, attributes, allowedAttributes,
@@ -50,7 +48,7 @@ const videoPlugin = (opts?: Partial<VideoPluginOptions>): ArenaPlugin => ({
     }
     let uploadFunc = upload;
     if (izoConfig) {
-      uploadFunc = izoUpload(izoConfig);
+      uploadFunc = izoVideoUpload(izoConfig);
     }
     const arena = textarena.registerArena(
       {
@@ -139,5 +137,3 @@ const videoPlugin = (opts?: Partial<VideoPluginOptions>): ArenaPlugin => ({
     );
   },
 });
-
-export default videoPlugin;

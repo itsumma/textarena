@@ -1,12 +1,11 @@
-import ArenaNodeAncestorPart from './node/ArenaNodeAncestorPart';
-import ArenaNodeCorePart from './node/ArenaNodeCorePart';
-import ArenaNodeScionPart from './node/ArenaNodeScionPart';
-import ArenaNodeTextPart from './node/ArenaNodeTextPart';
 import {
   ArenaInlineInterface, ArenaMediatorInterface, ArenaRootInterface, ArenaSingleInterface,
 } from './Arena';
-import ArenaAttribute from './ArenaAttribute';
-import NodeAttributes from './NodeAttributes';
+import { ArenaAttribute } from './ArenaAttribute';
+import {
+  ArenaNodeAncestorPart, ArenaNodeCorePart, ArenaNodeScionPart, ArenaNodeTextPart,
+} from './node';
+import { NodeAttributes } from './NodeAttributes';
 
 export type ArenaNodeRoot = ArenaNodeCorePart<ArenaNodeRoot>
   & ArenaNodeAncestorPart

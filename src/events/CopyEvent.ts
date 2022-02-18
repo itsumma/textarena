@@ -1,6 +1,6 @@
-import ArenaKeyboardEvent from '../interfaces/ArenaKeyboardEvent';
+import { ArenaKeyboardEvent } from '../interfaces';
 
-export default class CopyEvent implements ArenaKeyboardEvent {
+export class CopyEvent implements ArenaKeyboardEvent {
   static type = 'copy';
 
   constructor(

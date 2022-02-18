@@ -1,7 +1,7 @@
-import { AnyArenaNode } from '../../interfaces/ArenaNode';
+import { AnyArenaNode } from '../../interfaces';
 import { Contents } from './types';
 
-const outputContents = (
+export const outputContents = (
   type: string,
   node: AnyArenaNode,
 ): string => {
@@ -18,5 +18,3 @@ const outputContents = (
   }
   return '';
 };
-
-export default outputContents;

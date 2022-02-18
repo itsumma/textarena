@@ -1,15 +1,15 @@
 import {
-  CSSResult, css, TemplateResult, html,
+  css, CSSResult, html, TemplateResult,
 } from 'lit';
 import { property, queryAssignedNodes } from 'lit/decorators.js';
-import { unsafeHTML } from 'lit/directives/unsafe-html.js';
 import { styleMap } from 'lit/directives/style-map.js';
-import WebComponent from '../../helpers/WebComponent';
-import { AnyArena } from '../../interfaces/Arena';
-import { ArenaNodeMediator } from '../../interfaces/ArenaNode';
+import { unsafeHTML } from 'lit/directives/unsafe-html.js';
+
+import { WebComponent } from '../../helpers';
+import { AnyArena, ArenaNodeMediator } from '../../interfaces';
 import { FigureClass } from './types';
 
-export default class ArenaFigure extends WebComponent {
+export class ArenaFigure extends WebComponent {
   // @property({
   //   type: String,
   // })
