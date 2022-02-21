@@ -17,7 +17,7 @@
     "typograf": "^6.11.3"
   },
   "main": "public/textarena.js",
-  "module": "lib/Textarena.js",
+  "module": "lib/index.js",
   "typings": "lib/index.d.ts",
   "sass": "scss/style.scss",
   "files": [
