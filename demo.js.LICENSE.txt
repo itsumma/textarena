@@ -1,0 +1,31 @@
+/*!
+ * @license
+ * Copyright 2022 © ITSumma Ltd.
+ * SPDX-License-Identifier: AGPL-3.0-only
+ */
+
+/*! typograf | © 2021 Denis Seleznev | MIT  License | https://github.com/typograf/typograf */
+
+/**
+ * @license
+ * Copyright 2017 Google LLC
+ * SPDX-License-Identifier: BSD-3-Clause
+ */
+
+/**
+ * @license
+ * Copyright 2018 Google LLC
+ * SPDX-License-Identifier: BSD-3-Clause
+ */
+
+/**
+ * @license
+ * Copyright 2019 Google LLC
+ * SPDX-License-Identifier: BSD-3-Clause
+ */
+
+/**
+ * @license
+ * Copyright 2020 Google LLC
+ * SPDX-License-Identifier: BSD-3-Clause
+ */

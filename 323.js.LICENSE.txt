@@ -1,0 +1,5 @@
+/*!
+ * @license
+ * Copyright 2022 © ITSumma Ltd.
+ * SPDX-License-Identifier: AGPL-3.0-only
+ */
