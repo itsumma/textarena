@@ -73,6 +73,7 @@ function initTextarena(html: string): Textarena | undefined {
   const {
     commonPlugin,
     pastePlugin,
+    dragPlugin,
     paragraphPlugin,
     formatingsPlugin,
     headersPlugin,
@@ -94,6 +95,7 @@ function initTextarena(html: string): Textarena | undefined {
     tablePlugin,
     contentsPlugin,
     backImagePlugin,
+    blockFormationPlugin,
   } = Textarena.constructor.prototype.getPlugins();
 
   return new Textarena(
@@ -110,8 +112,25 @@ function initTextarena(html: string): Textarena | undefined {
       plugins: [
         commonPlugin(),
         pastePlugin(),
+        dragPlugin(),
         formatingsPlugin(),
         paragraphPlugin(),
+        blockFormationPlugin({
+          name: 'big-text',
+          title: 'Big text',
+          tag: 'DIV',
+          attributes: { class: 'big-text' },
+          icon: '<b><i>A</i></b>',
+          shortcut: 'Ctrl + Alt + 9',
+          description: 'Big text',
+          command: 'convert-to-big-text',
+          marks: [
+            {
+              tag: 'DIV',
+              attributes: ['class="big-text"'],
+            },
+          ],
+        }),
         headersPlugin(),
         hrPlugin({
           icon: '***',
