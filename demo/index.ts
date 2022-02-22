@@ -9,6 +9,30 @@ import PlaceFillIcon from './place-fill-icon.svg';
 import PlaceWideIcon from './place-wide-icon.svg';
 import { ArenaEvent } from '../src/helpers';
 
+const handleHtmlChange = (data: TextarenaData) => {
+  const htmlElem = document.getElementById('html');
+  const renderElem = document.getElementById('render');
+  localStorage.setItem('dataHtml', JSON.stringify(
+    {
+      dataHtml: data.dataHtml,
+      time: +new Date(),
+    },
+  ));
+  if (htmlElem) {
+    htmlElem.innerText = data.html;
+  }
+  if (renderElem) {
+    renderElem.innerHTML = data.html;
+  }
+  document.querySelectorAll('iframe[id^="iframe-twitter"]')
+    .forEach((frame) => frame.addEventListener('load', () => {
+      (frame as HTMLIFrameElement).contentWindow?.postMessage(
+        { element: frame.id, query: 'height' },
+        'https://twitframe.com',
+      );
+    }));
+};
+
 function initTextarena(html: string): Textarena | undefined {
   const elem = document.getElementById('textarena-container');
   let dataHtml = html;
@@ -31,29 +55,7 @@ function initTextarena(html: string): Textarena | undefined {
   const initData = {
     dataHtml,
   };
-  const htmlElem = document.getElementById('html');
-  const renderElem = document.getElementById('render');
-  const [onChange] = debounce((data: TextarenaData) => {
-    localStorage.setItem('dataHtml', JSON.stringify(
-      {
-        dataHtml: data.dataHtml,
-        time: +new Date(),
-      },
-    ));
-    if (htmlElem) {
-      htmlElem.innerText = data.html;
-    }
-    if (renderElem) {
-      renderElem.innerHTML = data.html;
-    }
-    document.querySelectorAll('iframe[id^="iframe-twitter"]')
-      .forEach((frame) => frame.addEventListener('load', () => {
-        (frame as HTMLIFrameElement).contentWindow?.postMessage(
-          { element: frame.id, query: 'height' },
-          'https://twitframe.com',
-        );
-      }));
-  }, 500);
+  const [onChange] = debounce(handleHtmlChange, 500);
   window.addEventListener('message', (e) => {
     if (e.origin === 'https://twitframe.com' && e.data.element.match(/^iframe-twitter/)) {
       const element = document.getElementById(e.data.element);
@@ -283,8 +285,10 @@ function main() {
       });
       elem.classList.add('active');
       const lang = elem.getAttribute('data-lang');
-      import(`./${lang}.html`).then(({ default: dataHtml }) => {
+      import(`./${lang}.html`).then(({ default: data }) => {
+        const dataHtml = data as string;
         textarena?.setData({ dataHtml });
+        handleHtmlChange({ json: '', html: dataHtml, dataHtml });
       });
     }));
   const activeItem = document.querySelector('.menu .menu-item.active');
