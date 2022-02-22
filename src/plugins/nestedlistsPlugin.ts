@@ -3,9 +3,9 @@ import {
   AnyArenaNode, ArenaAttributes, ArenaMediatorInterface, ArenaNodeMediator, ArenaNodeText,
   ArenaPlugin, ArenaTextInterface, ChildArenaNode, DefaultPluginOptions,
 } from '../interfaces';
+import { RootNode } from '../models';
 import Textarena from '../Textarena';
 import utils from '../utils';
-import RootNode from '../models/RootNode';
 
 // Icons https://freeicons.io/icon-list/material-icons-editor-2
 
